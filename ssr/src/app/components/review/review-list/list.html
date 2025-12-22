@@ -1,0 +1,90 @@
+<div class="card card-border">
+  <div class="card-header">
+    <h4 translate>
+      <span *ngIf="type==='tutor'" translate>Tutor's Rating</span>
+      <span *ngIf="type!=='tutor'" translate>Student's Rating</span> &amp;
+      <span translate>Review</span>
+    </h4>
+    <div class="card-header-right">
+      <a
+        translate
+        class="review-text color-primary"
+        (click)="writeReview=!writeReview"
+        [hidden]="!canWriteReview"
+        >Write Review</a
+      >
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="rating-stars pt-3">
+      <ul id="stars">
+        <app-star-rating [rate]="stats.ratingAvg"></app-star-rating>
+        <span style="padding-left: 5px"
+          >{{stats.ratingAvg}} ({{stats.totalRating}})</span
+        >
+      </ul>
+    </div>
+    <h5 *ngIf="reviews.length > 1" class="text-secondary mt-3">
+      {{reviews.length}} <span translate>Reviews</span>
+    </h5>
+    <h5 *ngIf="reviews.length <= 1" class="text-secondary mt-3">
+      {{reviews.length}} <span translate>Review</span>
+    </h5>
+    <hr />
+    <div *ngIf="writeReview && canWriteReview">
+      <app-review-create
+        [options]="options"
+        [reviews]="reviews"
+        (createRating)="onRating($event)"
+        class="inline"
+      ></app-review-create>
+      <hr />
+    </div>
+    <ul style="list-style: none; padding-left: 0" *ngIf="reviews">
+      <li *ngFor="let review of reviews, let i = index">
+        <div>
+          <app-star-rating [rate]="review?.rating"></app-star-rating>
+          <a
+            class="pull-right"
+            [hidden]="review.rateBy && userId !== review.rateBy"
+            (click)="update(review, i)"
+          >
+            <i class="fi fi-rr-pencil"></i>
+          </a>
+        </div>
+        <div>
+          <div class="mt-2 comment-profile">
+            <img
+              class="media-object me-2 header-profile"
+              [src]="review?.rater?.avatarUrl"
+              onerror="this.src='/assets/images/default-avatar.jpg'"
+              alt="img"
+              class="header-profile"
+            />
+            {{review?.rater?.name}}
+          </div>
+        </div>
+        <p class="comment-text">{{review?.comment}}</p>
+        <p class="comment-date">
+          Posted {{review?.createdAt | date:'mediumDate'}}
+        </p>
+        <hr />
+      </li>
+    </ul>
+    <div class="row mt-5">
+      <div class="col-md-12 text-center">
+        <p *ngIf="!reviews.length" translate>There is no reviews.</p>
+        <div class="display-inline" [hidden]="total < pageSize">
+          <ngb-pagination
+            [collectionSize]="total"
+            [(page)]="page"
+            [pageSize]="pageSize"
+            [maxSize]="2"
+            (pageChange)="query()"
+            class="card-pagination pagination"
+          ></ngb-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

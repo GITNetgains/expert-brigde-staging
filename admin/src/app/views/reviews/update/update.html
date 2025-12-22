@@ -1,0 +1,42 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  alignment="center"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Update your review</h5>
+    <button cButtonClose (click)="handleModalChange(false)"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if(review && review.rating) {
+    <div class="d-flex mb-3">
+      <div class="rating-container">
+        @for(star of [1, 2, 3, 4, 5]; track star) {
+        <span
+          class="star"
+          [class.filled]="star <= review.rating"
+          (click)="review.rating = star"
+          (mouseenter)="hovered = star"
+          (mouseleave)="hovered = 0"
+        >
+          <svg cIcon name="cilStar"></svg>
+        </span>
+        }
+      </div>
+    </div>
+    }
+    <textarea
+      cFormControl
+      rows="3"
+      [(ngModel)]="review.comment"
+      placeholder="Leave some text here"
+      class="w-100"
+    ></textarea>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="success" (click)="submit()">Update</button>
+    <button cButton color="secondary" (click)="handleModalChange(false)">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>

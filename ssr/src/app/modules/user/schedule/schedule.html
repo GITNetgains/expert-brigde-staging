@@ -1,0 +1,86 @@
+<section class="sm-padding">
+  <div class="container">
+    <h4 class="color-light-black mb-3" translate>Available Time Edit</h4>
+    <div class="card">
+      <ul class="nav nav-tabs d-flex nav-custom" role="tablist">
+        <li role="presentation" [ngClass]="{'active': tab === 'schedule'}">
+          <a
+            href="javascript:void(0)"
+            (click)="onTabSelect('schedule')"
+            translate
+            >Schedule</a
+          >
+        </li>
+        <li role="presentation" [ngClass]="{'active': tab === 'coupon'}">
+          <a href="javascript:void(0)" (click)="onTabSelect('coupon')" translate
+            >Coupon</a
+          >
+        </li>
+        <li role="presentation" [ngClass]="{'active': tab === 'free'}">
+          <a translate href="javascript:void(0)" (click)="onTabSelect('free')"
+            >Free Session</a
+          >
+        </li>
+      </ul>
+      <div class="tab-content card-body" id="main_form">
+        <div class="" id="step1" [hidden]="tab !=='schedule'">
+          <div class="input-border">
+            <div class="row mb-4">
+              <div class="col-md-12 d-flex justify-content-between">
+                <h5 class="color-light-black" translate>
+                  Create slot for 1on1 classes
+                </h5>
+
+                <button
+                  class="btn btn-default btn-small"
+                  (click)="addRecurring(false)"
+                  translate
+                >
+                  Add Bulk classes
+                </button>
+              </div>
+            </div>
+            <app-schedule-calendar
+              #schedulePaid
+              (doChange)="onChange($event)"
+              [type]="'subject'"
+              [slotDuration]="tutor.defaultSlotDuration"
+            ></app-schedule-calendar>
+
+            <!-- <button class="btn btn-default mt-4">Save</button> -->
+          </div>
+        </div>
+        <div class="" id="coupon" *ngIf="tab==='coupon'">
+          <app-coupon
+            [tutorId]="tutor._id"
+            *ngIf="!loading && tutor"
+            [targetType]="'subject'"
+          ></app-coupon>
+        </div>
+        <div class="" id="free" [hidden]="tab!=='free'">
+          <div class="row mb-4">
+            <div class="col-md-12 d-flex justify-content-between">
+              <h5 class="color-light-black" translate>Create free sessions</h5>
+              <button
+                class="btn btn-default btn-small"
+                (click)="addRecurring(true)"
+              >
+                Recurring for free class
+              </button>
+            </div>
+          </div>
+
+          <app-schedule-calendar
+            #scheduleFree
+            [isFree]="true"
+            (doChange)="onChange($event)"
+            [type]="'subject'"
+            [slotDuration]="tutor.defaultSlotDuration"
+          ></app-schedule-calendar>
+
+          <!-- <button class="btn btn-default mt-4">Save</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,105 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'mixed'){
+            @if(item.key==='smtpTransporter'){
+            <form cForm (ngSubmit)="onSave(item)" #smtpTransporterForm="ngForm" class="row g-3">
+              <c-col md="12">
+                <label cLabel>
+                  <strong>SMTP Type</strong>
+                </label>
+                <select cSelect [(ngModel)]="item.value.type" name="smtpType">
+                  <option value="service" selected>Service</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </c-col>
+              @if(item.value.type==='service'){
+              <c-col md="12">
+                <select cSelect [(ngModel)]="item.value.service.name" name="serviceName">
+                  @for(item of smtpServices; track item){
+                  <option value="item">{{item}}</option>
+                  }
+                </select>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Auth User</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.service.auth.user" name="serviceAuthUser" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Auth Pass</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.service.auth.pass" name="serviceAuthPass" type="password"
+                  autocomplete="username" />
+              </c-col>
+              }
+              @if(item.value.type==='custom'){
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Host</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.custom.host" name="host" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Port</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.custom.port" name="port" type="number" />
+              </c-col>
+              <c-col md="12">
+                <c-form-check>
+                  <input cFormCheckInput [(ngModel)]="item.value.custom.sercure" name="isSercure" type="checkbox" />
+                  <label cFormCheckLabel>Is sercure? (true for port 465)</label>
+                </c-form-check>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>User name</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.custom.auth.user" name="customAuthUser" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Password</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.custom.auth.pass" name="customAuthPass" type="password"
+                  autocomplete="username" />
+              </c-col>
+              }
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            }
+            }
+            @if(item.type === 'text'){
+            <c-input-group>
+              <input cFormControl [(ngModel)]="item.value" />
+              <button cButton color="primary" type="button" (click)="onSave(item)">
+                Save
+              </button>
+            </c-input-group>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

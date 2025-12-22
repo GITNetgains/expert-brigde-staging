@@ -1,0 +1,102 @@
+<div class="card card-item">
+  <div class="card-tag">
+    <div class="badge badge-tag" *ngIf="course?.featured">
+      <span translate>Featured</span>
+    </div>
+    <a
+      class="badge badge-default"
+      placement="bottom"
+      title="{{categories}}"
+      [routerLink]="['/courses']"
+      [queryParams]="{categoryIds: category._id}"
+      *ngIf="category && category.name && !url.includes('/courses')"
+      >{{category.name | ellipsis:14}}</a
+    >
+
+    <span
+      class="badge badge-default"
+      placement="bottom"
+      title="{{categories}}"
+      *ngIf="category && category.name && url.includes('/courses')"
+      >{{category.name | ellipsis:14}}</span
+    >
+  </div>
+  <a [routerLink]="['/courses',course?.alias]" class="hyperlink card-img-top">
+    <img
+      src="{{course?.mainImage?.fileUrl}}"
+      [alt]="course?.name"
+      onerror="this.src='/assets/images/no-image.jpg'"
+    />
+  </a>
+
+  <div class="card-body">
+    <div class="profile-card">
+      <div class="profile">
+        <a
+          class="hyperlink"
+          [routerLink]="['/tutors', course?.tutor?.username]"
+        >
+          <img
+            src="{{course?.tutor?.avatarUrl}}"
+            [alt]="course?.tutor?.name"
+            onerror="this.src='/assets/images/default-avatar.jpg'"
+          />
+          <h5 class="cate-profile-name pt-sm">{{course?.tutor?.name}}</h5>
+        </a>
+      </div>
+    </div>
+    <ul id="stars" class="stars-card">
+      <app-star-rating [rate]="course?.tutor?.ratingAvg"></app-star-rating>
+      <span>{{course?.tutor?.ratingAvg}} ({{course?.tutor?.totalRating}})</span>
+    </ul>
+
+    <div class="card-content mt-2">
+      <h5 class="card-title text-line-break">
+        {{(course?.name || '') | ellipsis:60}}
+      </h5>
+      <!-- <div *ngIf="course?.description">
+        <app-text-ellipsis [content]="course?.description" [showChar]="50" [path]="'/courses'"
+          [param]="course?.alias"></app-text-ellipsis>
+      </div> -->
+      <p class="m-0">
+        <span translate>Total no of learners</span>: {{course?.enrolledCount ||
+        0}}
+      </p>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent p-3">
+    <div class="left-card-footer">
+      <!-- <a class="btn btn-default" [routerLink]="['/courses',course?._id]" translate>Buy Now</a> -->
+      <a
+        *ngIf="!course?.booked && stateService.showBooking()"
+        class="btn btn-default"
+        [routerLink]="['/courses',course?.alias]"
+        translate
+        >Buy Now</a
+      >
+      <a
+        class="btn btn-default"
+        [routerLink]="['/courses',course?.alias]"
+        translate
+        *ngIf="!stateService.showBooking()"
+        >Details</a
+      >
+      <a
+        *ngIf="course?.booked"
+        class="btn btn-default"
+        [routerLink]="['/courses',course?.alias]"
+        translate
+        >Purchased</a
+      >
+    </div>
+    <div class="right-card-footer text-end">
+      <h5 class="color-light-red">
+        <strong *ngIf="course.price >0"
+          >{{ course?.price | appCurrency}}</strong
+        >
+
+        <strong *ngIf="course.price ===0" translate>Free</strong>
+      </h5>
+    </div>
+  </div>
+</div>

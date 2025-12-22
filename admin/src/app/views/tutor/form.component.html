@@ -1,0 +1,847 @@
+<c-container class="p-0">
+  <c-row class="mb-4">
+    <c-tabs>
+      <c-tabs-list variant="tabs">
+        <button cTab itemKey="info">General Info</button>
+        @if(info._id){ <button cTab itemKey="categories">Expert's Categories</button>}
+        @if(info._id){ <button cTab itemKey="resume">Expert's resume</button>}
+        @if(info._id){ <button cTab itemKey="reviews">Expert's reviews</button>}
+      </c-tabs-list>
+      <c-tabs-content>
+        <c-tab-panel class="p-2" itemKey="info">
+          <c-row [gutter]="3">
+            <c-col md="3">
+              <app-profile-card
+                [user]="info"
+                (afterUpload)="afterUpload($event)"
+              ></app-profile-card>
+            </c-col>
+            <c-col md="9">
+              <c-card>
+                @if(info._id){
+                <c-card-header>
+                  <h4>Update Expert</h4>
+                </c-card-header>
+                } @else {
+                <c-card-header>
+                  <h4>Create Expert</h4>
+                </c-card-header>
+                }
+                <c-card-body>
+                  <form
+                    cForm
+                    #frm="ngForm"
+                    (ngSubmit)="submit(frm)"
+                    novalidate
+                    class="needs-validation"
+                    [validated]="customStylesValidated"
+                  >
+                    @if(info.introVideoId) {
+                    <div
+                      class="mb-3 video-intro"
+                      style="padding-left: 4em; padding-right: 4em"
+                    >
+                      <video
+                        width="100%"
+                        [src]="info?.introVideo?.fileUrl"
+                        controls
+                      ></video>
+                    </div>
+                    } @if(info.introYoutubeId) {
+                    <div
+                      class="mb-3"
+                      style="padding-left: 4em; padding-right: 4em"
+                    >
+                      <iframe
+                        style="min-height: 25em"
+                        width="100%"
+                        height="100%"
+                        [src]="urlYoutube"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      ></iframe>
+                    </div>
+                    }
+                    <c-row>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="name"
+                            >Full Name (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              id="name"
+                              [(ngModel)]="info.name"
+                              required
+                              name="name"
+                              #name="ngModel"
+                              placeholder="Enter name"
+                            />
+                            @if(name.errors && (name.dirty || name.touched ||
+                            isSubmitted)){
+                            <c-form-feedback invalid>
+                              Please enter name!
+                            </c-form-feedback>
+                            }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="username"
+                            >Username (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              id="username"
+                              [(ngModel)]="info.username"
+                              required
+                              name="username"
+                              #username="ngModel"
+                              placeholder="Enter username"
+                            />
+                            @if(username.errors && (username.dirty ||
+                            username.touched || isSubmitted)){
+                            <c-form-feedback invalid>
+                              Please enter username!
+                            </c-form-feedback>
+                            }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="timezone"
+                            >Timezone (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <div class="position-relative">
+                            <app-timezone
+                              #timezoneComponent
+                              [userTz]="info.timezone"
+                              [isSubmitted]="isSubmitted"
+                              (onChange)="info.timezone = $event"
+                              (onValidationChange)="onTimezoneValidationChange($event)"
+                            ></app-timezone>
+                          </div>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="email"
+                            >Email (<span class="text-danger">*</span>)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              type="email"
+                              id="email"
+                              [(ngModel)]="info.email"
+                              required
+                              name="email"
+                              #email="ngModel"
+                              placeholder="user@example.com"
+                              pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$"
+                            />
+                            @if(email.errors && (email.dirty || email.touched ||
+                            isSubmitted)){ @if(email.errors['required']){
+                            <c-form-feedback invalid>
+                              Please enter email address!
+                            </c-form-feedback>
+                            } @else if(email.errors['pattern']){
+                            <c-form-feedback invalid>
+                              Please enter a valid email address.
+                            </c-form-feedback>
+                            } }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="phoneNumber"
+                            >Phone Number (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              type="text"
+                              id="phoneNumber"
+                              [(ngModel)]="info.phoneNumber"
+                              name="phoneNumber"
+                              placeholder="E.g: 0123456789"
+                              pattern="[0-9\+]{9,15}$"
+                              minlength="9"
+                              maxlength="15"
+                              #phone="ngModel"
+                              required
+                            />
+                            @if(phone.errors && (phone.dirty || phone.touched ||
+                            isSubmitted)){ @if(phone.errors['required']){
+                            <c-form-feedback invalid>
+                              Please enter phone number
+                            </c-form-feedback>
+                            } @else if(phone.errors['minlength'] ||
+                            phone.errors['maxlength']){
+                            <c-form-feedback invalid>
+                              Phone numbers must be between 9 to 15 digits
+                            </c-form-feedback>
+                            } @else if(phone.errors['pattern']){
+                            <c-form-feedback invalid>
+                              Phone number is invalid format
+                            </c-form-feedback>
+                            } }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="country"
+                            >Country (<span class="text-danger">*</span>)</label
+                          >
+                          <div class="position-relative">
+                            <ng-select
+                              [items]="countries"
+                              bindLabel="name"
+                              bindValue="code"
+                              [searchable]="true"
+                              [(ngModel)]="info.country"
+                              name="country"
+                              #country="ngModel"
+                              placeholder="Select country"
+                              required
+                              [clearable]="true"
+                              class="my-select"
+                            >
+                            </ng-select>
+                            @if(country.errors && (country.dirty ||
+                            country.touched || isSubmitted)) {
+                            @if(country.errors['required']) {
+                            <div class="invalid-feedback d-block">
+                              Please select a country!
+                            </div>
+                            } }
+                          </div>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="state">State</label>
+                          <c-input-group class="mb-3">
+                            <input
+                              cFormControl
+                              type="text"
+                              id="state"
+                              [(ngModel)]="info.state"
+                              name="state"
+                              placeholder="Enter state"
+                              #state="ngModel"
+                            />
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="city">City</label>
+                          <c-input-group class="mb-3">
+                            <input
+                              cFormControl
+                              type="text"
+                              id="city"
+                              [(ngModel)]="info.city"
+                              name="city"
+                              placeholder="Enter city"
+                              #city="ngModel"
+                            />
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="address"
+                            >Address (<span class="text-danger">*</span>)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              type="text"
+                              id="address"
+                              [(ngModel)]="info.address"
+                              name="address"
+                              placeholder="Enter address"
+                              #address="ngModel"
+                              required
+                            />
+                            @if(address.errors && (address.dirty ||
+                            address.touched || isSubmitted)){
+                            @if(address.errors['required']){
+                            <c-form-feedback invalid>
+                              Please enter address!
+                            </c-form-feedback>
+                            } }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="zipCode"
+                            >Zip Code (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <c-input-group class="mb-3 has-validation">
+                            <input
+                              cFormControl
+                              type="text"
+                              id="zipCode"
+                              [(ngModel)]="info.zipCode"
+                              name="zipCode"
+                              placeholder="Enter zip code"
+                              minlength="5"
+                              maxlength="10"
+                              #zipcode="ngModel"
+                              pattern="[0-9A-Z]+"
+                              required
+                            />
+                            @if(zipcode.errors && (zipcode.dirty ||
+                            zipcode.touched || isSubmitted)){
+                            @if(zipcode.errors['required']){
+                            <c-form-feedback invalid>
+                              Please enter zip code!
+                            </c-form-feedback>
+                            } @else if(zipcode.errors['minlength'] ||
+                            zipcode.errors['maxlength']){
+                            <c-form-feedback invalid>
+                              Zip code must be between 5 to 10 characters
+                            </c-form-feedback>
+                            } @else if(zipcode.errors['pattern']){
+                            <c-form-feedback invalid>
+                              Zip code is invalid format
+                            </c-form-feedback>
+                            } }
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="languages"
+                            >Languages (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <div class="position-relative">
+                            <ng-select
+                              [items]="languages"
+                              bindLabel="name"
+                              bindValue="code"
+                              [multiple]="true"
+                              [closeOnSelect]="false"
+                              [(ngModel)]="info.languages"
+                              name="languages"
+                              #languageField="ngModel"
+                              placeholder="Select languages"
+                              required
+                              class="my-select"
+                            >
+                            </ng-select>
+                            @if(languageField.errors && (languageField.dirty ||
+                            languageField.touched || isSubmitted)) {
+                            @if(languageField.errors['required']) {
+                            <div class="invalid-feedback d-block">
+                              Please select at least one language!
+                            </div>
+                            } }
+                      </div>
+                    </div>
+                  </c-col>
+                  <c-col md="6">
+                    <div class="mb-3">
+                      <label cLabel for="skillIds">Skills</label>
+                      <div class="position-relative">
+                        <ng-select
+                          [items]="skills"
+                          bindLabel="name"
+                          bindValue="_id"
+                          [multiple]="true"
+                          [closeOnSelect]="false"
+                          [(ngModel)]="info.skillIds"
+                          name="skillIds"
+                          class="my-select"
+                          placeholder="Select skills"
+                        >
+                        </ng-select>
+                      </div>
+                    </div>
+                  </c-col>
+                  <c-col md="6">
+                    <div class="mb-3">
+                      <label cLabel for="industryIds">Industries</label>
+                      <div class="position-relative">
+                        <ng-select
+                          [items]="industries"
+                          bindLabel="name"
+                          bindValue="_id"
+                          [multiple]="true"
+                          [closeOnSelect]="false"
+                          [(ngModel)]="info.industryIds"
+                          name="industryIds"
+                          class="my-select"
+                          placeholder="Select industries"
+                        >
+                        </ng-select>
+                      </div>
+                    </div>
+                  </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="idYoutube"
+                            >YouTube ID (Introduction video)</label
+                          >
+                          <c-input-group class="mb-1">
+                            <input
+                              cFormControl
+                              id="idYoutube"
+                              name="idYoutube"
+                              placeholder="Enter YouTube ID"
+                              [(ngModel)]="info.idYoutube"
+                              #idYoutube="ngModel"
+                            />
+                          </c-input-group>
+                          <small class="form-text text-muted"
+                            >EG:
+                            https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>,
+                            id = <strong>xRjlRfpsHGw</strong></small
+                          >
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="commissionRate"
+                            >Commission Rate (<span class="text-danger">*</span
+                            >)</label
+                          >
+                          <c-input-group class="mb-1 has-validation">
+                            <input
+                              cFormControl
+                              type="number"
+                              id="commissionRate"
+                              [(ngModel)]="info.commissionRate"
+                              name="commissionRate"
+                              min="0"
+                              max="1"
+                              step="0.01"
+                              placeholder="Enter commission rate"
+                              #commission="ngModel"
+                            />
+                            @if(commission.errors && (commission.dirty ||
+                            commission.touched || isSubmitted)){
+                            <c-form-feedback invalid>
+                              Commission rate is required
+                            </c-form-feedback>
+                            } @else if(commission.value < 0 && (commission.dirty
+                            || commission.touched || isSubmitted)){
+                            <c-form-feedback invalid>
+                              Commission rate must be greater than 0!
+                            </c-form-feedback>
+                            } @else if(commission.value > 1 && (commission.dirty
+                            || commission.touched || isSubmitted)){
+                            <c-form-feedback invalid>
+                              Commission rate must be less than 1!
+                            </c-form-feedback>
+                            }
+                          </c-input-group>
+                          <small class="form-text text-muted"
+                            >Enter decimal number, from 0 - 1. Value 0.2 means
+                            admin will get 20% on the booking</small
+                          >
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="highlights">Highlights</label>
+                          <div class="position-relative">
+                            <ng-select
+                              [items]="info.highlights"
+                              [multiple]="true"
+                              [closeOnSelect]="false"
+                              [(ngModel)]="info.highlights"
+                              name="highlights"
+                              [addTag]="true"
+                              class="my-select"
+                              placeholder="Add highlights"
+                            >
+                            </ng-select>
+                          </div>
+                        </div>
+                      </c-col>
+                      <c-col md="12">
+                        <div class="mb-3">
+                          <label cLabel for="workHistory">Work History</label>
+                          <div class="row g-2">
+                            <div class="col-md-4">
+                              <c-input-group class="mb-1">
+                                <input
+                                  cFormControl
+                                  id="workPosition"
+                                  name="workPosition"
+                                  [(ngModel)]="newWorkPosition"
+                                  placeholder="Position"
+                                />
+                              </c-input-group>
+                            </div>
+                            <div class="col-md-4">
+                              <c-input-group class="mb-1">
+                                <input
+                                  cFormControl
+                                  id="workCompany"
+                                  name="workCompany"
+                                  [(ngModel)]="newWorkCompany"
+                                  placeholder="Company"
+                                />
+                              </c-input-group>
+                            </div>
+                            <div class="col-md-3">
+                              <c-input-group class="mb-1">
+                                <input
+                                  cFormControl
+                                  id="workYears"
+                                  name="workYears"
+                                  [(ngModel)]="newWorkYears"
+                                  placeholder="Years, e.g. 2013-2023"
+                                />
+                              </c-input-group>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                              <button
+                                cButton
+                                color="primary"
+                                type="button"
+                                (click)="addWorkHistory()"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                          @if(info.workHistory && info.workHistory.length) {
+                          <ul class="mt-2 list-unstyled">
+                            @for (item of info.workHistory; track $index; let i = $index) {
+                            <li class="d-flex align-items-center mb-1">
+                              <span class="me-2">&bull; {{ item }}</span>
+                              <button
+                                cButton
+                                color="danger"
+                                size="sm"
+                                type="button"
+                                (click)="removeWorkHistory(i)"
+                              >
+                                Remove
+                              </button>
+                            </li>
+                            }
+                          </ul>
+                          }
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="yearsExperience">Years of Experience</label>
+                          <c-input-group class="mb-1">
+                            <input
+                              cFormControl
+                              type="number"
+                              id="yearsExperience"
+                              [(ngModel)]="info.yearsExperience"
+                              name="yearsExperience"
+                              min="0"
+                              placeholder="Enter years of experience"
+                            />
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel for="consultationFee">Consultation Fee</label>
+                          <c-input-group class="mb-1">
+                            <input
+                              cFormControl
+                              type="number"
+                              id="consultationFee"
+                              [(ngModel)]="info.consultationFee"
+                              name="consultationFee"
+                              min="0"
+                              step="0.01"
+                              placeholder="Enter consultation fee"
+                            />
+                          </c-input-group>
+                        </div>
+                      </c-col>
+                      <c-col md="6">
+                        <div class="mb-3">
+                          @if(!userId){
+                          <label cLabel for="password"
+                            >Password <span class="text-danger">*</span></label
+                          >
+                          } @else {
+                          <label cLabel for="password">Password</label>
+                          }
+                          <c-input-group class="mb-1 has-validation">
+                            <input
+                              cFormControl
+                              type="password"
+                              id="password"
+                              [(ngModel)]="info.password"
+                              name="password"
+                              #password="ngModel"
+                              minlength="6"
+                              [required]="!userId"
+                              placeholder="Enter password"
+                            />
+
+                            @if(password.errors && (password.dirty ||
+                            password.touched || isSubmitted)){
+                            @if(password.errors['minlength']){
+                            <c-form-feedback invalid>
+                              Password must be at least 6 characters!
+                            </c-form-feedback>
+                            } @else if(password.errors['required']){
+                            <c-form-feedback invalid>
+                              Password is required!
+                            </c-form-feedback>
+                            } }
+                          </c-input-group>
+                          @if(userId){
+                          <small class="form-text text-muted d-block">
+                            Leave blank to keep the current password
+                          </small>
+                          }
+                        </div>
+                      </c-col>
+                      @if(info._id) {
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel>Issue Document</label><br />
+                          @if(info.issueDocument && !isDoc(info.issueDocument))
+                          {
+                          <a
+                            [href]="info.issueDocument?.fileUrl"
+                            target="_blank"
+                            download
+                            class="text-decoration-none"
+                            >{{ info.issueDocument?.fileUrl }}</a
+                          >
+                          } @if(info.issueDocument && isDoc(info.issueDocument))
+                          {
+                          <a
+                            href="javascript:void(0)"
+                            (click)="showDocument(info.issueDocument)"
+                            class="text-decoration-none"
+                            >{{ info.issueDocument?.fileUrl }}</a
+                          >
+                          }
+                        </div>
+                      </c-col>
+                      } @if(info._id) {
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel>Resume Document</label><br />
+                          @if(info.resumeDocument &&
+                          !isDoc(info.resumeDocument)) {
+                          <a
+                            [href]="info.resumeDocument?.fileUrl"
+                            target="_blank"
+                            download
+                            class="text-decoration-none"
+                            >{{ info.resumeDocument?.fileUrl }}</a
+                          >
+                          } @if(info.resumeDocument &&
+                          isDoc(info.resumeDocument)) {
+                          <a
+                            href="javascript:void(0)"
+                            (click)="showDocument(info.resumeDocument)"
+                            class="text-decoration-none"
+                            >{{ info.resumeDocument?.fileUrl }}</a
+                          >
+                          }
+                        </div>
+                      </c-col>
+                      } @if(info._id) {
+                      <c-col md="6">
+                        <div class="mb-3">
+                          <label cLabel>Certification Document</label><br />
+                          @if(info.certificationDocument &&
+                          !isDoc(info.certificationDocument)) {
+                          <a
+                            [href]="info.certificationDocument?.fileUrl"
+                            target="_blank"
+                            download
+                            class="text-decoration-none"
+                            >{{ info.certificationDocument?.fileUrl }}</a
+                          >
+                          } @if(info.certificationDocument &&
+                          isDoc(info.certificationDocument)) {
+                          <a
+                            href="javascript:void(0)"
+                            (click)="showDocument(info.certificationDocument)"
+                            class="text-decoration-none"
+                            >{{ info.certificationDocument?.fileUrl }}</a
+                          >
+                          }
+                        </div>
+                      </c-col>
+                      }
+                      <c-col md="12">
+                        <div class="mb-3">
+                          <label cLabel for="bio">Biography</label>
+                          <app-editor
+                            [content]="info.bio"
+                            (contentChange)="info.bio = $event"
+                          ></app-editor>
+                        </div>
+                      </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        Active?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.isActive"
+                          name="isActive"
+                          id="isActive"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        Email Verified?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.emailVerified"
+                          name="emailVerified"
+                          id="emailVerified"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        Phone Verified?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.phoneVerified"
+                          name="phoneVerified"
+                          id="phoneVerified"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        In Home Page?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.isHomePage"
+                          name="isHomePage"
+                          id="isHomePage"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        Featured?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.featured"
+                          name="featured"
+                          id="featured"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
+                      <c-col md="4">
+                        <label>
+                          Status: @if (!info.pendingApprove && !info.rejected) {
+                          <span class="badge bg-success">Approved</span>
+                          } @if (!info.pendingApprove && info.rejected) {
+                          <span class="badge bg-warning">Rejected</span>
+                          } @if (info.pendingApprove) {
+                          <span class="badge bg-primary"
+                            >Waiting for approval</span
+                          >
+                          }
+                        </label>
+                      </c-col>
+                      <c-col md="12">
+                        <div class="form-group mt-3">
+                          <button
+                            cButton
+                            color="primary"
+                            type="submit"
+                            [disabled]="loading"
+                          >
+                            @if (loading) {
+                            <span
+                              class="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            } Save
+                          </button>
+                          @if (info._id && (info.pendingApprove ||
+                          (!info.pendingApprove && !info.rejected))) {
+                          <button
+                            cButton
+                            color="secondary"
+                            class="float-end"
+                            type="button"
+                            (click)="reject()"
+                          >
+                            Reject
+                          </button>
+                          } @if (info._id && (info.pendingApprove ||
+                          (!info.pendingApprove && info.rejected))) {
+                          <button
+                            cButton
+                            color="secondary"
+                            class="float-end me-2"
+                            type="button"
+                            (click)="approve()"
+                          >
+                            Approve
+                          </button>
+                          } @if (info._id) {
+                          <button
+                            cButton
+                            color="secondary"
+                            class="float-end me-2"
+                            type="button"
+                            [disabled]="info.isZoomAccount"
+                            (click)="inviteTutorJoinZoom()"
+                          >
+                            Invite tutors to join the zoom
+                          </button>
+                          }
+                        </div>
+                      </c-col>
+                    </c-row>
+                  </form>
+                </c-card-body>
+              </c-card>
+            </c-col>
+          </c-row>
+        </c-tab-panel>
+        <c-tab-panel class="p-2" itemKey="categories">
+          <app-tutor-categories [tutorId]="info._id"></app-tutor-categories>
+        </c-tab-panel>
+        <c-tab-panel class="p-2" itemKey="resume">
+          @if(info && info._id) {
+          <app-tutor-education [tutorId]="info._id"></app-tutor-education>
+          }
+        </c-tab-panel>
+        <c-tab-panel class="p-2" itemKey="reviews">
+          <c-card>
+            <c-card-header>
+              <h5>Reviews of the Expert {{ info?.name }}</h5>
+            </c-card-header>
+            <c-card-body>
+              <app-review-tutor [tutorId]="info._id"></app-review-tutor>
+            </c-card-body>
+          </c-card>
+        </c-tab-panel>
+      </c-tabs-content>
+    </c-tabs>
+  </c-row>
+</c-container>

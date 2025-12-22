@@ -1,0 +1,89 @@
+<div class="card">
+  <div class="card-body">
+    <div class="col-md-12" *ngIf="!earningStats" translate>No information</div>
+    <div class="table-responsive table-no-fixed">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <td translate>Tutor Name:</td>
+            <td>{{earningStats?.tutor?.name}}</td>
+          </tr>
+          <tr>
+            <td translate>Tutor Email:</td>
+            <td>{{earningStats?.tutor?.email}}</td>
+          </tr>
+          <tr>
+            <td translate>Admin %:</td>
+            <td>{{earningStats?.commissionRate}} %</td>
+          </tr>
+          <tr>
+            <td translate>Total amount requested for payment:</td>
+            <td>{{earningStats?.totalAmountPayoutRequest}} %</td>
+          </tr>
+          <tr class="table-danger">
+            <td colspan="2">
+              <h3 style="font-size: 17px; font-weight: bold; margin: 0">
+                Tutor Earnings
+              </h3>
+            </td>
+          </tr>
+          <tr>
+            <td>Total till date:</td>
+            <td>
+              {{earningStats?.totalTutorTillDate | currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0'}}
+            </td>
+          </tr>
+          <tr>
+            <td>Paid till date:</td>
+            <td>
+              {{earningStats?.paidTutorTillDate | currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0'}}
+            </td>
+          </tr>
+          <tr>
+            <td>Balance Due:</td>
+            <td>
+              {{earningStats?.balanceTutorDue| currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0' }}
+            </td>
+          </tr>
+          <tr class="table-danger">
+            <td colspan="2">
+              <h3 style="font-size: 17px; font-weight: bold; margin: 0">
+                Admin Earnings
+              </h3>
+            </td>
+          </tr>
+          <tr>
+            <td>Total till date:</td>
+            <td>
+              {{earningStats.totalAdminTillDate | currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0'}}
+            </td>
+          </tr>
+          <tr>
+            <td>Paid till date:</td>
+            <td>
+              {{earningStats.paidAdminTillDate | currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0'}}
+            </td>
+          </tr>
+          <tr>
+            <td>Balance Due:</td>
+            <td>
+              {{earningStats.balanceAdminDue | currency :
+              (config?.currencySymbol ? config?.currencySymbol : '$'): 'symbol'
+              : '1.0'}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

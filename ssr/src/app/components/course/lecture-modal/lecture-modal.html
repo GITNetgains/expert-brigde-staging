@@ -1,0 +1,19 @@
+<div class="modal-header">
+  <h2 class="modal-title">{{lecture?.title}}</h2>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="lecture && lecture.mediaType==='video'">
+    <video class="mb-2" *ngIf="lecture" width="100%" src="{{lecture?.media?.fileUrl}}" controls></video>
+  </div>
+  <div *ngIf="lecture && lecture.mediaType==='audio'">
+    <audio class="mb-2" *ngIf="lecture" width="100%" src="{{lecture?.media?.fileUrl}}" controls></audio>
+  </div>
+  <div *ngIf="lecture && lecture.mediaType==='pdf' && lecture.media && lecture.media.fileUrl && isPlatform"
+    class="mb-2">
+    <ngx-extended-pdf-viewer [src]="lecture.media.fileUrl" [useBrowserLocale]="true" height="80vh"
+      [listenToURL]="true"></ngx-extended-pdf-viewer>
+  </div>
+</div>

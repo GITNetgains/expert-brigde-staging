@@ -1,0 +1,135 @@
+<c-container class="p-0">
+  <c-row>
+    <c-col md="12">
+      <c-card class="mb-4">
+        <c-card-header>
+          <h3>Manger Complaint</h3>
+        </c-card-header>
+        <c-card-body>
+          <c-row>
+            <c-col md="8">
+              <div class="mb-3">
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="searchFields.q"
+                  name="name"
+                  placeholder="Enter name"
+                />
+              </div>
+            </c-col>
+            <c-col md="4">
+              <div class="mb-3">
+                <button cButton color="primary" class="w-100" (click)="query()">
+                  Filter
+                </button>
+              </div>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+      <c-card>
+        <c-card-header>
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center"
+          >
+            <h4 class="mb-0">Total Complaint: {{ total }}</h4>
+
+            <app-pagination
+              [currentPage]="currentPage"
+              [pageSize]="pageSize"
+              [totalItems]="total"
+              [maxSize]="3"
+            ></app-pagination>
+          </div>
+        </c-card-header>
+        <c-card-body>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr class="">
+                  <th>
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="targetType"
+                      [sortOption]="sortOption"
+                      sortTitle="Type"
+                    ></app-sort>
+                  </th>
+                  <th>
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="targetId"
+                      [sortOption]="sortOption"
+                      sortTitle="Class"
+                    ></app-sort>
+                  </th>
+                  <th>
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="transactionId"
+                      [sortOption]="sortOption"
+                      sortTitle="Transaction"
+                    ></app-sort>
+                  </th>
+                  <th>
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="issue"
+                      [sortOption]="sortOption"
+                      sortTitle="Issue"
+                    ></app-sort>
+                  </th>
+                  <th>Report By</th>
+                  <th>
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th>
+                    <a>Action</a>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for(item of items; track item) {
+                <tr class="">
+                  <td>
+                    <span *ngIf="item.targetType === 'subject'"
+                      >One To One</span
+                    >
+                    <span *ngIf="item.targetType === 'webinar'"
+                      >Group Class</span
+                    >
+                  </td>
+                  <td>{{ item.targetCode }}</td>
+                  <td>{{ item.transactionCode }}</td>
+                  <td>{{ item.issue }}</td>
+                  <td>{{ item.meta.reportBy }}</td>
+                  <td>
+                    <span>{{item?.createdAt | date}}</span>
+                  </td>
+                  <td>
+                    <a
+                      cButton
+                      color="secondary"
+                      size="sm"
+                      [routerLink]="['/reports/details/', item._id]"
+                    >
+                      <app-eye-icon></app-eye-icon>
+                    </a>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

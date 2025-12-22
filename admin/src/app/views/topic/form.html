@@ -1,0 +1,155 @@
+<c-col md="12">
+  <c-card class="mb-4">
+    @if(topicId){
+    <c-card-header>
+      <h4>Update Topic</h4>
+    </c-card-header>
+    } @else {
+    <c-card-header>
+      <h4>Create Topic</h4>
+    </c-card-header>
+    }
+    <c-card-body>
+      <form
+        cForm
+        #frm="ngForm"
+        (ngSubmit)="submit(frm)"
+        ngNativeValidate
+        novalidate
+        class="needs-validation"
+        [validated]="customStylesValidated"
+      >
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Name</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter name"
+                  [(ngModel)]="topic.name"
+                  #name="ngModel"
+                  id="name"
+                  required
+                  name="name"
+                />
+                @if(name.errors && (name.dirty || name.touched || isSubmitted)){
+                <c-form-feedback invalid>
+                  Please enter name topic
+                </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="alias"><strong>Alias</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter alias"
+                  [(ngModel)]="topic.alias"
+                  required
+                  name="alias"
+                  #alias="ngModel"
+                  id="alias"
+                />
+                @if (alias.invalid && (alias.touched || isSubmitted)) {
+                <c-form-feedback> Alias is required. </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="alias"><strong>Ordering</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  type="number"
+                  placeholder="Enter ordering"
+                  [(ngModel)]="topic.ordering"
+                  #ordering="ngModel"
+                  required
+                  name="ordering"
+                  #alias="ngModel"
+                  id="alias"
+                />
+                @if (ordering.invalid && (ordering.touched || isSubmitted)) {
+                @if (ordering.errors?.['required']) {
+                <c-form-feedback>Ordering is required.</c-form-feedback>
+                } @if (ordering.errors?.['min']) {
+                <c-form-feedback
+                  >Ordering must be greater than 0.</c-form-feedback
+                >
+                } }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <app-category-select
+              [categories]="categories"
+              (selectedCategoryIdsChange)="selectCategory($event)"
+              [query]="{ take: 100 }"
+              [(selectedCategoryIds)]="topic.categoryIds"
+            >
+            </app-category-select>
+            <!-- <ng-select
+                placeholder="Chose Category"
+                class=""
+                [hideSelected]="true"
+                [items]="categories"
+                multiple="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="category"
+                [(ngModel)]="topic.categoryIds"
+                bindValue="_id"
+                #categoryId="ngModel"
+                required
+                [dropdownPosition]="'top'"
+                (change)="selectCategory($event)"
+              >
+              </ng-select> -->
+          </c-col>
+        </c-row>
+        <c-row>
+          @if(subjects && subjects.length>0){
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="imageUpload"
+                ><strong>Subject</strong> (*)</label
+              >
+              <c-input-group class="has-validation"></c-input-group>
+
+              <ng-select
+                placeholder="Chose subject"
+                class=""
+                [hideSelected]="true"
+                [items]="subjects"
+                multiple="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="category"
+                [(ngModel)]="topic.subjectIds"
+                bindValue="_id"
+                #categoryId="ngModel"
+                required
+                [dropdownPosition]="'top'"
+                class="my-select"
+              >
+              </ng-select>
+            </div>
+          </c-col>
+          }
+        </c-row>
+
+        <div class="d-flex justify-content-start">
+          <button cButton color="primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </c-card-body>
+  </c-card>
+</c-col>

@@ -1,0 +1,32 @@
+.sort-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .sort-options {
+    display: flex;
+
+    .sort {
+      color: initial;
+      font-style: bold;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .sort.active {
+      color: #5856d6 !important;
+    }
+  }
+}
+
+.dark-mode {
+  .sort-group {
+    .sort-options {
+      .sort {
+        color: #fff;
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  alignment="center"
+>
+  <c-modal-header>
+    <h5 cModalTitle>My Category</h5>
+    <button cButtonClose (click)="closeModal()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <form #frm="ngForm" (submit)="submit(frm)">
+      <div class="mb-3">
+        <label cLabel>Select Category</label>
+        <ng-select
+          [items]="categories || []"
+          bindLabel="name"
+          name="category"
+          placeholder="Choose Category"
+          [ngModel]="myCategory?.originalCategoryId"
+          (ngModelChange)="updateCategoryId($event)"
+          bindValue="_id"
+          #categoryId="ngModel"
+          required
+          [disabled]="myCategory?._id"
+          class="my-select"
+        >
+        </ng-select>
+        @if(categoryId.errors && (categoryId.dirty || categoryId.touched ||
+        submitted)) { @if(categoryId.errors['required']) {
+        <div class="invalid-feedback d-block">Category is required</div>
+        } }
+      </div>
+      <div class="mb-3">
+        <c-form-check>
+          <input
+            cFormCheckInput
+            type="checkbox"
+            name="isActive"
+            [ngModel]="myCategory?.isActive || false"
+            (ngModelChange)="updateIsActive($event)"
+          />
+          <label cFormCheckLabel>Active</label>
+        </c-form-check>
+      </div>
+      <div class="mt-3">
+        <button cButton color="primary" type="submit" class="me-2">
+          Submit
+        </button>
+        <button cButton color="secondary" type="button" (click)="closeModal()">
+          Close
+        </button>
+      </div>
+    </form>
+  </c-modal-body>
+</c-modal>

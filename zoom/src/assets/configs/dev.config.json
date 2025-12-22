@@ -1,0 +1,6 @@
+{
+    "production": false,
+    "zoomSDK": "LYbt6hoGJDKCws6ZbWVTrfStwudNNHwayl0x",
+    "mainUrl": "http://localhost:4200",
+    "apiBaseUrl": "http://localhost:9000/v1"
+}

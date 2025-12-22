@@ -1,0 +1,82 @@
+<c-container class="p-0">
+  <c-row>
+    <c-card>
+      <c-card-header>
+        <div
+          class="d-flex flex-wrap justify-content-left align-items-center mb-2"
+        >
+          <button class="btn btn-warning mr-3" type="button" (click)="pull()">
+            Pull Text
+          </button>
+          <p class="m-0">
+            Make sure to remember the root phrase/text before translation, you
+            can search from translation column first to find the root
+            phrase/text
+          </p>
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Text</th>
+              <th>Translation</th>
+              <th>#</th>
+            </tr>
+            <tr>
+              <th>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search text"
+                  [(ngModel)]="search.text"
+                  name="text"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search translation"
+                  [(ngModel)]="search.translation"
+                  name="translation"
+                />
+              </th>
+              <th>
+                <button class="btn btn-primary" type="button" (click)="query()">
+                  Search
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items, let i= index">
+              <td>{{item.text}}</td>
+              <td>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="item.translation"
+                  name="translation{{i}}"
+                />
+              </td>
+              <td>
+                <button (click)="update(item)" class="btn btn-primary">
+                  Update
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          @if(total !== 0){
+          <app-pagination
+            [currentPage]="page"
+            [pageSize]="pageSize"
+            [totalItems]="total"
+            [maxSize]="3"
+          ></app-pagination>
+          }
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-row>
+</c-container>

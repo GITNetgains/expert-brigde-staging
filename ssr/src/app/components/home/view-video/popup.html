@@ -1,0 +1,10 @@
+<div class="modal-header">
+  <h3 class="modal-title" id="modal-basic-title" translate>View video</h3>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.close({confirmed: false})">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <iframe width="100%" height="400" [src]="urlYoutube" frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>

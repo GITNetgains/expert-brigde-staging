@@ -1,0 +1,357 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class="mb-4" translate>Appointment Information</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-5">
+      <div class="card card-body">
+        <app-loading [loading]="loading"></app-loading>
+        <table id="table_id" class="table table-text tble-responsive">
+          <tbody>
+            <tr>
+              <td translate>User Name</td>
+              <td>{{appointment?.user?.name}}</td>
+            </tr>
+            <tr>
+              <td><span translate>Subject / Group Class</span></td>
+              <td>
+                <span
+                  >{{appointment.webinar && appointment.targetType === 'webinar'
+                  ? appointment?.webinar?.name : appointment.subject ?
+                  appointment.subject?.name : 'No name'}}</span
+                >
+              </td>
+            </tr>
+            <tr *ngIf="appointment?.category">
+              <td><span translate>Class category</span></td>
+              <td>{{appointment?.category?.name}}</td>
+            </tr>
+            <tr *ngIf="appointment?.topic">
+              <td><span translate>Topic</span></td>
+              <td>{{appointment?.topic?.name}}</td>
+            </tr>
+            <tr>
+              <td><span translate>Start Time</span></td>
+              <td>
+                <span>
+                  {{(appointment?.displayStartTime?
+                  appointment?.displayStartTime : appointment?.startTime )|
+                  date:'short'}}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><span translate>End Time</span></td>
+              <td>
+                <span>
+                  {{(appointment?.displayToTime? appointment?.displayToTime:
+                  appointment?.toTime) | date:'short'}}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><span translate>Price</span></td>
+              <td>
+                <span *ngIf="!appointment?.transaction?.couponCode">
+                  {{appointment?.transaction?.price | appCurrency}}
+                </span>
+                <span *ngIf="appointment?.transaction?.couponCode">
+                  {{appointment?.transaction?.discountAmount +
+                  appointment?.transaction?.discountPrice | appCurrency}}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="appointment?.transaction?.couponCode">
+              <td translate>Discount Amount</td>
+              <td>
+                <span class="highlight-red"
+                  >{{appointment?.transaction?.discountAmount | appCurrency}}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="appointment?.transaction?.couponCode">
+              <td><span translate>Price Discount</span></td>
+              <td>
+                <span class="highlight-red"
+                  >{{appointment?.transaction?.discountPrice | appCurrency}}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="appointment?.couponCode">
+              <td translate>Coupon code</td>
+              <td>
+                <span> {{appointment?.couponCode}} </span>
+              </td>
+            </tr>
+            <tr>
+              <td translate>Payment Type</td>
+              <td>
+                <span
+                  class="label label-light-primary"
+                  *ngIf="appointment?.paid"
+                  translate
+                  >Paid</span
+                >
+                <span
+                  class="label label-light-danger"
+                  *ngIf="!appointment?.paid"
+                  translate
+                  >Unpaid</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td translate>Lesson Type</td>
+              <td>
+                <span
+                  class="label label-light-primary"
+                  translate
+                  *ngIf="appointment?.isFree"
+                  translate
+                  >{{appointment.targetType === 'webinar' ? 'Free Group class' :
+                  'Free Trial'}}
+                </span>
+                <span
+                  class="label label-light-danger"
+                  translate
+                  *ngIf="!appointment?.isFree"
+                  translate
+                  >{{appointment.targetType === 'webinar' ? 'Paid Group class' :
+                  'Paid Lesson'}}</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td><span translate>Status</span></td>
+              <td>
+                <app-appointment-status
+                  [status]="appointment?.status || ''"
+                ></app-appointment-status>
+                <div
+                  class="alert alert-warning mt-2"
+                  role="alert"
+                  *ngIf="appointment?.status === 'canceled'"
+                >
+                  <p><strong>Reason: </strong>{{appointment.cancelReason}}</p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              *ngIf="appointment?.status==='pending' || appointment?.status === 'progressing'"
+            >
+              <td><span translate>Start class</span></td>
+              <td>
+                <a
+                  href="javascript:void(0)"
+                  class="btn btn-default btn-pink"
+                  (click)="startMeeting()"
+                >
+                  <span translate>Click to start class</span>
+                </a>
+              </td>
+            </tr>
+            <tr
+              *ngIf="canReschedule && (appointment?.status === 'booked' || appointment?.status === 'pending')"
+            >
+              <td><span translate>Reschedule class</span></td>
+              <td>
+                <a
+                  (click)="showCalendar = !showCalendar"
+                  class="btn btn-default btn-pink"
+                >
+                  <span translate>Reschedule</span>
+                </a>
+              </td>
+            </tr>
+            <tr *ngIf="appointment.recordings?.shareUrl">
+              <td><span translate>Preview</span></td>
+              <td>
+                <a [href]="appointment.recordings?.shareUrl" target="_blank">
+                  <button type="button" class="btn btn-default btn-pink">
+                    <span translate>Click to view video</span>
+                    <span class="badge badge-light"
+                      ><i class="fa fa-play"></i
+                    ></span>
+                  </button>
+                </a>
+              </td>
+            </tr>
+            <tr
+              *ngIf="appointment.recordings?.shareUrl && appointment.recordings?.password"
+            >
+              <td><span translate>Password for record</span></td>
+              <td>
+                <p>{{appointment.recordings?.password}}</p>
+                <small translate
+                  >If asked to enter a password when viewing the record, please
+                  enter the password above.</small
+                >
+              </td>
+            </tr>
+            <tr>
+              <td translate>Send Message</td>
+              <td>
+                <app-send-message-btn
+                  [recipientId]="appointment?.user?._id || ''"
+                  buttonClass="btn btn-default btn-block btn-redirect-transaction"
+                ></app-send-message-btn>
+              </td>
+            </tr>
+            <tr *ngIf="appointment.report">
+              <td><span translate>Report</span></td>
+              <td>
+                <div class="alert alert-warning mt-2" role="alert">
+                  <p><strong>Issue: </strong>{{appointment.report.issue}}</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="mb-4" *ngIf="showCalendar">
+        <p class="text-secondary" translate>
+          You can reschedule the appointment 8 hours in advance.
+        </p>
+        <div class="card-horizontal p-4 text-border position-relative">
+          <app-loading [loading]="rescheduling"></app-loading>
+          <app-tutor-available-time
+            [tutorId]="appointment.tutor._id"
+            [isFree]="appointment.isFree"
+            (onSelect)="chooseSlot($event)"
+            [reschedule]="true"
+          ></app-tutor-available-time>
+        </div>
+      </div>
+      <div class="mb-4" *ngIf="!appointment.report && !loading">
+        <app-report-form
+          [appointment]="appointment"
+          (doReport)="onReport($event)"
+        ></app-report-form>
+      </div>
+      <div class="mb-4" *ngIf="appointment?.status === 'booked'">
+        <div class="card text-border">
+          <div class="card-body">
+            <p class="text-secondary" translate>
+              You can cancel the appointment 24 hours in advance.
+            </p>
+            <form>
+              <div class="form-group">
+                <label translate>Reason</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  placeholder="{{'Enter some text here'| translate}}"
+                  [(ngModel)]="reason"
+                  name="reason"
+                ></textarea>
+              </div>
+              <button class="btn btn-default mt-3" (click)="cancel()" translate>
+                Can't join the course
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 translate>Lesson Materials</h4>
+          </div>
+          <!-- <label class="content-title" translate style="width: 100%">Update lesson materials </label> -->
+          <div class="card-body">
+            <div *ngIf="documents.length">
+              <div
+                class="d-flex justify-content-between mb-2"
+                *ngFor="let item of documents, let i = index"
+              >
+                <div>
+                  <i class="fa fa-file" aria-hidden="true"></i>
+                  <span> {{item?.name}}</span>
+                </div>
+
+                <div>
+                  <a target="_blank" [href]="item.fileUrl" download class="me-2"
+                    ><i class="fi fi-rr-download"></i
+                  ></a>
+                  <a (click)="removeMedia(i)"
+                    ><i class="fi fi-rr-trash text-danger"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <small *ngIf="filesSelected.length"
+              >{{filesSelected[0].file.name}} is selected</small
+            >
+            <app-file-upload [options]="documentOptions"></app-file-upload>
+          </div>
+          <!-- <button *ngIf="documents.length" class="btn btn-default ms-3 mt-2" (click)="updateDocs()" translate>
+              Save changes
+            </button> -->
+        </div>
+      </div>
+
+      <app-review-list
+        [options]="reviewOptions"
+        [type]="'student'"
+        [stats]="statsReview"
+        *ngIf="reviewOptions.appointmentId"
+        [canWriteReview]="true"
+      ></app-review-list>
+    </div>
+  </div>
+
+  <!-- <div class="row">
+      <div class="col-md-12">
+        <h4 translate>Lesson Materials</h4>
+      </div>
+    </div> -->
+
+  <!-- <div class="row" *ngIf="appointment?.status==='completed'">
+      <div class="col-md-12 mt-5">
+        <div class="card-horizontal">
+          <h4 translate>Review your student</h4>
+          <div *ngIf="hasReview && !isUpdateReview">
+            <div>
+              <app-star-rating [rate]="review?.rating"></app-star-rating>
+              <a class="pull-right" (click)="isUpdateReview=!isUpdateReview">
+                <i class="fi fi-rr-pencil"></i>
+              </a>
+            </div>
+
+            <p class="comment-text">{{review?.comment}}</p>
+            <p class="comment-date"><span translate>Posted</span> {{review?.createdAt  | date:'mediumDate'}}</p>
+          </div>
+
+          <div *ngIf="review && isUpdateReview">
+            <div class="pull-left">
+              <ngb-rating [(rate)]="newReview.rating" (hover)="hovered=$event" max="5" class="no-outline">
+                <ng-template let-fill="fill" let-index="index">
+                  <span class="star font-22" [class.filled]="fill === 100" [class.bad]="index < 2">&#9733;</span>
+                </ng-template>
+              </ngb-rating>
+            </div>
+            <textarea
+              class="form-control mb-2"
+              style="border: 1px solid #ced4da"
+              rows="3"
+              [(ngModel)]="newReview.comment"
+              placeholder="{{'Leave some text here'| translate}}"
+            ></textarea>
+            <div class="pull-right">
+              <button type="button" class="btn btn-default me-1" (click)="updateReview()" translate>
+                Update
+              </button>
+              <button type="button" class="btn btn-default" (click)="isUpdateReview=false" translate>Cancle</button>
+            </div>
+          </div>
+          <div *ngIf="!hasReview && !isUpdateReview">
+            <a translate class="review-text color-blue" (click)="isUpdateReview=!isUpdateReview">Write Review</a>
+          </div>
+        </div>
+      </div>
+    </div> -->
+</div>

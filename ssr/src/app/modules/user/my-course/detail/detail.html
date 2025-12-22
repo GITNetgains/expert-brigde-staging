@@ -1,0 +1,167 @@
+<section class="sm-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <h4 translate *ngIf="course">
+          <a [routerLink]="['/courses',course?.alias]">{{course?.name}} </a>
+        </h4>
+      </div>
+    </div>
+    <div class="row">
+      <div [ngClass]="{'col-md-12': _zoomOut, 'col-md-8': !_zoomOut}">
+        <div class="card">
+          <div class="top-course-s">
+            <button class="btn btn-default btn-prev" [hidden]="indexMedia === -1"
+              (click)="prev(indexSection, indexLecture, indexMedia)" [disabled]="!canPrev" translate>
+              <i class="fi fi-rs-angle-left"></i>
+            </button>
+            <div class="top-course-s-title">
+              <h4 class="card-title">{{shownItem?.title}}</h4>
+              <span (click)="zoomOut()" class="btn-zoom"><i class="fas fa-expand-alt" *ngIf="!_zoomOut"></i><i
+                  *ngIf="_zoomOut" class="fas fa-compress-alt"></i></span>
+            </div>
+            <button class="btn btn-default btn-next" [hidden]="indexMedia === -1"
+              (click)="next(indexSection, indexLecture, indexMedia)" [disabled]="!canNext" translate>
+              <i class="fi fi-rs-angle-right"></i>
+            </button>
+          </div>
+          <div *ngIf="shownItem&&shownItem.type==='video'" class="video-my-course">
+            <video *ngIf="shownItem" width="100%" src="{{shownItem?.url}}" controls></video>
+          </div>
+          <div *ngIf="shownItem&&shownItem.type==='audio'">
+            <audio *ngIf="shownItem" width="100%" src="{{shownItem?.url}}" controls></audio>
+          </div>
+          <div *ngIf="shownItem&&shownItem.type==='pdf'">
+            <ngx-extended-pdf-viewer [src]="shownItem?.url" [useBrowserLocale]="true" height="80vh"
+              *ngIf="isPlatformBrowser" [listenToURL]="true">
+            </ngx-extended-pdf-viewer>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" [hidden]="_zoomOut">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4 translate>Progress</h4>
+          </div>
+          <div class="card-body">
+            <ngb-progressbar style="border-radius: 0.25em; font-size: 0.8em" type="danger" [value]="completedPercent"
+              translate>{{completedPercent}}%</ngb-progressbar>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title" translate>Course content</h4>
+          </div>
+          <div class="card-body">
+            <p class="card-text font-xs" *ngIf="course">
+              <span *ngIf="course.totalSection>1">{{course?.totalSection}} <span translate>sections</span></span>
+              <span *ngIf="course.totalSection<=1">{{course?.totalSection}} <span translate>section</span></span>
+              •
+              <span *ngIf="course.totalLecture > 1">{{course?.totalLecture? course?.totalLecture : '0'}} <span
+                  translate>lectures</span></span>
+              <span *ngIf="course.totalLecture <= 1">{{course?.totalLecture? course?.totalLecture : '0'}} <span
+                  translate>lecture</span></span>
+              • {{returnDurationString(course.totalLength || 0)}} <span translate>total length</span>
+            </p>
+            <div id="accordion" class="myaccordion myaccordion-detail">
+              <div class="box-collapse" *ngFor="let section of sections, let i=index">
+                <div class="item-collapse">
+                  <div class="btn-collapse collapsed" [attr.data-bs-toggle]="'collapse'"
+                    [attr.data-bs-target]="'#collapse' + i" [attr.aria-expanded]="true"
+                    [attr.aria-controls]="'collapse' + i">
+                    <h4>{{section.title}}</h4>
+                    <span class="arrow-collapsed">
+                      <i class="fi fi-rr-minus"></i>
+                    </span>
+                    <div class="right-collapse">
+                      <span *ngIf="section.lectureIds.length > 1">{{section.lectureIds.length || 0}}
+                        <span translate>lectures</span> • {{returnDurationString(section.duration)}}
+                      </span>
+                      <span *ngIf="section.lectureIds.length <= 1">{{section.lectureIds.length || 0}}
+                        <span translate>lecture</span> • {{returnDurationString(section.duration)}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div id="{{'collapse' + i}}" class="collapse" [attr.aria-labelledby]="section._id"
+                  data-parent="#accordion">
+                  <div class="lecture-items">
+                    <a *ngIf="section?.trialVideo" href="javascript:void(0)" (click)="videoTrialVideo(section)"
+                      class="d-flex justify-content-between">
+                      <p class="font-xs text-secondary">
+                        <i class="fi fi-rr-play-circle me-2 font-sm"></i>{{section?.title + ' trial video'}}
+                      </p>
+                      <div class="font-xs">
+                        <span class="label label-light-primary">{{returnDuration(section?.trialVideo?.duration ||
+                          0)}}</span>
+                      </div>
+                    </a>
+                    <div class="lecture-item" *ngFor="let lecture of section.lectures, let iLecture = index">
+                      <a class="lecture-items-title" href="javascript:void(0)"
+                        (click)="openLecture(lecture, i, iLecture)"
+                        [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture}">
+                        <i class="fi fi-rr-file me-2 font-sm"></i>{{lecture?.title}}
+
+                        <p class="font-sm text-secondary" style="margin: 0;">{{returnDuration(lecture?.duration || 0)}}
+                        </p>
+                      </a>
+
+                      <div class="lecture-media font-xs" *ngIf="openLectureId===lecture._id">
+                        <div class="lecture-media-item" *ngFor="let media of lecture.medias, let iMedia = index">
+                          <a href="javascript:void(0)" (click)="viewMedia(media, i, iLecture, iMedia)"
+                            [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                            *ngIf="media?.mediaType==='video'" class="lecture-media-item-li">
+                            <p class="font-xs text-secondary">
+                              <i class="fi fi-rr-play-circle me-2 font-sm"></i>{{media?.media?.name}}
+                            </p>
+                            <div class="right-lecture-media-item">
+                              <span class="label label-light-warning" translate>video</span>
+                              <span class="label label-light-primary ms-1">{{returnDuration(media?.media?.duration ||
+                                0)}}</span>
+                            </div>
+                          </a>
+                          <a (click)="viewMedia(media, i, iLecture, iMedia)"
+                            [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                            *ngIf="media?.mediaType==='pdf'" class="lecture-media-item-li">
+                            <p class="font-xs text-secondary">
+                              <i class="fi fi-rr-file me-2 font-sm"></i>{{media?.media?.name}}
+                            </p>
+                            <div class="right-lecture-media-item">
+                              <span class="label label-light-warning" translate>pdf</span>
+                              <span class="label label-light-primary ms-1">{{returnDuration(media?.totalLength ||
+                                0)}}</span>
+                            </div>
+                          </a>
+                          <a (click)="viewMedia(media, i, iLecture, iMedia)"
+                            [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                            *ngIf="media?.mediaType==='audio'" class="lecture-media-item-li">
+                            <p class="font-xs text-secondary">
+                              <i class="fi fi-rr-play-circle me-2 font-sm"></i>{{media?.media?.name}}
+                            </p>
+                            <div class="right-lecture-media-item">
+                              <span class="label label-light-warning" translate>audio</span>
+                              <span class="label label-light-primary ms-1">{{returnDuration(media?.media?.duration ||
+                                0)}}</span>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <div class="">
+          <app-review-list *ngIf="optionsReview.courseId" [options]="optionsReview" [stats]="statsReview"
+            [canWriteReview]="true"></app-review-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

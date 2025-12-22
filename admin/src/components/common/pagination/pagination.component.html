@@ -1,0 +1,68 @@
+<c-pagination aria-label="Page navigation" [align]="'center'" size="sm">
+  <li cPageItem [disabled]="currentPage === 1">
+    <a
+      cPageLink
+      aria-label="First"
+      [attr.aria-disabled]="currentPage === 1 ? 'true' : null"
+      (click)="selectPage(1)"
+      style="cursor: pointer;"
+    >
+      <span aria-hidden="true">««</span>
+    </a>
+  </li>
+  <!-- Previous Button -->
+  <li cPageItem [disabled]="currentPage === 1">
+    <a
+      cPageLink
+      aria-label="Previous"
+      [attr.aria-disabled]="currentPage === 1 ? 'true' : null"
+      (click)="selectPage(currentPage - 1)"
+      style="cursor: pointer;"
+    >
+      <span aria-hidden="true">«</span>
+    </a>
+  </li>
+
+  <!-- Page Numbers -->
+  <ng-container *ngFor="let page of getPages(); let i = index">
+    <!-- Ellipsis -->
+    <li cPageItem *ngIf="page === '...'">
+      <span class="page-link">...</span>
+    </li>
+    <!-- Page Number -->
+    <li cPageItem *ngIf="page !== '...'" [active]="page === currentPage">
+      <a
+        cPageLink
+        [attr.aria-current]="page === currentPage ? 'page' : null"
+        (click)="selectPage(page)"
+        style="cursor: pointer;"
+      >
+        {{ page }}
+      </a>
+    </li>
+  </ng-container>
+
+  <!-- Next Button -->
+  <li cPageItem [disabled]="currentPage === totalPages">
+    <a
+      cPageLink
+      aria-label="Next"
+      [attr.aria-disabled]="currentPage === totalPages ? 'true' : null"
+      (click)="selectPage(currentPage + 1)"
+      style="cursor: pointer;"
+    >
+      <span aria-hidden="true">»</span>
+    </a>
+  </li>
+  <li cPageItem [disabled]="currentPage === totalPages">
+    <a
+      cPageLink
+      aria-label="Last"
+      [attr.aria-disabled]="currentPage === totalPages ? 'true' : null"
+      (click)="selectPage(totalPages)"
+      style="cursor: pointer;"
+    >
+      <span aria-hidden="true">»»</span>
+    </a>
+  </li>
+</c-pagination>

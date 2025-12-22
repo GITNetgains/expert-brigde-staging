@@ -1,0 +1,312 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'mixed'){ @if(item.key === 'teachWithUsPicture'){
+            <form
+              cForm
+              (ngSubmit)="onSave(item)"
+              #teachWithUsPictureForm="ngForm"
+              class="row g-3"
+            >
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Banner</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="banner"
+                    (selectFileUrl)="getSelectedFile($event, item, 'banner')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.banner"
+                    name="banner"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Banner Small</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="banner_sm"
+                    (selectFileUrl)="getSelectedFile($event, item, 'banner_sm')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.banner_sm"
+                    name="banner_sm"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            } @if(item.key === 'homepagePicture'){
+            <form
+              cForm
+              (ngSubmit)="onSave(item)"
+              #homepagePictureForm="ngForm"
+              class="row g-3"
+            >
+              <c-col md="12">
+                <label cLabel>
+                  <strong>How it work block background</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="background_how_it_work_block"
+                    (selectFileUrl)="
+                      getSelectedFile(
+                        $event,
+                        item,
+                        'background_how_it_work_block'
+                      )
+                    "
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.background_how_it_work_block"
+                    name="background_how_it_work_block"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>How it work picture</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="howItWork"
+                    (selectFileUrl)="getSelectedFile($event, item, 'howItWork')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.howItWork"
+                    name="howItWork"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Tutor with us block background</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="background_teach_with_us_block"
+                    (selectFileUrl)="
+                      getSelectedFile(
+                        $event,
+                        item,
+                        'background_teach_with_us_block'
+                      )
+                    "
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.background_teach_with_us_block"
+                    name="background_teach_with_us_block"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>How it work picture</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="tutorWithUs"
+                    (selectFileUrl)="
+                      getSelectedFile($event, item, 'tutorWithUs')
+                    "
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.tutorWithUs"
+                    name="tutorWithUs"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            } @if(item.key === 'howItWorkPicture'){
+            <form
+              cForm
+              (ngSubmit)="onSave(item)"
+              #howItWorkPictureForm="ngForm"
+              class="row g-3"
+            >
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Step 1</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="step1"
+                    (selectFileUrl)="getSelectedFile($event, item, 'step1')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.step1"
+                    name="step1"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Step 2</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="step2"
+                    (selectFileUrl)="getSelectedFile($event, item, 'step2')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.step2"
+                    name="step2"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Step 3</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="step3"
+                    (selectFileUrl)="getSelectedFile($event, item, 'step3')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.step3"
+                    name="step3"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Step 4</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="step4"
+                    (selectFileUrl)="getSelectedFile($event, item, 'step4')"
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.step4"
+                    name="step4"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Lifetime Access</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="lifetimeAccess"
+                    (selectFileUrl)="
+                      getSelectedFile($event, item, 'lifetimeAccess')
+                    "
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.lifetimeAccess"
+                    name="lifetimeAccess"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Record Live Sessions</strong>
+                </label>
+                <c-input-group>
+                  <app-modal-upload
+                    field="recordLiveSession"
+                    (selectFileUrl)="
+                      getSelectedFile($event, item, 'recordLiveSession')
+                    "
+                  ></app-modal-upload>
+                  <input
+                    cFormControl
+                    type="text"
+                    [(ngModel)]="item.value.recordLiveSession"
+                    name="recordLiveSession"
+                    placeholder="Upload or select an image"
+                  />
+                </c-input-group>
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            } } @if(item.type === 'text'){ @if(item.key === 'profileBanner'){
+            <c-input-group>
+              <app-modal-upload
+                field="recordLiveSession"
+                (selectFileUrl)="getSelectedFile($event, item)"
+              ></app-modal-upload>
+              <input
+                cFormControl
+                [(ngModel)]="item.value"
+                placeholder="Upload or select an image"
+              />
+              <button
+                cButton
+                color="primary"
+                type="button"
+                (click)="onSave(item)"
+              >
+                Save
+              </button>
+            </c-input-group>
+            } }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

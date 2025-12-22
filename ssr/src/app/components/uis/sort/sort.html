@@ -1,0 +1,11 @@
+<div class="sort-group">
+  <a (click)="sort(sortBy, 'desc')" translate *ngIf="sortTitle">{{sortTitle}}</a>
+  <div class="sort-options">
+    <a (click)="sort(sortBy, 'desc')" class="sort sort-desc"
+      [ngClass]="{'active': sortOption.sortType==='desc' && sortOption.sortBy===sortBy}"><i
+        class="fi fi-rr-arrow-down"></i></a>
+    <a (click)="sort(sortBy, 'asc')" class="sort sort-asc"
+      [ngClass]="{'active': sortOption.sortType==='asc' && sortOption.sortBy===sortBy}"><i
+        class="fi fi-rr-arrow-up"></i></a>
+  </div>
+</div>

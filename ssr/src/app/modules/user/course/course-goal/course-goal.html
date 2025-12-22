@@ -1,0 +1,105 @@
+<div class="input-border">
+  <form (submit)="submit()" #frm="ngForm">
+    <div class="form-group">
+      <label translate>All the end of my course, students will be able to</label>
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <ul *ngIf="course.goalCourse.length" style="padding: 0;">
+            <li style="list-style: none" *ngFor="let item of course.goalCourse, let i=index">
+              <button type="button" class="btn-transparent" (click)="removeItem('goalCourse',i)">
+                <i class="fi fi-rr-trash text-danger font-sm"></i>
+              </button>
+              {{item}}
+            </li>
+          </ul>
+          <form class="row">
+            <div class="col-md-10">
+              <div class="form-group">
+                <input type="text" [(ngModel)]="courseGoal.goalCourse" name="goalCourse" class="form-control"
+                  placeholder="{{'All the end of my course, students will be able to'|translate}}" />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-dark btn-block" [disabled]="!courseGoal.goalCourse.trim()"
+                (click)="addItem('goalCourse')" translate>
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label translate>Who should take this course? Who should not?</label>
+      <div class="row mb-3">
+        <div class="col-md-12">
+
+          <ul *ngIf="course.whyJoinCourse.length" style="padding: 0;">
+            <li style="list-style: none" *ngFor="let item of course.whyJoinCourse, let i=index">
+              <button type="button" class="btn-transparent" (click)="removeItem('whyJoinCourse',i)">
+                <i class="fi fi-rr-trash text-danger font-sm"></i>
+              </button>
+              {{item}}
+            </li>
+          </ul>
+          <form class="row">
+            <div class="col-md-10">
+              <div class="form-group">
+                <input type="text" [(ngModel)]="courseGoal.whyJoinCourse" name="whyJoinCourse" class="form-control"
+                  placeholder="{{'Who should take this course? Who should not?'|translate}}" />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-dark btn-block" [disabled]="!courseGoal.whyJoinCourse.trim()"
+                (click)="addItem('whyJoinCourse')" translate>
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label translate>What will students need to know or do before starting this course?</label>
+          <ul *ngIf="course.needToJoinCourse.length" style="padding: 0;">
+            <li style="list-style: none" *ngFor="let item of course.needToJoinCourse, let i=index">
+              <button type="button" class="btn-transparent" (click)="removeItem('needToJoinCourse',i)">
+                <i class="fi fi-rr-trash text-danger font-sm"></i>
+              </button>
+              {{item}}
+            </li>
+          </ul>
+          <form class="row">
+            <div class="col-md-10">
+              <div class="form-group">
+                <input type="text" [(ngModel)]="courseGoal.needToJoinCourse" name="needToJoinCourse"
+                  class="form-control"
+                  placeholder="{{'What will students need to know or do before starting this course?'|translate}}" />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-dark btn-block" [disabled]="!courseGoal.needToJoinCourse.trim()"
+                (click)="addItem('needToJoinCourse')" translate="">
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<ul class="list-inline pull-right">
+  <li>
+    <button type="button" class="btn btn-light prev-step me-2" (click)="onTab(1)">
+      <i class="fas fa-angle-double-left me-1 wizard-arrow"></i><span translate>Previous</span>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="btn btn-default next-step" (click)="onTab(3)">
+      <span translate>Continue</span><i class="fas fa-angle-double-right ms-1 wizard-arrow"></i>
+    </button>
+  </li>
+</ul>

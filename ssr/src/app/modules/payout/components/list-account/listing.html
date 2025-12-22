@@ -1,0 +1,160 @@
+<div class="sm-padding data-table">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-3 card-filter input-border">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <input [hidden]="true" type="search" class="form-control" placeholder="" aria-controls="table_id"
+                  (keyup)="doSearch($event)" />
+                <select class="form-select form-control" [(ngModel)]="searchType" (change)="query()"
+                  [ngModelOptions]="{standalone: true}">
+                  <option value="">-- <span translate>All Accounts</span> --</option>
+                  <option value="bank-account" translate>Bank Account</option>
+                  <option value="paypal" translate>Paypal</option>
+                </select>
+
+              </div>
+              <div class="col-md-3">
+                <a class="btn btn-default" [routerLink]="['/users/payout/account/create']"><i
+                    class="fi fi-rr-plus me-2 font-sm"></i><span translate>Add your account</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table id="table_id" class="table  dataTable no-footer" role="grid" aria-describedby="table_id_info">
+              <thead>
+                <tr>
+                  <th>
+                    <span (click)="sortBy('accountHolderName', 'desc')" translate>Recipient's Name</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'accountHolderName'"
+                      (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('type', 'desc')" translate>Type</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'type'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('paypalAccount', 'desc')" translate>Paypal Account</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'paypalAccount'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('accountNumber', 'desc')" translate>Account Number</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'accountNumber'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('bankName', 'desc')" translate>Bank Name</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'bankName'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('bankAddress', 'desc')" translate>Bank Address</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'bankAddress'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('iban', 'desc')" translate>IBA Number</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'iban'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('swiftCode', 'desc')" translate>Swift Code</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'swiftCode'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('sortCode', 'desc')" translate>UKB Code</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'sortCode'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('routingNumber', 'desc')" translate>ABA Number</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'routingNumber'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('ifscCode', 'desc')" translate>IFSC Code</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'ifscCode'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('routingCode', 'desc')" translate>Other Code</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'routingCode'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('createdAt', 'desc')" translate>Created On</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span translate>Action</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td translate colspan="9" *ngIf="!accounts?.length && !loading" translate>
+                    There is no payment requests.
+                  </td>
+                </tr>
+                <tr *ngIf="loading">
+                  <td translate colspan="9" translate><span translate>Loading</span>...</td>
+                </tr>
+                <tr *ngFor="let item of accounts, let i = index">
+                  <td>{{item?.accountHolderName}}</td>
+                  <td>
+                    <span *ngIf="item.type === 'paypal'" class="label label-light-primary" translate>Paypal</span>
+                    <span *ngIf="item.type === 'bank-account'" class="label label-light-warning" translate>Bank
+                      account</span>
+                  </td>
+                  <td>{{item?.paypalAccount}}</td>
+                  <td>{{item?.accountNumber}}</td>
+                  <td>{{item?.bankName}}</td>
+                  <td>{{item?.bankAddress}}</td>
+                  <td>{{item?.iban}}</td>
+                  <td>{{item?.swiftCode}}</td>
+                  <td>{{item?.sortCode}}</td>
+                  <td>{{item?.routingNumber}}</td>
+                  <td>{{item?.ifscCode}}</td>
+                  <td>{{item?.routingCode}}</td>
+                  <td>{{item.createdAt | date:'short'}}</td>
+                  <td>
+                    <a class="btn btn-outline-dark btn-action" [routerLink]="['update', item._id ]">
+                      <i class="fi fi-rs-pencil"></i>
+                    </a>
+                    <a class="btn btn-outline-danger btn-action" (click)="remove(item?._id, i)">
+                      <i class="fi fi-rr-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bottom-table">
+            <div class="input-border show-entries" id="table_id_length">
+              <span translate>Show</span>
+              <select name="table_id_length" aria-controls="table_id"
+                class="custom-select custom-select-sm form-control form-control-sm" [(ngModel)]="pageSize"
+                (change)="query()">
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              <span translate>entries</span>
+            </div>
+            <div class="pagination-table" id="table_id_paginate">
+              <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" [maxSize]="2"
+                (pageChange)="pageChange()">
+                <ng-template ngbPaginationPrevious translate><span translate><i
+                      class="fi fi-rr-angle-small-left"></i></span></ng-template>
+                <ng-template ngbPaginationNext translate><span translate><i
+                      class="fi fi-rr-angle-small-right"></i></span></ng-template>
+                <!-- <ng-template ngbPaginationNumber let-page>{{ currentPage }}</ng-template> -->
+              </ngb-pagination>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<button
+  (click)="openModal()"
+  cButton
+  color="danger"
+  class="text-white"
+  size="sm"
+>
+  <svg cIcon name="cilTrash" size="sm"></svg>
+</button>
+
+<c-modal
+  id="deleteModal"
+  [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Confirm Deletion</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <div>
+      <span>
+        Are you sure you want to delete this testimonial? <br />
+        This action cannot be undone
+      </span>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancel</button>
+    <button (click)="confirm()" cButton color="danger" class="text-white">
+      Delete
+    </button>
+  </c-modal-footer>
+</c-modal>

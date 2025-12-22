@@ -1,0 +1,450 @@
+<section class="profile-page">
+  <div class="container">
+    <div class="profile-detail">
+      <div class="profile-detail-left">
+        <div class="card card-border card-body profile-card mb-3">
+          <div class="profile-img">
+            <img
+              src="{{tutor.avatarUrl}}"
+              onerror="this.src='/assets/images/default-avatar.jpg'"
+              alt=""
+            />
+            <div class="favoired-icon">
+              <a *ngIf="!tutor.isFavorite" (click)="favorite()">
+                <i class="fi fi-rs-heart color-light-red"></i>
+              </a>
+              <a *ngIf="tutor.isFavorite" (click)="unFavorite()">
+                <i class="fi fi-ss-heart color-light-red"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="profile-info">
+            <h5 class="font-weight-bold">
+              {{tutor.name}}<i
+                class="fi fi-ss-badge-check color-blue ms-1 font-sm"
+              ></i>
+            </h5>
+            <div class="rating-stars">
+              <ul id="stars">
+                <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
+                <span style="padding-left: 5px"
+                  >{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span
+                >
+              </ul>
+            </div>
+            <div class="mb-3">
+              <div class="img-flag-tutor">
+                <img
+                  src="{{tutor?.country?.flag}}"
+                  alt=""
+                  class="image-sm"
+                  onerror="this.src='/assets/images/no-image.jpg'"
+                />
+              </div>
+              <span class="ms-2 text-secondary" translate
+                >{{tutor?.country?.name || 'Updating'}}</span
+              >
+            </div>
+            <app-send-message-btn
+              [recipientId]="tutor._id"
+            ></app-send-message-btn>
+          </div>
+        </div>
+      </div>
+      <div class="profile-detail-right">
+        <div class="card card-border mb-3">
+          <div class="video-play">
+            <iframe
+              width="100%"
+              height="100%"
+              [src]="urlYoutube"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="card-body">
+            <div class="tutor-info-m">
+              <div class="item-tutor-info" style="margin: 0">
+                <h5 translate>About Me</h5>
+                <p
+                  class="card-text"
+                  [innerHTML]="tutor.bio | ellipsis: showChar"
+                  [hidden]="!showChar"
+                ></p>
+                <p
+                  class="card-text"
+                  [innerHTML]="tutor.bio"
+                  [hidden]="showChar"
+                ></p>
+                <a
+                  href="javascript:void(0)"
+                  class="morelink"
+                  *ngIf="showMore && showChar > 0"
+                  (click)="showChar = 0"
+                  ><span translate>Read More</span>...</a
+                >
+                <a
+                  href="javascript:void(0)"
+                  class="morelink"
+                  *ngIf="showMore && !showChar"
+                  (click)="showChar = 500"
+                  >...<span translate>Read Less</span></a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3">
+          <div class="card-body">
+            <div
+              class="row mb-3"
+              style="justify-content: space-around"
+              *ngIf="stateService.showBooking()"
+            >
+              <div
+                class="col-md-12 d-flex align-items-center justify-content-center classes"
+              >
+                <div class="d-flex justify-content-end align-items-center">
+                  <label class="custom-checkbox me-4 font-md" translate
+                    ><span translate>Paid Class</span>
+                    <input
+                      type="radio"
+                      selected
+                      name="type"
+                      [(ngModel)]="booking.isFree"
+                      [value]="false"
+                    />
+                    <span class="checkmark"></span>
+                  </label>
+                  <label class="custom-checkbox font-md"
+                    ><span translate>Free Class</span>
+                    <input
+                      type="radio"
+                      name="type"
+                      [(ngModel)]="booking.isFree"
+                      [value]="true"
+                      [disabled]="appliedCoupon"
+                    />
+                    <span class="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+              <p
+                class="mt-2 text-center"
+                [hidden]="!booking.isFree"
+                style="color: grey"
+              >
+                <span translate
+                  >The maximum number of free trial classes you can take
+                  is</span
+                >
+                {{maxFreeSlotToBook}}
+              </p>
+            </div>
+            <div class="row row-sm step-to-booking mb-2">
+              <div
+                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
+              >
+                <h5 translate>Step 1</h5>
+                <select
+                  class="custom-select form-select"
+                  [(ngModel)]="selectedCategoryId"
+                  (change)="selectMyCategory()"
+                >
+                  <option selected value="" translate>Select Category</option>
+                  <option *ngFor="let cat of myCategories" [value]="cat._id">
+                    {{cat.name}}
+                  </option>
+                </select>
+              </div>
+              <div
+                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
+              >
+                <h5 translate>Step 2</h5>
+                <select
+                  class="custom-select form-select"
+                  [(ngModel)]="selectedSubjectId"
+                  (change)="selectMySubject()"
+                >
+                  <option selected value="" translate>Select Subject</option>
+                  <option
+                    *ngFor="let subject of mySubjects"
+                    [value]="subject._id"
+                  >
+                    {{subject.name}}
+                  </option>
+                </select>
+              </div>
+              <div
+                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
+              >
+                <h5 translate>Step 3</h5>
+                <div class="step-3">
+                  <select
+                    class="custom-select form-select me-1"
+                    [(ngModel)]="booking.targetId"
+                    (change)="changeTopic()"
+                  >
+                    <option selected value="" translate>Select Topic</option>
+                    <option *ngFor="let topic of myTopics" [value]="topic._id">
+                      {{topic.name}}
+                    </option>
+                  </select>
+                  <p
+                    class="slot-btn mb-0 d-inline-block"
+                    *ngIf="!appliedCoupon&&!booking.isFree"
+                  >
+                    {{price | appCurrency }}/<span translate>Slot</span>
+                  </p>
+                  <p
+                    class="slot-btn mb-0 d-inline-block"
+                    *ngIf="appliedCoupon&&!booking.isFree"
+                  >
+                    <small class="text-line-through me-1">
+                      {{price| appCurrency}}</small
+                    >
+                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span
+                      translate
+                      >Slot</span
+                    >
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-12 d-flex justify-content-center">
+                <div class="mt-3">
+                  <app-apply-coupon
+                    *ngIf="!booking.isFree && topic"
+                    [options]="optionsCoupon"
+                    (doApply)="applyCoupon($event)"
+                    (doCancel)="onCancelCoupon($event)"
+                  ></app-apply-coupon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 translate>Schedule</h4>
+          </div>
+          <div class="card-body" style="padding: 0">
+            <div class="text-center" style="padding: 15px 15px 0 15px">
+              <!-- <span (click)="bookingPaid()">Book</span> -->
+              <!-- <h5 class="mb-0" translate>June 19, 2020 - June 26, 2020</h5> -->
+              <p class="font-md mb-0 text-secondary" translate>
+                All times listed are in your local timezone
+              </p>
+            </div>
+            <app-tutor-available-time
+              *ngIf="tutor"
+              [tutorId]="tutor._id"
+              [isFree]="booking.isFree || false"
+              (doAddToCart)="chooseSlot($event)"
+              (doSelect)="buyNow($event)"
+            ></app-tutor-available-time>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 translate>Group Classes</h4>
+          </div>
+          <div class="card-body">
+            <p *ngIf="webinarOptions.count===0" translate>
+              There is no results
+            </p>
+            <div
+              class="card-item card-item-1"
+              *ngFor="let webinar of webinarOptions.webinars"
+              [hidden]="!webinarOptions.webinars.length"
+            >
+              <div class="card-img">
+                <a
+                  [routerLink]="['/groupclass',webinar.alias]"
+                  class="hyperlink card-img-top"
+                >
+                  <img
+                    src="{{webinar?.mainImage?.fileUrl}}"
+                    alt=""
+                    onerror="this.src='/assets/images/no-image.jpg'"
+                  />
+                </a>
+                <div class="card-tag">
+                  <div class="badge badge-tag" *ngIf="webinar?.featured">
+                    <span translate>Featured</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-txt">
+                  <h5 class="card-title ellipsis-1-line">{{webinar.name}}</h5>
+                  <ul id="stars" class="stars-card">
+                    <app-star-rating
+                      [rate]="webinar?.tutor?.ratingAvg"
+                    ></app-star-rating>
+                    <span
+                      >{{webinar?.tutor?.ratingAvg}}
+                      ({{webinar?.tutor?.totalRating}})</span
+                    >
+                  </ul>
+                  <div class="date-card" *ngIf="webinar?.lastSlot">
+                    <span class="me-2 text-secondary"
+                      ><i class="fi fi-rr-calendar-day me-2"></i>{{
+                      webinar?.lastSlot?.startTime | date:'MMM dd,yyyy'}}
+                    </span>
+                    <span class="text-secondary"
+                      ><i class="fi fi-rr-clock-three me-2"></i>{{
+                      webinar?.lastSlot?.startTime | date:'HH:mm'}}</span
+                    >
+                  </div>
+                  <div class="card-content mt-2">
+                    <span
+                      [hidden]="!webinar?.description"
+                      [innerHTML]="webinar.description"
+                      class="card-description ellipsis-1-line mt-1"
+                    >
+                    </span>
+                  </div>
+                  <h5 class="color-light-red">
+                    <strong *ngIf="!webinar.price" translate>Free</strong>
+                    <strong *ngIf="webinar.price && webinar.price > 0"
+                      >{{ webinar.price | appCurrency}}</strong
+                    >
+                  </h5>
+                </div>
+                <div class="card-item-right">
+                  <a
+                    *ngIf="!webinar.booked"
+                    class="btn btn-default"
+                    [routerLink]="['/groupclass',webinar?.alias]"
+                    translate
+                    >Book Now</a
+                  >
+                  <a
+                    *ngIf="webinar.booked"
+                    class="btn btn-purchased"
+                    [routerLink]="['/groupclass',webinar?.alias]"
+                    translate
+                    >Purchased</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
+            [hidden]="!webinarOptions.webinars.length" class="col-md-4 mb-4"></app-card-webinar> -->
+            <div class="row mt-3">
+              <div
+                class="col-md-12 text-center"
+                *ngIf="webinarOptions.count>webinarOptions.pageSize"
+              >
+                <ngb-pagination
+                  [collectionSize]="webinarOptions.count"
+                  [(page)]="webinarOptions.currentPage"
+                  [pageSize]="webinarOptions.pageSize"
+                  [maxSize]="2"
+                  (pageChange)="queryWebinar()"
+                  class="card-pagination pagination"
+                >
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border">
+          <div class="card-header">
+            <h4 translate>Courses</h4>
+          </div>
+          <div class="card-body">
+            <p *ngIf="courseOptions.count===0" translate>There is no results</p>
+            <div
+              class="card-item card-item-1"
+              *ngFor="let course of courseOptions.courses"
+              [hidden]="!courseOptions.courses.length"
+            >
+              <div class="card-img">
+                <a
+                  [routerLink]="['/courses',course?.alias]"
+                  class="hyperlink card-img-top"
+                >
+                  <img
+                    src="{{course?.mainImage?.fileUrl}}"
+                    alt=""
+                    onerror="this.src='/assets/images/no-image.jpg'"
+                /></a>
+                <div class="card-tag">
+                  <div class="badge badge-tag">
+                    <span translate>Featured</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-txt">
+                  <h5 class="card-title">
+                    {{(course?.name || '')| ellipsis:60}}
+                  </h5>
+                  <ul id="stars" class="stars-card">
+                    <app-star-rating
+                      [rate]="course?.tutor?.ratingAvg"
+                    ></app-star-rating>
+                    <span
+                      >{{course?.tutor?.ratingAvg}}
+                      ({{course?.tutor?.totalRating}})</span
+                    >
+                  </ul>
+                  <h5 class="color-light-red mt-2">
+                    <strong>{{ course?.price | appCurrency}}</strong>
+                  </h5>
+                  <a
+                    class="badge badge-default"
+                    placement="bottom"
+                    title="{{getCategories(course)}}"
+                    [routerLink]="['/courses']"
+                    [queryParams]="{ categoryIds: course.categories[0]._id }"
+                    *ngIf="course.categories[0]"
+                    >{{course.categories[0].name | ellipsis:14}}</a
+                  >
+                </div>
+                <div class="card-item-right">
+                  <a
+                    *ngIf="!course.booked"
+                    class="btn btn-default"
+                    [routerLink]="['/courses',course?.alias]"
+                    translate
+                    >Buy Now</a
+                  >
+                  <a
+                    *ngIf="course.booked"
+                    class="btn btn-purchased"
+                    [routerLink]="['/courses',course?.alias]"
+                    translate
+                    >Purchased</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
+            [hidden]="!courseOptions.courses.length" class="col-md-4 mb-4"></app-card-course> -->
+            <div class="row mt-3">
+              <div
+                class="col-md-12 text-center"
+                *ngIf="courseOptions.count>courseOptions.pageSize"
+              >
+                <ngb-pagination
+                  [collectionSize]="courseOptions.count"
+                  [(page)]="courseOptions.currentPage"
+                  [pageSize]="courseOptions.pageSize"
+                  [maxSize]="2"
+                  (pageChange)="queryCourse()"
+                  class="card-pagination pagination"
+                >
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

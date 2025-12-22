@@ -1,0 +1,66 @@
+<div class=" input-border">
+  <div class="row mb-3">
+    <div class="col-md-3 d-flex align-items-center">
+      <button class="btn btn-default" (click)="submitSection()" translate>Add Section</button>
+    </div>
+  </div>
+  <div id="accordion" class="myaccordion" *ngIf="sections.length && !loading">
+    <div *ngFor="let section of sections, let i = index" id="{{section._id}}">
+      <div class="item-collapse">
+        <div class="collapsed btn-collapse" [attr.data-bs-toggle]="'collapse'" [attr.data-bs-target]="'#collapse' + i"
+          [attr.aria-expanded]="true" [attr.aria-controls]="'collapse' + i">
+          <span class="arrow-collapsed">
+            <i class="fi fi-rr-minus"></i>
+          </span>
+          <h4>{{section.title}}</h4>
+          <div class="right-collapse">
+            <span *ngIf="section.totalLecture > 1">{{section.totalLecture}} <span translate>Lectures</span></span>
+            <span *ngIf="section.totalLecture <=1">{{section.totalLecture}} <span translate>Lecture</span></span>
+          </div>
+        </div>
+        <div class="action-collapse" ngbDropdown>
+          <a class="dropdown-toggle nav-link" ngbDropdownToggle role="button">
+            <i class="fi fi-rr-menu-dots-vertical"></i>
+          </a>
+          <div ngbDropdownMenu aria-labelledby="dropdownLanguage" class="drop-menu">
+            <a (click)="submitSection(section)" class="dropdown-item"><i class="fi fi-rs-pencil ont-sm"></i> Edit</a>
+            <a (click)="removeSection(section, i)" class="dropdown-item"><i
+                class="fi fi-rr-trash text-danger font-sm"></i> Delete</a>
+          </div>
+        </div>
+      </div>
+      <div id="{{'collapse' + i}}" class="collapse" [attr.aria-labelledby]="section._id" data-parent="#accordion">
+        <button class="btn btn-dark mb-3" (click)="submitLecture(i, section._id, courseId)" translate>
+          Add Lecture
+        </button>
+        <div class="item-lecture" *ngFor="let lecture of section.lectures, let iLecture = index">
+          <a class="js-video-button" href="javascript:void(0)">
+            <i class="fi fi-rr-file me-2 font-sm"></i>{{lecture?.title}}
+          </a>
+          <div class="action-lecture" ngbDropdown>
+            <a class="dropdown-toggle" ngbDropdownToggle role="button">
+              <i class="fi fi-rr-menu-dots-vertical"></i>
+            </a>
+            <div ngbDropdownMenu aria-labelledby="dropdownLanguage" class="drop-menu">
+              <a (click)="submitLecture(i, section._id, courseId, lecture)" class="dropdown-item"><i
+                  class="fi fi-rs-pencil ont-sm"></i> Edit</a>
+              <a (click)="removeLecture(i, lecture, iLecture)" class="dropdown-item"><i
+                  class="fi fi-rr-trash text-danger font-sm"></i> Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ul class="list-inline pull-right">
+    <li>
+      <button type="button" class="btn btn-light prev-step me-2" (click)="onTab(2)">
+        <i class="fas fa-angle-double-left me-1 wizard-arrow"></i><span translate>Previous</span>
+      </button>
+    </li>
+    <li>
+      <button type="button " class="btn btn-default next-step" (click)="onTab(4)">
+        <span translate>Continue</span><i class="fas fa-angle-double-right ms-1 wizard-arrow"></i>
+      </button>
+    </li>
+  </ul>

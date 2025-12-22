@@ -1,0 +1,181 @@
+<section class="sm-padding">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="color-light-black">
+          <span translate>Learn on your schedule...</span><br />
+          <span translate>Anytime. Anywhere.</span>
+        </h2>
+        <!-- <p class="content-title mt-3">
+          <span translate
+            >Study any webinar, anytime. Explore thousands of courses.
+          </span>
+          <br /><span translate>Transform your life through education. </span>
+        </p> -->
+      </div>
+    </div>
+
+    <div class="top-list">
+      <div class="title-main">
+        <h4><strong translate>Courses</strong></h4>
+      </div>
+      <div class="input-group input-search">
+        <div class="input-group-prepend border-none d-flex">
+          <span class="input-group-text">
+            <i class="fi fi-rs-search color-light-red"></i>
+          </span>
+        </div>
+        <input
+          type="text"
+          class="form-control border-none"
+          placeholder="{{'Search here..'| translate}}"
+          (keyup)="doSearch($event)"
+        />
+      </div>
+    </div>
+    <div class="row row-filter">
+      <div class="col-md-4">
+        <div class="input-border form-filter">
+          <h4 (click)="showMore()">
+            <i class="fi fi-rr-bars-filter"></i> Filter
+          </h4>
+          <div [ngClass]="showMoreFilter ? 'filter show' : 'filter'">
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Grades</label>
+              <select
+                class="custom-select form-control form-select"
+                [(ngModel)]="searchFields.gradeIds"
+                (change)="gradeChange()"
+              >
+                <option class="subject" selected value="" translate>
+                  None
+                </option>
+                <option
+                  class="subject"
+                  *ngFor="let item of grades"
+                  ngValue="{{ item._id }}"
+                >
+                  {{ item.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate
+                >Categories</label
+              >
+              <select
+                class="custom-select form-control form-select"
+                [(ngModel)]="searchFields.categoryIds"
+                (change)="selectCategory()"
+              >
+                <option selected translate value="">None</option>
+                <option *ngFor="let cate of categories" value="{{cate._id}}">
+                  {{cate.name}}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Subjects</label>
+              <select
+                class="custom-select form-control form-select"
+                [(ngModel)]="searchFields.subjectIds"
+                (change)="selectSubject()"
+              >
+                <option selected translate value="">None</option>
+                <option *ngFor="let sub of subjects" value="{{sub._id}}">
+                  {{sub.name}}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Topics</label>
+              <select
+                class="custom-select form-control form-select"
+                [(ngModel)]="searchFields.topicIds"
+                (change)="query()"
+              >
+                <option selected translate value="">None</option>
+                <option *ngFor="let topic of topics" value="{{topic._id}}">
+                  {{topic.name}}
+                </option>
+              </select>
+            </div>
+            <div class="form-group custom-ng-select">
+              <label class="font-weight-bold font-sm" translate>Age</label>
+              <ng-select
+                [items]="ageFilter"
+                [hideSelected]="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="age"
+                placeholder="{{'Choose age' | translate}}"
+                required
+                (change)="filterByAge($event)"
+              >
+                <ng-template ng-label-tmp let-item="item">
+                  <span class="ng-value-label"
+                    >{{ item.from + ' - ' + item.to }}</span
+                  >
+                </ng-template>
+                <ng-template
+                  ng-option-tmp
+                  let-item="item"
+                  let-search="searchTerm"
+                  let-index="index"
+                >
+                  <span
+                    >{{ item.from + ' - ' + (item.to < 100 ? item.to : 'above' )
+                    }}</span
+                  >
+                </ng-template>
+              </ng-select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Price</label>
+              <select
+                class="custom-select form-control form-select"
+                [(ngModel)]="sortOption.sortType"
+                (change)="sortPrice($event)"
+              >
+                <option selected translate value="">None</option>
+                <option value="asc" translate>Low to High</option>
+                <option value="desc" translate>High to Low</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <p translate *ngIf="!itemChunks.length && !loading">No results</p>
+        <p *ngIf="loading"><span translate>Loading</span>...</p>
+        <div
+          class="row row-md"
+          *ngIf="itemChunks.length && itemChunks[0].length && !loading"
+        >
+          <app-card-course
+            class="col-md-6 col-lg-4 mb-3"
+            *ngFor="let item of itemChunks[0]"
+            [course]="item"
+          ></app-card-course>
+        </div>
+        <div class="row row-md" *ngIf="itemChunks.length >= 2">
+          <app-card-course
+            class="col-md-6 col-lg-4 mb-3"
+            *ngFor="let item of itemChunks[1]"
+            [course]="item"
+          ></app-card-course>
+        </div>
+        <div *ngIf="totalCourses>pageSize">
+          <ngb-pagination
+            [collectionSize]="totalCourses"
+            [(page)]="currentPage"
+            [pageSize]="pageSize"
+            [maxSize]="2"
+            (pageChange)="pageChange()"
+            class="card-pagination pagination"
+          ></ngb-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,58 @@
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Templates Update</h4>
+      </c-card-header>
+      <c-card-body>
+        <form
+          cForm
+          (ngSubmit)="submit(updateForm)"
+          #updateForm="ngForm"
+          class="row g-3"
+        >
+          <c-col md="12">
+            <label cLabel>
+              <strong>Subject</strong>
+            </label>
+            <input
+              cFormControl
+              type="text"
+              [(ngModel)]="template.subject"
+              name="subject"
+              #subject="ngModel"
+              required
+            />
+            @if (subject.errors && (subject.dirty || subject.touched ||
+            isSubmitted)) {
+            <div>
+              <p class="text-danger">Please enter template subject!</p>
+            </div>
+            }
+          </c-col>
+          <c-col md="12">
+            <label cLabel>
+              <strong>Content</strong>
+            </label>
+            <p style="color: red">
+              <small>
+                <i
+                  >Please do not remove all data contained in the tag
+                  "&#10100;&#10100;..&#10101;&#10101;" or
+                  "&#10100;%...%&#10101;"</i
+                >
+              </small>
+            </p>
+            <app-editor
+              [content]="template.content"
+              (contentChange)="template.content = $event"
+            ></app-editor>
+          </c-col>
+          <c-col md="12" class="d-flex justify-content-end">
+            <button cButton color="primary" type="submit">Save</button>
+          </c-col>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

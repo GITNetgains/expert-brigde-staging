@@ -1,0 +1,45 @@
+<section class="process-wrapper">
+  <div class="process-container">
+
+    <p class="process-top-label">Process</p>
+    <h2 class="process-main-title">Our 3 Steps Process...</h2>
+
+    <div class="process-content">
+
+      <!-- LEFT SIDE STEPS -->
+      <div class="process-left">
+
+        <div 
+          class="process-step" 
+          *ngFor="let step of steps; let i = index"
+          [class.active]="activeStep === i"
+          (click)="setActiveStep(i)"
+        >
+          <div class="step-line" [class.active]="activeStep === i"></div>
+
+          <div>
+            <h3 class="step-title">{{ step.title }}</h3>
+            <ul>
+              <li *ngFor="let point of step.points">
+                <i class="fi fi-rr-check"></i>
+                {{ point }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE IMAGE -->
+      <div class="process-right">
+        <img 
+          [src]="steps[activeStep].image" 
+          alt="process-image"
+          class="process-image"
+        />
+      </div>
+
+    </div>
+
+  </div>
+</section>

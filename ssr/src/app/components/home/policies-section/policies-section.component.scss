@@ -1,0 +1,58 @@
+
+.trust-features{
+background: #ffffff;
+  border-radius: 16px;
+  padding: 40px 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-top:20px;
+}
+.container {
+  margin: auto;
+  
+}
+
+.features-grid {
+  
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  gap: 28px;
+}
+
+.feature-box {
+  padding: 10px;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  object-fit: contain;
+
+  /* orange effect exactly like your screenshot */
+  filter: brightness(0) saturate(100%)
+          invert(50%) sepia(89%) saturate(1960%)
+          hue-rotate(350deg) brightness(96%) contrast(100%);
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #092F56;
+  margin-bottom: 6px;
+}
+
+.feature-text {
+  color: #586572;
+  font-size: 14px;
+  max-width: 240px;
+  margin: auto;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}

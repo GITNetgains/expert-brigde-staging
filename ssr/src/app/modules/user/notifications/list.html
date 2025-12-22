@@ -1,0 +1,124 @@
+<div class="sm-padding data-table">
+    <div class="notification-container">
+        <h4>Notifications</h4>
+        <ul class="notification_scroll card">
+            <li *ngFor="let item of items; let i = index" [ngClass]="{ unread: item.unreadNotification > 0 }"
+                class="notification-item">
+                <a class="notification-option" (click)="selectNotificationOption(item)">
+                    <i class="fi fi-rr-menu-dots-vertical"></i>
+                    <ul class="notification-option-dropdown" *ngIf="activeId === item._id">
+                        <li (click)="read(item, i)" *ngIf="item.unreadNotification > 0">Mark as read</li>
+                        <li (click)="removeNotification(item, i)" *ngIf="item.unreadNotification <= 0">Delete</li>
+                    </ul>
+                </a>
+                <span class="dot-unread" *ngIf="item.unreadNotification > 0">.</span>
+                <a href="javascript:void(0)" *ngIf="item.type === 'payment'">
+                    <div class="notification-icon"><i class="fi fi-rr-credit-card"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/transaction', item.itemId)">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'payout'">
+                    <div class="notification-icon"><i class="fi fi-rr-credit-card"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/payout/request', '')">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'refund'">
+                    <div class="notification-icon"><i class="fi fi-rr-comment-dollar"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/refund', item.itemId)">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)"
+                    *ngIf="item.type === 'booking' && currentUser && currentUser?.type === 'tutor'">
+                    <div class="notification-icon"><i class="fi fi-rr-user"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/appointments', item.itemId)">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)"
+                    *ngIf="item.type === 'booking' && currentUser && currentUser?.type === 'student'">
+                    <div class="notification-icon"><i class="fi fi-rr-graduation-cap"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/lessons', item.itemId)">
+                        <!-- <span class="date-n-time"> {{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span> -->
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'course'">
+                    <div class="notification-icon"><i class="fi fi-rs-book-open-reader"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/course', '')">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'my-course'">
+                    <div class="notification-icon"><i class="fi fi-rr-book-alt"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/my-courses', item.itemId)">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'webinar'">
+                    <div class="notification-icon"><i class="fi fi-rs-chalkboard-user"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/groupclass', item.itemId)">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'message'">
+                    <div class="notification-icon"><i class="fi fi-rr-envelope"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/messages/conversations', '')">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="dataTables_paginate paging_simple_numbers" id="table_id_paginate">
+                    <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" [maxSize]="2"
+                        [rotate]="true" (pageChange)="pageChange()" class="float-right">
+                        <ng-template ngbPaginationPrevious translate><span translate><i
+                                    class="fi fi-rr-angle-small-left"></i></span></ng-template>
+                        <ng-template ngbPaginationNext translate><span translate><i
+                                    class="fi fi-rr-angle-small-right"></i></span></ng-template>
+                        <!-- <ng-template ngbPaginationNumber let-page>{{ currentPage }}</ng-template> -->
+                    </ngb-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

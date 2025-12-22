@@ -1,0 +1,11 @@
+<div>
+  <span>
+    @if(media?.type === 'photo'){
+    <img [src]="media?.thumbUrl" alt="img" style="width: 100%; height: auto" />
+    } @if(media?.type !== 'photo'){
+    <app-file-icon></app-file-icon>
+    }
+    <br />
+    <span>{{ media?.name }}</span>
+  </span>
+</div>

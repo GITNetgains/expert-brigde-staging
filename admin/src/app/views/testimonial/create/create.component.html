@@ -1,0 +1,142 @@
+<form
+  cForm
+  (ngSubmit)="submit(updateForm)"
+  #updateForm="ngForm"
+  class="row g-3"
+>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <h4>Create New Testimonials</h4>
+        </c-card-header>
+        <c-card-body>
+          <c-row [gutter]="3">
+            <c-col md="6">
+              <label cLabel>
+                <strong>Name</strong>
+              </label>
+              <input
+                cFormControl
+                type="text"
+                [(ngModel)]="testimonial.name"
+                name="name"
+                #name="ngModel"
+                required
+                placeholder="Enter name"
+              />
+              @if (name.errors && (name.dirty || name.touched || isSubmitted)) {
+              <div>
+                <p class="text-danger">Please enter testimonial name!</p>
+              </div>
+              }
+            </c-col>
+            <c-col md="6">
+              <label cLabel>
+                <strong>Title</strong>
+              </label>
+              <input
+                cFormControl
+                type="text"
+                [(ngModel)]="testimonial.title"
+                name="title"
+                #title="ngModel"
+                required
+                placeholder="Enter title"
+              />
+              @if (title.errors && (title.dirty || title.touched ||
+              isSubmitted)) {
+              <div>
+                <p class="text-danger">Please enter testimonial title!</p>
+              </div>
+              }
+            </c-col>
+            <c-col md="6">
+              <label cLabel>
+                <strong>Type</strong>
+              </label>
+              <select cSelect name="type" [(ngModel)]="testimonial.type">
+                <option value="parent">Parent</option>
+                <option value="student">Student</option>
+              </select>
+            </c-col>
+            <c-col md="6">
+              <label cLabel>
+                <strong>ID Youtube</strong>
+              </label>
+              <input
+                cFormControl
+                type="text"
+                [(ngModel)]="testimonial.idYoutube"
+                name="idYoutube"
+                #idYoutube="ngModel"
+                required
+                placeholder="Enter ID youtube"
+              />
+              <small
+                >EG: https://www.youtube.com/watch?v=<strong
+                  >xRjlRfpsHGw</strong
+                >
+                <br />
+                ID = <strong>xRjlRfpsHGw</strong></small
+              >
+              @if (idYoutube.errors && (idYoutube.dirty || idYoutube.touched ||
+              isSubmitted)) {
+              <div>
+                <p class="text-danger">Please enter ID youtube!</p>
+              </div>
+              }
+            </c-col>
+            <c-col md="12">
+              <label cLabel>
+                <strong>Image </strong>
+                <span>
+                  <small
+                    >(Expected size: 210 x 210 pixels, Maximum size:
+                    {{ maxSize }} mb)</small
+                  >
+                </span>
+              </label>
+              <c-row>
+                <c-col md="6">
+                  <app-file-uploader
+                    [options]="uploadOptions"
+                  ></app-file-uploader>
+                </c-col>
+                <c-col md="6">
+                  @if(imageUrl){
+                  <img style="width: 100%" src="{{ imageUrl }}" alt="img" />
+                  }
+                </c-col>
+              </c-row>
+            </c-col>
+            <c-col md="12">
+              <label cLabel>
+                <strong>Description</strong>
+              </label>
+              <textarea
+                class="form-control"
+                id="content"
+                name="content"
+                required
+                [(ngModel)]="testimonial.description"
+                #content="ngModel"
+                rows="10"
+                placeholder="Enter some text here"
+              ></textarea>
+            </c-col>
+          </c-row>
+        </c-card-body>
+        <c-card-footer>
+          <c-row>
+            <c-col class="text-end">
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Submit</button>
+              </c-col>
+            </c-col>
+          </c-row>
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</form>

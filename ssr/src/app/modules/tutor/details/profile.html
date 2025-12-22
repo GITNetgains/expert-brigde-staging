@@ -1,0 +1,465 @@
+<section class="profile-page">
+  <div class="container">
+    <div class="profile-detail">
+      <div class="profile-detail-left">
+        <div class="card card-border profile-card mb-3">
+          <div class="card-body">
+            <div class="profile-img">
+              <img
+                src="{{tutor.avatarUrl}}"
+                onerror="this.src='/assets/images/default-avatar.jpg'"
+                alt="tutor avatar"
+              />
+              <div class="favoired-icon">
+                <a *ngIf="!tutor.isFavorite" (click)="favorite()">
+                  <i class="fi fi-rs-heart color-light-red"></i>
+                </a>
+                <a *ngIf="tutor.isFavorite" (click)="unFavorite()">
+                  <i class="fi fi-ss-heart color-light-red"></i>
+                </a>
+              </div>
+            </div>
+            <div class="profile-info">
+              <h5 class="font-weight-bold">
+                {{tutor.name}}<i
+                  class="fi fi-ss-badge-check color-blue ms-1 font-sm"
+                ></i>
+              </h5>
+              <div class="rating-stars">
+                <ul id="stars">
+                  <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
+                  <span style="padding-left: 5px"
+                    >{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span
+                  >
+                </ul>
+              </div>
+              <div class="">
+                <div class="img-flag-tutor">
+                  <img
+                    src="{{tutor?.country?.flag}}"
+                    alt="tutor country flag"
+                    class="image-sm"
+                    onerror="this.src='/assets/images/no-image.jpg'"
+                  />
+                </div>
+                <span class="ms-2 text-secondary" translate
+                  >{{tutor?.country?.name || 'Updating'}}</span
+                >
+              </div>
+              <p class="font-weight-bold text-start">
+                <img
+                  src="../assets/images/webinar/certified-img.svg"
+                  alt="tutor certificate"
+                  class="me-2 image-sm"
+                  translate
+                />
+                <span translate>Completed by</span> {{tutor?.completedByLearner
+                || 0}}
+                <span translate>Learners</span>
+              </p>
+              <div class="row">
+                <div class="col-md-12">
+                  <app-send-message-btn
+                    [recipientId]="tutor._id"
+                  ></app-send-message-btn>
+                </div>
+                <div class="col-md-12 mt-3" *ngIf="tutor && tutor.username">
+                  <strong translate>Share me:</strong>
+                  <share-button
+                    button="facebook"
+                    theme="circles-light"
+                  ></share-button>
+                  <share-button
+                    button="twitter"
+                    theme="circles-light"
+                  ></share-button>
+                  <!-- <share-button
+                    button="instagram"
+                    theme="circles-light"
+                    [icon]="['fab', 'instagram']"
+                  ></share-button> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-detail-right">
+        <div class="card card-border mb-3">
+          <div class="video-play">
+            <iframe
+              width="100%"
+              height="100%"
+              [src]="urlYoutube"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="card-body">
+            <div class="tutor-features">
+              <button
+                class="btn btn-default no-hover"
+                [routerLink]="['/tutors',tutor.username, 'booking']"
+              >
+                <img
+                  src="../assets/images/1-on-1.svg"
+                  alt="1 on 1"
+                  class="img-sm mt-n1 me-1"
+                  translate
+                />
+                <span translate>1-on-1</span>
+              </button>
+              <button
+                class="btn btn-default no-hover scrollTo"
+                id="btn-view-webinars"
+              >
+                <img
+                  src="../assets/images/webinar.svg"
+                  alt="view webinars"
+                  class="img-sm mt-n1 me-1"
+                  translate
+                />
+                <span translate>View Group Classes</span>
+              </button>
+              <button
+                class="btn btn-default no-hover scrollTo"
+                id="btn-view-courses"
+              >
+                <img
+                  src="../assets/images/course.svg"
+                  alt="view courses"
+                  class="img-sm mt-n1 me-1"
+                  translate
+                />
+                <span translate>View Courses</span>
+              </button>
+            </div>
+            <div class="tutor-info-m">
+              <div class="item-tutor-info">
+                <h5 translate>Languages</h5>
+                <div class="text-line-break">{{languageNames.join(', ')}}</div>
+              </div>
+              <div class="item-tutor-info">
+                <h5
+                  class="rmt-4 mt-3"
+                  translate
+                  *ngIf="tutor.gradeItems.length"
+                >
+                  Grades which they take classes for
+                </h5>
+                <div class="text-secondary">
+                  <span *ngFor="let grade of tutor.gradeItems, let i = index"
+                    >{{grade.name}}<span *ngIf="i < tutor.gradeItems.length - 1"
+                      >,
+                    </span></span
+                  >
+                </div>
+              </div>
+              <div class="item-tutor-info">
+                <h5 translate *ngIf="tutor.subjects.length">
+                  Subjects which they specialize in
+                </h5>
+                <div class="text-secondary">
+                  <span *ngFor="let subject of tutor.subjects; let i = index"
+                    >{{ subject.name }}<span
+                      *ngIf="i < tutor.subjects.length - 1"
+                      >,
+                    </span></span
+                  >
+                </div>
+              </div>
+              <!-- Tutor not option select category -->
+              <div class="item-tutor-info">
+                <h5
+                  translate
+                  *ngIf="tutor.categories && tutor.categories.length"
+                >
+                  Categories
+                </h5>
+                <div
+                  class="text-secondary"
+                  *ngIf="tutor.categories && tutor.categories.length"
+                >
+                  <span *ngFor="let cat of tutor.categories, let i = index"
+                    >{{cat.name}}<span *ngIf="i < tutor.categories.length - 1"
+                      >,
+                    </span></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 class="card-tite" translate>Resume</h4>
+          </div>
+          <div class="card-body">
+            <div class="row resume-box mb-3">
+              <div class="col-md-12">
+                <h4>
+                  <img
+                    src="../assets/images/tutor/book.svg"
+                    class="me-2"
+                    alt="Education"
+                  /><span translate>Education</span>
+                </h4>
+              </div>
+              <app-certificate
+                class="app-certificate"
+                *ngFor="let cer of tutor.education"
+                [certificate]="cer"
+              ></app-certificate>
+            </div>
+            <div class="row resume-box mb-3">
+              <div class="col-md-12">
+                <h4>
+                  <img
+                    src="../assets/images/tutor/experience.svg"
+                    class="me-2"
+                    alt="Work
+                  Experience"
+                  /><span translate>Work Experience</span>
+                </h4>
+              </div>
+              <app-certificate
+                class="app-certificate"
+                *ngFor="let cer of tutor.experience"
+                [certificate]="cer"
+              ></app-certificate>
+            </div>
+            <div class="row resume-box mb-3">
+              <div class="col-md-12">
+                <h4>
+                  <img
+                    src="../assets/images/tutor/certificate.svg"
+                    class="me-2"
+                    alt="Certifications"
+                  /><span translate>Certifications</span>
+                </h4>
+              </div>
+              <app-certificate
+                class="app-certificate"
+                *ngFor="let cer of tutor.certification"
+                [certificate]="cer"
+              ></app-certificate>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3" *ngIf="tutor && tutor.bio">
+          <div class="card-header">
+            <h4 class="card-tite" translate>About Me</h4>
+          </div>
+          <div class="card-body">
+            <app-card-text
+              [content]="tutor.bio"
+              [showChar]="500"
+            ></app-card-text>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3" id="view-webinars">
+          <div class="card-header">
+            <h4 class="color-light-black" translate>Group Classes</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!webinarOptions.webinars.length">
+              <p>No results!</p>
+            </div>
+
+            <div
+              class="card-item card-item-1"
+              *ngFor="let webinar of webinarOptions.webinars"
+              [hidden]="!webinarOptions.webinars.length"
+            >
+              <div class="card-img">
+                <a
+                  [routerLink]="['/groupclass',webinar.alias]"
+                  class="hyperlink card-img-top"
+                >
+                  <img
+                    src="{{webinar?.mainImage?.fileUrl}}"
+                    alt="no image"
+                    onerror="this.src='/assets/images/no-image.jpg'"
+                  />
+                </a>
+                <div class="card-tag">
+                  <div class="badge badge-tag" *ngIf="webinar?.featured">
+                    <span translate>Featured</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-txt">
+                  <h5 class="card-title ellipsis-1-line">{{webinar.name}}</h5>
+                  <ul id="stars" class="stars-card">
+                    <app-star-rating
+                      [rate]="webinar?.ratingAvg"
+                    ></app-star-rating>
+                    <span
+                      >{{webinar?.ratingAvg}} ({{webinar?.totalRating}})</span
+                    >
+                  </ul>
+                  <div class="date-card" *ngIf="webinar?.lastSlot">
+                    <span class="me-2 text-secondary"
+                      ><i class="fi fi-rr-calendar-day me-2"></i>{{
+                      webinar?.lastSlot?.startTime | date:'MMM dd,yyyy'}}</span
+                    >
+                    <span class="text-secondary"
+                      ><i class="fi fi-rr-clock-three me-2"></i>{{
+                      webinar?.lastSlot?.startTime | date:'HH:mm'}}</span
+                    >
+                  </div>
+                  <div class="card-content mt-2">
+                    <span
+                      [hidden]="!webinar?.description"
+                      [innerHTML]="webinar.description"
+                      class="card-description ellipsis-1-line mt-1"
+                    >
+                    </span>
+                  </div>
+                  <h5 class="color-light-red">
+                    <strong *ngIf="!webinar.price" translate>Free</strong>
+                    <strong *ngIf="webinar.price && webinar.price > 0"
+                      >{{ webinar.price | appCurrency}}</strong
+                    >
+                  </h5>
+                </div>
+                <div class="card-item-right">
+                  <a
+                    *ngIf="!webinar.booked"
+                    class="btn btn-default"
+                    [routerLink]="['/groupclass',webinar?.alias]"
+                    translate
+                    >Book Now</a
+                  >
+                  <a
+                    *ngIf="webinar.booked"
+                    class="btn btn-purchased"
+                    [routerLink]="['/groupclass',webinar?.alias]"
+                    translate
+                    >Purchased</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
+            [hidden]="!webinarOptions.webinars.length" class="col-md-4 mb-4"></app-card-webinar> -->
+            <div class="row mt-3">
+              <div
+                class="col-md-12 text-center"
+                *ngIf="webinarOptions.count>webinarOptions.pageSize"
+              >
+                <ngb-pagination
+                  [collectionSize]="webinarOptions.count"
+                  [(page)]="webinarOptions.currentPage"
+                  [pageSize]="webinarOptions.pageSize"
+                  [maxSize]="2"
+                  (pageChange)="queryWebinar()"
+                  class="card-pagination pagination"
+                >
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3" id="view-courses">
+          <div class="card-header">
+            <h4 class="color-light-black" translate>Courses</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!courseOptions.courses.length">
+              <p>No results!</p>
+            </div>
+            <div
+              class="card-item card-item-1"
+              *ngFor="let course of courseOptions.courses"
+              [hidden]="!courseOptions.courses.length"
+            >
+              <div class="card-img">
+                <a
+                  [routerLink]="['/courses',course?.alias]"
+                  class="hyperlink card-img-top"
+                >
+                  <img
+                    src="{{course?.mainImage?.fileUrl}}"
+                    alt="course image"
+                    onerror="this.src='/assets/images/no-image.jpg'"
+                /></a>
+                <div class="card-tag">
+                  <div class="badge badge-tag">
+                    <span translate>Featured</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-txt">
+                  <h5 class="card-title">{{course?.name| ellipsis:60}}</h5>
+                  <ul id="stars" class="stars-card">
+                    <app-star-rating
+                      [rate]="course?.ratingAvg"
+                    ></app-star-rating>
+                    <span>{{course?.ratingAvg}} ({{course?.totalRating}})</span>
+                  </ul>
+                  <h5 class="color-light-red mt-2">
+                    <strong>{{ course?.price | appCurrency}}</strong>
+                  </h5>
+                  <a
+                    class="badge badge-default"
+                    placement="bottom"
+                    title="{{getCategories(course)}}"
+                    [routerLink]="['/courses']"
+                    [queryParams]="{ categoryIds: course.categories[0]._id }"
+                    *ngIf="course.categories[0]"
+                    >{{course.categories[0].name | ellipsis:14}}</a
+                  >
+                </div>
+                <div class="card-item-right">
+                  <a
+                    *ngIf="!course.booked"
+                    class="btn btn-default"
+                    [routerLink]="['/courses',course?.alias]"
+                    translate
+                    >Buy Now</a
+                  >
+                  <a
+                    *ngIf="course.booked"
+                    class="btn btn-purchased"
+                    [routerLink]="['/courses',course?.alias]"
+                    translate
+                    >Purchased</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
+            [hidden]="!courseOptions.courses.length" class="col-md-4 mb-4"></app-card-course> -->
+            <div class="row mt-3">
+              <div
+                class="col-md-12 text-center"
+                *ngIf="courseOptions.count>courseOptions.pageSize"
+              >
+                <ngb-pagination
+                  [collectionSize]="courseOptions.count"
+                  [(page)]="courseOptions.currentPage"
+                  [pageSize]="courseOptions.pageSize"
+                  [maxSize]="2"
+                  (pageChange)="queryCourse()"
+                  class="card-pagination pagination"
+                >
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+        <app-review-list
+          [options]="optionsReview"
+          [canWriteReview]="false"
+          [stats]="statsReview"
+        ></app-review-list>
+      </div>
+    </div>
+  </div>
+</section>

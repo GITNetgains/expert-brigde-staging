@@ -1,0 +1,128 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Manage Testimonials</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col sm="12" md="10">
+            <input
+              cFormControl
+              type="text"
+              [(ngModel)]="searchFields.name"
+              placeholder="Enter name"
+            />
+          </c-col>
+          <c-col sm="12" md="2">
+            <button
+              class="button"
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="query()"
+            >
+              Filter
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex flex-wrap justify-content-between">
+        <h4>Total Testimonials: {{ count }}</h4>
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+        ></app-pagination>
+        }
+      </c-card-header>
+      @if(count !== 0){
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <thead>
+            <tr>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="name"
+                  [sortOption]="sortOption"
+                  sortTitle="Name"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="title"
+                  [sortOption]="sortOption"
+                  sortTitle="Title"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="type"
+                  [sortOption]="sortOption"
+                  sortTitle="Type"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="description"
+                  [sortOption]="sortOption"
+                  sortTitle="Description"
+                ></app-sort>
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(item of items; track item._id){
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.title }}</td>
+              <td>{{ item.type }}</td>
+              <td>{{ item.description }}</td>
+              <td style="min-width: 100px">
+                <a
+                  [routerLink]="['/testimonials/update', item._id]"
+                  class="btn btn-sm btn-primary me-1"
+                >
+                  <svg cIcon name="cilPencil" size="sm"></svg>
+                </a>
+                <app-modal-delete
+                  [item]="item"
+                  (confirmDelete)="remove($event, $event._id)"
+                ></app-modal-delete>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <div
+          style="background-color: #ffc12b; padding: 10px 0; border-radius: 8px"
+        >
+          <span style="padding: 10px; width: 100%">There are no items</span>
+        </div>
+      </c-card-body>
+      }
+    </c-card>
+  </c-col>
+</c-row>

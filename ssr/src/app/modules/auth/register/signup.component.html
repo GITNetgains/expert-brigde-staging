@@ -1,0 +1,173 @@
+<div class="signup-wrapper d-flex flex-column flex-lg-row">
+
+  <!-- LEFT IMAGE -->
+  <div class="left-pane">
+    <img
+      *ngIf="account.type === 'tutor'"
+      src="assets/images/signup-expert.png"
+      alt="Expert Signup"
+    />
+
+    <img
+      *ngIf="account.type === 'student'"
+      src="assets/images/signup-client.jpg"
+      alt="Client Signup"
+    />
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right-pane d-flex justify-content-center align-items-center">
+    <div class="form-box">
+
+      <!-- Brand Logo -->
+      <div class="text-center mb-4">
+        <img src="assets/images/logo.svg" class="logo" alt="ExpertBridge" />
+      </div>
+
+      <!-- TITLES -->
+      <h2 class="text-center mb-4" *ngIf="account.type === 'tutor'">
+        Join as an Expert
+      </h2>
+
+      <h2 class="text-center mb-4" *ngIf="account.type === 'student'">
+        Sign up
+      </h2>
+
+      <!-- SWITCH ROLE -->
+      <div class="mb-3 text-center" *ngIf="!lockType">
+        <label class="switch-type">
+          <input type="radio" name="type" value="student" [(ngModel)]="account.type" />
+          Client
+        </label>
+
+        <label class="switch-type ms-3">
+          <input type="radio" name="type" value="tutor" [(ngModel)]="account.type" />
+          Expert
+        </label>
+      </div>
+
+      <!-- SOCIAL LOGIN FOR EXPERT -->
+      <div *ngIf="account.type === 'tutor'">
+        <button class="btn social-btn w-100 mb-2" (click)="loginWithGoogle()">
+          <img src="assets/images/google-icon.svg" /> Continue With Google
+        </button>
+
+        <button class="btn social-btn w-100 mb-3" (click)="loginWithLinkedin()">
+          <img src="assets/images/linkedin-icon.svg" /> Continue With LinkedIn
+        </button>
+
+        <div class="text-center mb-3">
+          <span>Or</span>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <form #frm="ngForm" (submit)="submit(frm)">
+
+        <!-- EMAIL FIELD -->
+        <div class="mb-3">
+          <label>Email</label>
+          <input
+            id="email-input"
+            type="email"
+            class="form-control"
+            placeholder="Enter your email address"
+            [(ngModel)]="account.email"
+            name="email"
+            required
+          />
+          <div *ngIf="account.type === 'student' && account.email">
+            <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
+              <span class="dot"></span> valid domain
+            </div>
+            <div class="error" *ngIf="!isCompanyEmail(account.email)">
+              Please use company email domain
+            </div>
+          </div>
+        </div>
+
+        <!-- OTP FIELD -->
+        <div *ngIf="step === 'otp'" class="mb-3">
+          <label>Enter OTP</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter verification code"
+            [(ngModel)]="otpToken"
+            name="otpToken"
+          />
+        </div>
+
+        <!-- CREATE PASSWORD -->
+        <div *ngIf="step === 'createPassword'">
+          <div class="mb-3">
+            <label>New Password</label>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Create a new password"
+              [(ngModel)]="newPassword"
+              name="newPassword"
+            />
+          </div>
+          <div class="mb-3">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Confirm your password"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+            />
+          </div>
+        </div>
+
+        <!-- TERMS -->
+        <div class="mt-3">
+          
+
+        <!-- BUTTONS -->
+        <button
+          class="btn btn-primary w-100 mt-4 mb-3"
+          [disabled]="loading || !isAgreeWithTerms || (account.type === 'student' && !allowPersonalEmail && !isCompanyEmail(account.email))"
+          *ngIf="step === 'email'"
+        >
+          Email OTP
+        </button>
+       
+        <button
+          class="btn btn-primary w-100 mt-2 mb-3"
+          type="button"
+          *ngIf="step === 'otp'"
+          (click)="submit(frm)"
+        >
+          Verify & Continue
+        </button>
+
+        <button
+          class="btn btn-primary w-100 mt-2 mb-3"
+          type="button"
+          *ngIf="step === 'createPassword'"
+          (click)="submit(frm)"
+        >
+          Save Password & Go To Dashboard
+        </button>
+
+        
+       
+
+        <div class="text-center mt-2" *ngIf="account.type === 'student'">
+          Don’t have a company email? Sign Up
+        </div>
+      
+          <label class="ms-2">
+By signing in, you agree to our Terms and Conditions          </label>
+        </div>
+        <div class="text-center mt-2" >
+          Already have an account? <a routerLink="/auth/login">Sign In</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

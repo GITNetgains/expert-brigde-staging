@@ -1,0 +1,55 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  alignment="center"
+>
+  <c-modal-header>
+    <h5 cModalTitle>My Subject</h5>
+    <button cButtonClose (click)="closeModal()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <form #frm="ngForm" (submit)="submit(frm)">
+      <div class="mb-3">
+        <label cLabel>Select Subject</label>
+        <ng-select
+          [items]="subjects || []"
+          bindLabel="name"
+          name="subject"
+          placeholder="Choose Subject"
+          [ngModel]="mySubject?.originalSubjectId"
+          (ngModelChange)="updateSubjectId($event)"
+          bindValue="_id"
+          #subjectId="ngModel"
+          required
+          [disabled]="mySubject?._id"
+           class="my-select"
+        >
+        </ng-select>
+        @if(subjectId.errors && (subjectId.dirty || subjectId.touched ||
+        submitted)) { @if(subjectId.errors['required']) {
+        <div class="invalid-feedback d-block">Subject is required</div>
+        } }
+      </div>
+      <div class="mb-3">
+        <c-form-check>
+          <input
+            cFormCheckInput
+            type="checkbox"
+            name="isActive"
+            [ngModel]="mySubject?.isActive || false"
+            (ngModelChange)="updateIsActive($event)"
+          />
+          <label cFormCheckLabel>Active</label>
+        </c-form-check>
+      </div>
+      <div class="mt-3">
+        <button cButton color="primary" type="submit" class="me-2">
+          Submit
+        </button>
+        <button cButton color="secondary" type="button" (click)="closeModal()">
+          Close
+        </button>
+      </div>
+    </form>
+  </c-modal-body>
+</c-modal>

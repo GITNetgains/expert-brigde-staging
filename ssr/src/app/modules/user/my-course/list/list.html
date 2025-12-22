@@ -1,0 +1,138 @@
+<div class="sm-padding data-table">
+  <div class="container">
+    <div class="card mb-3 card-filter input-border">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+
+            <form id="table_id_filter">
+              <select name="category" class="form-control" [(ngModel)]="searchFields.categoryIds" (change)="query()">
+                <option selected translate value="">None</option>
+                <option *ngFor="let cate of categories" value="{{cate._id}}">{{cate.name}}</option>
+              </select>
+            </form>
+
+          </div>
+          <div class="col-md-4">
+
+            <form id="table_id_filter" class=" form-inline">
+              <input name="search" type="search" class="form-control" aria-controls="table_id"
+                placeholder="{{'Search here'|translate}}" (keyup)="doSearch($event)" />
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="table-responsive">
+        <table id="table_id" class="table dataTable no-footer" role="grid" aria-describedby="table_id_info">
+          <thead>
+            <tr>
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Course name: activate to sort column ascending">
+                <span (click)="sortBy('name', 'desc')" translate>Course name</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'name'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Paid: activate to sort column ascending">
+                <span (click)="sortBy('paid', 'desc')" translate>Paid/Free</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'paid'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Categories: activate to sort column ascending">
+                <span (click)="sortBy('category', 'desc')" translate>Categories</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'category'" (onSort)="onSort($event)"></app-sort>
+              </th>
+
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Completed: activate to sort column ascending">
+                <span (click)="sortBy('createdAt', 'desc')" translate>Created On</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Created At: activate to sort column ascending">
+                <span (click)="sortBy('isCompleted', 'desc')" translate>Progress</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'isCompleted'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+                aria-label="Action: activate to sort column ascending">
+                <a translate>Action</a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!courses.length && !loading">
+              <td translate colspan="9">There are no courses</td>
+            </tr>
+            <tr *ngIf="loading">
+              <td translate colspan="9">Loading...</td>
+            </tr>
+            <tr *ngFor="let item of courses, let i = index">
+              <!-- <td>{{item?.course?.tutor?.name}}</td> -->
+              <td>
+                <a [routerLink]="['/courses',item?.course?.alias]">{{item?.course? item?.course?.name :
+                  item?.name}}</a>
+              </td>
+              <td>
+                <span class="label label-light-primary" *ngIf="item.course && item.course.isFree===false" translate>Paid
+                  Course</span>
+                <span class="label label-light-danger" *ngIf="item.course && item.course.isFree===true" translate>Free
+                  Course</span>
+              </td>
+              <td>
+                <span *ngFor="let cat of item?.category; let i = index">{{ cat.name }}<span
+                    *ngIf="i < item.category.length - 1">, </span></span>
+              </td>
+              <td>
+                <span>{{item?.createdAt | date:'dd/MM/yyyy, HH:mma'}}</span>
+              </td>
+              <td>
+                <span class="label label-light-primary" *ngIf="item?.isCompleted" translate>Completed</span>
+                <span class="label label-light-warning" *ngIf="!item?.isCompleted &&item.completedPercent!==null"
+                  translate>{{item.completedPercent}}%</span>
+              </td>
+              <td>
+                <a [routerLink]="['/users/my-courses', item._id ]" class="btn btn-outline-dark btn-action">
+                  <i class="fi fi-rr-eye"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bottom-table">
+        <div class="input-border show-entries">
+          <form class="form-inline">
+            <div class="dataTables_length" id="table_id_length">
+              <label>
+                <span translate>Show</span>
+                <select name="table_id_length" aria-controls="table_id"
+                  class="custom-select custom-select-sm form-control" [(ngModel)]="pageSize" (change)="query()">
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span translate>entries</span>
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="pagination-table" id="table_id_paginate">
+          <ngb-pagination [collectionSize]="total" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="2"
+            (pageChange)="pageChange()">
+            <ng-template ngbPaginationPrevious translate><span translate><i
+                  class="fi fi-rr-angle-small-left"></i></span></ng-template>
+            <ng-template ngbPaginationNext translate><span translate><i
+                  class="fi fi-rr-angle-small-right"></i></span></ng-template>
+            <!-- <ng-template ngbPaginationNumber let-page>{{ currentPage }}</ng-template> -->
+          </ngb-pagination>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>

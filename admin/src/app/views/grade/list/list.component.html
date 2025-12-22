@@ -1,0 +1,189 @@
+<c-container class="p-0">
+  <c-row class="mb-4">
+    <c-col md="12">
+      <c-card>
+        <c-card-header>
+          <h3>Manage Grade</h3>
+        </c-card-header>
+        <c-card-body>
+          <c-row>
+            <c-col md="8">
+              <div class="mb-3">
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="searchField.name"
+                  name="name"
+                  placeholder="Enter name"
+                />
+              </div>
+            </c-col>
+
+            <c-col md="4">
+              <div class="mb-3">
+                <button cButton color="primary" class="w-100" (click)="filter()">
+                  Filter
+                </button>
+              </div>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center"
+          >
+            <h4 class="mb-0">Total Grade: {{ gradesCount }}</h4>
+
+            <app-pagination
+              [currentPage]="currentPage"
+              [pageSize]="pageSize"
+              [totalItems]="gradesCount"
+              [maxSize]="3"
+              (pageChanged)="onPageChange($event)"
+            ></app-pagination>
+          </div>
+        </c-card-header>
+        @if(gradesCount !== 0){
+        <c-card-body>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 100%"
+            >
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'name'"
+                      [sortOption]="sortOption"
+                      sortTitle="Name"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 150px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'ordering'"
+                      [sortOption]="sortOption"
+                      sortTitle="Ordering"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'type'"
+                      [sortOption]="sortOption"
+                      sortTitle="Type"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'createdAt'"
+                      [sortOption]="sortOption"
+                      sortTitle="Created on"
+                    ></app-sort>
+                  </th>
+                  <th
+                    scope="col"
+                    style="
+                      width: 100px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(item of grades; track item.id) {
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.ordering }}</td>
+                  <td>
+                    @if (item.type === 'elementary') {
+                    <c-badge color="warning">Elementary</c-badge>
+                    } @else if (item.type === 'middle-school') {
+                    <c-badge color="info">Middle School</c-badge>
+                    } @else if (item.type === 'high-school') {
+                    <c-badge color="primary">High School</c-badge>
+                    } @else if (item.type === 'college') {
+                    <c-badge color="success">College</c-badge>
+                    }
+                  </td>
+                  <td>
+                    {{ item.createdAt | date }}
+                  </td>
+                  <td
+                    style="
+                      text-align: center;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <a
+                      cButton
+                      [routerLink]="['/grade/update', item._id]"
+                      class="btn btn-sm btn-primary me-1"
+                    >
+                      <svg cIcon name="cilPencil" size="sm"></svg>
+                    </a>
+                    <a>
+                      <button
+                        cButton
+                        class="btn btn-sm btn-danger me-1 text-white"
+                        (click)="removeGrade(item.id)"
+                      >
+                        <svg cIcon name="cilTrash" size="sm"></svg>
+                      </button>
+                    </a>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+        }@else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        }
+        <c-card-footer class="d-flex justify-content-end">
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="gradesCount"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

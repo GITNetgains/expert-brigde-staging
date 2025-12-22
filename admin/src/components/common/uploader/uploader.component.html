@@ -1,0 +1,52 @@
+<div class="upload-container">
+  @if (options?.uploadZone) {
+  <div class="text-center upload-zone">
+    <div ng2FileDrop [ngClass]="{ 'nv-file-over': hasBaseDropZoneOver }" (fileOver)="fileOverBase($event)"
+      [uploader]="uploader" class="well my-drop-zone" (onFileDrop)="fileDrop($event)">
+      <label for="{{options.id || 'file-upload'}}" class="custom-file-upload">
+
+      </label>
+      <span translate>{{ options.hintText || 'Drop or select file to here' }}</span>
+      @if (options?.multiple) {
+      <input id="{{options.id}}" type="file" ng2FileSelect [uploader]="uploader" name="mediaPath" multiple
+        (onFileSelected)="onFileSelected($event)" class="custom-file-input" style="display: none"
+        accept="{{options.allowedMimeType || ''}}" type="file" />
+      } @else {
+      <input id="{{options.id || 'file-upload'}}" type="file" ng2FileSelect [uploader]="uploader" name="mediaPath"
+        (onFileSelected)="onFileSelected($event)" class="custom-file-input" style="display: none"
+        accept="{{options.allowedMimeType || ''}}" type="file" />
+      }
+    </div>
+    <div class="progress" [hidden]="!progress">
+      <div class="bg-color-default" [ngStyle]="{ width: progress + '%' }"
+        [ngClass]="{ 'bg-success': progress === 100 }">
+        <span *ngIf="progress === 100" translate>File was uploaded</span>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <button cButton color="light" class="btn-upload" type="button" [disabled]="uploader.isUploading">
+    <label for="{{options.id || 'file-upload'}}">
+      <svg cIcon name="cilCloudUpload" size="sm"></svg>
+      {{options.hintText || 'Upload'}}
+    </label>
+    @if (options?.multiple) {
+    <input id="{{options.id || 'file-upload'}}" type="file" ng2FileSelect [uploader]="uploader" name="mediaPath"
+      multiple (onFileSelected)="onFileSelected($event)" class="custom-file-input" style="display: none"
+      accept="{{options.allowedMimeType || ''}}" type="file" />
+    } @else {
+    <input id="{{options.id || 'file-upload'}}" type="file" ng2FileSelect [uploader]="uploader" name="mediaPath"
+      (onFileSelected)="onFileSelected($event)" class="custom-file-input" style="display: none"
+      accept="{{options.allowedMimeType || ''}}" type="file" />
+    }
+  </button>
+  }
+  <div class="file-list-container" *ngIf="uploader.queue.length">
+    <app-file-list [files]="uploader.queue" (onRemoveFile)="removeFile($event)"></app-file-list>
+    <button class="upload-btn" type="button" cButton (click)="uploadAll()" translate [disabled]="uploader.isUploading"
+      *ngIf="uploader.queue.length && !options.autoUpload">
+      Upload
+    </button>
+  </div>
+
+</div>

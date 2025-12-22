@@ -1,0 +1,94 @@
+<div class="login-wrapper d-flex flex-column flex-lg-row">
+
+  <!-- LEFT IMAGE -->
+  <div class="left-pane d-none d-lg-block">
+    <img src="assets/images/signup-client.jpg" alt="Login Image" />
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right-pane d-flex justify-content-center align-items-center">
+    <div class="form-box">
+
+      <!-- LOGO -->
+      <div class="text-center mb-4">
+        <img src="assets/images/logo.svg" class="logo" alt="ExpertBridge" />
+      </div>
+
+      <h2 class="text-center mb-4">Sign In</h2>
+
+      <form #frm="ngForm" (ngSubmit)="login(frm)">
+
+        <!-- EMAIL -->
+        <div class="mb-3" *ngIf="step === 'email'">
+          <label>Email</label>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Enter your email"
+            [(ngModel)]="credentials.email"
+            name="email"
+            required
+          />
+           
+          <div class="text-end mt-2">
+            <button
+              type="button"
+              class="btn btn-link p-0"
+              (click)="loginMode = loginMode === 'otp' ? 'password' : 'otp'">
+              {{ loginMode === 'otp' ? 'Use password instead' : 'Use email OTP instead' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="mb-3" *ngIf="loginMode === 'password' && step === 'password'">
+          <label>Password</label>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Enter your password"
+            [(ngModel)]="credentials.password"
+            name="password"
+            required
+          />
+        </div>
+
+        <!-- OTP -->
+        <div class="mb-3" *ngIf="loginMode === 'otp' && step === 'otp'">
+          <label>Enter Verification Code</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter OTP"
+            [(ngModel)]="otpCode"
+            name="otpCode"
+            required
+          />
+        </div>
+
+        <!-- SUBMIT -->
+        <button class="btn primary-btn w-100 mt-4">
+          {{ loginMode === 'otp'
+            ? (step === 'email' ? 'Send Code' : 'Verify & Sign In')
+            : 'Sign In' }}
+        </button>
+
+        <div class="text-center mt-3">
+          <a routerLink="/auth/forgot">I forgot my password</a>
+        </div>
+
+        <div class="text-center mt-4 small">
+          By signing in, you agree to our
+          <a routerLink="/terms">Terms</a> and
+          <a routerLink="/privacy">Privacy Policy</a>
+        </div>
+
+        <div class="text-center mt-2">
+          Don’t have an account?
+          <a routerLink="/auth/sign-up">Sign Up</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

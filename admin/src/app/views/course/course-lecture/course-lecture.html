@@ -1,0 +1,154 @@
+<c-card>
+  <c-card-body>
+    <c-row class="mb-3 mt-3">
+      <c-col md="3" class="d-flex align-items-center">
+        <button cButton color="primary" (click)="submitSection()">
+          Add Section
+        </button>
+      </c-col>
+    </c-row>
+
+    @if (loading) {
+    <div class="text-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading sections...</p>
+    </div>
+    } @else if (!sections.length) {
+    <div class="text-center p-5">
+      <p>
+        No sections available. Click "Add Section" to create your first section.
+      </p>
+    </div>
+    } @else {
+    <div class="accordion mb-3" id="accordionExample">
+      @for (section of sections; track section._id; let i = $index) {
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button"
+            [class.collapsed]="activeAccordion !== section._id"
+            type="button"
+            (click)="toggleAccordion(section._id)"
+          >
+            <div
+              class="d-flex justify-content-between align-items-center w-100"
+            >
+              <div>
+                <h5 class="mb-0">{{ section.title }}</h5>
+                <p class="mb-0 text-muted small">
+                  @if (section.totalLecture === 1) { 1 lecture } @else { {{
+                  section.totalLecture }} lectures }
+                </p>
+              </div>
+              <div>
+                <button
+                  cButton
+                  color="success"
+                  variant="ghost"
+                  size="sm"
+                  class="me-2"
+                  (click)="submitSection(section); $event.stopPropagation()"
+                >
+                  <svg cIcon name="cilPencil" size="sm"></svg>
+                </button>
+                <button
+                  cButton
+                  color="danger"
+                  variant="ghost"
+                  size="sm"
+                  (click)="removeSection(section, i); $event.stopPropagation()"
+                >
+                  <svg cIcon name="cilTrash" size="sm"></svg>
+                </button>
+              </div>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="collapse{{i}}"
+          class="accordion-collapse collapse"
+          [class.show]="activeAccordion === section._id"
+        >
+          <div class="accordion-body">
+            <c-row class="mb-3">
+              <c-col md="3">
+                <button
+                  cButton
+                  color="primary"
+                  (click)="submitLecture(i, section._id, courseId)"
+                >
+                  Add Lecture
+                </button>
+              </c-col>
+            </c-row>
+
+            @if (!section.lectures || section.lectures.length === 0) {
+            <p class="text-muted">
+              No lectures in this section. Add your first lecture.
+            </p>
+            } @else { @for (lecture of section.lectures; track lecture._id; let
+            iLecture = $index) {
+            <div
+              class="d-flex justify-content-between align-items-center border-bottom p-2 mb-2"
+            >
+              <div>
+                <p class="mb-0">
+                  <svg cIcon name="cilFile" class="me-2" size="sm"></svg>
+                  {{ lecture?.title }}
+                </p>
+              </div>
+              <div>
+                <button
+                  cButton
+                  color="success"
+                  variant="ghost"
+                  size="sm"
+                  class="me-2"
+                  (click)="submitLecture(i, section._id, courseId, lecture)"
+                >
+                  <svg cIcon name="cilPencil" size="sm"></svg>
+                </button>
+                <button
+                  cButton
+                  color="danger"
+                  variant="ghost"
+                  size="sm"
+                  (click)="removeLecture(i, lecture, iLecture)"
+                >
+                  <svg cIcon name="cilTrash" size="sm"></svg>
+                </button>
+              </div>
+            </div>
+            } }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <div class="mb-3">
+      <button cButton color="primary" class="me-2" (click)="onTab(2)">
+        Previous
+      </button>
+      <button cButton color="primary" (click)="onTab(4)">Next</button>
+    </div>
+  </c-card-body>
+</c-card>
+
+<app-section-form
+  [visible]="showSectionModal"
+  [section]="currentSection"
+  (formSubmit)="onSectionFormSubmit($event)"
+  (modalClose)="onModalClose()"
+></app-section-form>
+
+<app-lecture-form
+  [visible]="showLectureModal"
+  [lecture]="currentLecture"
+  [courseId]="courseId"
+  (formSubmit)="onLectureFormSubmit($event)"
+  (modalClose)="onModalClose()"
+></app-lecture-form>

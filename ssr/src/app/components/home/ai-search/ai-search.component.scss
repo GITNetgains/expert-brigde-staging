@@ -1,0 +1,210 @@
+/* -------------------------------
+   AI Banner Section
+--------------------------------*/
+.ai-banner {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 10rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background Image */
+.bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Content Wrapper */
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  max-width: 900px;
+  width: 90%;
+}
+
+/* Heading */
+.title {
+  font-size: 54px;
+  font-weight: 600;
+  line-height: 1.2;
+  color:#FFFFFF !important;
+}
+
+.subtitle {
+  font-size: 18px;
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+/* -------------------------------
+   Search Section (CLEAN — NO BLUR)
+--------------------------------*/
+.search-wrap {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  /* NEW STYLES BELOW FOR THE BLUR CONTAINER */
+ background: rgba(255, 255, 255, 0.20); /* soft transparent white */
+  padding: 10px;
+  border-radius: 16px;
+
+  /* Soft subtle shadow */
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
+
+  /* Frosted glass look */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);/* Optional: A subtle white border */
+  border-radius: 18px; /* Slightly larger border-radius than the boxes inside */
+  /* END OF NEW STYLES */
+}
+
+/* -------------------------------
+   Frosted Input Box ONLY
+--------------------------------*/
+.search-box {
+  background: white;
+  border-radius: 14px;
+  padding: 5px 18px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+   color: #6C7A88;
+}
+
+/* Input */
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+ 
+  font-size: 15px;
+  color: #6C7A88;
+}
+
+.search-input::placeholder {
+  color: #6C7A88;
+}
+
+/* -------------------------------
+   Recording Indicator + Mic
+--------------------------------*/
+.recording-indicator {
+  color: red;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 8px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.25; }
+  100% { opacity: 1; }
+}
+
+.mic-btn {
+  background: transparent;
+  border: none;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mic-img {
+  width: 22px;
+  height: 22px;
+}
+
+.mic-img.recording {
+  animation: pulseMic 0.8s infinite alternate;
+}
+
+@keyframes pulseMic {
+  from { transform: scale(1); opacity: 0.75; }
+  to { transform: scale(1.25); opacity: 1; }
+}
+
+/* -------------------------------
+   Proceed Button (SOLID)
+--------------------------------*/
+.proceed-btn {
+  background: #f05a3f;
+  padding: 0 30px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.proceed-btn:hover {
+  background: #d54d32;
+}
+
+/* -------------------------------
+   Text & Notes
+--------------------------------*/
+.desc {
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e5e5e5;
+}
+
+.notes {
+  margin-top: 10px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notes p {
+  margin: 3px 0;
+  display: flex;
+  gap: 6px;
+}
+
+.notes i {
+  color: #E4543C ;
+}
+
+/* -------------------------------
+   RESPONSIVE DESIGN
+--------------------------------*/
+@media (max-width: 992px) {
+  .title { font-size: 40px; }
+  .search-box { width: 100%; }
+  .search-wrap { flex-direction: column; }
+  .proceed-btn { width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 32px; }
+  .ai-banner { padding: 4rem 1rem; }
+}
+
+@media (max-width: 480px) {
+  .title { font-size: 26px; }
+  .ai-banner { padding: 4rem 1rem; }
+  .search-box { height: 48px; }
+  .proceed-btn { height: 48px; }
+}

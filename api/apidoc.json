@@ -1,0 +1,29 @@
+{
+  "name": "API Livelearn",
+  "version": "3.0.8",
+  "description": "apiDoc basic example",
+  "title": "Custom apiDoc browser title",
+  "template": {
+    "showRequiredLabels": true,
+    "withCompare": true,
+    "withGenerator": true,
+    "aloneDisplay": false
+  },
+  "url": "https://api.example.com",
+  "order": [
+    "Auth",
+    "User",
+    "Tutor",
+    "Booking",
+    "Appointment",
+    "Course",
+    "Course Section",
+    "Course Lecture",
+    "Course Lecture Media",
+    "Webinar",
+    "Schedule",
+    "Category",
+    "Subject",
+    "Topic"
+  ]
+}

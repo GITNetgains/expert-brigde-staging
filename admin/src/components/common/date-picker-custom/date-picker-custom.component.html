@@ -1,0 +1,21 @@
+<div class="date-picker-container">
+  <div class="date-picker-input">
+    <input
+      type="text"
+      class="form-control"
+      readonly
+      (click)="openDatepicker()"
+      [(ngModel)]="dateValue"
+    />
+  </div>
+  <div [hidden]="!open" class="date-range-picker-component">
+    <ngx-daterangepicker-bootstrap
+      (chosenDate)="chosenDate($event)"
+      [locale]="locale"
+      [startDate]="selected.startDate"
+      [endDate]="selected.endDate"
+      [autoApply]="options.autoApply"
+      [singleDatePicker]="options.singleDatePicker"
+    ></ngx-daterangepicker-bootstrap>
+  </div>
+</div>

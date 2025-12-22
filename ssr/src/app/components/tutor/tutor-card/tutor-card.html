@@ -1,0 +1,63 @@
+<div class="expert-card" [ngClass]="{ active: isBorder }">
+
+  <!-- HEADER -->
+  <div class="expert-header">
+    <img
+      class="avatar"
+      [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'"
+      alt="avatar"
+    />
+
+    <div class="expert-meta">
+      <div class="name-location">
+      <h3 class="name">{{ tutor.name }}</h3>
+
+      <p class="location">
+        {{ tutor.state }}{{ tutor.country?.name ? ', ' + tutor.country.name : '' }}
+      </p>
+      </div>
+
+      <p class="fee">
+        <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" /> Consultation Fee:
+        <a>{{ $any(tutor).consultationFee | appCurrency }}/hr</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- WORK HISTORY -->
+  <div class="work-history" *ngIf="$any(tutor).workHistory?.length">
+    <div
+      class="work-item"
+      *ngFor="let w of $any(tutor).workHistory | slice:0:4"
+    >
+      <span class="red-arrow">▶</span>
+      <span>{{ w }}</span>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div class="description" *ngIf="$any(tutor).highlights?.length">
+    <div
+      class="desc-item"
+      *ngFor="let d of $any(tutor).highlights | slice:0:3"
+    >
+      – {{ d }}
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- ACTIONS -->
+  <div class="card-actions">
+    <a [routerLink]="['/tutors', tutor.username]">Watch</a>
+    <a>Engage</a>
+    <a (click)="favorite()" *ngIf="!tutor.isFavorite">Shortlist</a>
+    <a (click)="unFavorite()" *ngIf="tutor.isFavorite">Remove</a>
+    <a>Response</a>
+    <a (click)="chat()">Chat</a>
+
+    <i class="fi fi-rr-arrow-up-right open-icon"></i>
+  </div>
+
+</div>

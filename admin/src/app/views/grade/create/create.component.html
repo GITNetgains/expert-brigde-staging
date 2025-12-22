@@ -1,0 +1,119 @@
+<c-col md="12">
+  <c-card class="mb-4">
+    <c-card-header>
+      <h4>Create Grade</h4>
+    </c-card-header>
+    <c-card-body>
+      <form
+        cForm
+        #frm="ngForm"
+        (ngSubmit)="submit(frm)"
+        ngNativeValidate
+        novalidate
+        [validated]="customStylesValidated"
+      >
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name">Name</label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter name"
+                  id="name"
+                  required
+                  [(ngModel)]="grade.name"
+                  #name="ngModel"
+                  name="name"
+                  required
+                />
+                @if (name.errors && (name.dirty || name.touched || isSubmitted))
+                { @if (name.errors['required']) {
+                <c-form-feedback invalid>
+                  Please enter user first name and last name!
+                </c-form-feedback>
+                } @else if (name.errors['pattern']) {
+                <c-form-feedback invalid>
+                  Please enter a valid name.
+                </c-form-feedback>
+                } }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="alias">Alias</label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  type="alias"
+                  id="alias"
+                  placeholder="Enter alias"
+                  required
+                  [(ngModel)]="grade.alias"
+                  name="alias"
+                  #alias="ngModel"
+                />
+                @if (alias.errors?.['required'] && (alias.touched ||
+                isSubmitted)) {
+                <c-form-feedback invalid>Please enter alias!</c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name">Ordering</label>
+              <input
+                type="number"
+                cFormControl
+                placeholder="Enter ordering"
+                required
+                id="ordering"
+                [(ngModel)]="grade.ordering"
+                name="ordering"
+                #ordering="ngModel"
+              />
+              @if (ordering.errors?.['required'] && (ordering.touched ||
+              isSubmitted)) {
+              <c-form-feedback class="text-danger" invalid
+                >Please enter ordering!</c-form-feedback
+              >
+              }
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="School Type">School Type</label>
+              <select
+                cFormControl
+                cSelect
+                id="type"
+                aria-label="Default select example"
+                required
+                [(ngModel)]="grade.type"
+                name="type"
+                #type="ngModel"
+              >
+                <option value="elementary">Elementary</option>
+                <option value="middle-school">Middle school</option>
+                <option value="high-school">High school</option>
+                <option value="college">College</option>
+              </select>
+              @if (type.errors?.['required'] && (type.touched || isSubmitted)) {
+              <c-form-feedback invalid>
+                Please select a school type!
+              </c-form-feedback>
+              }
+            </div>
+          </c-col>
+        </c-row>
+        <div class="d-flex justify-content-start">
+          <button cButton color="primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </c-card-body>
+  </c-card>
+</c-col>

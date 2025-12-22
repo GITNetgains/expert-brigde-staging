@@ -1,0 +1,102 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "env": {
+    "commonjs": true,
+    "node": true,
+    "jest": true,
+    "es6": true,
+    "browser": true,
+    "worker": true
+  },
+  "globals": {
+    "localStorage": true,
+    "window": true,
+    "File": true,
+    "Response": true,
+    "NodeJS": true
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "quotes": [
+          "error",
+          "single",
+          {
+            "avoidEscape": true
+          }
+        ],
+        "no-unused-vars": "off",
+        "comma-dangle": [
+          "error",
+          "never"
+        ],
+        "no-unused-expressions": 0,
+        "@typescript-eslint/no-unused-vars": "error",
+        "import/no-unresolved": 0,
+        "import/prefer-default-export": 0,
+        "no-underscore-dangle": 0,
+        "max-classes-per-file": 0,
+        "max-len": 0,
+        "max-lines": 0,
+        "no-useless-constructor": 0,
+        "no-empty-function": 0,
+        "class-methods-use-this": 0,
+        "@typescript-eslint/camelcase": 0,
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": [
+          "error"
+        ],
+        "jsx-a11y/anchor-is-valid": 0,
+        "import/no-extraneous-dependencies": 0,
+        "jsx-a11y/media-has-caption": 0,
+        "no-shadow": [
+          "error",
+          {
+            "hoist": "never"
+          }
+        ],
+        "no-alert": 0,
+        "indent": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {}
+    }
+  ]
+}

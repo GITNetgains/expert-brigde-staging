@@ -1,0 +1,401 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Stats</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3" class="mb-4">
+          <c-col sm="12" md="4">
+            <app-date-picker-custom
+              [options]="datePickerOptions"
+            ></app-date-picker-custom>
+          </c-col>
+          <c-col sm="12" md="4">
+            <ng-select
+              [items]="tutor"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="tutorId"
+              placeholder="Search tutor"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="4">
+            <button
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="queryStats()"
+            >
+              Filter Stats
+            </button>
+          </c-col>
+        </c-row>
+        <c-row [gutter]="3">
+          <c-col md="6">
+            <c-card>
+              <c-card-header>
+                <h4>Pending</h4>
+              </c-card-header>
+              <c-card-body>
+                <c-row>
+                  <c-col md="4">
+                    <p>
+                      <strong>Total:</strong>
+                      {{
+                        stats?.pending?.total
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                    <p>
+                      <strong>Commission:</strong>
+                      {{
+                        stats?.pending?.commission
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                    <p>
+                      <strong>Tutor Balance:</strong>
+                      {{
+                        stats?.pending?.balance
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                  </c-col>
+                  <c-col md="4">
+                    <c-chart [data]="dataPending" type="doughnut" [options]="chartOptionsNoLegend" />
+                  </c-col>
+                  <c-col md="4">
+                    <div class="chart-legend">
+                      <div class="legend-item" *ngFor="let label of dataPending.labels; let i = index">
+                        <span
+                          class="legend-color"
+                          [style.background-color]="dataPending.datasets[0].backgroundColor[i]">
+                        </span>
+                        <span class="legend-label">{{ label }}</span>
+                      </div>
+                    </div>
+                  </c-col>
+                </c-row>
+              </c-card-body>
+            </c-card>
+          </c-col>
+          <c-col md="6">
+            <c-card>
+              <c-card-header>
+                <h4>Approved</h4>
+              </c-card-header>
+              <c-card-body>
+                <c-row>
+                  <c-col md="4">
+                    <p>
+                      <strong>Total:</strong>
+                      {{
+                        stats?.approved?.total
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                    <p>
+                      <strong>Commission:</strong>
+                      {{
+                        stats?.approved?.commission
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                    <p>
+                      <strong>Tutor Balance:</strong>
+                      {{
+                        stats?.approved?.balance
+                          | currency
+                            : (config?.currencySymbol
+                                ? config?.currencySymbol
+                                : "$")
+                            : "symbol"
+                            : "1.0"
+                      }}
+                    </p>
+                  </c-col>
+                  <c-col md="4">
+                    <c-chart [data]="dataApproved" type="doughnut" [options]="chartOptionsNoLegend" />
+                  </c-col>
+                  <c-col md="4">
+                    <div class="chart-legend">
+                      <div class="legend-item" *ngFor="let label of dataApproved.labels; let i = index">
+                        <span
+                          class="legend-color"
+                          [style.background-color]="dataApproved.datasets[0].backgroundColor[i]">
+                        </span>
+                        <span class="legend-label">{{ label }}</span>
+                      </div>
+                    </div>
+                  </c-col>
+                </c-row>
+              </c-card-body>
+            </c-card>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex justify-content-between">
+        <h4>Total Requests: {{ total }}</h4>
+        <select (change)="export($event)" style="max-width: 150px" cSelect>
+          <option value="">Export</option>
+          <option value="csv">Export CSV</option>
+          <option value="excel">Export Excel</option>
+        </select>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3" class="mb-3">
+          <c-col sm="12" md="3">
+            <app-date-picker-custom
+              [options]="datePickerOptions"
+            ></app-date-picker-custom>
+          </c-col>
+          <c-col sm="12" md="3">
+            <select cSelect [(ngModel)]="searchFields.status">
+              <option value="" selected disabled>Choose status</option>
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+              <option value="approved">Approved</option>
+            </select>
+          </c-col>
+          <c-col sm="12" md="3">
+            <ng-select
+              [items]="tutor"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="tutorId"
+              placeholder="Search tutor"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="3">
+            <button
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="query()"
+            >
+              Filter Requests
+            </button>
+          </c-col>
+        </c-row>
+        @if(total !==0 ){
+        <c-row>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 1610px"
+            >
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 100px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="code"
+                      [sortOption]="sortOption"
+                      sortTitle="Code"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 100px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="tutorId"
+                      [sortOption]="sortOption"
+                      sortTitle="Tutor Name"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 50px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="total"
+                      [sortOption]="sortOption"
+                      sortTitle="Total"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 50px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="commission"
+                      [sortOption]="sortOption"
+                      sortTitle="Commission"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 50px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="balance"
+                      [sortOption]="sortOption"
+                      sortTitle="Tutor Balance"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 50px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="status"
+                      [sortOption]="sortOption"
+                      sortTitle="Status"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 50px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th
+                    scope="col"
+                    style="
+                      width: 30px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(item of items; track item._id){
+                <tr>
+                  <td>
+                    <a [routerLink]="['/payout/request', item?._id]">
+                      {{ item?.code }}
+                    </a>
+                  </td>
+                  <td>
+                    <a> {{ item?.tutor.name }} </a>
+                  </td>
+                  <td>
+                    {{
+                      item?.total
+                        | currency
+                          : (config?.currencySymbol
+                              ? config?.currencySymbol
+                              : "$")
+                          : "symbol"
+                          : "1.0"
+                    }}
+                  </td>
+                  <td>
+                    {{
+                      item?.commission
+                        | currency
+                          : (config?.currencySymbol
+                              ? config?.currencySymbol
+                              : "$")
+                          : "symbol"
+                          : "1.0"
+                    }}
+                  </td>
+                  <td>
+                    {{
+                      item?.balance
+                        | currency
+                          : (config?.currencySymbol
+                              ? config?.currencySymbol
+                              : "$")
+                          : "symbol"
+                          : "1.0"
+                    }}
+                  </td>
+                  <td>
+                    @switch(item.status){ @case('approved'){
+                    <c-badge color="success">Approve</c-badge>
+                    } @case('rejected'){
+                    <c-badge color="danger">Rejected</c-badge>
+                    }@case('pending'){
+                    <c-badge color="warning">Pending</c-badge>
+                    } }
+                  </td>
+                  <td>{{ item?.createdAt | date }}</td>
+                  <td
+                    style="
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <a
+                      cButton
+                      color="secondary"
+                      size="sm"
+                      [routerLink]="['/payout/request', item?._id]"
+                    >
+                      <app-eye-icon></app-eye-icon>
+                    </a>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-row>
+        }@else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        }
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

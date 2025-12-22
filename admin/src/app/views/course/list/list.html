@@ -1,0 +1,325 @@
+<c-container class="p-0">
+  <c-row class="mb-4">
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <h4>Manage Courses</h4>
+        </c-card-header>
+        <c-card-body>
+          <c-row [gutter]="3">
+            <c-col xs="12" sm="6" md="3">
+              <ng-select
+                [items]="tutorItems"
+                bindLabel="name"
+                bindValue="_id"
+                [(ngModel)]="tutorId"
+                placeholder="Search expert"
+                [clearable]="true"
+                [virtualScroll]="true"
+                [typeahead]="tutorInput$"
+                (open)="loadTutors()"
+                class="my-select"
+              >
+              </ng-select>
+            </c-col>
+            <c-col xs="12" sm="6" md="2">
+              <input
+                cFormControl
+                type="text"
+                name="name"
+                [(ngModel)]="searchFields.name"
+                placeholder="Enter name"
+              />
+            </c-col>
+            <c-col xs="12" sm="6" md="3">
+              <ng-select
+                [items]="categories"
+                [hideSelected]="true"
+                [multiple]="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="category"
+                placeholder="Choose category"
+                [(ngModel)]="categoryIds"
+                bindValue="_id"
+                class="my-select"
+              >
+              </ng-select>
+            </c-col>
+            <c-col xs="12" sm="6" md="2">
+              <select cSelect [(ngModel)]="searchFields.approved">
+                <option selected value="">All</option>
+                <option value="0">Pending</option>
+                <option value="1">Approved</option>
+              </select>
+            </c-col>
+            <c-col xs="12" sm="6" md="2">
+              <button
+                cButton
+                color="primary"
+                style="width: 100%"
+                (click)="filter()"
+              >
+                Filter
+              </button>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header class="d-flex flex-wrap justify-content-between">
+          <h4 class="card-title">Total Courses: {{ count }}</h4>
+          @if(count !== 0){
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+          }
+        </c-card-header>
+        @if(count !== 0){
+        <c-card-body>
+          <div class="table-responsive">
+            @if(!loading && count === 0){
+            <div class="text-center p-3">No items found</div>
+            }
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 100%"
+            >
+              <thead>
+                <tr>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="tutorId"
+                      [sortOption]="sortOption"
+                      sortTitle="Tutor Name"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="name"
+                      [sortOption]="sortOption"
+                      sortTitle="Course Title"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="totalSection"
+                      [sortOption]="sortOption"
+                      sortTitle="Total Section"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="categoryIds"
+                      [sortOption]="sortOption"
+                      sortTitle="Categories"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="price"
+                      [sortOption]="sortOption"
+                      sortTitle="Price"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="featured"
+                      [sortOption]="sortOption"
+                      sortTitle="Featured?"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="enabled"
+                      [sortOption]="sortOption"
+                      sortTitle="Enabled?"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="status"
+                      [sortOption]="sortOption"
+                      sortTitle="Status"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th
+                    style="
+                      width: 150px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(item of items; track item._id) {
+                <tr>
+                  <td>{{item.tutor?.name}}</td>
+                  <td>{{item.name}}</td>
+                  <td>{{item?.totalSection | number}}</td>
+                  <td>
+                    @for(cat of item.categories; track cat._id; let i = $index)
+                    { {{ cat?.name }} @if(i < item.categories.length - 1) {, } }
+                  </td>
+                  <td>
+                    {{item?.price| currency : (config?.currencySymbol ?
+                    config?.currencySymbol : '$'): 'symbol' : '1.0' }}
+                  </td>
+                  <td>
+                    @if(!item.featured) {
+                    <c-badge
+                      color="warning"
+                      class="badge-update"
+                      (click)="update(item, 'featured', true)"
+                      >N</c-badge
+                    >
+                    } @else {
+                    <c-badge
+                      color="success"
+                      class="badge-update"
+                      (click)="update(item,'featured', false)"
+                      >Y</c-badge
+                    >
+                    }
+                  </td>
+                  <td>
+                    @if(!item.disabled) {
+                    <c-badge
+                      color="success"
+                      class="badge-update"
+                      (click)="disable(item)"
+                      >Y</c-badge
+                    >
+                    } @else {
+                    <c-badge
+                      color="warning"
+                      class="badge-update"
+                      (click)="enable(item)"
+                      >N</c-badge
+                    >
+                    }
+                  </td>
+                  <td>
+                    @if(item.isDraff) {
+                    <c-badge color="warning">Draft</c-badge>
+                    } @else if(!item?.approved) {
+                    <c-badge color="warning">Pending</c-badge>
+                    } @else {
+                    <c-badge color="primary">Approved</c-badge>
+                    }
+                  </td>
+                  <td>{{item?.createdAt | date}}</td>
+                  <td
+                    style="
+                      text-align: center;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <a
+                      [routerLink]="['/courses/preview', item._id]"
+                      cButton
+                      size="sm"
+                      class="me-1"
+                      color="secondary"
+                    >
+                      <app-eye-icon></app-eye-icon>
+                    </a>
+                    <a
+                      [routerLink]="['/courses/update', item._id]"
+                      cButton
+                      class="btn btn-sm btn-primary me-1"
+                      size="sm"
+                      class="me-1"
+                    >
+                      <svg
+                        cIcon
+                        name="cilPencil"
+                        style="color: white"
+                        size="sm"
+                      ></svg>
+                    </a>
+                    <a
+                      (click)="remove(item, $index)"
+                      cButton
+                      class="btn btn-sm btn-danger me-1"
+                      size="sm"
+                    >
+                      <svg
+                        cIcon
+                        name="cilTrash"
+                        style="color: white"
+                        size="sm"
+                      ></svg>
+                    </a>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+        } @else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        } @if(count > pageSize) {
+        <c-card-footer class="d-flex justify-content-end">
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </c-card-footer>
+        }
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

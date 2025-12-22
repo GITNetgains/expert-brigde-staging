@@ -1,0 +1,213 @@
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Detail Payment</h4>
+      </c-card-header>
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <tbody>
+            <tr>
+              <th translate>Tutor Name</th>
+              <td>
+                @if(transaction && transaction.tutor){
+                <a [routerLink]="['/tutor/update', transaction.tutor._id]">{{
+                  transaction?.tutor?.name
+                }}</a>
+                }
+              </td>
+            </tr>
+            <tr>
+              <th>User Name</th>
+              <td>
+                @if(transaction && transaction.tutor){
+                <a [routerLink]="['/users/update', transaction.user._id]">{{
+                  transaction?.user?.name
+                }}</a>
+                }
+              </td>
+            </tr>
+            <tr>
+              <th>Type</th>
+              <td>
+                @switch(transaction?.type){ @case('booking'){
+                <c-badge color="primary">Booked</c-badge>
+                } @case('gift'){
+                <c-badge color="success">Gift</c-badge>
+                } }
+              </td>
+            </tr>
+            <tr>
+              <th>Enroll Type</th>
+              <td>
+                @switch(transaction?.targetType){ @case('webinar'){
+                <c-badge color="primary">Group Class</c-badge>
+                } @case('subject'){
+                <c-badge color="success">One to One</c-badge>
+                } @case('course'){
+                <c-badge color="success">Course</c-badge>
+                } }
+              </td>
+            </tr>
+            @if(transaction.targetType === 'webinar'){
+            <tr>
+              <th>Group Class</th>
+              <td>
+                <span>{{ transaction?.webinar?.name }}</span>
+              </td>
+            </tr>
+            } @if(transaction.targetType === 'subject'){
+            <tr>
+              <th>Subject</th>
+              <td>
+                <span *ngIf="transaction?.tutorSubject?.name"
+                  >{{ transaction?.tutorSubject?.name }} - </span
+                ><span>{{ transaction.subject?.name }}</span>
+              </td>
+            </tr>
+            } @if(transaction.targetType === 'course'){
+            <tr>
+              <th>Course</th>
+              <td>
+                <span>{{ transaction.course?.name }}</span>
+              </td>
+            </tr>
+            }
+            <tr>
+              <th>Code</th>
+              <td>
+                <span>{{ transaction?.code }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                @if(transaction.couponCode){
+                <th>Original price</th>
+                }@else{
+                <th>Price</th>
+                }
+              </td>
+              <td>
+                @if(transaction.couponCode){
+                <span>
+                  {{
+                    transaction.discountAmount + transaction.priceDiscount
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </span>
+                }@else{
+                <span>
+                  {{
+                    transaction.price
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </span>
+                }
+              </td>
+            </tr>
+            @if(transaction.couponCode){
+            <tr>
+              <th>Discount price</th>
+              <td>
+                <span>{{
+                  transaction?.priceDiscount
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}</span>
+              </td>
+            </tr>
+            } @if(transaction.couponCode){
+            <tr>
+              <th>Discount amount</th>
+              <td>
+                <span>{{
+                  transaction?.discountAmount
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}</span>
+              </td>
+            </tr>
+            } @if(transaction.couponCode){
+            <tr>
+              <th>Coupon code</th>
+              <td>
+                <span>{{ transaction?.couponCode }}</span>
+              </td>
+            </tr>
+            }
+            <tr>
+              <th>Commission</th>
+              <td>
+                <span>{{
+                  transaction?.commission
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>Balance</th>
+              <td>
+                <span>{{
+                  transaction?.balance
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>Create On</th>
+              <td>
+                <span>{{ transaction?.createdAt | date }}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>
+                @switch(transaction?.status){ @case('pending'){
+                <c-badge color="warning">Pending</c-badge>
+                } @case('canceled'){
+                <c-badge color="danger">Canceled</c-badge>
+                } @case('progressing'){
+                <c-badge color="primary">In Progress</c-badge>
+                } @case('completed'){
+                <c-badge color="success">Completed</c-badge>
+                } @case('pending-refund'){
+                <c-badge color="warning">Pending refund</c-badge>
+                } @case('approved-refund'){
+                <c-badge color="primary">Approved refund</c-badge>
+                } @case('refunded'){
+                <c-badge color="success">Refunded</c-badge>
+                } }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

@@ -1,0 +1,278 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Manage Appointments</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col sm="12" md="2">
+            <ng-select
+              [items]="tutor"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="tutorId"
+              placeholder="Search tutor"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="2">
+            <ng-select
+              [items]="user"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="userId"
+              placeholder="Search user"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="2">
+            <select cSelect [(ngModel)]="searchFields.status">
+              <option value="" selected disabled>Choose status</option>
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="canceled">Canceled</option>
+              <option value="progressing">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="not-start">Not start</option>
+            </select>
+          </c-col>
+          <c-col sm="12" md="3">
+            <app-date-picker-custom
+              [options]="datePickerOptions"
+            ></app-date-picker-custom>
+          </c-col>
+          <c-col sm="12" md="3">
+            <button
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="filter()"
+            >
+              Filter
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header
+        class="d-flex flex-wrap justify-content-between align-items-center gap-2"
+      >
+        <h4>Appointments: {{ count }}</h4>
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
+      </c-card-header>
+      @if(count !== 0){
+      <c-card-body>
+        <div class="table-responsive">
+          <table
+            cTable
+            [responsive]="true"
+            [cBorder]="1"
+            borderColor="gray"
+            bordered
+            style="table-layout: fixed; width: 1610px"
+          >
+            <thead>
+              <tr>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    [sortBy]="'tutorId'"
+                    [sortOption]="sortOption"
+                    sortTitle="Tutor Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    [sortBy]="'userId'"
+                    [sortOption]="sortOption"
+                    sortTitle="User Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="webinarId"
+                    [sortOption]="sortOption"
+                    sortTitle="Group Class"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="subjectId"
+                    [sortOption]="sortOption"
+                    sortTitle="Subject"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="targetType"
+                    [sortOption]="sortOption"
+                    sortTitle="Enroll type"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="paid"
+                    [sortOption]="sortOption"
+                    sortTitle="Paid"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="startTime"
+                    [sortOption]="sortOption"
+                    sortTitle="Start time"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="toTime"
+                    [sortOption]="sortOption"
+                    sortTitle="To time"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="createdAt"
+                    [sortOption]="sortOption"
+                    sortTitle="Created On"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="status"
+                    [sortOption]="sortOption"
+                    sortTitle="Status"
+                  ></app-sort>
+                </th>
+                <th
+                  scope="col"
+                  style="
+                    width: 100px;
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of items; track item.id) {
+              <tr>
+                <td>{{ item?.tutor?.name }}</td>
+                <td>{{ item?.user?.name }}</td>
+                <td>{{ item?.webinar?.name }}</td>
+                <td>{{ item?.subject?.name }}</td>
+                <td>
+                  @switch(item?.targetType) { @case('webinar') {
+                  <c-badge color="success">Group Class</c-badge>
+                  } @case('subject') {
+                  <c-badge color="primary">One-One</c-badge>
+                  } }
+                </td>
+                <td>
+                  @if (item?.paid) {
+                  <c-badge color="success">Yes</c-badge>
+                  } @else {
+                  <c-badge color="primary">No</c-badge>
+                  }
+                </td>
+                <td>{{ item?.startTime | date : "short" }}</td>
+                <td>{{ item?.toTime | date : "short" }}</td>
+                <td>{{ item?.createdAt | date }}</td>
+                <td>
+                  @switch(item?.status) { @case('booked') {
+                  <c-badge color="primary">Booked</c-badge>
+                  } @case('pending') {
+                  <c-badge color="warning">Pending</c-badge>
+                  } @case('canceled') {
+                  <c-badge color="danger">Canceled</c-badge>
+                  } @case('progressing') {
+                  <c-badge color="primary">In Progress</c-badge>
+                  } @case('completed') {
+                  <c-badge color="success">Completed</c-badge>
+                  } @case('not-start') {
+                  <c-badge class="secondary">Not start</c-badge>
+                  } }
+                </td>
+                <td
+                  style="
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  <a
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    [routerLink]="['/appointment/detail', item._id]"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <c-container
+          style="background-color: #ffc12b; padding: 10px 0; border-radius: 8px"
+        >
+          <span style="padding: 10px">There are no items</span>
+        </c-container>
+      </c-card-body>
+      }
+      <c-card-footer class="d-flex justify-content-end">
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>

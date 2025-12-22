@@ -1,0 +1,257 @@
+<c-container class="p-0">
+  <c-row class="mb-3">
+    <c-col md="12">
+      <c-card>
+        <c-card-header>
+          <h3>Manager Group Class</h3>
+        </c-card-header>
+        <c-card-body>
+          <c-row>
+            <c-col md="3">
+              <div class="mb-3">
+                <input
+                  cFormControl
+                  type="text"
+                  placeholder="Enter group class name"
+                  [(ngModel)]="searchFields.name"
+                  aria-describedby="inputGroup-sizing-sm"
+                  aria-label="Sizing example input"
+                />
+              </div>
+            </c-col>
+            <c-col md="3">
+              <div class="mb-3">
+                <ng-select
+                  cFormControl
+                  [(ngModel)]="tutorId"
+                  [items]="tutor"
+                  bindLabel="name"
+                  bindValue="_id"
+                  placeholder="Select Tutor"
+                  class="my-select"
+                ></ng-select>
+              </div>
+            </c-col>
+            <c-col md="3">
+              <div class="mb-3">
+                <app-category-select
+                  [showLabel]="false"
+                  [query]="{take : 100}"
+                  [(selectedCategoryIds)]="categoryId"
+                  (selectedCategoryIdsChange)="selectCategory($event)"
+                ></app-category-select>
+              </div>
+            </c-col>
+            <c-col md="3">
+              <div class="mb-3">
+                <button cButton color="primary" class="w-100" (click)="filter()">
+                  Filter
+                </button>
+              </div>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center"
+          >
+            <h4 class="mb-0">Total Group Class: {{ total }}</h4>
+            <app-pagination
+              [currentPage]="currentPage"
+              [pageSize]="pageSize"
+              [totalItems]="total"
+              [maxSize]="3"
+              (pageChanged)="onPageChange($event)"
+            ></app-pagination>
+          </div>
+        </c-card-header>
+
+        @if(total !== 0){
+        <c-card-body>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 1610px"
+            >
+              <thead>
+                <tr>
+                  <th style="width: 300px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="name"
+                      [sortOption]="sortOption"
+                      sortTitle="Name"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="tutorId"
+                      [sortOption]="sortOption"
+                      sortTitle="Tutor Name"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">Categories</th>
+                  <th style="width: 150px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="maximumStrength"
+                      [sortOption]="sortOption"
+                      sortTitle="Maximum Strength"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="numberParticipants"
+                      [sortOption]="sortOption"
+                      sortTitle="Number of people booked"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 150px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="featured"
+                      [sortOption]="sortOption"
+                      sortTitle="Featured"
+                    ></app-sort>
+                  </th>
+
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th
+                    style="
+                      width: 100px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items; track item._id ?? index) {
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.tutor.name }}</td>
+                  <td>
+                    @for (cat of item.categories; track cat) {
+                    <c-badge color="primary" class="me-1">
+                      {{ cat?.name }}
+                    </c-badge>
+                    }
+                  </td>
+                  <td>{{ item.maximumStrength }}</td>
+                  <td>{{ item.numberParticipants }}</td>
+                  <td>
+                    @if(item.featured) {
+                    <span
+                      class="badge text-bg-success text-white"
+                      (click)="update(item, 'featured', false)"
+                      >Y</span
+                    >}@else{
+                    <span
+                      class="badge text-bg-warning text-white"
+                      (click)="update(item, 'featured', true)"
+                      >N</span
+                    >}
+                  </td>
+
+                  <td>
+                    <span>{{ item.createdAt | date }}</span>
+                  </td>
+                  <td
+                    style="
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <div class="d-flex">
+                      <a
+                        [routerLink]="['/webinar/update', item.id]"
+                        cButton
+                        class="btn btn-sm btn-primary me-1"
+                      >
+                        <svg cIcon name="cilPencil" size="sm"></svg>
+                      </a>
+                      <a
+                        cButton
+                        [color]="item.disabled ? 'danger' : 'success'"
+                        size="sm"
+                        class="btn btn-sm me-1"
+                        (click)="changeStatus(item)"
+                      >
+                        @if(!item.disabled){
+                        <svg
+                          cIcon
+                          name="cilCheckCircle"
+                          class="text-white"
+                          size="sm"
+                        ></svg>
+                        } @else {
+                        <svg
+                          cIcon
+                          name="cilXCircle"
+                          class="text-white"
+                          size="sm"
+                        ></svg>
+                        }
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+        } @else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        }
+
+        <c-card-footer class="d-flex justify-content-end">
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="total"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

@@ -1,0 +1,62 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{item.name}}</strong> <br />
+            <small>{{item.description}}</small>
+          </td>
+          <td>
+            @if(item.type === 'number'){
+            <c-input-group>
+              <input cFormControl [(ngModel)]="item.value" />
+              <button cButton color="primary" type="button" (click)="onSave(item)">
+                Save
+              </button>
+            </c-input-group>
+            }
+            @if(item.type === 'text'){
+            @if(item.key === 'currency'){
+            <c-row [gutter]="2">
+              <c-col md="12">
+                <c-input-group>
+                  <select cSelect [(ngModel)]="item.value" name="currencyType" (change)="changeCurrency($event)">
+                    @for(c of currencies; track c){
+                    <option [value]="c.name">
+                      {{c.name}} - {{c['symbol-alt-narrow'] || c.symbol}}
+                    </option>
+                    }
+                  </select>
+                  <button cButton color="primary" type="button" (click)="saveCurrency()">
+                    Save
+                  </button>
+                </c-input-group>
+              </c-col>
+              <c-col md="12">
+                <input cFormControl type="text" [(ngModel)]="item.value" name="item{{item._id}}"
+                  [disabled]="item.key === 'currency' || item.key === 'currencySymbol'" />
+              </c-col>
+            </c-row>
+            }
+            @if(item.key === 'currencySymbol'){
+            <c-col md="12">
+              <input cFormControl type="text" [(ngModel)]="item.value" name="item{{item._id}}"
+                [disabled]="item.key === 'currency' || item.key === 'currencySymbol'" />
+            </c-col>
+            }
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

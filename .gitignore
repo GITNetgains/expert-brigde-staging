@@ -1,0 +1,13 @@
+# Ignore dependencies
+node_modules/
+
+# Ignore build outputs
+dist/
+.angular/
+
+# Ignore environment variables
+.env
+
+# Ignore OS files
+.DS_Store
+thumbs.db

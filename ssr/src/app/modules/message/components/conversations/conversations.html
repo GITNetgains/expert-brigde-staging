@@ -1,0 +1,107 @@
+<div class="sm-padding">
+  <div class="container">
+    <div class="row-conversation">
+      <div class="box-conversation">
+        <div class="headind_srch">
+          <!-- <div class="recent_heading">
+            <h4 translate>Messages</h4>
+          </div> -->
+          <div class="srch_bar">
+            <div class="input-group">
+              <input
+                autocomplete="off"
+                type="text"
+                class="search-bar form-control"
+                placeholder="{{'Search' | translate}}"
+                [(ngModel)]="q"
+                name="q"
+                (keypress)="enterToSend($event)"
+              />
+              <span class="input-group-addon">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="filter()"
+                >
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="inbox_chat" *ngIf="conversations && conversations.length">
+          <div
+            class="chat_list"
+            *ngFor="let conversation of conversations"
+            [ngClass]="{active_chat: conversation._id === activeConversation?._id}"
+          >
+            <span
+              class="dot-message"
+              *ngIf="conversation && conversation.userMeta && conversation.userMeta.unreadMessage > 0"
+              ><i class="fas fa-circle"></i
+            ></span>
+            <div class="chat_people" (click)="selectConversation(conversation)">
+              <div class="chat_img">
+                <img
+                  [src]="conversation?.member?.avatarUrl"
+                  onerror="this.src='/assets/images/default-avatar.jpg'"
+                  [alt]="conversation?.member?.username"
+                />
+              </div>
+              <div class="chat_ib">
+                <h5>
+                  {{conversation.name}}
+                  <span class="chat_date" *ngIf="conversation.lastMessage"
+                    >{{conversation.lastMessage.createdAt|date}}</span
+                  >
+                </h5>
+                <p>
+                  <span *ngIf="!conversation?.lastMessage" translate
+                    >No message right now</span
+                  >
+                  <span *ngIf="conversation?.lastMessage"
+                    >{{substringMessage(conversation.lastMessage.text)}}</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="inbox_chat" *ngIf="!conversations || !conversations.length">
+          <div class="chat_list">
+            <div class="chat_ib">
+              <h5 translate>Start a conversation</h5>
+              <p translate>Select a tutor below to start chatting</p>
+            </div>
+          </div>
+          <div class="chat_list" *ngFor="let c of contacts">
+            <div class="chat_people">
+              <div class="chat_img">
+                <img [src]="c?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="c?.name" />
+              </div>
+              <div class="chat_ib">
+                <h5>{{c?.name}}</h5>
+                <p>{{c?.bio || ''}}</p>
+                <button class="btn btn-default btn-sm mt-2" type="button" (click)="startConversation(c?._id)" translate>
+                  Start Chat
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box-message" [ngClass]="show ? 'show' : 'hide'">
+        <div class="inbox_msg">
+          <div class="mesgs" *ngIf="!activeConversation">
+            <p translate class="no-conversation">Please select conversation!</p>
+          </div>
+          <app-messages
+            *ngIf="activeConversation"
+            [conversation]="activeConversation"
+            (doBack)="onBack()"
+          ></app-messages>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

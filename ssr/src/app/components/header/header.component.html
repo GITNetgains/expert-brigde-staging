@@ -1,0 +1,311 @@
+<!-- Header Starts -->
+<!-- <div class="header">
+  <div *ngIf="showHelloBar" class="nav-noti">
+    <div></div>
+    <div class="noti-text">
+      <p *ngIf="appConfig?.helloBar?.text">
+        {{ appConfig?.helloBar?.text }}:
+        <a class="noti-link ms-1" href="{{ appConfig?.helloBar?.link }}">
+          {{ appConfig?.helloBar?.textLink }}
+        </a>
+      </p>
+    </div>
+    <button
+      (click)="showHelloBar = false"
+      class="btn btn-light-default btn-sm btn-icon-padding button-cancle"
+    >
+      <i class="fi fi-rr-cross"></i>
+    </button>
+  </div>
+  <nav class="navbar navbar-expand-lg box-shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" [routerLink]="['/home']"
+        ><img
+          src="{{
+            appConfig?.siteLogo ||
+              'assets/images/logo/livelearn-header-logo.png'
+          }}"
+          alt="logo"
+      /></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/home']"
+              [routerLinkActive]="'active'"
+              translate
+              >Home</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/pages/how-does-it-work']"
+              [routerLinkActive]="'active'"
+              translate
+              >How It Works</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/tutors']"
+              [routerLinkActive]="'active'"
+              translate
+              >Tutors</a
+            >
+          </li> -->
+          <!-- <li class="nav-item" >
+            <a class="nav-link" [routerLink]="['/pages/teach-with-us']" translate>Teach With Us</a>
+          </li> -->
+          <!-- <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/groupclass']"
+              [routerLinkActive]="'active'"
+              translate
+              >Group Classes</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/courses']"
+              [routerLinkActive]="'active'"
+              translate
+              >Courses</a
+            >
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/auth/login']"
+              *ngIf="!currentUser"
+              translate
+              >Log in</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn-sign-up border-default-color"
+              [routerLink]="['/auth/sign-up']"
+              *ngIf="!currentUser"
+              translate
+            >
+              Sign Up
+            </a>
+          </li>
+          <li
+            class="nav-item"
+            *ngIf="currentUser && currentUser.type === 'student'"
+          >
+            <a
+              href="javascript:void(0)"
+              class="nav-link cart-button"
+              (click)="checkout()"
+            >
+              <div style="display: inline-block; position: relative">
+                <span class="cart-count">{{ cartCount }}</span>
+                <i class="fi fi-rr-shopping-cart"></i>
+              </div>
+            </a>
+          </li>
+          <li class="nav-item nav-language" *ngIf="isLoaded" ngbDropdown>
+            <a
+              href="javascript:void(0)"
+              class="dropdown-toggle nav-link"
+              ngbDropdownToggle
+              role="button"
+              id="dropdownLanguage"
+            >
+              <img class="image-sm" [src]="flag" [alt]="userLang" />
+              <span style="text-transform: uppercase"> {{ userLang }}</span>
+            </a>
+            <div
+              ngbDropdownMenu
+              aria-labelledby="dropdownLanguage"
+              class="drop-menu dropdown-language"
+            >
+              <a
+                class="dropdown-item flags"
+                href="javascript:void(0)"
+                *ngFor="let lang of languages"
+                (click)="changeLang(lang)"
+              >
+                <img class="image-sm" [src]="lang.flag" [alt]="lang.name" />
+                {{ lang.name }}
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown" *ngIf="currentUser" ngbDropdown>
+            <a
+              class="dropdown-toggle nav-link"
+              ngbDropdownToggle
+              role="button"
+              id="dropdownMenuLink"
+            >
+              <span class="color" translate>Hi</span
+              ><span class="name-top"> {{ currentUser.name }}</span>
+            </a>
+            <div
+              class="dropdown-menu"
+              ngbDropdownMenu
+              aria-labelledby="dropdownMenuLink"
+            >
+              <a class="dropdown-item" [routerLink]="['/users/dashboard']"
+                ><i class="fi fi-rr-user"></i>&nbsp;<span translate
+                  >Dashboard</span
+                ></a
+              >
+              <a
+                href="javascript:void(0)"
+                class="dropdown-item"
+                [routerLink]=""
+                (click)="logout()"
+                ><i class="fi fi-rs-sign-out-alt"></i>&nbsp;<span translate
+                  >Logout</span
+                ></a
+              >
+            </div>
+          </li>
+          <li class="nav-item notification" *ngIf="currentUser">
+            <a
+              href="javascript:void(0)"
+              class="nav-link"
+              (click)="showNotification()"
+            >
+              <div style="display: inline-block; position: relative">
+                <i class="fi fi-rs-bell"></i>
+                <span
+                  class="badge badge-danger badge-pill badge-notification notification_box_item"
+                  *ngIf="notificationOptions.unreadNotification < 100"
+                >
+                  {{ notificationOptions.unreadNotification }}
+                </span>
+                <span
+                  class="badge badge-danger badge-pill badge-notification notification_box_item"
+                  *ngIf="
+                    notificationOptions.unreadNotification &&
+                    notificationOptions.unreadNotification > 99
+                  "
+                >
+                  {{ notificationOptions.unreadNotification }}+
+                </span>
+              </div>
+            </a>
+            <app-notification
+              class="notification_box"
+              [notifications]="notificationOptions.notifications"
+              [ngClass]="{ show: isShow }"
+              [currentUser]="currentUser"
+              (doRead)="onReadNotification($event)"
+              (doReadAllNotification)="onReadAllNotification()"
+              (closeNotification)="showNotification()"
+              (doRemove)="onRemoveNotification($event)"
+            ></app-notification>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+ -->
+<header class="main-header">
+  <div class="header-container">
+
+    <!-- LEFT: HAMBURGER -->
+    <button class="hamburger-btn" (click)="toggleDrawer()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- CENTER: LOGO -->
+    
+      <a routerLink="/home" class="logo-wrapper">
+        <img src="assets/images/logo.svg" alt="ExpertBridge" />
+      </a>
+  
+
+    <!-- RIGHT: BUTTONS (DESKTOP ONLY) -->
+    <div class="right-buttons desktop-only" *ngIf="!currentUser">
+      <button class="btn expert" (click)="openAuth('tutor')">
+        Expert Section
+      </button>
+      <button class="btn client" (click)="openAuth('student')">
+        Client Section
+      </button>
+    </div>
+
+    <div class="right-buttons desktop-only" *ngIf="currentUser">
+      <button class="btn expert" [routerLink]="['/users/dashboard']">
+        Dashboard
+      </button>
+      <button class="btn client" (click)="logout()">
+        Logout
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- OVERLAY -->
+<div
+  class="drawer-overlay"
+  *ngIf="drawerOpen"
+  (click)="toggleDrawer()"
+></div>
+
+<!-- SIDE DRAWER -->
+<div class="side-drawer" [class.open]="drawerOpen">
+  <nav>
+
+    <!-- NORMAL LINKS -->
+    <a routerLink="/home" (click)="toggleDrawer()">Home</a>
+    <a routerLink="/about" (click)="toggleDrawer()">About</a>
+    <a routerLink="/services" (click)="toggleDrawer()">Services</a>
+    <a routerLink="/contact" (click)="toggleDrawer()">Contact</a>
+
+    <div class="drawer-divider"></div>
+
+    <!-- AUTH BUTTONS (MOBILE ONLY) -->
+     <div class='mobile-only'>
+    <ng-container *ngIf="!currentUser">
+      <button class="btn expert" (click)="openAuth('tutor'); toggleDrawer()">
+        Expert Section
+      </button>
+      <button class="btn client" (click)="openAuth('student'); toggleDrawer()">
+        Client Section
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="currentUser">
+      <button
+        class="btn expert"
+        [routerLink]="['/users/dashboard']"
+        (click)="toggleDrawer()"
+      >
+        Dashboard
+      </button>
+      <button class="btn client" (click)="logout(); toggleDrawer()">
+        Logout
+      </button>
+    </ng-container>
+    </div>
+
+  </nav>
+</div>

@@ -1,0 +1,235 @@
+<c-tabs [activeItemKey]="activeTabKey">
+  <c-card>
+    <c-card-header>
+      <c-tabs-list layout="fill" variant="underline-border">
+        <button cTab itemKey="education">Education</button>
+        <button cTab itemKey="experience">Experience</button>
+        <button cTab itemKey="certification">Certification</button>
+      </c-tabs-list>
+    </c-card-header>
+    <c-card-body>
+      <c-tabs-content>
+        <c-tab-panel class="p-3" itemKey="education">
+          <c-row class="mt-2">
+            <c-col md="12">
+              <button cButton color="primary" (click)="open('education')">
+                Add Education
+              </button>
+            </c-col>
+          </c-row>
+          <c-row class="mt-2">
+            @if(!education || education.length === 0){
+            <c-col md="12">
+              <p>There is no education</p>
+            </c-col>
+            } @else { @for(cer of education; track cer._id){
+            <c-col sm="6">
+              <c-card class="card-border">
+                <c-card-body>
+                  <h5 class="card-title">{{ cer.title }}</h5>
+                  <p class="card-text">{{ cer.fromYear }} - {{ cer.toYear }}</p>
+                  <p class="card-text">{{ cer.description }}</p>
+                </c-card-body>
+                <c-card-footer>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="open('education', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilPencil"></svg>
+                  </a>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="deleteCer('education', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilTrash"></svg>
+                  </a>
+                  @if(cer?.document?.fileUrl && !isDoc(cer?.document)){
+                  <a
+                    [href]="cer?.document?.fileUrl"
+                    download
+                    target="_blank"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  } @else if(cer?.document?.fileUrl) {
+                  <a
+                    (click)="showDocument(cer?.document)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  }
+                </c-card-footer>
+              </c-card>
+            </c-col>
+            } }
+          </c-row>
+        </c-tab-panel>
+        <c-tab-panel class="p-3" itemKey="experience">
+          <c-row class="mt-2">
+            <c-col md="12">
+              <button cButton color="primary" (click)="open('experience')">
+                Add Experience
+              </button>
+            </c-col>
+          </c-row>
+          <c-row class="mt-2">
+            @if(!experience || experience.length === 0){
+            <c-col md="12">
+              <p>There is no experience</p>
+            </c-col>
+            } @else { @for(cer of experience; track cer._id){
+            <c-col sm="6">
+              <c-card class="card-border">
+                <c-card-body>
+                  <h5 class="card-title">{{ cer.title }}</h5>
+                  <p class="card-text">{{ cer.fromYear }} - {{ cer.toYear }}</p>
+                  <p class="card-text">{{ cer.description }}</p>
+                </c-card-body>
+                <c-card-footer>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="open('experience', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilPencil"></svg>
+                  </a>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="deleteCer('experience', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilTrash"></svg>
+                  </a>
+
+                  @if(cer?.document?.fileUrl && !isDoc(cer?.document)){
+                  <a
+                    [href]="cer?.document?.fileUrl"
+                    download
+                    target="_blank"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  } @else if(cer?.document?.fileUrl) {
+                  <a
+                    (click)="showDocument(cer?.document)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  }
+                </c-card-footer>
+              </c-card>
+            </c-col>
+            } }
+          </c-row>
+        </c-tab-panel>
+        <c-tab-panel class="p-3" itemKey="certification">
+          <c-row class="mt-2">
+            <c-col md="12">
+              <button cButton color="primary" (click)="open('certification')">
+                Add Certification
+              </button>
+            </c-col>
+          </c-row>
+          <c-row class="mt-2">
+            @if(!certification || certification.length === 0){
+            <c-col md="12">
+              <p>There is no certification</p>
+            </c-col>
+            } @else { @for(cer of certification; track cer._id){
+            <c-col sm="6">
+              <c-card class="card-border">
+                <c-card-body>
+                  <h5 class="card-title">{{ cer.title }}</h5>
+                  <p class="card-text">{{ cer.fromYear }} - {{ cer.toYear }}</p>
+                  <p class="card-text">{{ cer.description }}</p>
+                </c-card-body>
+                <c-card-footer>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="open('certification', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilPencil"></svg>
+                  </a>
+                  <a
+                    href="javascript:void(0)"
+                    (click)="deleteCer('certification', $index, cer)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <svg [cIcon]="icons.cilTrash"></svg>
+                  </a>
+
+                  @if(cer?.document?.fileUrl && !isDoc(cer?.document)){
+                  <a
+                    [href]="cer?.document?.fileUrl"
+                    download
+                    target="_blank"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    class="me-1"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  } @else if(cer?.document?.fileUrl) {
+                  <a
+                    (click)="showDocument(cer?.document)"
+                    cButton
+                    color="secondary"
+                    size="sm"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  }
+                </c-card-footer>
+              </c-card>
+            </c-col>
+            } }
+          </c-row>
+        </c-tab-panel>
+      </c-tabs-content>
+    </c-card-body>
+  </c-card>
+</c-tabs>
+
+<app-add-certification
+  [certificate]="modalData.certificate"
+  [type]="modalData.type"
+  [tutorId]="tutorId"
+  [visible]="modalData.visible"
+  [closeCallback]="closeModal.bind(this)"
+></app-add-certification>

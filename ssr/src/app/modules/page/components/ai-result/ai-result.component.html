@@ -1,0 +1,82 @@
+<div class="ai-result-wrapper">
+
+  <!-- BEFORE SUBMISSION -->
+  <div *ngIf="!submittedSuccess" class="result-container">
+
+    <!-- Heading -->
+    <h1 class="heading">
+      Your search posting for
+      <span class="highlight">{{ extractedRole }}</span>
+      in
+      <span class="highlight">{{ extractedIndustry }}</span>
+      is shared below:
+    </h1>
+
+    <!-- Subtitle - Left Aligned -->
+    <p class="subtitle-left">
+      Fine tweak the below response before submitting your request
+    </p>
+
+    <!-- Error -->
+    <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+    <!-- Text Editor Card -->
+    <div class="editor-card">
+      <textarea
+        [(ngModel)]="editableText"
+        class="editor-box"
+        placeholder="Loading..."
+      ></textarea>
+    </div>
+
+    <!-- Attachments Block -->
+    <div class="editor-card">
+      <label>Attach File (pdf, docx, jpg, png)</label>
+
+      <!-- If not logged in -->
+      <div *ngIf="!auth.isLoggedin()" style="color:#b91c1c; text-align:left; margin-top:10px">
+        Please <a (click)="goToLogin()" style="cursor:pointer;color:#0645AD">login</a> to attach files.
+      </div>
+
+      <!-- If logged in but NOT a client -->
+      <div *ngIf="auth.isLoggedin() && !isClientUser" style="color:#b91c1c; text-align:left; margin-top:10px">
+        Only clients can attach files. Experts cannot attach or submit.
+      </div>
+
+      <!-- File uploader visible ONLY to client users -->
+      <app-file-upload
+        *ngIf="auth.isLoggedin() && isClientUser"
+        [options]="aiFileUploadOptions">
+      </app-file-upload>
+
+      <!-- Show uploaded files -->
+      <div *ngIf="uploadedAttachments.length" class="mt-2" style="text-align:left">
+        <strong>Attached files ({{ uploadedAttachments.length }})</strong>
+        <ul>
+          <li *ngFor="let f of uploadedAttachments">{{ f.name }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Buttons - Right aligned -->
+    <div class="actions-right">
+      <button type="button" class="btn reset-btn" (click)="reset()">Reset</button>
+      <button type="button" class="btn submit-btn" (click)="submit()">Submit</button>
+    </div>
+
+  </div>
+
+  <!-- AFTER SUBMISSION -->
+  <div *ngIf="submittedSuccess" class="confirmation">
+    {{ confirmationText }}
+
+    <div class="redirect-note">
+      Redirecting to homepage in {{ countdown }} seconds...
+    </div>
+  </div>
+</div>
+
+<!-- Additional Sections -->
+<app-blog-section></app-blog-section>
+<app-make-it-happen></app-make-it-happen>
+<app-policies-section></app-policies-section>

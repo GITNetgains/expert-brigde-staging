@@ -1,0 +1,453 @@
+<section class="sm-padding">
+  <div class="signup-step-container">
+    <div class="container">
+      <div class="card">
+        <ul class="nav nav-tabs nav-custom" role="tablist">
+          <li
+            role="presentation "
+            [ngClass]="{'active': tab === 1}"
+            (click)="doTabSelect(1)"
+          >
+            <a href="javascript:void(0)">Basic Info</a>
+          </li>
+          <li
+            role="presentation "
+            [ngClass]="{'active': tab === 2}"
+            (click)="doTabSelect(2)"
+          >
+            <a href="javascript:void(0)">Course Goals</a>
+          </li>
+          <li
+            role="presentation "
+            [ngClass]="{'active': tab === 3}"
+            (click)="doTabSelect(3)"
+          >
+            <a href="javascript:void(0)">Lecture Details</a>
+          </li>
+          <li
+            role="presentation "
+            [ngClass]="{'active': tab === 4}"
+            (click)="doTabSelect(4)"
+          >
+            <a href="javascript:void(0)">Coupon</a>
+          </li>
+        </ul>
+        <div class="tab-content card-body" id="main_form">
+          <div
+            class="tab-pane"
+            role="tabpanel"
+            id="step1"
+            [ngClass]="{'active': tab === 1}"
+          >
+            <div class="input-border">
+              <form (submit)="submit(frm)" #frm="ngForm">
+                <div class="mb-3">
+                  <label class="custom-radio" translate
+                    >FREE
+                    <input
+                      type="radio"
+                      name="payment"
+                      [value]="true"
+                      [(ngModel)]="course.isFree"
+                    />
+                    <span class="checkmark"></span>
+                  </label>
+                  <label class="custom-radio" translate
+                    >PAID
+                    <input
+                      type="radio"
+                      name="payment"
+                      [value]="false"
+                      [(ngModel)]="course.isFree"
+                    />
+                    <span class="checkmark"></span>
+                  </label>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label translate>Course Title</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="{{'Enter title' | translate}}"
+                        [(ngModel)]="course.name"
+                        name="title"
+                        required
+                        #name="ngModel"
+                        autocomplete="off"
+                      />
+                    </div>
+                    <div
+                      *ngIf="name.errors && (name.dirty || name.touched || isSubmitted)"
+                    >
+                      <p
+                        [hidden]="!name.errors['required']"
+                        style="color: red"
+                        translate
+                      >
+                        Please enter course name!
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label translate
+                        ><span translate>Price</span>
+                        <span
+                          >({{config?.currencySymbol ? config?.currencySymbol +
+                          ' ' : ' $ '}})</span
+                        ></label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        placeholder="{{'Enter price' | translate}}"
+                        [(ngModel)]="course.price"
+                        name="price"
+                        required
+                        [value]="course.isFree ? 0 : course.price"
+                        #price="ngModel"
+                        [disabled]="course.isFree"
+                        pattern="[.0-9]{0,8}"
+                      />
+                      <div
+                        *ngIf="price.errors && (price.dirty || price.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!price.errors['required']"
+                          class="error"
+                          translate
+                        >
+                          Please enter price!
+                        </p>
+                        <p
+                          [hidden]="!price.errors['pattern']"
+                          class="error"
+                          translate
+                        >
+                          Cannot exceed 8 characters
+                        </p>
+                      </div>
+                      <div
+                        *ngIf="price.value <= 0 && (price.dirty || price.touched || isSubmitted) && !course.isFree"
+                      >
+                        <p style="color: red" translate>
+                          Price must be greater than 0!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label translate>Course categories (*)</label>
+                      <ng-select
+                        [items]="myCategories"
+                        [multiple]="true"
+                        [hideSelected]="true"
+                        bindLabel="name"
+                        [closeOnSelect]="false"
+                        name="category"
+                        placeholder="{{'Choose category' | translate}}"
+                        [(ngModel)]="course.categoryIds"
+                        bindValue="originalCategoryId"
+                        #categoryId="ngModel"
+                        required
+                        (change)="onSelectMyCategories($event)"
+                      >
+                      </ng-select>
+                      <div
+                        *ngIf="categoryId.errors && (categoryId.dirty || categoryId.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!categoryId.errors['required']"
+                          style="color: red"
+                          translate
+                        >
+                          Please choose category!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Subjects (*)</label>
+                      <ng-select
+                        [items]="mySubjects"
+                        [multiple]="true"
+                        [hideSelected]="true"
+                        bindLabel="name"
+                        [closeOnSelect]="false"
+                        name="subject"
+                        placeholder="{{'Choose subjects'|translate}}"
+                        [(ngModel)]="course.subjectIds"
+                        bindValue="originalSubjectId"
+                        #subjectId="ngModel"
+                        required
+                        (change)="onSelectMySubjects($event)"
+                      >
+                      </ng-select>
+                      <div
+                        *ngIf="subjectId.errors && (subjectId.dirty || subjectId.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!subjectId.errors['required']"
+                          style="color: red"
+                          translate
+                        >
+                          Please choose subject!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Topics (*)</label>
+                      <ng-select
+                        [items]="myTopics"
+                        [multiple]="true"
+                        [hideSelected]="true"
+                        bindLabel="name"
+                        [closeOnSelect]="false"
+                        name="topic"
+                        placeholder="{{'Choose topics'|translate}}"
+                        [(ngModel)]="course.topicIds"
+                        bindValue="originalTopicId"
+                        #topicId="ngModel"
+                        required
+                      >
+                      </ng-select>
+                      <div
+                        *ngIf="topicId.errors && (topicId.dirty || topicId.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!topicId.errors['required']"
+                          style="color: red"
+                          translate
+                        >
+                          Please choose topic!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label><span translate>Age</span> (*)</label>
+                      <ng-select
+                        [items]="ageFilter"
+                        [hideSelected]="true"
+                        bindLabel="name"
+                        [closeOnSelect]="true"
+                        name="age"
+                        placeholder="{{'Choose age' | translate}}"
+                        [(ngModel)]="course.age"
+                        #age="ngModel"
+                        required
+                      >
+                        <ng-template ng-label-tmp let-item="item">
+                          <span class="ng-value-label"
+                            >{{ item.from + ' - ' + item.to }}</span
+                          >
+                        </ng-template>
+                        <ng-template
+                          ng-option-tmp
+                          let-item="item"
+                          let-search="searchTerm"
+                          let-index="index"
+                        >
+                          <span>{{ item.from + ' - ' + item.to }}</span>
+                        </ng-template>
+                      </ng-select>
+                      <div
+                        *ngIf="age.errors && (age.dirty || age.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!age.errors['required']"
+                          style="color: red"
+                          translate
+                        >
+                          Please choose age!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label translate>Course Grades</label>
+                      <ng-select
+                        [items]="grades"
+                        [multiple]="true"
+                        [hideSelected]="true"
+                        bindLabel="name"
+                        [closeOnSelect]="false"
+                        name="grade"
+                        placeholder="{{'Choose grades' | translate}}"
+                        [(ngModel)]="course.gradeIds"
+                        bindValue="_id"
+                        #gradeIds="ngModel"
+                        required
+                      >
+                      </ng-select>
+                      <div
+                        *ngIf="gradeIds.errors && (gradeIds.dirty || gradeIds.touched || isSubmitted)"
+                      >
+                        <p
+                          [hidden]="!gradeIds.errors['required']"
+                          style="color: red"
+                          translate
+                        >
+                          Please choose grade!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-4">
+                  <div class="col-md-6">
+                    <label translate
+                      >Course Introduction Video<small class="ms-1" translate>
+                        (Maximum size: {{maxFileSize}} mb)</small
+                      ></label
+                    >
+                    <div class="d-flex flex-column">
+                      <video
+                        *ngIf="videoUrl"
+                        width="300px"
+                        style="margin-bottom: 10px"
+                        src="{{videoUrl}}"
+                        controls
+                      ></video>
+                      <small *ngIf="videoSelected.length"
+                        >{{videoSelected[0].file.name}} is selected</small
+                      >
+                      <app-file-upload
+                        [options]="videoOptions"
+                      ></app-file-upload>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label translate
+                      ><span translate>Course Image</span>
+                      <small class="ms-1" translate>
+                        (Expected size: 320 x 285 pixels, maximum size:
+                        {{maxFileSize}} mb )</small
+                      ></label
+                    >
+                    <div class="d-flex flex-column">
+                      <img
+                        *ngIf="mainImageUrl"
+                        style="
+                          width: 300px;
+                          max-width: 100%;
+                          margin-bottom: 10px;
+                        "
+                        src="{{mainImageUrl}}"
+                        alt=""
+                      />
+                      <small *ngIf="imageSelected.length"
+                        >{{imageSelected[0].file.name}} is selected</small
+                      >
+                      <app-file-upload
+                        [options]="mainImageOptions"
+                      ></app-file-upload>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-5">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <quill-editor
+                        [(ngModel)]="course.description"
+                        placeholder="Enter Text"
+                        [modules]="quillConfig"
+                        name="bio"
+                      >
+                      </quill-editor>
+                    </div>
+                  </div>
+                  <div class="col col-md-12">
+                    <div class="form-group pull-right">
+                      <button
+                        type="submit"
+                        class="btn btn-default next-step"
+                        translate
+                        [disabled]="uploadingVideo || uploadingImage"
+                      >
+                        Continue to next step
+                        <i
+                          class="fas fa-angle-double-right ms-1 wizard-arrow"
+                        ></i>
+                      </button>
+                    </div>
+                    <div class="form-group pull-left" *ngIf="!course._id">
+                      <button
+                        type="button"
+                        class="btn btn-default next-step"
+                        translate
+                        (click)="saveAsDraff()"
+                        [disabled]="uploadingVideo || uploadingImage"
+                      >
+                        Save as draft
+                      </button>
+                    </div>
+                    <small translate
+                      >Your course will not be approved without any lecture
+                      content. Please update it now.</small
+                    >
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="tab-pane"
+            role="tabpanel"
+            id="goal"
+            [ngClass]="{'active': tab === 2}"
+          >
+            <div *ngIf="!course._id" translate>
+              Please enter basic info first
+            </div>
+            <app-course-goal
+              *ngIf="course._id && !loading"
+              [course]="course"
+              (doTabSelect)="doTabSelect($event)"
+            ></app-course-goal>
+          </div>
+          <div
+            class="tab-pane"
+            role="tabpanel"
+            id="lecture"
+            [ngClass]="{'active': tab === 3}"
+          >
+            <div *ngIf="!course._id" translate>
+              Please enter basic info first
+            </div>
+            <app-course-lecture
+              *ngIf="course._id && !loading"
+              [course]="course"
+              (doTabSelect)="doTabSelect($event)"
+            ></app-course-lecture>
+          </div>
+          <div
+            class="tab-pane"
+            role="tabpanel"
+            id="coupon"
+            [ngClass]="{'active': tab === 4}"
+          >
+            <div *ngIf="!course._id" translate>
+              Please enter basic info first
+            </div>
+            <app-course-coupon
+              [tutorId]="course.tutorId"
+              *ngIf="course._id && !loading"
+              [course]="course"
+              (doTabSelect)="doTabSelect($event)"
+            >
+            </app-course-coupon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

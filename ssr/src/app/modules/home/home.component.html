@@ -1,0 +1,279 @@
+<!-- <app-header></app-header> -->
+<app-ai-search [config]="config"></app-ai-search>
+<app-how-it-works></app-how-it-works>
+<app-make-it-happen></app-make-it-happen>
+<app-process-section></app-process-section>
+<app-industries-section></app-industries-section>
+<app-blog-section></app-blog-section>
+<app-policies-section></app-policies-section>
+
+<!-- <section class="sm-padding">
+  <div class="container">
+    <div class="row mb-3">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="color-light-black" translate>
+          Choose your favorite category
+        </h2>
+        <p class="content-title mt-3" translate>
+          Learn difficult concepts in an intuitive and fun digital classroom.
+        </p>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-4" *ngFor="let item of categories">
+        <div class="language-card">
+          <a
+            [routerLink]="['/tutors']"
+            [queryParams]="{ category: item.alias }"
+          >
+            <img
+              src="{{ item.image && item.image.thumbUrl }}"
+              onerror="this.src='/assets/images/no-image.jpg'"
+              class="lang-image"
+              style="object-fit: cover"
+              alt="tutor language"
+            />
+            <div class="language-content">
+              <p class="language m-0 font-md font-weight-bold">
+                {{ item.name }}
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-12 text-center">
+        <a
+          [routerLink]="['/categories']"
+          class="btn btn-default min-w-100"
+          translate
+          >View All</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-color-light sm-padding">
+  <div class="container">
+    <div class="row mt-3 mb-3" [hidden]="!webinars.length">
+      <div class="col-md-12 d-flex align-items-center justify-content-between">
+        <h3 translate>Group Classes</h3>
+        <a [routerLink]="['/groupclass']" class="btn btn-default">
+          <span translate>View All</span>
+        </a>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+      <app-card-webinar
+        class="col mb-4"
+        *ngFor="let webinar of webinars"
+        [webinar]="webinar"
+        [hidden]="!webinars.length"
+        [config]="config"
+      ></app-card-webinar>
+    </div>
+    <div class="row mt-3 mb-3" [hidden]="!courses.length">
+      <div class="col-md-12 d-flex align-items-center justify-content-between">
+        <h3 translate>Courses</h3>
+        <a [routerLink]="['/courses']" class="btn btn-default">
+          <span translate>View All</span>
+        </a>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+      <app-card-course
+        class="col mb-4"
+        *ngFor="let c of courses"
+        [course]="c"
+        [hidden]="!courses.length"
+      ></app-card-course>
+    </div>
+  </div>
+</section>
+
+<section class="sm-padding text-center" id="testimonial">
+  <div class="no-margin outer">
+    <div class="container">
+      <div class="text-center mb-3">
+        <h2 class="color-light-black" translate>
+          Verified Teachers - Connect Instantly
+        </h2>
+        <p class="content-title mt-3" translate>
+          Top-notch teachers, limitless learning. Explore any interest over live
+          video chat! Discover fun, social, and safe learning experiences led by
+          passionate teachers
+        </p>
+      </div>
+      <ngx-slick-carousel #slickModal="slick-carousel" [config]="slideConfig">
+        <div
+          ngxSlickItem
+          *ngFor="let tutor of tutors"
+          class="testimonial-list position-relative"
+        >
+          <div class="teachers-img">
+            <img
+              src="{{ tutor.avatarUrl }}"
+              onerror="this.src='/assets/images/default-avatar.jpg'"
+              alt="tutor avatar"
+            />
+          </div>
+          <div class="outer">
+            <div class="inner">
+              <div class="content text-center">
+                <h5 class="card-title">{{ tutor.name }}</h5>
+                <div class="rating-stars text-center">
+                  <ul id="stars">
+                    <app-star-rating
+                      [rate]="tutor?.ratingAvg"
+                    ></app-star-rating>
+                    <span style="padding-left: 5px"
+                      >{{ tutor?.ratingAvg }} ({{ tutor?.totalRating }})</span
+                    >
+                  </ul>
+                </div>
+                <hr />
+              </div>
+              <div class="tutor-list text-start">
+                <h6 translate>I Can Tutor:</h6>
+                <p class="color-blue text-line-break">
+                  <a
+                    [routerLink]="['/tutors']"
+                    *ngFor="let subject of tutor.subjects; let i = index"
+                    >{{ subject.name
+                    }}<span *ngIf="i < tutor.subjects.length - 1">, </span>
+                  </a>
+                </p>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <a
+                class="btn btn-footer btn-block"
+                [routerLink]="['/tutors', tutor.username, 'booking']"
+                [queryParams]="{ isFree: 'true' }"
+                ><i class="fi fi-rs-paper-plane color-white me-2"></i>
+                <span> <span translate>Free Trial</span></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </ngx-slick-carousel>
+    </div>
+  </div>
+</section>
+
+<section class="sm-padding bg-color-light">
+  <div class="container">
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <h2 class="color-light-black" translate>
+          What students say about our tutors
+        </h2>
+      </div>
+    </div>
+    <ngx-slick-carousel
+      id="testimonial-slider"
+      class="flex-slider"
+      #slickModal="slick-carousel"
+      [config]="slideFullConfig"
+    >
+      <div ngxSlickItem *ngFor="let t of testimonials">
+        <div class="box-testimonials">
+          <div
+            class="embed-responsive embed-responsive-16by9 video-frame"
+            (click)="viewYoutubeVideo(t?.idYoutube)"
+          >
+            <img [src]="t.urlYoutube" [alt]="t.name" />
+            <span class="play-btn"></span>
+          </div>
+          <div class="description-testimonials">
+            <p class="sub-content">
+              {{ t.description }}
+            </p>
+          </div>
+        </div>
+        <div class="profile d-flex">
+          <img
+            [src]="t?.image?.fileUrl"
+            class="float-left cate-profile box-shadow-lg"
+            alt="testimonial image"
+          />
+          <div class="">
+            <h4 class="font-weight-bold">{{ t.name }}</h4>
+            <p style="text-transform: capitalize" translate>
+              {{ t.type }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </ngx-slick-carousel>
+  </div>
+</section>
+
+<section class="">
+  <div class="row m-0">
+    <div
+      class="col-md-6 padding-all-sm d-flex justify-content-center align-items-center"
+      [ngStyle]="{ 'background-image': background_how_it_work_block }"
+    >
+      <div class="">
+        <h2 class="color-white" translate>How Pinlearn works</h2>
+        <p
+          class="sub-text max-width-500 font-weight-bold color-white"
+          translate
+        >
+          Learn online with the world's best tutors
+        </p>
+        <a
+          class="btn btn-white mt-2"
+          [routerLink]="'/pages/how-does-it-work'"
+          translate
+          >Know More</a
+        >
+      </div>
+    </div>
+    <div class="col-md-6 p-0 how-it-work-picture">
+      <div class="img-box">
+        <img
+          src="{{
+            config?.homepagePicture && config?.homepagePicture?.howItWork
+              ? config?.homepagePicture?.howItWork
+              : 'assets/images/tutors01.jpg'
+          }}"
+          alt="how pinlearn work"
+        />
+      </div>
+    </div>
+    <div class="col-md-6 p-0 how-it-work-picture">
+      <div class="img-box">
+        <img
+          src="{{
+            config?.homepagePicture && config?.homepagePicture?.tutorWithUs
+              ? config?.homepagePicture?.tutorWithUs
+              : 'assets/images/tutors02.png'
+          }}"
+          alt="how pinlearn work"
+        />
+      </div>
+    </div>
+    <div
+      class="col-md-6 padding-all-sm d-flex justify-content-center align-items-center bg-vector"
+      [ngStyle]="{ 'background-image': 'background_teach_with_us_block' }"
+    >
+      <div class="">
+        <h2 translate>Tutor with Pinlearn</h2>
+        <p class="sub-text max-width-500 font-weight-bold" translate>
+          Earn money sharing your expert knowledge with students
+        </p>
+        <a
+          class="btn btn-default no-hover mt-2"
+          [routerLink]="'/pages/teach-with-us'"
+          translate
+        >
+          Become a Tutor
+        </a>
+      </div>
+    </div>
+  </div>
+</section> -->

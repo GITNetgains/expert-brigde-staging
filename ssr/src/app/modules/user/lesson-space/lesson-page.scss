@@ -1,0 +1,14 @@
+.lesson-space-box {
+  height: 100vh;
+  position: relative;
+
+  .close-btn {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    max-width: 90px;
+    cursor: pointer;
+  }
+}

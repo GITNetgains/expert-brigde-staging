@@ -1,0 +1,262 @@
+<c-col md="12">
+  <c-card>
+    <c-card-body>
+      <form
+        cForm
+        #frm="ngForm"
+        (ngSubmit)="submit(frm)"
+        ngNativeValidate
+        novalidate
+        class="needs-validation"
+        [validated]="customStylesValidated"
+      >
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"> <strong>Name</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter name"
+                  [(ngModel)]="coupon.name"
+                  #name="ngModel"
+                  id="name"
+                  required
+                  name="name"
+                />
+                @if(name.errors && (name.dirty || name.touched || isSubmitted)){
+                <c-form-feedback invalid>
+                  Please enter name name
+                </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Code</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter code"
+                  [(ngModel)]="coupon.code"
+                  #code="ngModel"
+                  id="code"
+                  required
+                  name="code"
+                />
+                @if(code.errors && (code.dirty || code.touched || isSubmitted)){
+                <c-form-feedback invalid>
+                  Please enter name name
+                </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Discount type</strong></label>
+              <c-input-group class="has-validation">
+                <select
+                  [(ngModel)]="coupon.type"
+                  name="type"
+                  class="form-control"
+                  required
+                  #type="ngModel"
+                >
+                  <option value="percent" selected>Percent (%)</option>
+                  <option value="money">Money</option>
+                </select>
+                @if(type.errors && (type.dirty || type.touched || isSubmitted)){
+                <c-form-feedback invalid> Please select type </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Target type</strong></label>
+              <c-input-group class="has-validation">
+                <select
+                  [(ngModel)]="coupon.targetType"
+                  name="target-type"
+                  class="form-control"
+                  required
+                  (change)="onTargetTypeChange()"
+                  #targetType="ngModel"
+                >
+                  <option value="" selected>None</option>
+                  <option value="all" selected>All</option>
+                  <option value="webinar">Group Class</option>
+                  <option value="course">Course</option>
+                  <option value="subject">1 on 1 classes</option>
+                  <!-- <option value="package">Package</option> -->
+                </select>
+                @if(targetType.errors && (targetType.dirty || targetType.touched
+                || isSubmitted)){
+                <c-form-feedback invalid>
+                  Please chose target type
+                </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Discount Value</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter name"
+                  [(ngModel)]="coupon.value"
+                  #value="ngModel"
+                  id="value"
+                  required
+                  name="value"
+                  pattern="[.0-9]{0,8}"
+                />
+                @if (value.errors && (value.dirty || value.touched ||
+                isSubmitted)) {
+                <c-form-feedback invalid>
+                  @if (value.errors?.['required']) { Discount is required. }
+                  @else if (value.errors?.['pattern']) { Please enter a valid
+                  number. }
+                </c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"
+                ><strong>Limit number of use</strong></label
+              >
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter code"
+                  [(ngModel)]="coupon.limitNumberOfUse"
+                  #limitNumberOfUse="ngModel"
+                  id="limitNumberOfUse"
+                  required
+                  name="limitNumberOfUse"
+                />
+                @if(limitNumberOfUse.errors && (limitNumberOfUse.dirty ||
+                limitNumberOfUse.touched || isSubmitted)){
+                <c-form-feedback invalid> Please number of use</c-form-feedback>
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Tutor</strong></label>
+              <ng-select
+                [items]="tutor"
+                [hideSelected]="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                (change)="selectTutor($event)"
+                name="webinar"
+                placeholder="Choose tutor"
+                [(ngModel)]="coupon.tutorId"
+                bindValue="_id"
+                #webinar="ngModel"
+                class="my-select"
+                required
+              ></ng-select>
+
+              @if(value.errors && (value.dirty || value.touched ||
+              isSubmitted)){
+              <c-form-feedback invalid> Please enter name </c-form-feedback>
+              }
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div
+              class="mb-3"
+              *ngIf="webinars.length && coupon.targetType === 'webinar'"
+            >
+              <label cLabel for="name"><strong>Webinar</strong></label>
+
+              <ng-select
+                [items]="webinars"
+                [hideSelected]="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="webinar"
+                placeholder="Choose webinar"
+                [(ngModel)]="coupon.webinarId"
+                bindValue="_id"
+                #webinar="ngModel"
+                required
+              ></ng-select>
+              <!-- @if(Webinar.errors && (Webinar.dirty || Webinar.touched ||
+                isSubmitted)){
+                <c-form-feedback invalid> Please number of use</c-form-feedback>
+                } -->
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Start date</strong></label>
+              <!-- <app-date-picker
+                [(selectedDate)]="time.startTime"
+                (datesUpdated)="selectDate($event, 'startTime')"
+                (selectedDateChange)="time.startTime = $event"
+              ></app-date-picker> -->
+              <app-date-picker-custom
+                [options]="getDatePickerOptions('startTime')"
+                [defaultValue]="selectedStart"
+              ></app-date-picker-custom>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Expired Date</strong></label>
+              <!-- <app-date-picker
+                [(selectedDate)]="time.expiredDate"
+                (datesUpdated)="selectDate($event, 'expiredDate')"
+                (selectedDateChange)="time.expiredDate = $event"
+              ></app-date-picker> -->
+              <app-date-picker-custom
+                [options]="getDatePickerOptions('expiredDate')"
+                [defaultValue]="selectedExpired"
+              ></app-date-picker-custom>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Active</strong></label> <br />
+              <!-- <app-date-picker
+                [(selectedDate)]="time.expiredDate"
+                (datesUpdated)="selectDate($event, 'expiredDate')"
+                (selectedDateChange)="time.expiredDate = $event"
+              ></app-date-picker> -->
+              Active
+              <input
+                class="p-2"
+                type="checkbox"
+                name="isActive"
+                [(ngModel)]="coupon.active"
+              />
+            </div>
+          </c-col>
+        </c-row>
+        <div class="d-flex justify-content-start">
+          <button cButton color="primary" type="submit">Submit</button>
+        </div>
+      </form>
+    </c-card-body>
+  </c-card>
+</c-col>

@@ -1,0 +1,315 @@
+<section class="sm-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-5">
+        <div class="category-list">
+          <div id="accordion">
+            <div class="card border-none">
+              <div class="card-header" id="headingOne">
+                <h5 class="mb-0 w-full">
+                  <button
+                    class="btn btn-link"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseCategorySelect"
+                    aria-expanded="true"
+                    aria-controls="collapseOne"
+                  >
+                    <span translate>Category</span>
+                    <i class="fa fa-chevron-down float-right font-sm"></i>
+                  </button>
+                </h5>
+              </div>
+              <div
+                id="collapseCategorySelect"
+                class="collapse show"
+                aria-labelledby="headingOne"
+                data-parent="#accordion"
+              >
+                <div class="card-body card-category-list">
+                  <form class="mb-3">
+                    <div class="form-group">
+                      <div class="input-group mb-3">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="{{ 'Search by category' | translate }}"
+                          aria-label="category"
+                          aria-describedby="basic-addon2"
+                          (keyup)="handleOnSearchCategory($event)"
+                        />
+                        <div class="input-group-append">
+                          <span class="input-group-text"
+                            ><i class="fa fa-search"></i
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  <div
+                    class="custom-control"
+                    *ngFor="let item of searchedCategories; let i = index"
+                  >
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="{{ item._id }}"
+                      (change)="onChangeCategorySelect(item._id)"
+                      [checked]="selectedCategoryIds.includes(item._id)"
+                    />
+                    <label
+                      class="custom-control-label cursor-pointer"
+                      for="{{ item._id }}"
+                      >{{ item.name }}</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9 toggle">
+        <div id="webinar-list">
+          <div class="d-flex align-items-center justify-content-between">
+            <h3
+              class="color-light-red toggle-btn"
+              (click)="showWebinarList = !showWebinarList"
+              translate
+            >
+              Group classes
+            </h3>
+            <a [routerLink]="['/groupclass']" class="btn btn-default">
+              <span translate>View All</span>
+            </a>
+          </div>
+          <div class="list-items" [ngClass]="{ show: showWebinarList }">
+            <p translate *ngIf="!webinars.length">No results</p>
+            <div class="row row-cols-1 row-cols-md-2 mt-3">
+              <app-card-webinar
+                class="col-md-6 col-lg-4 mb-3"
+                *ngFor="let item of webinars"
+                [webinar]="item"
+              ></app-card-webinar>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 text-center">
+                <ngb-pagination
+                  [collectionSize]="webinarPagination.total"
+                  [(page)]="webinarPagination.page"
+                  [pageSize]="webinarPagination.pageSize"
+                  (pageChange)="pageChange('webinar')"
+                  [maxSize]="5"
+                  class="card-pagination pagination"
+                  *ngIf="webinarPagination.total > webinarPagination.pageSize"
+                ></ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="course-list toggle mt-5">
+          <div class="d-flex align-items-center justify-content-between">
+            <h3
+              class="color-light-red toggle-btn"
+              (click)="showCourseList = !showCourseList"
+              translate
+            >
+              Courses
+            </h3>
+            <a [routerLink]="['/courses']" class="btn btn-default">
+              <span translate>View All</span>
+            </a>
+          </div>
+          <div class="list-items" [ngClass]="{ show: showCourseList }">
+            <p translate *ngIf="!courses.length">No results</p>
+            <div class="row row-cols-1 row-cols-md-2 mt-3">
+              <app-card-course
+                class="col-md-6 col-lg-4 mb-3"
+                *ngFor="let item of courses"
+                [course]="item"
+              ></app-card-course>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 text-center">
+                <ngb-pagination
+                  [collectionSize]="coursePagination.total"
+                  [(page)]="coursePagination.page"
+                  [pageSize]="coursePagination.pageSize"
+                  (pageChange)="pageChange('course')"
+                  [maxSize]="5"
+                  class="card-pagination pagination"
+                  *ngIf="coursePagination.total > coursePagination.pageSize"
+                ></ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-padding bg-color-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="" translate>See how you can improve your grades</h2>
+        <p class="content-title mt-3" translate>
+          Learn difficult concepts in an intuitive and fun digital classroom.
+        </p>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-3">
+        <div class="card-icon text-center">
+          <img src="assets/images/webinar/best-tutor.svg" alt="" />
+          <h4 translate>The Best Tutors.</h4>
+          <div class="border-solid"></div>
+          <p class="sub-content" translate>
+            We work with many of the bests in their subjects. All our tutors are
+            highly experienced in their fields and have proven skills and
+            certifications in online teaching.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-icon text-center">
+          <img src="assets/images/webinar/personalized.svg" alt="" />
+          <h4 translate>Personalized.</h4>
+          <div class="border-solid"></div>
+          <p class="sub-content" translate>
+            A custom learning experience for everyone prepared by skilled tutors
+            strictly according to the assessments, strengths, and aptitude of
+            individual learners.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-icon text-center">
+          <img src="assets/images/webinar/variety-of-subject.svg" alt="" />
+          <h4 translate>Variety of Subjects.</h4>
+          <div class="border-solid"></div>
+          <p class="sub-content" translate>
+            Learning for all levels, grades, and subjects with 1000+ skilled
+            tutors for a variety of subjects and skills. Every tutor on our
+            platform is well-trained in eLearning skills.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card-icon text-center">
+          <img src="assets/images/webinar/live-learn-cloud.svg" alt="" />
+          <h4 translate>Livelearn cloud.</h4>
+          <div class="border-solid"></div>
+          <p class="sub-content" translate>
+            All your learning resources, courses, recorded sessions, progress
+            history, etc. is saved safely on our cloud to offer you instant
+            access irrespective of the platform or device you use.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="" translate>A personalized solution to match your needs</h2>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <div class="card h-100 box-shadow-xs border-none">
+          <div class="d-flex justify-content-center align-items-center pt-3">
+            <div class="img-card bg-color-green">
+              <img src="assets/images/webinar/categories/parents.svg" />
+            </div>
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title" translate>Parents</h3>
+            <p class="card-text mb-0" translate>
+              Choose a safe and secure tutoring option
+            </p>
+            <p class="card-text" translate>
+              Reduce stress from homework while staying involved in your child's
+              learning
+            </p>
+            <a class="color-light-red" [routerLink]="['/auth/sign-up']"
+              ><span translate>Register Now</span>
+              <i class="fa fa-chevron-right font-sm ml-1"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 rmt-4">
+        <div class="card h-100 box-shadow-xs border-none">
+          <div class="d-flex justify-content-center align-items-center pt-3">
+            <div class="img-card bg-color-orange">
+              <img src="assets/images/webinar/categories/personalized.svg" />
+            </div>
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title" translate>Personalized</h3>
+            <p class="card-text mb-0" translate>
+              Sign up for free Learn with professional tutors
+            </p>
+            <p class="card-text" translate>
+              Study at your own pace with advanced digital technology
+            </p>
+            <a
+              class="color-light-red"
+              [routerLink]="['/auth/sign-up']"
+              translate
+              ><span translate>Register Now</span>
+              <i class="fa fa-chevron-right font-sm ml-1"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 rmt-4">
+        <div class="card h-100 box-shadow-xs border-none">
+          <div class="d-flex justify-content-center align-items-center pt-3">
+            <div class="img-card bg-color-dark-green">
+              <img src="assets/images/webinar/categories/tutor.svg" />
+            </div>
+          </div>
+          <div class="card-body text-center">
+            <h3 class="card-title" translate>Expert</h3>
+            <p class="card-text mb-0" translate>
+              Customize a tutoring program for your school
+            </p>
+            <p class="card-text" translate>
+              Provide academic support beyond the classroom
+            </p>
+            <a class="color-light-red" [routerLink]="['/auth/sign-up']"
+              ><span translate>Apply to be an expert</span>
+              <i class="fa fa-chevron-right font-sm ml-1"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-padding bg-color-light">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="" translate>Get started quickly and easily</h2>
+      </div>
+    </div>
+    <div class="row text-center step-user row-cols-1 row-cols-md-3">
+      <div class="col-md-4">
+        <div class="number-step bg-color-green">1</div>
+        <h4 class="mt-2" translate>Search for subject</h4>
+      </div>
+      <div class="col-md-4">
+        <div class="number-step bg-color-orange">2</div>
+        <h4 class="mt-2" translate>Choose your tutor</h4>
+      </div>
+      <div class="col-md-4">
+        <div class="number-step bg-color-blue">3</div>
+        <h4 class="mt-2" translate>Start or schedule a lesson</h4>
+      </div>
+    </div>
+  </div>
+</section>

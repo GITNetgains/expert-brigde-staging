@@ -1,0 +1,128 @@
+<c-tabs>
+  <c-tabs-list variant="tabs">
+    <button cTab itemKey="form">General Infor</button>
+    @if(categoryId){ <button cTab itemKey="list">List of Subject</button>
+    }
+  </c-tabs-list>
+
+  <c-tabs-content>
+    <c-tab-panel class="p-2" itemKey="form">
+      <c-col md="12">
+        <c-card class="mb-4">
+          @if(categoryId){
+          <c-card-header>
+            <h4>Update Category</h4>
+          </c-card-header>
+          } @else {
+          <c-card-header>
+            <h4>Create Category</h4>
+          </c-card-header>
+          }
+          <c-card-body>
+            <form
+              cForm
+              #frm="ngForm"
+              (ngSubmit)="submit(frm)"
+              ngNativeValidate
+              novalidate
+              class="needs-validation"
+              [validated]="customStylesValidated"
+            >
+              <c-row class="mb-3">
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="name"><strong>Name</strong></label>
+                    <c-input-group class="has-validation">
+                      <input
+                        cFormControl
+                        placeholder="Enter name"
+                        [(ngModel)]="category.name"
+                        #name="ngModel"
+                        id="name"
+                        required
+                        name="name"
+                      />
+                      @if (name.errors && (name.dirty || name.touched ||
+                      isSubmitted)) { @if (name.errors['required']) {
+                      <c-form-feedback invalid>
+                        Please enter user first name and last name!
+                      </c-form-feedback>
+                      } @else if (name.errors['pattern']) {
+                      <c-form-feedback invalid>
+                        Please enter a valid name.
+                      </c-form-feedback>
+                      } }
+                    </c-input-group>
+                  </div>
+                </c-col>
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="alias"><strong>Alias</strong></label>
+                    <c-input-group class="has-validation">
+                      <input
+                        cFormControl
+                        placeholder="Enter alias"
+                        [(ngModel)]="category.alias"
+                        required
+                        name="alias"
+                        #alias="ngModel"
+                        id="alias"
+                      />
+                      @if (alias.invalid && (alias.dirty || alias.touched)) {
+                      <c-form-feedback class="text-danger fw-bold">
+                        * Alias is required
+                      </c-form-feedback>
+                      }
+                    </c-input-group>
+                  </div>
+                </c-col>
+              </c-row>
+              <c-row class="mb-3">
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="name"><strong>Ordering</strong></label>
+                    <input
+                      type="number"
+                      cFormControl
+                      placeholder="Enter ordering"
+                      [(ngModel)]="category.ordering"
+                      required
+                      #ordering="ngModel"
+                      id="ordering"
+                      name="ordering"
+                    />
+                  </div>
+                </c-col>
+                <c-col md="6">
+                  @if (mainImageUrl) {
+                  <img
+                    src="{{ mainImageUrl }}"
+                    alt="main image"
+                    style="max-width: 100%; height: auto; object-fit: contain"
+                  />
+
+                  }
+                  <div class="mb-3">
+                    <label cLabel for="imageUpload"
+                      ><strong>Upload Image</strong></label
+                    >
+
+                    <app-file-uploader
+                      [options]="uploadOptions"
+                    ></app-file-uploader>
+                  </div>
+                </c-col>
+              </c-row>
+              <div class="d-flex justify-content-start">
+                <button cButton color="primary" type="submit">Submit</button>
+              </div>
+            </form>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-tab-panel>
+    <c-tab-panel class="p-2" itemKey="list"
+      ><app-subject-list [categoryIds]="categoryId"></app-subject-list
+    ></c-tab-panel>
+  </c-tabs-content>
+</c-tabs>

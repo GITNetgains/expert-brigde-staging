@@ -1,0 +1,227 @@
+<c-container class="p-0">
+  <c-row>
+    <c-col md="12">
+      <c-card class="mb-4">
+        <c-card-header>
+          <h3>Manage Coupons</h3>
+        </c-card-header>
+        <c-card-body>
+          <c-row class="row-filter">
+            <c-col xs="12" sm="6" md="4">
+              <div class="">
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="searchField.name"
+                  placeholder="Enter name"
+                  aria-describedby="inputGroup-sizing-sm"
+                  aria-label="Sizing example input"
+                />
+              </div>
+            </c-col>
+            <c-col md="3">
+              <div class="mb-3">
+                <button
+                  class="button"
+                  cButton
+                  color="primary"
+                  (click)="filter()"
+                >
+                  Filter
+                </button>
+              </div>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+      <c-card>
+        <c-card-header>
+          <div class="title d-flex flex-wrap justify-content-between">
+            <h4 class="card-title">Total coupons : {{ count }}</h4>
+            @if(count !== 0){
+            <app-pagination
+              [currentPage]="currentPage"
+              [pageSize]="pageSize"
+              [totalItems]="count"
+              [maxSize]="3"
+              (pageChanged)="onPageChange($event)"
+            ></app-pagination>
+            }
+          </div>
+        </c-card-header>
+        @if(count !== 0){
+        <c-card-body>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 1610px"
+            >
+              <thead>
+                <tr>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'name'"
+                      [sortOption]="sortOption"
+                      sortTitle="Name"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="code"
+                      [sortOption]="sortOption"
+                      sortTitle="Code"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="type"
+                      [sortOption]="sortOption"
+                      sortTitle="Type"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="value"
+                      [sortOption]="sortOption"
+                      sortTitle="Value"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="tutorId"
+                      [sortOption]="sortOption"
+                      sortTitle="Tutor Name"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="webinarId"
+                      [sortOption]="sortOption"
+                      sortTitle="Webinar"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="courseId"
+                      [sortOption]="sortOption"
+                      sortTitle="Course"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="expiredDate"
+                      [sortOption]="sortOption"
+                      sortTitle="Expiry Date"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th
+                    style="
+                      width: 100px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items; track $index) {
+                <tr>
+                  <td>{{ item?.name }}</td>
+                  <td>{{ item?.code }}</td>
+                  <td>{{ item?.type }}</td>
+                  <td>{{ item?.value }}</td>
+                  <td>{{ item?.tutor?.name }}</td>
+                  <td>{{ item?.webinar?.name || "-" }}</td>
+                  <td>{{ item?.course?.name || "-" }}</td>
+                  <td>{{ item?.expiredDate | date }}</td>
+                  <td>
+                    <span>{{ item?.createdAt | date }}</span>
+                  </td>
+                  <td
+                    style="
+                      width: 100px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <div class="d-flex">
+                      <a
+                        cButton
+                        [routerLink]="['/coupon/update', item._id]"
+                        class="btn btn-sm btn-primary me-1"
+                      >
+                        <svg cIcon name="cilPencil" size="sm"></svg>
+                      </a>
+                      <a>
+                        <button
+                          cButton
+                          class="text-white"
+                          color="danger"
+                          size="sm"
+                          (click)="deleteCoupon(item.id)"
+                        >
+                          <svg cIcon name="cilTrash" size="sm"></svg>
+                        </button>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+                }
+              </tbody>
+            </table>
+          </div> </c-card-body
+        >} @else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        }
+        <c-card-footer class="d-flex justify-content-end">
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

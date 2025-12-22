@@ -1,0 +1,30 @@
+<div class="input-border">
+  <app-coupon
+    [tutorId]="course.tutorId"
+    *ngIf="course._id"
+    [course]="course"
+    [targetType]="'course'"
+  ></app-coupon>
+</div>
+<ul class="list-inline pull-right">
+  <li>
+    <button
+      type="button"
+      class="btn btn-light prev-step me-2"
+      (click)="onTab(3)"
+    >
+      <i class="fas fa-angle-double-left me-1 wizard-arrow"></i
+      ><span translate>Previous</span>
+    </button>
+  </li>
+  <li>
+    <button
+      type="button"
+      class="btn btn-default next-step"
+      [routerLink]="['/users/courses']"
+    >
+      <span translate>Finish</span
+      ><i class="fas fa-angle-double-right ms-1 wizard-arrow"></i>
+    </button>
+  </li>
+</ul>

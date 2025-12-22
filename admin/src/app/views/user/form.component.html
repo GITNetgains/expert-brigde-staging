@@ -1,0 +1,228 @@
+<c-row [gutter]="3">
+  @if(!loading){<c-col md="3">
+    <app-profile-card
+      [user]="info"
+      (afterUpload)="afterUpload($event)"
+    ></app-profile-card> </c-col
+  >}
+  <c-col md="9">
+    <c-card>
+      @if(info._id){
+      <c-card-header>
+        <h4>Update User</h4>
+      </c-card-header>
+      } @else {
+      <c-card-header>
+        <h4>Create User</h4>
+      </c-card-header>
+      }
+      <c-card-body>
+        @if (loading) {
+        <div class="d-flex justify-content-center p-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        } @else {
+        <form
+          cForm
+          #frm="ngForm"
+          (ngSubmit)="submit(frm)"
+          novalidate
+          class="needs-validation"
+          [validated]="customStylesValidated"
+        >
+          <c-row>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="name">Full Name</label>
+                <c-input-group class="has-validation">
+                  <input
+                    cFormControl
+                    id="name"
+                    [(ngModel)]="info.name"
+                    required
+                    name="name"
+                    #name="ngModel"
+                    placeholder="Enter name"
+                  />
+                  @if (name.errors && (name.dirty || name.touched ||
+                  isSubmitted)) { @if (name.errors['required']) {
+                  <c-form-feedback invalid>
+                    Please enter user first name and last name!
+                  </c-form-feedback>
+                  } @else if (name.errors['pattern']) {
+                  <c-form-feedback invalid>
+                    Please enter a valid name.
+                  </c-form-feedback>
+                  } }
+                </c-input-group>
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="email">Email</label>
+                <c-input-group class="has-validation">
+                  <input
+                    cFormControl
+                    type="email"
+                    id="email"
+                    [(ngModel)]="info.email"
+                    required
+                    name="email"
+                    #email="ngModel"
+                    placeholder="user@example.com"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                  />
+                  @if (email.errors && (email.dirty || email.touched ||
+                  isSubmitted)) { @if(email.errors['required']){
+                  <c-form-feedback invalid>Email is required.</c-form-feedback>
+                  } @else if(email.errors['pattern']){
+                  <c-form-feedback invalid
+                    >Please enter a valid email address.</c-form-feedback
+                  >
+                  } }
+                </c-input-group>
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="phoneNumber">Phone Number</label>
+                <c-input-group class="has-validation">
+                  <input
+                    cFormControl
+                    type="text"
+                    id="phoneNumber"
+                    [(ngModel)]="info.phoneNumber"
+                    name="phone"
+                    #phone="ngModel"
+                    placeholder="Enter phone number"
+                    pattern="[0-9\+]{9,15}$"
+                    minlength="9"
+                    maxlength="15"
+                    required
+                  />
+                  @if (phone.errors && (phone.dirty || phone.touched ||
+                  isSubmitted)) { @if(phone.errors['required']){
+                  <c-form-feedback invalid>
+                    Please enter phone number
+                  </c-form-feedback>
+                  } @else if(phone.errors['minlength'] ||
+                  phone.errors['maxlength']){
+                  <c-form-feedback invalid>
+                    Phone numbers must be between 9 to 15 digits
+                  </c-form-feedback>
+                  } @else if(phone.errors['pattern']){
+                  <c-form-feedback invalid>
+                    Phone number is in an invalid format
+                  </c-form-feedback>
+                  } }
+                </c-input-group>
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="address">Address</label>
+                <c-input-group class="has-validation">
+                  <input
+                    cFormControl
+                    type="text"
+                    id="address"
+                    [(ngModel)]="info.address"
+                    name="address"
+                    #address="ngModel"
+                    placeholder="Enter address"
+                    required
+                  />
+                  @if (address.errors && (address.dirty || address.touched ||
+                  isSubmitted)) { @if(address.errors['required']){
+                  <c-form-feedback invalid>
+                    Please enter address!
+                  </c-form-feedback>
+                  } }
+                </c-input-group>
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="bio">Description</label>
+                <textarea
+                  cFormControl
+                  id="bio"
+                  [(ngModel)]="info.bio"
+                  name="bio"
+                  rows="5"
+                  placeholder="Enter description"
+                ></textarea>
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label cLabel for="password">Password</label>
+                <c-input-group class="has-validation">
+                  <input
+                    cFormControl
+                    type="password"
+                    id="password"
+                    [(ngModel)]="info.password"
+                    name="password"
+                    #password="ngModel"
+                    placeholder="Enter password"
+                    minlength="6"
+                    [required]="!userId"
+                  />
+                  @if (password.errors && (password.dirty || password.touched ||
+                  isSubmitted)) { @if(password.errors['minlength']){
+                  <c-form-feedback invalid>
+                    Password must be at least 6 characters!
+                  </c-form-feedback>
+                  } @else if(password.errors['required']){
+                  <c-form-feedback invalid>
+                    Password is required.
+                  </c-form-feedback>
+                  } }
+                </c-input-group>
+                @if(userId){
+                <small class="form-text text-muted d-block mt-1">
+                  Leave blank to keep the current password
+                </small>
+                }
+              </div>
+            </c-col>
+            <c-col md="6">
+              <div class="mb-3">
+                <label class="mb-2">Status</label>
+                <div class="d-flex justify-content-start">
+                  Active?
+                  <input
+                    type="checkbox"
+                    class="form-check-input ms-2"
+                    id="isActive"
+                    name="isActive"
+                    [(ngModel)]="info.isActive"
+                  />
+                </div>
+                <div class="d-flex justify-content-start mt-2">
+                  Email Verified?
+                  <input
+                    type="checkbox"
+                    class="form-check-input ms-2"
+                    id="emailVerified"
+                    name="emailVerified"
+                    [(ngModel)]="info.emailVerified"
+                  />
+                </div>
+              </div>
+            </c-col>
+            <c-col md="12">
+              <div class="form-group mt-3">
+                <button cButton color="primary" type="submit">Save</button>
+              </div>
+            </c-col>
+          </c-row>
+        </form>
+        }
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

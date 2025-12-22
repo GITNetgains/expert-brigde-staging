@@ -1,0 +1,208 @@
+// .nav-noti {
+//   background-color: #000000;
+//   min-height: 2.5em;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   flex-wrap: nowrap;
+
+//   p {
+//     font-size: 1.05em;
+//     font-weight: 600;
+//     // color: white;
+//     margin: 0;
+//   }
+
+//   .noti-text {
+//     padding: 0 5px;
+//     display: flex;
+//     align-items: baseline;
+//   }
+
+//   .button-cancle {
+//     background-color: transparent;
+//     border-color: transparent;
+//   }
+// }
+
+// .notification {
+//   &_scroll {
+//     overflow: auto;
+//   }
+
+//   .badge-notification {
+//     width: 10px;
+//     height: 10px;
+//     padding: 10px;
+//     font-size: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     border-radius: 50%;
+//     position: absolute;
+//     top: -2px;
+//     right: -13px;
+//     margin: 0;
+//   }
+
+// }
+/* HEADER BASE */
+/* =========================
+   HEADER
+========================= */
+.main-header {
+  background: #f7f5f2;
+  padding: 20px 0;
+  position: relative;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: 1280px;
+  margin: auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* =========================
+   HAMBURGER
+========================= */
+.hamburger-btn {
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  z-index: 200;
+}
+
+.hamburger-btn span {
+  width: 26px;
+  height: 3px;
+  background: #0c2a51;
+  border-radius: 4px;
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.logo-wrapper img {
+  height: 71px;
+  cursor: pointer;
+}
+
+/* =========================
+   RIGHT BUTTONS (DESKTOP)
+========================= */
+.right-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+/* KEEP SAME COLORS */
+.btn.expert {
+  border: 2px solid #0c2a51 !important;
+  background: transparent !important;
+  color: #0c2a51;
+}
+
+.btn.client {
+  background: #E4543C ;
+  color: #fff;
+}
+/* =========================
+   DRAWER
+========================= */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 199;
+}
+
+.side-drawer {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background: #fff;
+  padding: 20px;
+  transition: left 0.3s ease;
+  z-index: 200;
+}
+
+.side-drawer.open {
+  left: 0;
+}
+
+.side-drawer nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.side-drawer a {
+  color: #0c2a51;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.drawer-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+}
+.mobile-only{
+display: none;
+}
+
+/* =========================
+   MOBILE BEHAVIOR
+========================= */
+@media (max-width: 768px) {
+
+  /* hide right buttons */
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only{
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+  /* logo back to normal flow */
+  .logo-wrapper {
+    position: static;
+    transform: none;
+  }
+
+  .logo-wrapper img {
+    height: 45px;
+  }
+}

@@ -1,0 +1,146 @@
+<button (click)="openMediaModal()" cButton color="secondary">
+  Upload Image
+</button>
+
+<c-modal
+  id="liveDemoModal"
+  [visible]="visible"
+  size="lg"
+  (visibleChange)="handleLiveDemoChange($event)"
+  scrollable
+>
+  <c-modal-header>
+    <h5 cModalTitle>Manage Media</h5>
+    <button (click)="closeMediaModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-tabs [activeItemKey]="0">
+      <c-tabs-list variant="underline-border">
+        <button cTab [itemKey]="'library'">Library</button>
+        <button cTab [itemKey]="'upload'">Upload</button>
+      </c-tabs-list>
+      <c-tabs-content>
+        <c-tab-panel class="p-3" [itemKey]="'library'">
+          <c-row>
+            <c-col md="6">
+              <ul class="p-0">
+                @for(media of files; track media._id){
+                <div
+                  style="
+                    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+                      rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+                    cursor: pointer;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                  "
+                  class="my-3 p-2 cursor-pointer hover"
+                  (click)="selectToEdit(media)"
+                >
+                  <div>
+                    @if(media?.type === 'photo'){
+                    <img
+                      [src]="media?.thumbUrl"
+                      alt="img"
+                      style="width: 30px; height: 30px"
+                    />
+                    } @if(media?.type !== 'photo'){
+                    <app-file-icon></app-file-icon>
+                    }
+                  </div>
+                  <a>
+                    <span class="p-1">{{ media?.name }}</span>
+                  </a>
+                </div>
+                }
+              </ul>
+              <app-pagination
+                [currentPage]="currentPage"
+                [pageSize]="pageSize"
+                [totalItems]="totalMedia"
+                [maxSize]="3"
+                (pageChanged)="onPageChanged($event)"
+              ></app-pagination>
+            </c-col>
+            <c-col md="6">
+              @if(activeEditMedia){
+              <form
+                cForm
+                (ngSubmit)="update(previewForm)"
+                #previewForm="ngForm"
+                class="row g-3"
+              >
+                <c-row [gutter]="3">
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>Preview</strong>
+                    </label>
+                    <app-preview [media]="activeEditMedia"></app-preview>
+                  </c-col>
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>URL</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      [cTooltip]="activeEditMedia.fileUrl"
+                      cTooltipPlacement="top"
+                      class="me-1"
+                      type="text"
+                      [ngModel]="activeEditMedia.fileUrl"
+                      disabled
+                      name="fileUrl"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>File name</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      [cTooltip]="activeEditMedia.name"
+                      cTooltipPlacement="top"
+                      class="me-1"
+                      [(ngModel)]="activeEditMedia.name"
+                      type="text"
+                      name="name"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>File description</strong>
+                    </label>
+                    <textarea
+                      cFormControl
+                      type="text"
+                      name="description"
+                      rows="3"
+                      placeholder="Enter some text here"
+                      [(ngModel)]="activeEditMedia.description"
+                    ></textarea>
+                  </c-col>
+                  <c-col md="12">
+                    <button cButton type="submit" color="primary">
+                      Update
+                    </button>
+                  </c-col>
+                </c-row>
+              </form>
+              }
+            </c-col>
+          </c-row>
+        </c-tab-panel>
+        <c-tab-panel class="p-3" [itemKey]="'upload'">
+          <app-file-uploader [options]="uploadOptions"></app-file-uploader>
+        </c-tab-panel>
+      </c-tabs-content>
+    </c-tabs>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeMediaModal()" cButton color="secondary">Close</button>
+    <button cButton color="primary" (click)="select(activeEditMedia)">
+      Select
+    </button>
+  </c-modal-footer>
+</c-modal>

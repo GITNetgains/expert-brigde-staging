@@ -1,0 +1,109 @@
+<c-container>
+  <c-row class="mb-4">
+    <h3>Update Profile</h3>
+  </c-row>
+  <c-row>
+    <c-col md="3">
+      <app-profile-card
+        [user]="user"
+        (afterUpload)="afterUpload($event)"
+      ></app-profile-card>
+    </c-col>
+    <c-col md="9">
+      <c-card class="mb-4">
+        <c-card-body>
+          <form cForm [formGroup]="profileForm" (ngSubmit)="submit()">
+            <c-row class="mb-3">
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel for="name">Full Name</label>
+                  <input
+                    cFormControl
+                    id="name"
+                    formControlName="name"
+                    placeholder="Enter name"
+                  />
+                  @if (isSubmitted && nameControl.errors) {
+                  <c-form-feedback invalid
+                    >Please enter your full name!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel for="email">Email</label>
+                  <input
+                    cFormControl
+                    id="email"
+                    formControlName="email"
+                    placeholder="user@example.com"
+                  />
+                  @if (isSubmitted && emailControl.errors?.['required']) {
+                  <c-form-feedback invalid>Email is required.</c-form-feedback>
+                  } @else if (isSubmitted && emailControl.errors?.['email']) {
+                  <c-form-feedback invalid
+                    >Please enter a valid email address.</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row class="mb-3">
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel for="phoneNumber">Phone Number</label>
+                  <input
+                    cFormControl
+                    id="phoneNumber"
+                    formControlName="phoneNumber"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+              </c-col>
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel for="address">Address</label>
+                  <input
+                    cFormControl
+                    id="address"
+                    formControlName="address"
+                    placeholder="Enter your address"
+                  />
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row class="mb-3">
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel for="password">Password</label>
+                  <input
+                    cFormControl
+                    id="password"
+                    type="password"
+                    formControlName="password"
+                    placeholder="Enter new password"
+                  />
+                  @if (isSubmitted && passwordControl.errors?.['minlength']) {
+                  <c-form-feedback invalid
+                    >Password must be at least 6 characters!</c-form-feedback
+                  >
+                  }
+                  <small class="form-text text-muted"
+                    >Leave blank to keep current password</small
+                  >
+                </div>
+              </c-col>
+            </c-row>
+
+            <div class="d-flex justify-content-start">
+              <button cButton color="primary" type="submit">Save</button>
+            </div>
+          </form>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

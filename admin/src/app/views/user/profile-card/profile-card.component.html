@@ -1,0 +1,84 @@
+<c-card>
+  <c-card-body>
+    <div class="text-center d-flex flex-column align-items-center mb-3">
+      @if (previewUrl || user?.avatarUrl) {
+      <img
+        class="rounded-circle mb-3"
+        [src]="previewUrl || user?.avatarUrl"
+        style="width: 150px; height: 150px; object-fit: cover"
+        alt="User avatar"
+      />
+      } @else {
+      <img src="https://api.pinlearn.info/assets/default-avatar.jpg" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="User avatar">
+        <!-- <svg cIcon name="cilUser" size="xl"></svg> -->
+      }
+      <h4 class="mb-1">{{ user?.name || "User" }}</h4>
+      <h6 class="text-muted">{{ user?.type || "N/A" }}</h6>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">
+        <strong>Choose Avatar</strong>
+        <small class="ms-1 text-muted" style="font-size: 80%;"> (Expected size: 320x421 pixels, Maximum size: {{ maxFileSize }} MB)</small>
+      </label>
+      <app-file-uploader [options]="uploaderOptions"></app-file-uploader>
+    </div>
+  </c-card-body>
+  <c-card-footer>
+    @if(attachments && attachments.length){
+    <div class="mb-3">
+      <small class="text-muted">Client Attachments</small>
+      <ul class="mt-2" style="max-height: 240px; overflow:auto;">
+        @for (att of attachments; track att._id) {
+        <li>
+          <a [href]="att.fileUrl || att.url" target="_blank">{{ att.name || 'Attachment' }}</a>
+        </li>
+        }
+      </ul>
+    </div>
+    }
+    <div class="mb-3">
+      <small class="text-muted">Email Address</small>
+      <h6>{{ user?.email || "N/A" }}</h6>
+    </div>
+    <div class="mb-3">
+      <small class="text-muted">Phone</small>
+      <h6>{{ user?.phoneNumber || "N/A" }}</h6>
+    </div>
+    <div class="mb-3">
+      <small class="text-muted">Address</small>
+      <h6>{{ user?.address || "N/A" }}</h6>
+    </div>
+    @if (user?.socialProfile) {
+    <div class="mb-3">
+      <small class="text-muted">Social Profile</small>
+      <div class="mt-2">
+        <button
+          cButton
+          color="primary"
+          variant="ghost"
+          shape="rounded-pill"
+          class="me-1"
+        >
+          <svg cIcon name="cilSocialFacebook"></svg>
+        </button>
+        <button
+          cButton
+          color="info"
+          variant="ghost"
+          shape="rounded-pill"
+          class="me-1"
+        >
+          <svg cIcon name="cilSocialTwitter"></svg>
+        </button>
+        <button cButton color="danger" variant="ghost" shape="rounded-pill">
+          <svg cIcon name="cilSocialYoutube"></svg>
+        </button>
+      </div>
+    </div>
+    }
+    <div class="mb-1">
+      <small class="text-muted">Created / joined at</small>
+      <h6>{{ user?.createdAt | date }}</h6>
+    </div>
+  </c-card-footer>
+</c-card>

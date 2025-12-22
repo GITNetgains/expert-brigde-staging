@@ -1,0 +1,91 @@
+<div class="modal-header">
+  <h4 class="modal-title">Recurring </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close(null)">
+  </button>
+</div>
+<ul class="nav nav-tabs nav-custom" role="tablist">
+  <li role="presentation" [ngClass]="{'active': tab === 'list'}" (click)="changeTab('list')">
+    <a href="javascript:void(0)" translate>List recurring</a>
+  </li>
+  <li role="presentation" [ngClass]="{'active': tab === 'add'}" (click)="changeTab('add')">
+    <a href="javascript:void(0)" translate>Add new recurring</a>
+  </li>
+</ul>
+<div class="modal-body">
+  <div *ngIf="tab === 'list'"><app-recurring-list [isFree]="isFree"></app-recurring-list></div>
+  <form #frm="ngForm" (submit)="submit(frm)" class="recurring-form" *ngIf="tab === 'add'">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label translate>Start Time</label>
+          <ngb-timepicker [(ngModel)]="timeStart" name="timeStart" [minuteStep]="5"></ngb-timepicker>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label translate>End Time</label>
+          <ngb-timepicker [(ngModel)]="timeEnd" name="timeEnd" [minuteStep]="5"></ngb-timepicker>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label translate>Days Of Week</label>
+          <ng-select name="daysOfWeek" [items]="dayOfWeek" [hideSelected]="true" [multiple]="true" bindLabel="name"
+            [closeOnSelect]="false" placeholder="{{'Choose days of week' |  translate}}" bindValue="index"
+            [(ngModel)]="recurring.dayOfWeek" required>
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Date To Start</label>
+              <div class="input-group">
+                <input readonly class="form-control" placeholder="dd-mm-yyyy" name="startRecur"
+                  [(ngModel)]="range.start" ngbDatepicker #b="ngbDatepicker" #startRecur="ngModel" required
+                  (ngModelChange)="selectDate($event, 'start')" [minDate]="{year: 2022, month: 1, day: 1}" />
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calendar" (click)="b.toggle()" type="button">
+                    <i class="fa fa-calendar"></i>
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="!recurring.range.start && (startRecur.dirty || startRecur.touched || isSubmitted)">
+                <p style="color: red" translate>Please enter start date!</p>
+              </div>
+              <div *ngIf="validTime['start']">
+                <p style="color: red" translate>Please enter valid date!</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>End Date</label>
+              <div class="input-group">
+                <input readonly class="form-control" placeholder="dd-mm-yyyy" name="endRecur" [(ngModel)]="range.end"
+                  ngbDatepicker #a="ngbDatepicker" #endRecur="ngModel" required
+                  (ngModelChange)="selectDate($event, 'end')" [minDate]="{year: 2022, month: 1, day: 1}" />
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calendar" (click)="a.toggle()" type="button">
+                    <i class="fa fa-calendar"></i>
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="!recurring.range.end&& (endRecur.dirty || endRecur.touched || isSubmitted)">
+                <p style="color: red" translate>Please enter end date!</p>
+              </div>
+              <div *ngIf="validTime['end']">
+                <p style="color: red" translate>Please enter valid date!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-default me-3" translate>Submit</button>
+        <button type="button" class="btn btn-outline-dark" (click)="close(null)" translate>Close</button>
+      </div>
+    </div>
+  </form>
+</div>

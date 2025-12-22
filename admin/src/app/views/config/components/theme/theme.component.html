@@ -1,0 +1,45 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'mixed'){
+            @if(item.key==='colorScheme'){
+            <form cForm (ngSubmit)="onSave(item)" #colorSchemeForm="ngForm" class="row g-3">
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Primary color</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.btn_color" name="btn_color" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Secondary color</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.background_color" name="background_color" type="text" />
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            }
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

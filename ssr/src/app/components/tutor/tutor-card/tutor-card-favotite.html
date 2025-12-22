@@ -1,0 +1,112 @@
+<div class="card card-item">
+  <div class="badge-tag" style="font-size: 0.8em" *ngIf="tutor.featured">
+    <span translate>Featured</span>
+  </div>
+  <a [routerLink]="['/tutors', tutor.username]" class="card-img-top">
+    <img
+      [src]="tutor.avatarUrl"
+      onerror="this.src='/assets/images/default-avatar.jpg'"
+      [alt]="tutor.username"
+    />
+  </a>
+
+  <div class="card-body" id="tutor-card">
+    <div class="row" style="padding-left: 15px">
+      <h5>
+        <a class="hyperlink" [routerLink]="['/tutors', tutor.username]"
+          >{{tutor.name}}</a
+        ><i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
+      </h5>
+    </div>
+    <div class="row rating-stars text-end sm-stars" style="padding-left: 15px">
+      <ul id="stars">
+        <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
+        <span style="padding-left: 5px"
+          >{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span
+        >
+      </ul>
+    </div>
+
+    <div class="row justify-content-between" style="padding-inline: 15px">
+      <div class="col-md-7 pl-0 pr-0">
+        <h5
+          class="text-line-break mb-0"
+          *ngIf="tutor.languages && tutor.languages.length"
+        >
+          <span *ngFor="let lang of tutor.languages, let i  = index"
+            >{{languageService.returnNameLanguage(lang)}}
+            <span *ngIf="i < tutor.languages.length - 1">, </span></span
+          >
+        </h5>
+        <h5
+          class="text-line-break mb-0"
+          *ngIf="tutor.languages && !tutor.languages.length"
+        >
+          Updating
+        </h5>
+      </div>
+
+      <!-- <div class="text-end">
+        <div class="img-flag-tutor">
+          <img
+            src="{{(tutor?.country?.flag || '') | defaultImage}}"
+            [alt]="tutor.name"
+            class="image-sm"
+          />
+        </div>
+      </div> -->
+    </div>
+
+    <!-- <div class="row row-cols-2">
+      <div class="col-md-7 pr-0">
+        <h5>
+          <a class="hyperlink" [routerLink]="['/tutors', tutor.username]">{{tutor.name}}</a
+          ><i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
+        </h5>
+        <h5 class="text-line-break mb-0" *ngIf="tutor.languages && tutor.languages.length">
+          <span *ngFor="let lang of tutor.languages, let i  = index"
+            >{{languageService.returnNameLanguage(lang)}} <span *ngIf="i < tutor.languages.length - 1">, </span></span
+          >
+        </h5>
+        <h5 class="text-line-break mb-0" *ngIf="tutor.languages && !tutor.languages.length">Updating</h5>
+      </div>
+      <div class="col-md-5 pl-0">
+        <div class="rating-stars text-end" style="font-size: 0.7em; margin-top: 0.4rem">
+          <ul id="stars">
+            <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
+            <span>{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
+          </ul>
+        </div>
+        <div class="text-end">
+          <div class="img-flag-tutor">
+            <img src="{{tutor?.country?.flag | defaultImage}}" alt="" class="image-sm" />
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="card-content mt-2" style="font-size: 0.8em">
+      <app-text-ellipsis
+        [content]="tutor?.highlights?.join(', ') || ''"
+        [showChar]="50"
+        [path]="'/tutors'"
+        [param]="tutor?.username || ''"
+      ></app-text-ellipsis>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between card-footer bg-transparent">
+    <a
+      class="btn btn-default"
+      [routerLink]="['/tutors', tutor.username, 'booking']"
+      [queryParams]="{ isFree: 'true' }"
+    >
+      <!-- <i class="fi fi-rs-paper-plane color-white me-2"></i> -->
+      <span translate>Book Free Trial</span>
+    </a>
+    <a class="btn btn-white" *ngIf="!tutor.isFavorite" (click)="favorite()">
+      <i class="fi fi-rs-heart color-light-red"></i>
+    </a>
+    <a class="btn btn-white" *ngIf="tutor.isFavorite" (click)="unFavorite()">
+      <i class="fi fi-ss-heart color-light-red"></i>
+    </a>
+  </div>
+</div>

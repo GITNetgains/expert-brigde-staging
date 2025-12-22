@@ -1,0 +1,212 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Manage Request</h4>
+      </c-card-header>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex flex-wrap flex-wrap justify-content-between">
+        <h4>Total Requests: {{ total }}</h4>
+        @if(total !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="total"
+          [maxSize]="3"
+        ></app-pagination>
+        }
+      </c-card-header>
+      @if( total !== 0 ){
+      <c-card-body>
+        <div class="table-responsive">
+          <table
+            cTable
+            [responsive]="true"
+            [cBorder]="1"
+            borderColor="gray"
+            bordered
+            style="table-layout: fixed; width: 1610px"
+          >
+            <thead>
+              <tr>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="userId"
+                    [sortOption]="sortOption"
+                    sortTitle="User"
+                  >
+                  </app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="tutorId"
+                    [sortOption]="sortOption"
+                    sortTitle="Tutor"
+                  ></app-sort>
+                </th>
+                <th scope="col" style="width: 150px">Group Class</th>
+                <th scope="col" style="width: 150px">Subject</th>
+                <th scope="col" style="width: 150px">Course</th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="amount"
+                    [sortOption]="sortOption"
+                    sortTitle="Amount"
+                  ></app-sort>
+                </th>
+                <th scope="col" style="width: 150px">Admin Fee</th>
+                <th scope="col" style="width: 150px">Tutor Fee</th>
+                <th scope="col" style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="amount"
+                    [sortOption]="sortOption"
+                    sortTitle="Status"
+                  ></app-sort>
+                </th>
+                <th style="width: 300px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="reason"
+                    [sortOption]="sortOption"
+                    sortTitle="Reason"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="rejectReason"
+                    [sortOption]="sortOption"
+                    sortTitle="Reject Reason"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="createdAt"
+                    [sortOption]="sortOption"
+                    sortTitle="Created on"
+                  ></app-sort>
+                </th>
+                <th
+                  scope="col"
+                  style="
+                    width: 100px;
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of items; track item._id) {
+              <tr>
+                <td>{{ item?.user?.name }}</td>
+                <td>{{ item?.tutor?.name }}</td>
+                <td>{{ item?.webinar?.name || "-" }}</td>
+                <td>{{ item?.subject?.name || "-" }}</td>
+                <td>{{ item?.course?.name || "-" }}</td>
+                <td>
+                  {{
+                    item?.amount
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  {{
+                    item?.transaction?.commission
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  {{
+                    item?.transaction?.balance
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  @switch(item?.status){ @case('approved'){
+                  <c-badge color="success">Approved</c-badge>
+                  } @case('refunded'){
+                  <c-badge color="primary">Refunded</c-badge>
+                  } @case('rejected'){
+                  <c-badge color="danger">Rejected</c-badge>
+                  } @case('pending'){
+                  <c-badge color="warning">Pending</c-badge>
+                  } }
+                </td>
+                <td>{{ item.reason }}</td>
+                <td>{{ item.rejectReason }}</td>
+                <td>{{ item?.createdAt | date }}</td>
+                <td
+                  style="
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  <a
+                    [routerLink]="['/refund/refund-list', item._id]"
+                    class="btn btn-sm btn-primary me-1"
+                  >
+                    <svg cIcon name="cilPencil" size="sm"></svg>
+                  </a>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <c-container
+          style="background-color: #ffc12b; padding: 10px 0; border-radius: 8px"
+        >
+          <span style="padding: 10px">There are no items</span>
+        </c-container>
+      </c-card-body>
+      }
+      <c-card-footer class="d-flex justify-content-end">
+        @if(total !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="total"
+          [maxSize]="3"
+        ></app-pagination>
+        }
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>

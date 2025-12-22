@@ -1,0 +1,75 @@
+<!-- <app-header *ngIf="!noShowMenu"></app-header>
+<user-left-menu *ngIf="!noShowMenu"></user-left-menu> -->
+<div class="wrapper-dashboard" [ngClass]="{ 'menu-hidden': !showSidebar, 'menu-show': showSidebar }">
+  <div class="overlay" (click)="toggleMemu()"></div>
+  <div class="header-dashboard">
+    <a class="nav-link" href="javascript:void(0)" (click)="toggleMemu()"><i class="fi fi-rr-menu-burger"></i></a>
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/"><i class="fi fi-rs-house-chimney"></i></a>
+      </li>
+      <li class="nav-item" [routerLinkActive]="'active'">
+        <a class="nav-link" [routerLink]="['/users/conversations']"><i class="fi fi-rr-envelope"></i></a>
+      </li>
+      <li class="nav-item" *ngIf="currentUser" [routerLinkActive]="'active'">
+        <a [routerLink]="['/users/notifications']" class="nav-link cart-button">
+          <span class="cart-count">{{unreadNotificationCount}}</span>
+          <i class="fi fi-rs-bell"></i>
+        </a>
+      </li>
+      <li class="nav-item" *ngIf="currentUser && currentUser.type === 'student'">
+        <a href="javascript:void(0)" class="nav-link cart-button" (click)="checkout()">
+          <span class="cart-count">{{cartCount}}</span>
+          <i class="fi fi-rr-shopping-cart"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <ng-template #popContent>
+          <div class="languages">
+            <button class="btn btn-outline-dark btn-sm font-xs me-1 mb-1" *ngFor="let lang of languages"
+              [ngClass]="{ active: lang.key === userLang }" (click)="changeLang(lang)">
+              <img class="image-sm" [src]="lang.flag" /> {{ lang.name }}
+            </button>
+          </div>
+        </ng-template>
+        <ng-template #popTitle> Choose your languages! </ng-template>
+        <a class="nav-link" href="javascript:void(0)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+          <i class="fi fi-rr-language"></i>
+        </a>
+      </li>
+      <!-- <li class="nav-item" ngbDropdown>
+          <div class="user-top">
+            <a class="dropdown-toggle nav-link" ngbDropdownToggle role="button">
+              {{info.name}}
+            </a>
+            <div ngbDropdownMenu aria-labelledby="dropdownLanguage" class="drop-menu">
+              <a class="dropdown-item"  href="javascript:void(0)" (click)="logout()">
+                <i class="fi fi-rr-user"></i> Profile settings
+              </a>
+              <a class="dropdown-item"  href="/users/profile" (click)="logout()">
+                <i class="fi fi-rs-sign-out-alt"></i> Logout
+              </a>
+            </div>
+          </div>
+        </li> -->
+      <li>
+        <a class="nav-link" href="javascript:void(0)" (click)="logout()"><i class="fi fi-rs-sign-out-alt"></i></a>
+      </li>
+    </ul>
+  </div>
+  <app-sidebar [showMenu]="showSidebar" (showMenuChange)="showMenuChange($event)"></app-sidebar>
+  <div class="content-wrapper">
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <!-- <section class="footer-bottom bg-color-black">
+    <p class="color-white text-center footer-bottom-content">
+      &copy; Livelearn
+      <script>
+        document.write(new Date().getFullYear());
+      </script>
+      <span translate>Copyright. All rights reserved </span>
+    </p>
+  </section> -->
+</div>

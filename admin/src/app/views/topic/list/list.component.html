@@ -1,0 +1,230 @@
+<c-container class="p-0">
+  <c-row class="mb-4">
+    <c-col md="12">
+      <c-card>
+        <c-card-header>
+          <h4>Manage Topics</h4>
+        </c-card-header>
+        <c-card-body>
+          <c-row>
+            <c-col md="8">
+              <div class="mb-3">
+                <input
+                  cFormControl
+                  type="text"
+                  name="name"
+                  placeholder="Enter name"
+                  [(ngModel)]="searchFields.name"
+                />
+              </div>
+            </c-col>
+            <c-col md="4">
+              <div class="mb-3">
+                <button cButton color="primary" class="w-100" (click)="filter()">
+                  Filter
+                </button>
+              </div>
+            </c-col>
+          </c-row>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center"
+          >
+            <h4 class="mb-0">Total Topic: {{ topicCount }}</h4>
+            <app-pagination
+              [currentPage]="currentPage"
+              [pageSize]="pageSize"
+              [totalItems]="topicCount"
+              [maxSize]="3"
+              (pageChanged)="onPageChange($event)"
+            ></app-pagination>
+          </div>
+        </c-card-header>
+        @if(topicCount !== 0){
+        <c-card-body>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 100%"
+            >
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'name'"
+                      [sortOption]="sortOption"
+                      sortTitle="Name"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'categoryId'"
+                      [sortOption]="sortOption"
+                      sortTitle="Category"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 200px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'subjectId'"
+                      [sortOption]="sortOption"
+                      sortTitle="Subject"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 100px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'isActive'"
+                      [sortOption]="sortOption"
+                      sortTitle="Active"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 100px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      [sortBy]="'ordering'"
+                      [sortOption]="sortOption"
+                      sortTitle="Ordering"
+                    ></app-sort>
+                  </th>
+                  <th scope="col" style="width: 150px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="createdAt"
+                      [sortOption]="sortOption"
+                      sortTitle="Created On"
+                    ></app-sort>
+                  </th>
+                  <th
+                    scope="col"
+                    style="
+                      width: 150px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of topics; track item.id) {
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>
+                    @for (cat of item.categories; track cat) {
+                    <c-badge color="primary" class="me-1">
+                      {{ cat?.name }}
+                    </c-badge>
+                    }
+                  </td>
+                  <td>
+                    @for (cat of item.subjects; track cat) {
+                    <c-badge color="primary" class="me-1">
+                      {{ cat?.name }}
+                    </c-badge>
+                    }
+                  </td>
+                  <td>
+                    <c-badge
+                      [color]="item.isActive ? 'success' : 'warning'"
+                      class="badge-update cursor-pointer"
+                      (click)="updateTopic(item)"
+                    >
+                      {{ item.isActive ? "Y" : "N" }}
+                    </c-badge>
+                  </td>
+                  <td>
+                    {{ item.ordering }}
+                  </td>
+                  <td>
+                    {{ item.createdAt | date }}
+                  </td>
+                  <td
+                    style="
+                      text-align: center;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                      padding: 0.5rem;
+                      white-space: nowrap;
+                      vertical-align: middle;
+                    "
+                  >
+                    <div style="display: flex; align-items: center; gap: 8px">
+                      <a
+                        cButton
+                        [routerLink]="['/topic/update', item._id]"
+                        class="btn btn-sm btn-primary"
+                      >
+                        <svg cIcon name="cilPencil" size="sm"></svg>
+                      </a>
+                      @if (item.isActive) {
+                      <button
+                        cButton
+                        class="btn btn-sm btn-success text-white"
+                        (click)="updateTopic(item)"
+                      >
+                        Activated
+                      </button>
+                      } @else {
+                      <button
+                        cButton
+                        class="btn btn-sm btn-danger text-white"
+                        (click)="updateTopic(item)"
+                      >
+                        Deactivated
+                      </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+        }@else {
+        <c-card-body>
+          <c-container
+            style="
+              background-color: #ffc12b;
+              padding: 10px 0;
+              border-radius: 8px;
+            "
+          >
+            <span style="padding: 10px">There are no items</span>
+          </c-container>
+        </c-card-body>
+        }
+        <c-card-footer class="d-flex justify-content-end">
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="topicCount"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

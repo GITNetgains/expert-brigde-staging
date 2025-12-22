@@ -1,0 +1,19 @@
+<section class="trust-features">
+  <div class="container">
+
+    <div class="features-grid">
+      
+      <div class="feature-box" *ngFor="let item of policyItems">
+        
+        <img [src]="item.icon" [alt]="item.title" class="feature-icon" />
+
+        <h3 class="feature-title">{{ item.title }}</h3>
+
+        <p class="feature-text">{{ item.text }}</p>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,18 @@
+<div class="modal-header">
+  <h2 class="modal-title">{{ media?.name}}</h2>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="media && media.type==='video'">
+    <video class="mb-2" *ngIf="media" width="100%" style="max-height: 80vh" src="{{media?.fileUrl}}" controls></video>
+  </div>
+  <div *ngIf="media && media.type==='audio'">
+    <audio class="mb-2" *ngIf="media" width="100%" src="{{media?.fileUrl}}" controls></audio>
+  </div>
+  <div *ngIf="media && media.type==='pdf' && media.fileUrl" class="mb-2">
+    <ngx-extended-pdf-viewer [src]="media.fileUrl" [useBrowserLocale]="true" height="80vh"
+      [listenToURL]="true"></ngx-extended-pdf-viewer>
+  </div>
+</div>

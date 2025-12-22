@@ -1,0 +1,19 @@
+@if (title) {
+<ng-container>
+  <c-toast-header [closeButton]="closeButton" color="error">
+    <toast-sample-icon [color]="colorIcon" />
+    <strong>{{ title }}</strong>
+  </c-toast-header>
+  <c-toast-body #toast [cToastClose]="toast.toast ?? undefined">
+    <ng-content />
+    {{ message }}
+  </c-toast-body>
+</ng-container>
+} @else if(!title) {
+<ng-container>
+  <c-toast-body #toast [cToastClose]="toast.toast ?? undefined">
+    <ng-content />
+    {{ message }}
+  </c-toast-body>
+</ng-container>
+}

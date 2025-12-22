@@ -1,0 +1,204 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex justify-content-between">
+        <h4>Detail Request</h4>
+      </c-card-header>
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <tbody>
+            @if(item){
+            <tr>
+              <th>User Name</th>
+              <td>{{ item?.user?.name }}</td>
+            </tr>
+            <tr>
+              <th>Paypal Email ID</th>
+              <td>{{ item?.user?.paypalEmailId || "Not provided" }}</td>
+            </tr>
+            <tr>
+              <th>Tutor Name</th>
+              <td>{{ item?.tutor?.name }}</td>
+            </tr>
+            <tr>
+              <th>Group Class / Subject / Course</th>
+              <td>
+                {{
+                  item?.targetType === "webinar"
+                    ? item?.webinar?.name
+                    : item?.targetType === "course"
+                    ? item?.course?.name
+                    : item?.subject?.name
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>
+                @switch(status){ @case('approved'){
+                <c-badge color="success">Approved</c-badge>
+                } @case('refunded'){
+                <c-badge color="primary">Refunded</c-badge>
+                } @case('rejected'){
+                <c-badge color="danger">Rejected</c-badge>
+                } @case('pending'){
+                <c-badge color="warning">Pending</c-badge>
+                } }
+              </td>
+            </tr>
+            <tr>
+              <th>Amount Request</th>
+              <td>
+                {{
+                  item?.amount
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Admin Fee</th>
+              <td>
+                {{
+                  item?.transaction?.commission
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Tutor Fee</th>
+              <td>
+                {{
+                  item?.transaction?.balance
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Admin note</th>
+              <td>" {{ item?.note }} "</td>
+            </tr>
+            <tr>
+              <th>Student Reason</th>
+              <td>" {{ item?.reason }} "</td>
+            </tr>
+            <tr>
+              <th>Reject Reason</th>
+              <td>" {{ item?.rejectReason }} "</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+@if(status !== 'refunded' && status !== 'rejected'){ @if(status ==='approved'){
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Confirm refund</h4>
+      </c-card-header>
+      <c-card-body>
+        <button cButton color="success" class="text-white" (click)="confirm()">
+          Confirm refund
+        </button>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+} @if(status === 'pending'){
+<c-row [gutter]="3">
+  <c-col xs="12" sm="12" md="6">
+    <c-card>
+      <c-card-header>
+        <h4>Approve Request</h4>
+      </c-card-header>
+      <c-card-body>
+        <label cLabel>
+          <strong>Note</strong>
+        </label>
+        <textarea
+          cFormControl
+          id="Note"
+          name="Note"
+          rows="3"
+          placeholder="Enter some text here"
+        ></textarea>
+      </c-card-body>
+      <c-card-footer class="text-end">
+        <button
+          cButton
+          color="success"
+          class="text-white"
+          (click)="approveRequest()"
+        >
+          Approve
+        </button>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+  <c-col xs="12" sm="12" md="6">
+    <c-card>
+      <c-card-header>
+        <h4>Reject Request</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col md="12">
+            <label cLabel>
+              <strong>Note</strong>
+            </label>
+            <textarea
+              cFormControl
+              id="Note"
+              name="Note"
+              rows="3"
+              placeholder="Enter some text here"
+              [(ngModel)]="reject.note"
+            ></textarea>
+          </c-col>
+          <c-col md="12">
+            <label cLabel>
+              <strong>Reject Reason</strong>
+            </label>
+            <textarea
+              cFormControl
+              id="reject"
+              name="reject"
+              rows="3"
+              placeholder="Enter some text here"
+              [(ngModel)]="reject.rejectReason"
+            ></textarea>
+          </c-col>
+        </c-row>
+      </c-card-body>
+      <c-card-footer class="text-end">
+        <button
+          cButton
+          color="danger"
+          class="text-white"
+          (click)="rejectRequest()"
+        >
+          Reject
+        </button>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>
+} }

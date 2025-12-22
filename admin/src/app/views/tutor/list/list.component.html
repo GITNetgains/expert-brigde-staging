@@ -1,0 +1,345 @@
+<div class="row">
+  <div class="col-md-12">
+    <c-card class="mb-4">
+      <c-card-header>
+        <h4>Manage Experts</h4>
+      </c-card-header>
+      <c-card-body>
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <input
+              type="text"
+              name="name"
+              cFormControl
+              [(ngModel)]="searchFields.name"
+              placeholder="Filter by Name"
+            />
+          </div>
+          <div class="col-md-3 mb-3">
+            <input
+              type="text"
+              name="email"
+              cFormControl
+              [(ngModel)]="searchFields.email"
+              placeholder="Filter by Email"
+            />
+          </div>
+          <div class="col-md-2 mb-3">
+            <select cSelect [(ngModel)]="searchFields.status">
+              <option value="">Status</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+          <div class="col-md-2 mb-3">
+            <select cSelect [(ngModel)]="searchFields.rating">
+              <option value="">Filter by Rating</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+              <option value="0">0</option>
+            </select>
+          </div>
+          <div class="col-md-2 mb-3">
+            <button cButton color="primary" class="w-100" (click)="filter()">
+              Filter
+            </button>
+          </div>
+        </div>
+      </c-card-body>
+    </c-card>
+
+    <c-card>
+      <c-card-header>
+        <div
+          class="d-flex flex-wrap justify-content-between align-items-center"
+        >
+          <h4 class="mb-0">Total Experts: {{ count }}</h4>
+          @if(count !== 0){
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+          }
+        </div>
+      </c-card-header>
+      @if(count !== 0){
+      <c-card-body>
+        <div class="table-responsive">
+          <table
+            cTable
+            [responsive]="true"
+            [cBorder]="1"
+            borderColor="gray"
+            bordered
+            style="table-layout: fixed; width: 1610px"
+          >
+            <thead>
+              <tr>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="name"
+                    [sortOption]="sortOption"
+                    sortTitle="Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="username"
+                    [sortOption]="sortOption"
+                    sortTitle="User Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 250px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="email"
+                    [sortOption]="sortOption"
+                    sortTitle="Email"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="ratingAvg"
+                    [sortOption]="sortOption"
+                    sortTitle="Rating"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="isActive"
+                    [sortOption]="sortOption"
+                    sortTitle="Active"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="emailVerified"
+                    [sortOption]="sortOption"
+                    sortTitle="Email Verified"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="isZoomAccount"
+                    [sortOption]="sortOption"
+                    sortTitle="Zoom Activation"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="isHomePage"
+                    [sortOption]="sortOption"
+                    sortTitle="In Home Page"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="featured"
+                    [sortOption]="sortOption"
+                    sortTitle="Featured"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="rejected"
+                    [sortOption]="sortOption"
+                    sortTitle="Approved"
+                  ></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="createdAt"
+                    [sortOption]="sortOption"
+                    sortTitle="Created On"
+                  ></app-sort>
+                </th>
+                <th
+                  style="
+                    width: 100px;
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for(item of items; track item._id; let i = $index){
+              <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.ratingAvg }}</td>
+                <td>
+                  @if(!item.isActive){<span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'isActive', true)"
+                    >N</span
+                  >}@else{
+                  <span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'isActive', false)"
+                    >Y</span
+                  >}
+                </td>
+                <td>
+                  @if(!item.emailVerified){
+                  <span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'emailVerified', true)"
+                    >N</span
+                  >}@else{
+                  <span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'emailVerified', false)"
+                    >Y</span
+                  >}
+                </td>
+                <td>
+                  @if(item.isZoomAccount){
+                  <span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'isZoomAccount', false)"
+                    >Y</span
+                  >}@else{
+                  <span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'isZoomAccount', true)"
+                    >N</span
+                  >}
+                </td>
+                <td>
+                  @if(!item.isHomePage){<span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'isHomePage', true)"
+                    >N</span
+                  >} @else{<span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'isHomePage', false)"
+                    >Y</span
+                  >}
+                </td>
+                <td>
+                  @if(!item.featured){
+                  <span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'featured', true)"
+                    >N</span
+                  >} @else{<span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'featured', false)"
+                    >Y</span
+                  >}
+                </td>
+                <td>
+                  @if(item.pendingApprove) {
+                  <span class="badge text-bg-primary text-white">Pending</span>
+                  } @else if(!item.pendingApprove && item.rejected){
+                  <span
+                    class="badge text-bg-warning text-white"
+                    (click)="update(item, 'approved', true)"
+                    >N</span
+                  >
+                  } @else{
+                  <span
+                    class="badge text-bg-success text-white"
+                    (click)="update(item, 'approved', false)"
+                    >Y</span
+                  >
+                  }
+                </td>
+                <td>
+                  <span>{{ item.createdAt | date }}</span>
+                </td>
+                <td
+                  style="
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  <div class="d-flex">
+                    <a
+                      [routerLink]="['/tutor/update', item._id]"
+                      cButton
+                      class="btn btn-sm btn-primary me-1"
+                    >
+                      <svg cIcon name="cilPencil" size="sm"></svg>
+                    </a>
+                    <a
+                      cButton
+                      [color]="item.isActive ? 'success' : 'danger'"
+                      size="sm"
+                      class="btn btn-sm me-1"
+                      (click)="changeStatus(item)"
+                    >
+                      @if(item.isActive){
+                      <svg
+                        cIcon
+                        name="cilCheckCircle"
+                        class="text-white"
+                        size="sm"
+                      ></svg>
+                      } @else {
+                      <svg
+                        cIcon
+                        name="cilXCircle"
+                        class="text-white"
+                        size="sm"
+                      ></svg>
+                      }
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <div style="background-color: #ffc12b; border-radius: 8px">
+          <span style="padding: 10px; display: block">There are no items</span>
+        </div>
+      </c-card-body>
+      }
+
+      <c-card-footer class="d-flex justify-content-end">
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
+      </c-card-footer>
+    </c-card>
+  </div>
+</div>

@@ -1,0 +1,291 @@
+<div class="sm-padding data-table">
+  <div class="container">
+    <div class="row data-user">
+      <div class="col-md-12">
+        <div class="card mb-3">
+          <div class="card-body card-filter">
+            <div class="row align-items-center input-border">
+              <div class="col-sm-12 col-md-3">
+                <div class="dataTables_length" id="table_id_length">
+                  <select
+                    style="width: 100%"
+                    name="category"
+                    class="form-control"
+                    [(ngModel)]="searchFields.categoryIds"
+                    (change)="query()"
+                  >
+                    <option selected translate value="">Category</option>
+                    <option
+                      *ngFor="let cate of categories"
+                      value="{{cate._id}}"
+                    >
+                      {{cate.name}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-3">
+                <div class="dataTables_length" id="table_id_length">
+                  <input
+                    style="width: 100%"
+                    name="search"
+                    type="search"
+                    class="form-control form-control-sm"
+                    aria-controls="table_id"
+                    placeholder="{{'Search Title'|translate}}"
+                    (keyup)="doSearch($event)"
+                  />
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-3">
+                <div class="dataTables_length" id="table_id_length">
+                  <a
+                    class="btn btn-default"
+                    [routerLink]="['/users/courses/create']"
+                    ><i class="fi fi-rr-plus"></i>
+                    <span translate>Add Course</span></a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" *ngIf="loading">
+            <p><span translate>Loading</span>...</p>
+          </div>
+          <div *ngIf="!loading">
+            <table
+              id="table_id"
+              class="table tble-responsive table-user dataTable no-footer"
+              role="grid"
+              aria-describedby="table_id_info"
+            >
+              <thead>
+                <tr role="row">
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-sort="ascending"
+                    aria-label="Main Image: activate to sort column descending"
+                    translate
+                  >
+                    Main Image
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="title: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('name', 'asc')" translate>Title</span>
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'title'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Category: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('category', 'asc')" translate
+                      >Category</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'category'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Price: activate to sort column ascending"
+                    translate
+                  >
+                    <span (click)="sortBy('price', 'asc')" translate
+                      >Price</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'price'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Created At: activate to sort column ascending"
+                    style="width: 61px"
+                  >
+                    <span (click)="sortBy('createdAt', 'asc')" translate
+                      >CreatedAt</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'createdAt'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="status: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('status', 'asc')" translate
+                      >Status</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'status'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Action: activate to sort column ascending"
+                    translate
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  role="row"
+                  class="odd"
+                  *ngFor="let item of items, let i = index"
+                >
+                  <td class="sorting_1" style="width: 100px">
+                    <img
+                      src="{{item?.mainImage?.thumbUrl}}"
+                      alt=""
+                      class="table-img"
+                      onerror="this.src='/assets/images/no-image.jpg'"
+                    />
+                  </td>
+                  <td>{{item?.name}}</td>
+                  <td>
+                    <span *ngFor="let cat of item.categories; let i = index"
+                      >{{ cat?.name }}
+                      <span *ngIf="i < item.categories.length - 1">, </span>
+                    </span>
+                  </td>
+                  <td>{{item?.price | appCurrency}}</td>
+                  <td>{{item?.createdAt | date:'mediumDate'}}</td>
+                  <td>
+                    <span
+                      class="label label-light-warning"
+                      *ngIf="item.isDraff"
+                      translate
+                      >Draft</span
+                    >
+                    <span
+                      class="label label-light-warning"
+                      *ngIf="!item?.approved && !item.isDraff"
+                      translate
+                      >Pending</span
+                    >
+                    <span
+                      class="label label-light-primary"
+                      *ngIf="item?.approved && !item.isDraff"
+                      translate
+                      >Approved</span
+                    >
+                  </td>
+                  <td>
+                    <a
+                      class="btn btn-outline-dark btn-action"
+                      *ngIf="!item.isDraff"
+                      [routerLink]="['/courses',item?.alias]"
+                    >
+                      <i class="fi fi-rr-eye"></i>
+                    </a>
+                    <a
+                      class="btn btn-outline-dark btn-action"
+                      [routerLink]="['/users/courses', item._id]"
+                    >
+                      <i class="fi fi-rs-pencil"></i>
+                    </a>
+                    <a
+                      class="btn btn-outline-danger btn-action"
+                      (click)="remove(item, i)"
+                    >
+                      <i class="fi fi-rr-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="bottom-table">
+              <div
+                class="showing-table"
+                id="table_id_info"
+                role="status"
+                aria-live="polite"
+                translate
+              >
+                <span translate>Showing</span> <span> {{ fromItem }} </span>
+                <span translate>to</span> <span> {{ toItem }} </span>
+                <span translate>of</span> <span> {{ total }} </span>
+                <span translate>entries</span>
+              </div>
+              <div class="input-border show-entries" id="table_id_length">
+                <label translate>Show entries</label>
+                <select
+                  name="table_id_length"
+                  aria-controls="table_id"
+                  class="custom-select custom-select-sm form-control form-control-sm"
+                  [(ngModel)]="pageSize"
+                  (change)="query()"
+                >
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+              <div class="pagination-table" id="table_id_paginate">
+                <ngb-pagination
+                  [collectionSize]="total"
+                  [(page)]="currentPage"
+                  [pageSize]="pageSize"
+                  [maxSize]="2"
+                  (pageChange)="query()"
+                >
+                  <ng-template ngbPaginationPrevious translate
+                    ><span translate
+                      ><i class="fi fi-rr-angle-small-left"></i></span
+                  ></ng-template>
+                  <ng-template ngbPaginationNext translate
+                    ><span translate
+                      ><i class="fi fi-rr-angle-small-right"></i></span
+                  ></ng-template>
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

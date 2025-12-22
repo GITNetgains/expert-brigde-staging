@@ -1,0 +1,269 @@
+<!-- Footer content starts -->
+<!-- 
+<section class="sm-padding bg-color-light-black">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <p class="footer-content color-white" translate>
+          {{ config.siteName }} - practise makes progress. Find top rated
+          instructors guide you in every step of your journey. Try a free lesson
+          today. Tutors are waiting for you.
+        </p>
+        <a
+          class="btn btn-default"
+          *ngIf="!isLoggedin"
+          [routerLink]="['/auth/sign-up']"
+          translate
+          >Register</a
+        > -->
+        <!-- <button-signup-component [text]="textButton"></button-signup-component> -->
+      <!-- </div>
+      <div class="col-md-3 rmt-4">
+        <h4 class="color-white">
+          <span translate>About</span> {{ config.siteName }} &copy;
+        </h4>
+        <ul class="p-0 list-unstyled">
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="'/pages/how-does-it-work'"
+              routerLinkActive="router-link-active"
+              translate
+              >How it works</a
+            >
+          </li>
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/pages/teach-with-us']"
+              routerLinkActive="router-link-active"
+              translate
+              >Teach with us</a
+            >
+          </li>
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/groupclass']"
+              translate
+              >Group classes</a
+            >
+          </li>
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/courses']"
+              translate
+              >Courses</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-3 rmt-4">
+        <h4 class="color-white" translate>Resources</h4>
+        <ul class="p-0 list-unstyled">
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/categories']"
+              translate
+              >Categories</a
+            >
+          </li> -->
+          <!-- <li class="footer-item">
+            <a class="footer-link color-white" [routerLink]="['/tutors/subject']" translate>Subjects</a>
+          </li> -->
+          <!-- <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/tutors']"
+              translate
+              >Find tutors</a
+            >
+          </li>
+          <div *ngIf="!isLoggedin">
+            <li class="footer-item">
+              <a
+                class="footer-link color-white"
+                [routerLink]="['/auth/login']"
+                translate
+                >Login</a
+              >
+            </li>
+            <li class="footer-item">
+              <a
+                class="footer-link color-white"
+                [routerLink]="['/auth/sign-up']"
+                translate
+                >Sign up</a
+              >
+            </li>
+          </div>
+        </ul>
+      </div>
+      <div class="col-md-3 rmt-4">
+        <h4 class="color-white" translate>Contact Us</h4>
+        <ul class="p-0 list-unstyled">
+          <li class="footer-item">
+            <span translate class="color-white">Email:</span>&nbsp;
+            <a
+              class="footer-link color-white"
+              href="mailto:{{ config?.contactEmail || 'contact@pinlearn.com' }}"
+            >
+              {{ config?.contactEmail || 'contact@pinlearn.com' }}</a
+            >
+          </li>
+          <li class="footer-item">
+            <span translate class="color-white">Phone:</span>&nbsp;
+            <a
+              class="footer-link color-white"
+              href="tel:{{ config?.contactPhone || '+1-408-909-5136' }}"
+            >
+              {{ config?.contactPhone || '+1-408-909-5136' }}</a
+            >
+          </li>
+          <ul class="p-0 list-unstyled social-media-links mt-3">
+            <li class="facebook" *ngIf="config?.facebookLink">
+              <a
+                target="_blank"
+                class="footer-social"
+                [href]="'https://' + config?.facebookLink"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+            </li>
+            <li class="twitter" *ngIf="config?.twitterLink">
+              <a
+                target="_blank"
+                class="footer-social"
+                [href]="'https://' + config?.twitterLink"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentcolor"
+                  viewBox="0 0 30 30"
+                  width="30px"
+                  height="30px"
+                >
+                  <path
+                    d="M26.37,26l-8.795-12.822l0.015,0.012L25.52,4h-2.65l-6.46,7.48L11.28,4H4.33l8.211,11.971L12.54,15.97L3.88,26h2.65 l7.182-8.322L19.42,26H26.37z M10.23,6l12.34,18h-2.1L8.12,6H10.23z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li class="instagram" *ngIf="config?.instagramLink">
+              <a
+                target="_blank"
+                class="footer-social"
+                [href]="'https://' + config?.instagramLink"
+                ><i class="fab fa-instagram"></i
+              ></a>
+            </li>
+          </ul>
+          <li class="footer-item">
+            <a
+              class="footer-link color-white"
+              [routerLink]="['/pages', 'terms']"
+              translate
+              >Terms of service - privacy policy</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="footer-bottom bg-color-black">
+  <div class="footer-static-pages">
+    <li *ngFor="let item of staticPages">
+      <a
+        class="footer-link color-white"
+        *ngIf="item.type !== 'post'"
+        [routerLink]="['/pages', item.alias]"
+        routerLinkActive="router-link-active"
+        translate
+        >{{ item.title }}</a
+      > -->
+    <!-- </li>
+  </div>
+  <p class="color-white text-center footer-bottom-content">
+    &copy; {{ config.siteName }}
+    <script>
+      document.write(new Date().getFullYear());
+    </script>
+    <span translate>Copyright. All rights reserved </span> -->
+    <!-- {{appConfig?.version}}
+    <span translate>build</span>
+    {{appConfig?.build}} -->
+  <!-- </p>
+</section> -->
+
+<!-- Footer content ends -->
+
+
+<footer class="footer">
+  <div class="footer-container">
+
+    <!-- Left Branding -->
+    <div class="footer-brand">
+      <img src="assets/images/logo.svg" alt="ExpertBridge" class="footer-logo" />
+      <p class="footer-text">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
+        et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.
+      </p>
+
+      <div class="social-icons">
+       <p> FOLLOW US</p>
+        <a href="#"><img src="assets/images/fb.svg" /></a>
+        <a href="#"><img src="assets/images/ig.svg" /></a>
+        <a href="#"><img src="assets/images/yt.svg" /></a>
+        <a href="#"><img src="assets/images/x.svg" /></a>
+      </div>
+    </div>
+
+    <!-- Right Columns -->
+    <div class="footer-columns">
+
+      <div class="footer-col">
+        <h4>For Client</h4>
+        <a href="#">Short Consultant</a>
+        <a href="#">Extended Project</a>
+        <a href="#">Expert Survey</a>
+        <a href="#">Insights</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>For Expert</h4>
+        <a href="#">Short Consult</a>
+        <a href="#">Extended Project</a>
+        <a href="#">Expert Survey</a>
+        <a href="#">Insights</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About us</a>
+        <a href="#">Contact us</a>
+        <a href="#">Partners</a>
+        <a href="#">FAQs</a>
+        <a href="#">Help & support</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <p>©2025 ExpertBridge</p>
+
+    <div class="footer-links">
+      <a href="#">Terms of Service</a>
+      <span>|</span>
+      <a href="#">Privacy Policy</a>
+      <span>|</span>
+      <a href="#">Your Privacy Choices</a>
+      <span>|</span>
+      <a href="#">Accessibility</a>
+    </div>
+  </div>
+</footer>
+

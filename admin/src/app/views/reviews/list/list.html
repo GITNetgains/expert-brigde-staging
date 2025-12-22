@@ -1,0 +1,89 @@
+@if(reviews && reviews.length > 0) {
+<div class="list-review list-rating">
+  <div class="row">
+    @for(item of reviews; track item._id; let i = $index) {
+    <div class="col-md-6 mb-3">
+      <c-card>
+        <c-card-body>
+          <div class="d-flex">
+            <div class="me-3">
+              <img
+                class="rounded-circle"
+                [src]="item?.rater?.avatarUrl"
+                alt="User avatar"
+                style="width: 60px; height: 60px; object-fit: cover"
+              />
+            </div>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between mb-2">
+                <h5 class="mb-0">{{item?.rater?.name}}</h5>
+                <small class="text-muted"
+                  >{{item?.createdAt | date:'short'}}</small
+                >
+              </div>
+
+              @if(item?.course) {
+              <a
+                [routerLink]="['/courses/preview', item?.course?._id]"
+                class="d-block mb-1 text-decoration-none"
+              >
+                Course: {{item?.course?.name}}
+              </a>
+              } @if(item?.webinar) {
+              <a
+                [routerLink]="['/group-classes/update', item?.webinar?._id]"
+                class="d-block mb-1 text-decoration-none"
+              >
+                Group Class: {{item?.webinar?.name}}
+              </a>
+              } @if(item?.appointment?.subject) {
+              <a
+                [routerLink]="['/appointment/detail', item?.appointment?._id]"
+                class="d-block mb-1 text-decoration-none"
+              >
+                Subject: {{item?.appointment?.subject?.name}}
+              </a>
+              }
+
+              <p class="fst-italic mb-2">{{item?.comment}}</p>
+              <star-rating [rate]="item?.rating"></star-rating>
+            </div>
+          </div>
+        </c-card-body>
+        <c-card-footer>
+          <button
+            cButton
+            color="danger"
+            size="sm"
+            class="me-2"
+            (click)="remove(item, i)"
+          >
+            <svg style="color: white" cIcon name="cilTrash" size="sm"></svg>
+          </button>
+          <button cButton color="primary" size="sm" (click)="update(item, i)">
+            <svg cIcon name="cilPencil" size="sm"></svg>
+          </button>
+        </c-card-footer>
+      </c-card>
+    </div>
+    }
+  </div>
+</div>
+} @else {
+<div class="alert alert-warning">There are no reviews.</div>
+} @if(total > pageSize) {
+<div class="d-flex justify-content-end mt-3">
+  <app-pagination
+    [currentPage]="page"
+    [pageSize]="pageSize"
+    [totalItems]="total"
+    [maxSize]="3"
+    (pageChanged)="onPageChange($event)"
+  ></app-pagination>
+</div>
+} @if(showUpdateModal) {
+<app-review-edit
+  [reviewId]="updateReviewId"
+  (closeModal)="handleUpdateModalClose($event)"
+></app-review-edit>
+}

@@ -1,0 +1,197 @@
+<c-card>
+  <c-card-body>
+    <form (submit)="submit()" #frm="ngForm">
+      <c-container>
+        <c-row class="mb-3">
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel
+                >At the end of my course, students will be able to</label
+              >
+              @if (course.goalCourse && course.goalCourse.length) {
+              <ul>
+                @for (item of course.goalCourse; track $index; let i = $index) {
+                <li style="list-style: none">
+                  <a
+                    (click)="removeItem('goalCourse',i)"
+                    role="button"
+                    class="me-2"
+                  >
+                    <svg
+                      cIcon
+                      name="cilTrash"
+                      size="sm"
+                      class="text-danger"
+                    ></svg>
+                  </a>
+                  {{item}}
+                </li>
+                }
+              </ul>
+              }
+              <div class="row">
+                <c-col md="10">
+                  <div class="mb-3">
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="courseGoal.goalCourse"
+                      name="goalCourse"
+                      placeholder="At the end of my course, students will be able to"
+                    />
+                  </div>
+                </c-col>
+                <c-col
+                  md="2"
+                  class="d-flex align-items-center justify-content-center mb-3"
+                >
+                  <button
+                    cButton
+                    color="primary"
+                    [disabled]="!courseGoal.goalCourse?.trim()"
+                    (click)="addItem('goalCourse')"
+                    type="button"
+                  >
+                    Add
+                  </button>
+                </c-col>
+              </div>
+            </div>
+          </c-col>
+        </c-row>
+
+        <c-row class="mb-3">
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel>Who should take this course? Who should not?</label>
+              @if (course.whyJoinCourse && course.whyJoinCourse.length) {
+              <ul>
+                @for (item of course.whyJoinCourse; track $index; let i =
+                $index) {
+                <li style="list-style: none">
+                  <a
+                    (click)="removeItem('whyJoinCourse',i)"
+                    role="button"
+                    class="me-2"
+                  >
+                    <svg
+                      cIcon
+                      name="cilTrash"
+                      size="sm"
+                      class="text-danger"
+                    ></svg>
+                  </a>
+                  {{item}}
+                </li>
+                }
+              </ul>
+              }
+              <div class="row">
+                <c-col md="10">
+                  <div class="mb-3">
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="courseGoal.whyJoinCourse"
+                      name="whyJoinCourse"
+                      placeholder="Who should take this course? Who should not?"
+                    />
+                  </div>
+                </c-col>
+                <c-col
+                  md="2"
+                  class="d-flex align-items-center justify-content-center mb-3"
+                >
+                  <button
+                    cButton
+                    color="primary"
+                    [disabled]="!courseGoal.whyJoinCourse?.trim()"
+                    (click)="addItem('whyJoinCourse')"
+                    type="button"
+                  >
+                    Add
+                  </button>
+                </c-col>
+              </div>
+            </div>
+          </c-col>
+        </c-row>
+
+        <c-row>
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel
+                >What will students need to know or do before starting this
+                course?</label
+              >
+              @if (course.needToJoinCourse && course.needToJoinCourse.length) {
+              <ul>
+                @for (item of course.needToJoinCourse; track $index; let i =
+                $index) {
+                <li style="list-style: none">
+                  <a
+                    (click)="removeItem('needToJoinCourse',i)"
+                    role="button"
+                    class="me-2"
+                  >
+                    <svg
+                      cIcon
+                      name="cilTrash"
+                      size="sm"
+                      class="text-danger"
+                    ></svg>
+                  </a>
+                  {{item}}
+                </li>
+                }
+              </ul>
+              }
+              <div class="row">
+                <c-col md="10">
+                  <div class="mb-3">
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="courseGoal.needToJoinCourse"
+                      name="needToJoinCourse"
+                      placeholder="What will students need to know or do before starting this course?"
+                    />
+                  </div>
+                </c-col>
+                <c-col
+                  md="2"
+                  class="d-flex align-items-center justify-content-center mb-3"
+                >
+                  <button
+                    cButton
+                    color="primary"
+                    [disabled]="!courseGoal.needToJoinCourse?.trim()"
+                    (click)="addItem('needToJoinCourse')"
+                    type="button"
+                  >
+                    Add
+                  </button>
+                </c-col>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <button cButton color="primary" type="button" (click)="onTab(1)">
+                Previous
+              </button>
+              <button
+                cButton
+                color="primary"
+                class="ms-2"
+                type="button"
+                (click)="onTab(3)"
+              >
+                Next
+              </button>
+            </div>
+          </c-col>
+        </c-row>
+      </c-container>
+    </form>
+  </c-card-body>
+</c-card>

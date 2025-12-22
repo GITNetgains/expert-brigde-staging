@@ -1,0 +1,243 @@
+<app-ai-query-bar></app-ai-query-bar>
+
+<section class="sm-padding">
+  <div class="container">
+
+    <!-- TITLE -->
+    <div class="row mb-5">
+      <div class="heading-box col-12 text-center">
+        <h2 class="main-heading" translate>
+          Recommended experts for your project
+        </h2>
+      </div>
+    </div>
+
+    <div class="row row-filter">
+
+      <!-- FILTER COLUMN -->
+      <div class="col-12 col-lg-3">
+
+        <!-- MOBILE FILTER TOGGLE -->
+        <input type="checkbox" id="filterToggle" class="filter-toggle-checkbox" />
+
+        <label for="filterToggle" class="mobile-filter-btn">
+          <i class="fi fi-rr-bars-filter"></i> Filter
+        </label>
+
+        <!-- FILTER PANEL -->
+        <div class="filter-card filter-panel">
+
+          <h3 class="filter-title">Filter</h3>
+
+          <!-- SKILL -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('skill')">
+              Skill <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.skill">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.skillIds"
+                      (ngModelChange)="selectSkill()">
+                <option value="">None</option>
+                <option *ngFor="let sk of skills" [value]="sk._id">
+                  {{ sk.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- EXPERTISE -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('expertise')">
+              Expertise <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.expertise">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.subjectIds"
+                      (ngModelChange)="selectSubject()">
+                <option value="">None</option>
+                <option *ngFor="let sub of subjects" [value]="sub._id">
+                  {{ sub.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TECHNOLOGY -->
+          <!-- <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('technology')">
+              Technology <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.technology">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.skillIds"
+                      (ngModelChange)="selectSkill()">
+                <option value="">None</option>
+                <option *ngFor="let sk of skills" [value]="sk._id">
+                  {{ sk.name }}
+                </option>
+              </select>
+            </div>
+          </div> -->
+
+          <!-- CATEGORY -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('category')">
+              Category <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.category">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.categoryIds"
+                      (ngModelChange)="selectCategory()">
+                <option value="">None</option>
+                <option *ngFor="let cate of categories" [value]="cate._id">
+                  {{ cate.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- INDUSTRY -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('industry')">
+              Industry <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.industry">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.industryIds"
+                      (ngModelChange)="selectIndustry()">
+                <option value="">None</option>
+                <option *ngFor="let ind of industries" [value]="ind._id">
+                  {{ ind.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- CONSULTATION FEE -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('fee')">
+              Consultation Fee <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.fee">
+              <div class="d-flex gap-2">
+                <input type="number" class="form-control"
+                       placeholder="Min Fee"
+                       [(ngModel)]="searchFields.minConsultationFee"
+                       (ngModelChange)="query()" />
+                <input type="number" class="form-control"
+                       placeholder="Max Fee"
+                       [(ngModel)]="searchFields.maxConsultationFee"
+                       (ngModelChange)="query()" />
+              </div>
+            </div>
+          </div>
+
+          <!-- SORT -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('recent')">
+              Sort By <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.recent">
+              <select class="form-control"
+                      [(ngModel)]="sortValue"
+                      (ngModelChange)="onSortChange($event)">
+                <option value="">None</option>
+                <option value="recent">Most Recent</option>
+                <option value="rating">Highest Rating</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- RATING -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('rating')">
+              Rating <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.rating">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.rating"
+                      (ngModelChange)="query()">
+                <option value="">Any</option>
+                <option *ngFor="let r of [5,4,3,2,1]" [value]="r">
+                  {{ r }}+
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- LOCATION -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('location')">
+              Location <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.location">
+              <select class="form-control mb-2"
+                      [(ngModel)]="searchFields.countryCode"
+                      (ngModelChange)="query()">
+                <option value="">Country</option>
+                <option *ngFor="let c of countries" [value]="c.code">
+                  {{ c.name }}
+                </option>
+              </select>
+
+              <select class="form-control"
+                      [(ngModel)]="searchFields.state"
+                      (ngModelChange)="query()">
+                <option value="">State</option>
+                <option *ngFor="let s of states" [value]="s">
+                  {{ s }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- EXPERIENCE -->
+          <div class="filter-item">
+            <button class="filter-header" (click)="toggleFilter('experience')">
+              Yrs Of Experience <i class="fi fi-rr-angle-small-down"></i>
+            </button>
+            <div class="filter-body" *ngIf="openFilter.experience">
+              <select class="form-control"
+                      [(ngModel)]="searchFields.yearsExperience"
+                      (ngModelChange)="query()">
+                <option value="">Any</option>
+                <option *ngFor="let y of [1,2,3,5,7,10,15,20]" [value]="y">
+                  {{ y }}+
+                </option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="col-12 col-lg-8">
+        <p *ngIf="loading">Loading...</p>
+
+        <div class="blocks">
+          <app-tutor-card
+            *ngFor="let item of tutors"
+            [tutor]="item"
+            [config]="config"
+            [isBorder]="item._id === activeTutor?._id"
+            [currentUser]="currentUser"
+            (hover)="onHoverTutor($event)">
+          </app-tutor-card>
+        </div>
+
+        <div class="mt-4" *ngIf="total > pageSize">
+          <ngb-pagination
+            [collectionSize]="total"
+            [(page)]="page"
+            [pageSize]="pageSize"
+            [maxSize]="2"
+            (pageChange)="pageChange()">
+          </ngb-pagination>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

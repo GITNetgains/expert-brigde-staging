@@ -1,0 +1,134 @@
+<div class="modal-header">
+  <h2 class="modal-title" translate>Lecture</h2>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #frm="ngForm" (submit)="submit(frm)" class="add-certification-form">
+    <div class="row">
+      <div class="col col-md-12">
+        <div class="form-group">
+          <label><span translate>Title</span><span class="required">*</span></label>
+          <input type="text" name="title" class="form-control" placeholder="{{'Enter title'|translate}}"
+            [(ngModel)]="lecture.title" required #title="ngModel" />
+          <div *ngIf="title.errors && (title.dirty || title.touched || submitted)">
+            <p [hidden]="!title.errors['required']" style="color: red" translate>Title is required!</p>
+          </div>
+        </div>
+      </div>
+      <div class="col col-md-12">
+        <div class="form-group">
+          <label translate>Description</label>
+          <textarea name="description" rows="3" class="form-control" placeholder="{{'Enter some text here'|translate}}"
+            [(ngModel)]="lecture.description" #description="ngModel"></textarea>
+        </div>
+      </div>
+      <div class="col col-md-6">
+        <div class="form-group">
+          <label translate>Ordering</label>
+          <input type="number" name="ordering" class="form-control" placeholder="{{'0'|translate}}"
+            [(ngModel)]="lecture.ordering" #ordering="ngModel" />
+          <div *ngIf="ordering.value < 0">
+            <p style="color: red" translate>Order must be greater than or equal to 0!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+        <div class="lecture-items">
+          <div class="custom-control custom-checkbox" *ngFor="let media of medias, let i=index">
+            <div class="d-flex justify-content-between" *ngIf="media?.mediaType==='video'">
+              <p class="font-xs text-secondary">
+                <i class="fi fi-rr-play-circle me-2 font-xs"></i>{{media?.media?.name}}
+              </p>
+              <div class="font-xs">
+                <span class="label label-light-warning" translate>video</span>
+                <span class="label label-light-primary ms-1">{{returnDuration(media?.media?.duration || 0)}}</span>
+                <a (click)="removeMedia(media, i)" class="btn btn-outline-danger btn-action ms-1">
+                  <i class="fi fi-rr-trash"></i>
+                </a>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between" *ngIf="media?.mediaType==='pdf'">
+              <p class="font-xs text-secondary"><i class="fi fi-rr-file me-2 font-xs"></i>{{media?.media?.name}}</p>
+              <div class="font-xs">
+                <span class="label label-light-warning" translate>pdf</span>
+                <span class="label label-light-primary ms-1">{{returnDuration(media?.totalLength || 0)}}</span>
+                <a (click)="removeMedia(media, i)" class="btn btn-outline-danger btn-action ms-1">
+                  <i class="fi fi-rr-trash"></i>
+                </a>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between" *ngIf="media?.mediaType==='audio'">
+              <p class="font-xs text-secondary">
+                <i class="fi fi-rr-play-circle me-2 font-xs"></i>{{media?.media?.name}}
+              </p>
+              <div class="font-xs">
+                <span class="label label-light-warning" translate>audio</span>
+                <span class="label label-light-primary ms-1">{{returnDuration(media?.media?.duration || 0)}}</span>
+                <a (click)="removeMedia(media, i)" class="btn btn-outline-danger btn-action ms-1">
+                  <i class="fi fi-rr-trash"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="col-md-12">
+        <div class="form-group text-center">
+          <p class="card-text text-center" translate>
+            Add lecture media content<br />
+            <small class="ms-1" translate> (Maximum size: {{maxFileSize}} mb)</small>
+          </p>
+          <div class="mt-3">
+            <label class="custom-radio" translate>Add Video(*.mp4,*.mov)
+              <input type="radio" (click)="checkMediaType('video')" [ngModel]="mediaType" name="media" value="video" />
+              <span class="checkmark"></span>
+            </label>
+            <label class="custom-radio" translate>Add Audio(*.mp3)
+              <input type="radio" (click)="checkMediaType('audio')" [ngModel]="mediaType" name="media" value="audio" />
+              <span class="checkmark"></span>
+            </label>
+            <label class="custom-radio" translate>Add PDF
+              <input type="radio" (click)="checkMediaType('pdf')" [ngModel]="mediaType" name="media" value="pdf" />
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <!-- <div *ngIf="mediaType === 'pdf'">
+            <div class="form-group">
+              <label translate>Total length (seconds)</label>
+              <input
+                type="number"
+                name="total-length"
+                class="form-control"
+                placeholder="{{'Total length'|translate}}"
+                [(ngModel)]="lectureMedia.totalLength"
+                #total="ngModel"
+                required
+              />
+              <small translate>Total length is required for PDF file</small>
+            </div>
+          </div> -->
+          <span> {{lecture?.media?.name}}</span>
+          <div *ngIf="mediaType==='video'">
+            <app-file-upload [options]="videoOptions"></app-file-upload>
+          </div>
+          <div *ngIf="mediaType==='audio'">
+            <app-file-upload [options]="audioOptions"></app-file-upload>
+          </div>
+          <div *ngIf="mediaType==='pdf'">
+            <app-file-upload [options]="pdfOptions" (onUpload)="onUpload($event)"></app-file-upload>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-default me-3" translate [disabled]="uploading">Submit</button>
+        <button type="button" class="btn btn-outline-dark" (click)="activeModal.dismiss('Cross click')" translate>
+          Close
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

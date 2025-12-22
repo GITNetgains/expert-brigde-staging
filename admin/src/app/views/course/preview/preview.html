@@ -1,0 +1,397 @@
+<c-card>
+  <c-card-body class="text-center">
+    @if (course) {
+    <h2>{{course?.name}}</h2>
+    }
+    <span>This course is in draft, please complete it before preview</span>
+  </c-card-body>
+</c-card>
+
+@if(course && !course.isDraff) {
+<div class="row mt-4">
+  <div class="col-md-4">
+    <c-card>
+      <c-card-header>
+        <h4 cCardTitle>Course Content</h4>
+      </c-card-header>
+      <c-card-body>
+        @if(course) {
+        <p class="card-text font-xs">
+          <span
+            >{{course?.totalSection <= 1 ? course?.totalSection + ' Section' :
+            course.totalSection + ' Sections'}}</span
+          >
+          • @if(course?.totalLecture <= 1) {
+          <span
+            >{{course?.totalLecture ? course?.totalLecture : '0'}} Lecture</span
+          >
+          } @else {
+          <span
+            >{{course?.totalLecture ? course?.totalLecture : '0'}}
+            Lectures</span
+          >
+          } • {{returnDurationString(course?.totalLength)}} Total Length
+        </p>
+        }
+        <div class="course-sections">
+          @for (section of sections; track section._id; let i = $index) {
+          <div class="section-item">
+            <div
+              class="section-header"
+              (click)="openLectureId === section._id ? openLectureId = '' : openLectureId = section._id"
+            >
+              <div class="section-info">
+                <div class="section-title">
+                  <svg
+                    cIcon
+                    name="cilChevronBottom"
+                    class="me-2 section-chevron"
+                    [class.rotated]="openLectureId === section._id"
+                    size="sm"
+                  ></svg>
+                  {{section?.title}}
+                </div>
+                <div class="section-meta">
+                  {{section.lectureIds.length}} lectures •
+                  {{returnDurationString(section.duration)}}
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="lectures-container"
+              [class.show]="openLectureId === section._id"
+            >
+              @for (lecture of section.lectures; track lecture._id; let iLecture
+              = $index) {
+              <div class="lecture-item">
+                <div
+                  class="lecture-header"
+                  (click)="$event.stopPropagation(); openFileId === lecture._id ? openFileId = '' : openFileId = lecture._id;"
+                >
+                  <div class="lecture-info">
+                    <div class="lecture-title">
+                      <svg cIcon name="cilFile" class="me-2" size="sm"></svg>
+                      {{lecture?.title}}
+                    </div>
+                    <div class="lecture-duration">
+                      {{returnDuration(lecture?.duration)}}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="files-container"
+                  [class.show]="openFileId === lecture._id"
+                >
+                  @for (media of lecture.medias; track media._id; let iMedia =
+                  $index) {
+                  <div
+                    class="file-item"
+                    (click)="$event.stopPropagation(); viewMedia(media, i, iLecture, iMedia)"
+                  >
+                    <div class="file-info">
+                      <div class="file-name text-danger">
+                        <svg
+                          cIcon
+                          [name]="media?.mediaType === 'pdf' ? 'cilFile' : 'cilMediaPlay'"
+                          class="me-2 text-danger"
+                          size="sm"
+                        ></svg>
+                        {{media?.media?.name || media?.name}}
+                      </div>
+                      <div class="file-meta">
+                        <span class="file-type text-danger"
+                          >{{media?.mediaType}}</span
+                        >
+                        <span class="file-duration text-danger">
+                          {{media?.mediaType === 'pdf' ?
+                          returnDuration(media?.totalLength) :
+                          returnDuration(media?.media?.duration)}}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+
+        @if(createdBy !== adminId) {
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              @if(course?.approved && course?._id) {
+              <button
+                cButton
+                color="primary"
+                class="float-start"
+                type="button"
+                (click)="reject()"
+              >
+                Reject
+              </button>
+              } @else {
+              <button
+                cButton
+                color="success"
+                class="float-start"
+                type="button"
+                (click)="approve()"
+                style="margin-right: 3px"
+              >
+                Approve
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </c-card-body>
+    </c-card>
+  </div>
+
+  <div class="col-md-8">
+    <c-card
+      [ngClass]="{'pdf-full-height-card': shownItem && shownItem.type === 'pdf'}"
+    >
+      @if(shownItem && shownItem.type !== 'pdf') {
+      <c-card-header>
+        <h3 cCardTitle>{{shownItem?.title}}</h3>
+      </c-card-header>
+      } @else {
+      <c-card-header> </c-card-header>
+      }
+      <c-card-body
+        [ngClass]="{'pdf-container-body': shownItem && shownItem.type === 'pdf'}"
+      >
+        @if (shownItem && shownItem.type === 'video' && shownItem.url) {
+        <div class="video-course-preview">
+          <video width="100%" [src]="shownItem?.url" controls></video>
+        </div>
+        } @else if (shownItem && shownItem.type === 'audio' && shownItem.url) {
+        <audio width="100%" [src]="shownItem?.url" controls></audio>
+        } @else if (shownItem && shownItem.type === 'pdf' && shownItem.url) {
+        <div class="pdf-container">
+          <app-pdf-viewer [src]="shownItem.url" [config]="pdfConfig">
+          </app-pdf-viewer>
+        </div>
+        } @else {
+        <div class="text-center py-5">
+          <h4>Select a content on the left to view</h4>
+          <p class="text-muted">
+            Click on a lecture and select a document to view
+          </p>
+        </div>
+        }
+      </c-card-body>
+    </c-card>
+  </div>
+</div>
+}
+
+<c-modal
+  [visible]="rejectModalVisible"
+  (visibleChange)="handleRejectModalChange($event)"
+  alignment="center"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Reason</h5>
+    <button cButtonClose (click)="rejectModalVisible = false"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <h4>Why do you want to reject this course?</h4>
+    <input
+      cFormControl
+      type="text"
+      placeholder="Write the reason"
+      required
+      name="reason"
+      [(ngModel)]="rejectReason"
+    />
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="primary" (click)="submitReject()">Submit</button>
+    <button cButton color="secondary" (click)="rejectModalVisible = false">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<style>
+  .course-sections {
+    margin-top: 1rem;
+  }
+  .section-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .section-header {
+    padding: 1rem;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--cui-body-bg, #f8f9fa);
+    border-bottom: 1px solid #e9ecef;
+  }
+  .section-info {
+    flex: 1;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+  }
+  .section-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+  }
+  .section-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin: 0;
+  }
+  .section-chevron {
+    transition: transform 0.3s ease;
+  }
+  .section-chevron.rotated {
+    transform: rotate(180deg);
+  }
+  .lectures-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: white;
+  }
+  .lectures-container.show {
+    max-height: 1000px;
+  }
+  .lecture-item {
+    border-bottom: 1px solid #e9ecef;
+    background-color: white;
+  }
+  .lecture-item:last-child {
+    border-bottom: none;
+  }
+  .lecture-header {
+    padding: 0.75rem 1rem 0.75rem 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .lecture-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .lecture-title {
+    font-weight: 500;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+  .lecture-duration {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .files-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #f8f9fa;
+  }
+  .files-container.show {
+    max-height: 500px;
+    border-top: 1px solid #dee2e6;
+  }
+  .file-item {
+    padding: 0.6rem 1rem 0.6rem 3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    background-color: var(--cui-body-bg ,#f8f9fa);
+  }
+  .file-item:last-child {
+    border-bottom: none;
+  }
+  .file-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .file-name {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+  .file-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .file-type {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .file-duration {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .pdf-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .pdf-full-height-card {
+    height: 100%;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .pdf-container-body {
+    padding: 15px !important;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ::ng-deep .card.pdf-full-height-card {
+    height: calc(100vh - 150px);
+    margin-bottom: 0;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  ::ng-deep .card-body.pdf-container-body {
+    padding: 15px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    .lecture-header {
+      padding-left: 1rem;
+    }
+    .file-item {
+      padding-left: 2rem;
+    }
+  }
+</style>

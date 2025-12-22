@@ -1,0 +1,79 @@
+<div class="data-table my-category-table">
+
+  <div class="table-responsive">
+    <table id="table_id" class="table dataTable no-footer" role="grid" aria-describedby="table_id_info">
+      <thead>
+        <tr>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1">
+            <span (click)="sortBy('start', 'asc')" translate>Start time</span>
+            <app-sort [sortOption]="filter.sortOption" [sortBy]="'start'" (onSort)="onSort($event)"></app-sort>
+          </th>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1">
+            <span (click)="sortBy('end', 'asc')" translate>End time</span>
+            <app-sort [sortOption]="filter.sortOption" [sortBy]="'end'" (onSort)="onSort($event)"></app-sort>
+          </th>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1">
+            <span (click)="sortBy('dayOfWeek', 'asc')" translate>Days of week</span>
+            <app-sort [sortOption]="filter.sortOption" [sortBy]="'dayOfWeek'" (onSort)="onSort($event)"></app-sort>
+          </th>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1">
+            <span (click)="sortBy('range.start', 'asc')" translate>Start date</span>
+            <app-sort [sortOption]="filter.sortOption" [sortBy]="'range.start'" (onSort)="onSort($event)"></app-sort>
+          </th>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1">
+            <span (click)="sortBy('range.end', 'asc')" translate>End date</span>
+            <app-sort [sortOption]="filter.sortOption" [sortBy]="'range.end'" (onSort)="onSort($event)"></app-sort>
+          </th>
+          <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
+            aria-label="Action: activate to sort column ascending">
+            <a translate class="me-2 cate-action">Action</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="!recurring.length && !loading">
+          <td translate colspan="4">There are no recurring</td>
+        </tr>
+
+        <tr *ngIf="loading">
+          <td translate colspan="4">Loading...</td>
+        </tr>
+        <tr *ngFor="let item of recurring, let i = index">
+          <td>{{renderTime(item?.start)}}</td>
+          <td>{{renderTime(item?.end)}}</td>
+          <td>{{renderDayOfWeek(item.dayOfWeek)}}</td>
+          <td>{{item?.range?.start | date}}</td>
+          <td>{{item?.range?.end | date}}</td>
+          <td>
+            <ng-template #popContent>
+              <div class="alert alert-warning">
+                <p class="m-0">
+                  <span class="warning-icon"><i class="fas fa-exclamation-circle"></i></span> Slots already booked
+                  will not be deleted.
+                </p>
+              </div>
+              <button class="btn btn-danger btn-sm btn-block" (click)="remove(item, i)">Delete</button>
+            </ng-template>
+            <ng-template #popTitle>Delete this recurring!</ng-template>
+            <button type="button" class="btn btn-outline-dark btn-action" [ngbPopover]="popContent"
+              [popoverTitle]="popTitle" [placement]="['left', 'auto']">
+              <i class="fi fi-rr-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="dataTables_paginate paging_simple_numbers" id="table_id_paginate">
+    <ngb-pagination [collectionSize]="filter.total" [(page)]="filter.currentPage" [pageSize]="filter.pageSize"
+      [maxSize]="2" (pageChange)="loadListSchedule()" class="float-right">
+      <ng-template ngbPaginationPrevious translate><span translate><i
+            class="fi fi-rr-angle-small-left"></i></span></ng-template>
+      <ng-template ngbPaginationNext translate><span translate><i
+            class="fi fi-rr-angle-small-right"></i></span></ng-template>
+    </ngb-pagination>
+  </div>
+
+</div>

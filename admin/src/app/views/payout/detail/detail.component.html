@@ -1,0 +1,191 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>General Information</h4>
+      </c-card-header>
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <tbody>
+            <tr>
+              <th>Code</th>
+              <td>{{ item?.code }}</td>
+            </tr>
+            <tr>
+              <th>Tutor</th>
+              <td>
+                <a
+                  [routerLink]="['/tutor/update', item.tutor.id]"
+                  *ngIf="item && item.tutor"
+                  >{{ item?.tutor?.name }}</a
+                >
+              </td>
+            </tr>
+            <tr>
+              <th>Created On</th>
+              <td>{{ item.createdAt | date }}</td>
+            </tr>
+            <tr>
+              <th>Request To Date</th>
+              <td>{{ item.requestToTime | date }}</td>
+            </tr>
+            <tr>
+              <th>Total Balance</th>
+              <td>
+                <c-badge color="success">{{
+                  item?.total
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}</c-badge>
+              </td>
+            </tr>
+            <tr>
+              <th>Commission</th>
+              <td>
+                {{
+                  item?.commission
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Expert Balance</th>
+              <td>
+                {{
+                  item?.balance
+                    | currency
+                      : (config?.currencySymbol ? config?.currencySymbol : "$")
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Request Attempts</th>
+              <td>
+                {{ item?.requestAttempts }}
+              </td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>
+                @switch (item.status) { @case('approved'){
+                <c-badge color="success">Approved</c-badge>
+                } @case('rejected'){
+                <c-badge color="danger">Rejected</c-badge>
+                } @case('pending'){
+                <c-badge color="warning">Pending</c-badge>
+                } }
+              </td>
+            </tr>
+            <tr>
+              <th>Note</th>
+              <td>
+                {{ item?.note }}
+              </td>
+            </tr>
+            <tr>
+              <th>Reject Reason</th>
+              <td>
+                {{ item?.rejectReason }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Payout Account</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-container>
+          <c-row xs="4">
+            <c-col xs="3" class="border py-2"
+              ><strong>Holder Name</strong></c-col
+            >
+            <c-col xs="9" class="border py-2">{{
+              item?.payoutAccount?.accountHolderName
+            }}</c-col>
+          </c-row>
+          <c-row xs="4">
+            <c-col xs="3" class="border py-2"
+              ><strong>Paypal email ID</strong></c-col
+            >
+            <c-col xs="9" class="border py-2">
+              {{ item?.payoutAccount?.paypalAccount }}</c-col
+            >
+          </c-row>
+          <c-row xs="4">
+            <c-col class="border py-2"><strong>Account Number</strong></c-col>
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.accountNumber
+            }}</c-col>
+            <c-col class="border py-2"><strong>Bank Address</strong></c-col>
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.bankAddress
+            }}</c-col>
+          </c-row>
+          <c-row xs="4">
+            <c-col class="border py-2"><strong>Bank Name</strong></c-col>
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.bankName
+            }}</c-col>
+            <c-col class="border py-2"
+              ><strong>The International Bank Account Number</strong></c-col
+            >
+            <c-col class="border py-2">{{ item?.payoutAccount?.iban }}</c-col>
+          </c-row>
+          <c-row xs="4">
+            <c-col class="border py-2"
+              ><strong>Indian Financial System Code</strong></c-col
+            >
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.ifscCode
+            }}</c-col>
+            <c-col class="border py-2"><strong>UK Bank Code</strong></c-col>
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.sortCode
+            }}</c-col>
+          </c-row>
+          <c-row xs="4">
+            <c-col class="border py-2"
+              ><strong>The American Bankers Association Number</strong></c-col
+            >
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.routingNumber
+            }}</c-col>
+            <c-col class="border py-2"
+              ><strong>Any Other Local Bank Code</strong></c-col
+            >
+            <c-col class="border py-2">{{
+              item?.payoutAccount?.routingCode
+            }}</c-col>
+          </c-row>
+        </c-container>
+      </c-card-body>
+      <c-card-footer>
+        <c-row>
+          <c-col class="d-flex justify-content-end">
+            <a [routerLink]="['/payout/request']" class="btn btn-primary">Cancel</a>
+          </c-col>
+        </c-row>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>

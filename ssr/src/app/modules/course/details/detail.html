@@ -1,0 +1,691 @@
+<section class="profile-page">
+  <div class="container" *ngIf="course">
+    <div class="detail-box">
+      <div class="detail-box-left">
+        <div class="card card-border mb-3">
+          <div class="detail-box-video show-mobile">
+            <video
+              *ngIf="videoUrl"
+              width="100%"
+              height="100%"
+              src="{{videoUrl}}"
+              controls
+            ></video>
+          </div>
+          <div class="card-body">
+            <div class="detail-box-title flex-column">
+              <div class="course-detail-header">
+                <h4 class="font-weight-bold">{{course?.name}}</h4>
+                <h6 class="detail-box-title-right">
+                  <span translate>Last Updated</span> {{course?.updatedAt |
+                  date: 'MM/yyyy'}}
+                </h6>
+              </div>
+
+              <div class="course-detail-categories">
+                <a
+                  *ngFor="let cat of course.categories; let i = index"
+                  [routerLink]="['/courses']"
+                  [queryParams]="{ categoryIds: cat._id }"
+                  ><span class="badge badge-default">{{ cat.name }}</span></a
+                >
+              </div>
+            </div>
+            <div class="row row-cols-md-1 row-cols-lg-2">
+              <div class="col-md-6">
+                <div class="profile">
+                  <a [routerLink]="['/tutors', course?.tutor?.username]">
+                    <img
+                      src="{{course?.tutor?.avatarUrl}}"
+                      class="float-left cate-profile box-shadow-lg me-2"
+                      alt=""
+                      onerror="this.src='/assets/images/default-avatar.jpg'"
+                    />
+                    <h5 class="pt-2 font-sm">{{course?.tutor?.name}}</h5>
+                  </a>
+                </div>
+              </div>
+              <!-- <div class="col-md-6">
+                
+              </div> -->
+            </div>
+            <div class="rating-stars">
+              <div id="stars" class="pt-3">
+                <app-star-rating
+                  [rate]="course?.tutor?.ratingAvg"
+                ></app-star-rating>
+                <span style="padding-left: 5px"
+                  >{{course?.tutor?.ratingAvg}} ({{course?.tutor?.totalRating}}
+                  rating for this tutor)</span
+                >
+              </div>
+              <div id="stars" class="pt-2">
+                <app-star-rating [rate]="course?.ratingAvg"></app-star-rating>
+                <span style="padding-left: 5px"
+                  >{{course?.ratingAvg}} ({{course?.totalRating}} rating for
+                  this course)</span
+                >
+              </div>
+            </div>
+            <div class="course favoired-icon">
+              <a *ngIf="!course?.isFavorite" (click)="favorite()">
+                <i class="fi fi-rs-heart color-light-red"></i>
+              </a>
+              <a *ngIf="course?.isFavorite" (click)="unFavorite()">
+                <i class="fi fi-ss-heart color-light-red"></i>
+              </a>
+            </div>
+            <div class="show-mobile">
+              <span
+                class="color-light-red price-text"
+                *ngIf="course?.isFree"
+                translate
+                >FREE</span
+              >
+              <span class="color-light-red price-text" *ngIf="appliedCoupon"
+                >{{salePrice | appCurrency}}</span
+              >
+              <span
+                class="color-light-red price-text"
+                *ngIf="!appliedCoupon && !course?.isFree"
+                >{{course?.price | appCurrency }}</span
+              >
+              <span class="ms-1" *ngIf="appliedCoupon && !course?.isFree"
+                ><del>{{course?.price |appCurrency}}</del></span
+              >
+              <span
+                class="offer ms-1"
+                *ngIf="appliedCoupon&&course?.coupon?.type==='percent'"
+                >{{saleValue}}% off</span
+              >
+              <span
+                class="offer ms-1"
+                *ngIf="appliedCoupon&&course?.coupon?.type==='money'"
+              >
+                -${{saleValue}}</span
+              >
+              <p class="color-light-red mt-2"></p>
+              <div class="d-grid gap-2">
+                <button
+                  [disabled]="(currentUser && currentUser._id === course?.tutorId) || course?.booked"
+                  *ngIf="showBooking"
+                  class="btn btn-default btn-block me-2"
+                  (click)="enrollCourse(course, 'booking')"
+                >
+                  <!-- <i class="fi fi-rs-paper-plane color-white me-2"></i>  -->
+                  <i class="fi fi-rr-shopping-cart"></i>
+                  <span *ngIf="!course?.booked" translate>Buy Now</span>
+                  <span *ngIf="course?.booked" translate>Purchased</span>
+                </button>
+                <button
+                  [disabled]="(currentUser && currentUser._id === course?.tutorId) || emailRecipient === (currentUser && currentUser.email)"
+                  class="btn btn-default btn-block"
+                  (click)="enrollCourse(course, 'gift')"
+                >
+                  <i class="fi fi-rr-gift color-white"></i>
+                  <span translate>Gift Course</span>
+                </button>
+              </div>
+              <p class="text-center card-text mt-2 font-xs" translate>
+                30-Day Money-Back Guarantee
+              </p>
+            </div>
+            <div class="row mt-2" *ngIf="showBooking">
+              <div class="col-md-12" *ngIf="course.isFree || salePrice<=0">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Gift course</label
+                >
+                <input
+                  style="
+                    border: 1.2px solid grey;
+                    margin-bottom: 0.5em;
+                    height: 3em;
+                  "
+                  type="email"
+                  class="form-control"
+                  placeholder="{{'Recipient\'s email id' | translate}}"
+                  name="email"
+                  [(ngModel)]="emailRecipient"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                  #emailId="ngModel"
+                />
+                <div
+                  *ngIf="emailId.errors && (emailId.dirty || emailId.touched)"
+                >
+                  <p
+                    [hidden]="!emailId.errors['pattern']"
+                    class="error"
+                    translate
+                  >
+                    Email is invalid format
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3 show-mobile">
+          <div class="card-body">
+            <h5 class="mt-3" translate>This course includes:</h5>
+            <ul class="p-0 list-unstyled unorder-list">
+              <li>
+                <i class="fi fi-rr-play-circle me-2 font-sm"></i
+                >{{returnDurationString(course?.totalLength || 0)}}
+              </li>
+              <li>
+                <i class="fas fa-infinity me-2 font-sm"></i
+                ><span translate>Full lifetime access</span>
+              </li>
+              <li>
+                <i class="fas fa-mobile-alt me-2 font-sm"></i
+                ><span translate>Access on mobile and TV</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3" *ngIf="course.description">
+          <div class="card-header">
+            <h4 class="card-title" translate>Description</h4>
+          </div>
+          <div class="card-body">
+            <app-card-text
+              [content]="course.description"
+              [showChar]="2000"
+            ></app-card-text>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3" *ngIf="course?.goalCourse?.length">
+          <div class="card-header">
+            <h4 class="card-title" translate>
+              All the end of my course, students will be able to
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul class="p-0 list-unstyled unorder-list term-list list-more-text">
+              <li *ngFor="let item of course?.goalCourse">
+                <i class="fas fa-check text-success me-2 font-sm"></i>{{item}}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="card card-border mb-3"
+          *ngIf="course?.whyJoinCourse?.length"
+        >
+          <div class="card-header">
+            <h4 class="card-title" translate>
+              Who should take this course? Who should not?
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul class="p-0 list-unstyled unorder-list term-list list-more-text">
+              <li *ngFor="let item of course?.whyJoinCourse">
+                <i class="fas fa-check text-success me-2 font-sm"></i>{{item}}
+              </li>
+              <!-- <div class="more read_more">Read More...</div> -->
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="card card-border mb-3"
+          *ngIf="course?.needToJoinCourse?.length"
+        >
+          <div class="card-header">
+            <h4 class="card-title" translate>
+              What will students need to know or do before starting this course?
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul class="p-0 list-unstyled unorder-list term-list list-more-text">
+              <li *ngFor="let item of course?.needToJoinCourse">
+                <i class="fas fa-check text-success me-2 font-sm"></i>{{item}}
+              </li>
+              <!-- <div class="more read_more">Read More...</div> -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 class="card-title" translate>Course content</h4>
+          </div>
+          <div class="card-body">
+            <h *ngIf="myCourse" class="card-title" translate>Progress</h>
+            <div *ngIf="myCourse" class="mb-3">
+              <ngb-progressbar
+                style="border-radius: 0.25em; font-size: 0.8em"
+                type="danger"
+                [value]="completedPercent"
+                translate
+                >{{completedPercent}}%</ngb-progressbar
+              >
+            </div>
+            <p class="card-text font-xs">
+              {{course?.totalSection}} <span translate>sections</span> •
+              {{course?.totalLecture}} <span translate>lectures</span> •
+              {{returnDurationString(course?.totalLength || 0)}}
+              <span translate>total length</span>
+            </p>
+            <div id="accordion" class="myaccordion myaccordion-detail">
+              <div
+                class="box-collapse"
+                *ngFor="let section of sections, let i=index"
+              >
+                <div class="item-collapse">
+                  <div
+                    class="btn-collapse collapsed"
+                    [attr.data-bs-toggle]="'collapse'"
+                    [attr.data-bs-target]="'#collapse' + i"
+                    [attr.aria-expanded]="true"
+                    [attr.aria-controls]="'collapse' + i"
+                  >
+                    <h4>{{section.title}}</h4>
+                    <span class="arrow-collapsed">
+                      <i class="fi fi-rr-minus"></i>
+                    </span>
+                    <div class="right-collapse">
+                      <span *ngIf="section.lectureIds.length > 1"
+                        >{{section.lectureIds.length}}
+                        <span translate>lectures</span> •
+                        {{returnDurationString(section.duration || 0)}}
+                      </span>
+                      <span *ngIf="section.lectureIds.length <= 1"
+                        >{{section.lectureIds.length}}
+                        <span translate>lecture</span> •
+                        {{returnDurationString(section.duration || 0)}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="{{'collapse' + i}}"
+                  class="collapse"
+                  [attr.aria-labelledby]="section._id"
+                  data-bs-target="#accordion"
+                >
+                  <div class="lecture-items">
+                    <a
+                      *ngIf="section?.trialVideo"
+                      href="javascript:void(0)"
+                      (click)="videoTrialVideo(section)"
+                      class="d-flex justify-content-between"
+                    >
+                      <p class="font-xs text-secondary" style="margin: 0">
+                        <i class="fi fi-rr-play-circle me-2 font-sm"></i
+                        >{{section?.title + ' trial video'}}
+                      </p>
+                      <div class="font-xs">
+                        <span class="label label-light-primary"
+                          >{{returnDuration(section?.trialVideo?.duration ||
+                          0)}}</span
+                        >
+                      </div>
+                    </a>
+                    <div
+                      class="lecture-item"
+                      *ngFor="let lecture of section.lectures, let iLecture = index"
+                    >
+                      <div *ngIf="!canView">
+                        <a
+                          class="lecture-items-title"
+                          href="javascript:void(0)"
+                          (click)="openLecture(lecture, i, iLecture)"
+                          [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture}"
+                        >
+                          <i class="fi fi-rr-file me-2 font-sm"></i
+                          >{{lecture?.title}}
+                          <p class="font-sm text-secondary">
+                            {{returnDuration(lecture?.duration || 0)}}
+                          </p>
+                        </a>
+
+                        <div
+                          class="lecture-media"
+                          *ngIf="openLectureId===lecture._id"
+                        >
+                          <div
+                            class="lecture-media-item"
+                            *ngFor="let media of lecture.medias, let iMedia = index"
+                          >
+                            <div
+                              class="lecture-media-item-li"
+                              *ngIf="media?.mediaType==='video'"
+                            >
+                              <p class="font-xs text-secondary">
+                                <i class="fi fi-rr-play-circle me-2 font-sm"></i
+                                >{{media?.media?.name}}
+                              </p>
+                              <div class="right-lecture-media-item">
+                                <span
+                                  class="label label-light-warning"
+                                  translate
+                                  >video</span
+                                >
+                                <span class="label label-light-primary ms-1"
+                                  >{{returnDuration(media?.media?.duration ||
+                                  0)}}</span
+                                >
+                              </div>
+                            </div>
+                            <div
+                              class="lecture-media-item-li"
+                              *ngIf="media?.mediaType==='pdf'"
+                            >
+                              <p class="font-xs text-secondary">
+                                <i class="fi fi-rr-file me-2 font-sm"></i
+                                >{{media?.media?.name}}
+                              </p>
+                              <div class="right-lecture-media-item">
+                                <span
+                                  class="label label-light-warning"
+                                  translate
+                                  >pdf</span
+                                >
+                                <span class="label label-light-primary ms-1"
+                                  >{{returnDuration(media?.totalLength ||
+                                  0)}}</span
+                                >
+                              </div>
+                            </div>
+                            <div
+                              class="lecture-media-item-li"
+                              *ngIf="media?.mediaType==='audio'"
+                            >
+                              <p class="font-xs text-secondary">
+                                <i class="fi fi-rr-play-circle me-2 font-sm"></i
+                                >{{media?.media?.name}}
+                              </p>
+                              <div class="right-lecture-media-item">
+                                <span
+                                  class="label label-light-warning"
+                                  translate
+                                  >audio</span
+                                >
+                                <span class="label label-light-primary ms-1"
+                                  >{{returnDuration(media?.media?.duration ||
+                                  0)}}</span
+                                >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div *ngIf="canView">
+                          <div class="d-flex justify-content-between">
+                            <a
+                              class="font-sm js-video-button"
+                              href="javascript:void(0)"
+                              (click)="openLecture(lecture, i, iLecture)"
+                              [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture}"
+                            >
+                              <i class="fi fi-rr-file me-2 font-sm"></i
+                              >{{lecture?.title}}
+                            </a>
+                            <p class="font-sm text-secondary">
+                              {{returnDuration(lecture?.duration || 0)}}
+                            </p>
+                          </div>
+                          <div
+                            class="lecture-media"
+                            *ngIf="openLectureId===lecture._id"
+                          >
+                            <div
+                              *ngFor="let media of lecture.medias, let iMedia = index"
+                            >
+                              <a
+                                href="javascript:void(0)"
+                                (click)="viewMedia(media, i, iLecture, iMedia)"
+                                [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                                class="d-flex justify-content-between"
+                                *ngIf="media?.mediaType==='video'"
+                              >
+                                <p class="font-xs text-secondary">
+                                  <i
+                                    class="fi fi-rr-play-circle me-2 font-sm"
+                                  ></i
+                                  >{{media?.media?.name}}
+                                </p>
+                                <div class="font-xs">
+                                  <span
+                                    class="label label-light-warning"
+                                    translate
+                                    >video</span
+                                  >
+                                  <span class="label label-light-primary ms-1"
+                                    >{{returnDuration(media?.media?.duration ||
+                                    0)}}</span
+                                  >
+                                </div>
+                              </a>
+                              <a
+                                class="d-flex justify-content-between"
+                                (click)="viewMedia(media, i, iLecture, iMedia)"
+                                [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                                class="d-flex justify-content-between"
+                                *ngIf="media?.mediaType==='pdf'"
+                              >
+                                <p class="font-xs text-secondary">
+                                  <i class="fi fi-rr-file me-2 font-sm"></i
+                                  >{{media?.media?.name}}
+                                </p>
+                                <div class="font-xs">
+                                  <span
+                                    class="label label-light-warning"
+                                    translate
+                                    >pdf</span
+                                  >
+                                  <span class="label label-light-primary ms-1"
+                                    >{{returnDuration(media?.totalLength ||
+                                    0)}}</span
+                                  >
+                                </div>
+                              </a>
+                              <a
+                                class="d-flex justify-content-between"
+                                (click)="viewMedia(media, i, iLecture, iMedia)"
+                                [ngClass]="{'active':  i === indexSection&&iLecture === indexLecture&&iMedia===indexMedia}"
+                                class="d-flex justify-content-between"
+                                *ngIf="media?.mediaType==='audio'"
+                              >
+                                <p class="font-xs text-secondary">
+                                  <i
+                                    class="fi fi-rr-play-circle me-2 font-sm"
+                                  ></i
+                                  >{{media?.media?.name}}
+                                </p>
+                                <div class="font-xs">
+                                  <span
+                                    class="label label-light-warning"
+                                    translate
+                                    >audio</span
+                                  >
+                                  <span class="label label-light-primary ms-1"
+                                    >{{returnDuration(media?.media?.duration ||
+                                    0)}}</span
+                                  >
+                                </div>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3" *ngIf="enrolledList?.length">
+          <div class="card-header">
+            <h4 class="card-title" translate>
+              List of students who have enrolled for this course
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul
+              class="students-enrolled mt-2 mb-2"
+              *ngIf="enrolledList?.length"
+            >
+              <li
+                *ngFor="let item of enrolledList"
+                placement="bottom"
+                ngbTooltip="{{item?.user?.name}}"
+              >
+                <img
+                  src="{{item?.user?.avatarUrl}}"
+                  onerror="this.src='/assets/images/default-avatar.jpg'"
+                  alt=""
+                />
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 translate>Expert</h4>
+          </div>
+          <div class="card-body">
+            <div class="profile">
+              <a [routerLink]="['/tutors', course?.tutor?.username]">
+                <img
+                  src="{{(course?.tutor?.avatarUrl ) }}"
+                  onerror="this.src='/assets/images/default-avatar.jpg'"
+                  class="float-left profile-md box-shadow-lg"
+                  alt=""
+                />
+                <div class="profile-content pt-4">
+                  <h5 class="profile-name">
+                    {{course?.tutor?.name}}<i
+                      class="fi fi-ss-badge-check color-blue ms-2"
+                    ></i>
+                  </h5>
+                </div>
+              </a>
+            </div>
+            <div class="pt-3">
+              <h4 class="card-title" translate>About Me</h4>
+              <app-card-text
+                [content]="course?.tutor?.bio || ''"
+                [showChar]="500"
+              ></app-card-text>
+            </div>
+          </div>
+        </div>
+
+        <app-review-list
+          [options]="optionsReview"
+          [stats]="statsReview"
+          [canWriteReview]="false"
+        ></app-review-list>
+      </div>
+      <div class="detail-box-right">
+        <div class="card card-border card-sticky show-desktop">
+          <div class="detail-box-video">
+            <video
+              *ngIf="videoUrl"
+              width="100%"
+              height="100%"
+              src="{{videoUrl}}"
+              controls
+            ></video>
+          </div>
+          <div class="card-body">
+            <span
+              class="color-light-red price-text"
+              *ngIf="course?.isFree"
+              translate
+              >FREE</span
+            >
+            <span class="color-light-red price-text" *ngIf="appliedCoupon"
+              >{{salePrice |appCurrency}}</span
+            >
+            <span
+              class="color-light-red price-text"
+              *ngIf="!appliedCoupon && !course?.isFree"
+              >{{course?.price |appCurrency }}</span
+            >
+            <span class="ms-1" *ngIf="appliedCoupon && !course?.isFree"
+              ><del>{{course?.price | appCurrency }}</del></span
+            >
+            <span
+              class="offer ms-1"
+              *ngIf="appliedCoupon&&course?.coupon?.type==='percent'"
+              >{{saleValue}}% off</span
+            >
+            <span
+              class="offer ms-1"
+              *ngIf="appliedCoupon&&course?.coupon?.type==='money'"
+            >
+              -${{saleValue}}</span
+            >
+            <p class="color-light-red mt-1"></p>
+            <div
+              *ngIf="!course?.booked && currentUser?._id!==tutorId"
+              class="mb-2"
+            >
+              <app-apply-coupon
+                *ngIf="course && course.price > 0"
+                [options]="optionsCoupon"
+                (doApply)="applyCoupon($event)"
+                (doCancel)="onCancelCoupon($event)"
+              ></app-apply-coupon>
+            </div>
+            <div class="d-grid gap-2">
+              <button
+                [disabled]="(currentUser && currentUser._id === course?.tutorId) || course?.booked"
+                *ngIf="showBooking"
+                class="btn btn-default btn-block"
+                (click)="enrollCourse(course, 'booking')"
+              >
+                <!-- <i class="fi fi-rs-paper-plane color-white me-2"></i>  -->
+                <i class="fi fi-rr-shopping-cart"></i>
+                <span *ngIf="!course?.booked" translate>Buy Now</span>
+                <span *ngIf="course?.booked" translate>Purchased</span>
+              </button>
+              <button
+                [disabled]="(currentUser && currentUser._id === course?.tutorId) || emailRecipient === (currentUser && currentUser.email)"
+                class="btn btn-default btn-block"
+                (click)="enrollCourse(course, 'gift')"
+              >
+                <i class="fi fi-rr-gift color-white"></i>
+                <span translate>Gift Course</span>
+              </button>
+            </div>
+
+            <p class="text-center card-text mt-2 font-xs" translate>
+              30-Day Money-Back Guarantee
+            </p>
+          </div>
+          <hr />
+          <div class="card-body text-center">
+            <h5 translate>This course includes:</h5>
+            <ul class="p-0 list-unstyled unorder-list">
+              <li>
+                <i class="fi fi-rr-play-circle me-2 font-sm"></i
+                >{{returnDurationString(course?.totalLength || 0)}}
+              </li>
+              <li>
+                <i class="fas fa-infinity me-2 font-sm"></i
+                ><span translate>Full lifetime access</span>
+              </li>
+              <li>
+                <i class="fas fa-mobile-alt me-2 font-sm"></i
+                ><span translate>Access on mobile and TV</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

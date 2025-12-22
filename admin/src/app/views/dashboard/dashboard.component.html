@@ -1,0 +1,19 @@
+<c-row class="g-4">
+  @for(item of starts; track item){
+  <c-col xs="12" sm="6" md="6" xl="3">
+    <a [routerLink]="[item.path]">
+      <div class="custom-widget" [ngClass]="'bg-' + item.color">
+        <div class="widget-content">
+          <div class="widget-text">
+            <h6 class="widget-title">{{ item.title }}</h6>
+            <h2 class="widget-value">{{ item.value ?? 0 }}</h2>
+          </div>
+          <div class="widget-icon">
+            <svg [cIcon]="icons[item.icon]" size="xxl"></svg>
+          </div>
+        </div>
+      </div>
+    </a> 
+    </c-col
+  >}
+</c-row>

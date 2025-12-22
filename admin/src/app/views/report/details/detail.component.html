@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <strong>Report Detail</strong>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive table-no-fixed">
+          <table id="table_id" class="table table-bordered">
+            <tbody>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Type
+                </td>
+                <td>
+                  @if(report.targetType === 'subject'){
+                  <span>One To One</span>}
+                   @if(report.targetType === 'webinar'){
+                  <span>Group Class</span>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Class Code
+                </td>
+                <td>
+                  {{ report.targetCode }}
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Transaction Code
+                </td>
+                <td>
+                  {{ report.transactionCode }}
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Issue
+                </td>
+                <td>
+                  {{ report.issue }}
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Reported by
+                </td>
+                <td>
+                  {{ report?.meta?.reportBy }}
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Reported to
+                </td>
+                <td>
+                  {{ report?.meta?.reportTo }}
+                </td>
+              </tr>
+              <tr>
+                <td class="appoint-detail" translate style="min-width: 200px">
+                  Reported on
+                </td>
+                <td>
+                  {{ report.createdAt | date }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

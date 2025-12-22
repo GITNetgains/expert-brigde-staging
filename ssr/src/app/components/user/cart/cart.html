@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLongTitle">Checkout</h5>
+  <button
+    type="button"
+    class="btn-close"
+    data-dismiss="modal"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+
+<div class="row-card">
+  <div class="top-card">
+    <ul class="list-card">
+      <li *ngIf="!cartItems.length">
+        <span>There are no items</span>
+      </li>
+      <li *ngFor="let item of cartItems, let i = index">
+        <div class="count-card"></div>
+        <div class="txt-card">
+          <h3>{{item?.product?.targetInfo.name}}</h3>
+          <p>
+            {{item.product.startTime | date: 'dd/MM/yyyy HH:mma'}} -
+            {{item.product.toTime | date:'dd/MM/yyyy HH:mma'}}
+          </p>
+          <p class="price-card">{{item.price | appCurrency}}</p>
+        </div>
+        <div class="action-card">
+          <a
+            href="javascript:void(0)"
+            class="btn btn-light-danger btn-sm btn-icon-padding"
+            (click)="removeItem(item)"
+          >
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="bottom-card">
+    <div class="box-checkout">
+      <div class="price-total">
+        Total: <strong>{{totalPrice | appCurrency}}</strong>
+      </div>
+      <button
+        [disabled]="loading || !totalPrice"
+        class="btn btn-default btn-block"
+        (click)="checkout()"
+      >
+        Checkout
+      </button>
+    </div>
+  </div>
+</div>

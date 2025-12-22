@@ -1,0 +1,122 @@
+<div class="sm-padding data-table">
+    <div class="container">
+        <div class="row data-user">
+            <div class="col-md-12">
+                <div class="card mb-3 card-filter input-border">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input style="width: 100%" name="search" type="search"
+                                    class="form-control form-control-sm" aria-controls="table_id"
+                                    placeholder="{{'Search here'|translate}}" (keyup)="doSearch($event)" />
+                            </div>
+                            <div class="col-md-3">
+                                <a class="btn btn-default" [routerLink]="['/users/coupons/form']"><i
+                                        class="fi fi-rr-plus me-2 font-sm"></i> <span translate>Add Coupon</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="loading">
+                    <p><span translate>Loading</span>...</p>
+                </div>
+                <div class="card" *ngIf="!loading">
+                    <div class="table-responsive">
+                        <table class="table dataTable no-footer">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="name" [sortOption]="sortOption"
+                                            sortTitle="Name"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="code" [sortOption]="sortOption"
+                                            sortTitle="Code"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="type" [sortOption]="sortOption"
+                                            sortTitle="Type"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="value" [sortOption]="sortOption"
+                                            sortTitle="Value"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="webinarId" [sortOption]="sortOption"
+                                            sortTitle="Webinar"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="courseId" [sortOption]="sortOption"
+                                            sortTitle="Course"></app-sort>
+                                    </th>
+
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="expiredDate"
+                                            [sortOption]="sortOption" sortTitle="Expiry Date"></app-sort>
+                                    </th>
+                                    <th>
+                                        <app-sort (onSort)="onSort($event)" sortBy="createdAt" [sortOption]="sortOption"
+                                            sortTitle="Created On"></app-sort>
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of items, let i = index">
+                                    <td>{{item?.name}}</td>
+                                    <td>{{item?.code}}</td>
+                                    <td>{{item?.type}}</td>
+                                    <td>{{item?.value}}</td>
+                                    <td>{{item?.webinar?.name || '-'}}</td>
+                                    <td>{{item?.course?.name || '-'}}</td>
+                                    <td>{{item?.expiredDate | date}}</td>
+                                    <td>
+                                        <span>{{item?.createdAt | date}}</span>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/users/coupons/form', item._id ]"
+                                            class="btn btn-outline-dark"> <i class="fi fi-rs-pencil"></i>
+                                        </a>&nbsp;
+                                        <a (click)="remove(item, i)" class="btn btn-outline-danger">
+                                            <i class="fi fi-rr-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="bottom-table">
+                        <div class="showing-table" id="table_id_info" role="status" aria-live="polite" translate>
+                            <span translate>Showing</span> <span> {{ fromItem }} </span> <span translate>to</span>
+                            <span> {{ toItem }} </span> <span translate>of</span> <span> {{ count }}</span>
+                            <span translate>entries</span>
+                        </div>
+                        <div class="input-border show-entries" id="table_id_length">
+                            <label translate>Show entries</label>
+                            <select name="table_id_length" aria-controls="table_id"
+                                class="custom-select custom-select-sm form-control form-control-sm"
+                                [(ngModel)]="pageSize" (change)="query()">
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                        <div class="pagination-table" id="table_id_paginate">
+                            <ngb-pagination [collectionSize]="count" [(page)]="currentPage" [pageSize]="pageSize"
+                                [maxSize]="2" (pageChange)="query()">
+                                <ng-template ngbPaginationPrevious translate><span translate><i
+                                            class="fi fi-rr-angle-small-left"></i></span></ng-template>
+                                <ng-template ngbPaginationNext translate><span translate><i
+                                            class="fi fi-rr-angle-small-right"></i></span></ng-template>
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

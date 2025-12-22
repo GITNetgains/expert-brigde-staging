@@ -1,0 +1,106 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  alignment="center"
+  size="lg"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Section for the course</h5>
+    <button cButtonClose (click)="closeModal()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <form cForm #frm="ngForm" (submit)="submit(frm)" [validated]="submitted">
+      <c-container>
+        <c-row>
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel>Title<span class="text-danger">*</span></label>
+              <input
+                cFormControl
+                type="text"
+                name="title"
+                placeholder="Enter title"
+                [(ngModel)]="section.title"
+                required
+                #title="ngModel"
+              />
+              @if (title.errors && (title.dirty || title.touched || submitted))
+              { @if (title.errors['required']) {
+              <c-form-feedback invalid>Title is required!</c-form-feedback>
+              } }
+            </div>
+          </c-col>
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel>Description</label>
+              <textarea
+                cFormControl
+                name="description"
+                rows="3"
+                placeholder="Enter some text here"
+                [(ngModel)]="section.description"
+                #description="ngModel"
+              ></textarea>
+            </div>
+          </c-col>
+
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel>Ordering</label>
+              <input
+                cFormControl
+                type="number"
+                name="ordering"
+                placeholder="Ordering"
+                [(ngModel)]="section.ordering"
+                #ordering="ngModel"
+              />
+              @if (ordering.value < 0) {
+              <c-form-feedback invalid
+                >Order must be greater than or equal to 0!</c-form-feedback
+              >
+              }
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel>Video trial</label>
+              @if (videoUrl) {
+              <div class="video-container mb-3">
+                <video
+                  class="w-100"
+                  style="max-height: 350px"
+                  [src]="videoUrl"
+                  controls
+                ></video>
+              </div>
+              } @if (uploading) {
+              <div class="mb-2 text-info">
+                <span>Uploading video...</span>
+              </div>
+              }
+              <app-file-uploader
+                [options]="videoOptions"
+                #videoUploader
+              ></app-file-uploader>
+            </div>
+          </c-col>
+          <c-col md="12" class="mt-3">
+            <button cButton type="submit" color="primary" class="me-2">
+              Submit
+            </button>
+            <button
+              cButton
+              type="button"
+              color="secondary"
+              variant="outline"
+              (click)="closeModal()"
+            >
+              Close
+            </button>
+          </c-col>
+        </c-row>
+      </c-container>
+    </form>
+  </c-modal-body>
+</c-modal>

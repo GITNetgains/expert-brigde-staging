@@ -1,0 +1,92 @@
+<!-- <div class="col-md-4 mb-4"> -->
+<div class="card card-item">
+  <div class="badge-tag" *ngIf="webinar?.featured">
+    <span translate>Featured</span>
+  </div>
+  <a
+    [routerLink]="['/groupclass',webinar.alias]"
+    class="hyperlink card-img-top"
+  >
+    <img
+      src="{{webinar?.mainImage?.fileUrl}}"
+      alt="webinar image"
+      onerror="this.src='/assets/images/no-image.jpg'"
+  /></a>
+  <div class="card-body">
+    <div class="profile-card">
+      <div class="profile">
+        <a
+          [routerLink]="['/tutors', webinar?.tutor?.username]"
+          class="hyperlink"
+        >
+          <img
+            src="{{webinar?.tutor?.avatarUrl}}"
+            class=""
+            alt="tutor avatar"
+            onerror="this.src='/assets/images/default-avatar.jpg'"
+          />
+          <h5>{{webinar?.tutor?.name}}</h5>
+        </a>
+      </div>
+    </div>
+    <ul id="stars" class="stars-card">
+      <app-star-rating [rate]="webinar?.tutor?.ratingAvg"></app-star-rating>
+      <span
+        >{{webinar?.tutor?.ratingAvg}} ({{webinar?.tutor?.totalRating}})</span
+      >
+    </ul>
+    <div *ngIf="webinar.lastSlot">
+      <span class="me-2 text-secondary"
+        ><i class="fi fi-rr-calendar-day me-2"></i>{{
+        webinar.lastSlot?.startTime | date:'MMM dd,yyyy'}}</span
+      >
+      <span class="text-secondary"
+        ><i class="fi fi-rr-clock-three me-2"></i>{{webinar.lastSlot?.startTime
+        | date:'HH:mm'}}</span
+      >
+    </div>
+
+    <div class="card-content mt-1">
+      <h5 class="card-title ellipsis-1-line">{{(webinar?.name || '')}}</h5>
+      <span
+        class="card-description ellipsis-2-lines mt-1"
+        [innerHTML]="webinar.description"
+      >
+      </span>
+    </div>
+  </div>
+  <div class="card-footer bg-transparent border-text-mute p-3">
+    <div class="left-card-footer">
+      <a
+        *ngIf="!webinar.booked && systemService.showBooking()"
+        class="btn btn-default"
+        [routerLink]="['/groupclass',webinar.alias]"
+        translate
+        >Book Now</a
+      >
+      <a
+        *ngIf="!systemService.showBooking()"
+        class="btn btn-default"
+        [routerLink]="['/groupclass',webinar.alias]"
+        translate
+        >Details</a
+      >
+      <a
+        *ngIf="webinar.booked"
+        class="btn btn-purchased"
+        [routerLink]="['/groupclass',webinar.alias]"
+        translate
+        >Purchased</a
+      >
+    </div>
+    <div class="right-card-footer text-end">
+      <h5 class="color-light-red">
+        <strong *ngIf="!webinar.price || webinar.isFree" translate>Free</strong>
+        <strong *ngIf="webinar.price && webinar.price > 0"
+          >{{ webinar.price | appCurrency}}</strong
+        >
+      </h5>
+    </div>
+  </div>
+</div>
+<!-- </div> -->

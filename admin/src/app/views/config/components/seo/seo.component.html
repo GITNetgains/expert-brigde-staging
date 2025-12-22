@@ -1,0 +1,195 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'mixed'){ @if(item.key==='homeSEO'){
+            <form
+              cForm
+              (ngSubmit)="onSave(item)"
+              #homeForm="ngForm"
+              class="row g-3"
+            >
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Keyword</strong>
+                </label>
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="item.value.keywords"
+                  name="keywords"
+                />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Description</strong>
+                </label>
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="item.value.description"
+                  name="description"
+                />
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            } @if(item.key==='script'){ @for (script of item.value['head'];
+            track script; let i = $index){
+            <form cForm (ngSubmit)="onSave(item)" #headForm="ngForm">
+              <c-card class="mb-3">
+                <c-card-header class="d-flex justify-content-between">
+                  <h4>Script on head</h4>
+                  <div>
+                    <button
+                      cButton
+                      color="success"
+                      (click)="addScript('head', item)"
+                      class="text-white"
+                      style="margin-right: 10px"
+                    >
+                      Add Script
+                    </button>
+                    <button
+                      cButton
+                      color="danger"
+                      class="text-white"
+                      (click)="deleteScript('head', i, item)"
+                    >
+                      <svg [cIcon]="icons.cilTrash"></svg>
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body class="row g-3">
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>Name</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="script.name"
+                      name="headName"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>Script</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="script.script"
+                      name="headScript"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <c-form-check>
+                      <input
+                        cFormCheckInput
+                        type="checkbox"
+                        [(ngModel)]="script.isActive"
+                        name="item._id"
+                      />
+                      <label cFormCheckLabel>Active ?</label>
+                    </c-form-check>
+                  </c-col>
+                </c-card-body>
+                <c-card-footer>
+                  <c-col md="12" class="d-flex justify-content-end">
+                    <button cButton color="primary" type="submit">Save</button>
+                  </c-col>
+                </c-card-footer>
+              </c-card>
+            </form>
+            } @for (script of item.value['body']; track script; let i = $index){
+            <form cForm (ngSubmit)="onSave(item)" #bodyForm="ngForm">
+              <c-card class="mb-3">
+                <c-card-header class="d-flex justify-content-between">
+                  <h4>Script on body</h4>
+                  <div>
+                    <button
+                      cButton
+                      color="success"
+                      (click)="addScript('body', item)"
+                      class="text-white"
+                      style="margin-right: 10px"
+                    >
+                      Add Script
+                    </button>
+                    <button
+                      cButton
+                      color="danger"
+                      class="text-white"
+                      (click)="deleteScript('body', i, item)"
+                    >
+                      <svg [cIcon]="icons.cilTrash"></svg>
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body class="row g-3">
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>Name</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="script.name"
+                      name="bodyName"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <label cLabel>
+                      <strong>Script</strong>
+                    </label>
+                    <input
+                      cFormControl
+                      type="text"
+                      [(ngModel)]="script.script"
+                      name="bodyScript"
+                    />
+                  </c-col>
+                  <c-col md="12">
+                    <c-form-check>
+                      <input cFormCheckInput type="checkbox" />
+                      <label cFormCheckLabel>Active ?</label>
+                    </c-form-check>
+                  </c-col>
+                </c-card-body>
+                <c-card-footer>
+                  <c-col md="12" class="d-flex justify-content-end">
+                    <button
+                      cButton
+                      color="primary"
+                      type="submit"
+                      (click)="save(item)"
+                    >
+                      Save
+                    </button>
+                  </c-col>
+                </c-card-footer>
+              </c-card>
+            </form>
+            } } }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

@@ -1,0 +1,133 @@
+<c-tabs>
+  <c-tabs-list variant="tabs">
+    <button cTab itemKey="form">General Info</button>
+    @if(subjectId){ <button cTab itemKey="list">List of Topics</button>
+    }
+  </c-tabs-list>
+  <c-tabs-content>
+    <c-tab-panel class="p-2" itemKey="form">
+      <c-col md="12">
+        <c-card class="mb-4">
+          @if(subjectId){
+          <c-card-header>
+            <h4>Update Subject</h4>
+          </c-card-header>
+          } @else {
+          <c-card-header>
+            <h4>Create Subject</h4>
+          </c-card-header>
+          }
+          <c-card-body>
+            <form
+              cForm
+              #frm="ngForm"
+              (ngSubmit)="submit(frm)"
+              ngNativeValidate
+              novalidate
+              class="needs-validation"
+              [validated]="customStylesValidated"
+            >
+              <c-row class="mb-3">
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="name"><strong>Name</strong></label>
+                    <c-input-group class="has-validation">
+                      <input
+                        cFormControl
+                        placeholder="Enter name"
+                        [(ngModel)]="subject.name"
+                        #name="ngModel"
+                        id="name"
+                        required
+                        name="name"
+                      />
+                      @if(name.errors && (name.dirty || name.touched ||
+                      isSubmitted)){
+                      <c-form-feedback invalid>
+                        Please enter name subject
+                      </c-form-feedback>
+                      }
+                    </c-input-group>
+                  </div>
+                </c-col>
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="alias"><strong>Alias</strong></label>
+                    <c-input-group class="has-validation">
+                      <input
+                        cFormControl
+                        placeholder="Enter alias"
+                        [(ngModel)]="subject.alias"
+                        required
+                        name="alias"
+                        #alias="ngModel"
+                        id="alias"
+                      />
+                      @if (alias.invalid && (alias.touched || isSubmitted)) {
+                      <c-form-feedback class="text-danger">
+                        Alias is required.
+                      </c-form-feedback>
+                      }
+                    </c-input-group>
+                  </div>
+                </c-col>
+              </c-row>
+              <c-row class="mb-3">
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label cLabel for="imageUpload"
+                      ><strong>Category (*)</strong>
+                    </label>
+
+                    <ng-select
+                      class="my-select"
+                      [hideSelected]="true"
+                      [items]="categories"
+                      multiple="true"
+                      bindLabel="name"
+                      [closeOnSelect]="true"
+                      name="category"
+                      [(ngModel)]="subject.categoryIds"
+                      bindValue="_id"
+                      #categoryId="ngModel"
+                      required
+                      [dropdownPosition]="'top'"
+                      placeholder="Please select categories"
+                    >
+                    </ng-select>
+                    @if (categoryId.invalid && (categoryId.touched ||
+                    isSubmitted)) {
+                    <c-form-feedback class="text-danger">
+                      Please select at least one category.
+                    </c-form-feedback>
+                    }
+                  </div>
+                </c-col>
+              </c-row>
+              <c-row>
+                <c-col md="6">
+                  <div class="mb-3">
+                    <label class="fw-bold">
+                      Active?
+                      <input
+                        type="checkbox"
+                        [(ngModel)]="subject.isActive"
+                        name="isActive"
+                      />
+                    </label>
+                  </div>
+                </c-col>
+              </c-row>
+              <div class="d-flex justify-content-start">
+                <button cButton color="primary" type="submit">Submit</button>
+              </div>
+            </form>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-tab-panel>
+    <c-tab-panel class="p-2" itemKey="list">
+      <app-topic-list [subjectIds]="subjectId"></app-topic-list>
+    </c-tab-panel>
+  </c-tabs-content>
+</c-tabs>

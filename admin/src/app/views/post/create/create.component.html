@@ -1,0 +1,140 @@
+<form
+  cForm
+  #form="ngForm"
+  (ngSubmit)="submit(form)"
+  [validated]="customStylesValidated"
+  class="needs-validation"
+>
+  <c-row>
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <h4>Create New Post</h4>
+        </c-card-header>
+
+        <c-card-body>
+          <c-row [gutter]="3">
+
+            <!-- Title -->
+            <c-col md="6">
+              <label cLabel><strong>Title</strong></label>
+              <input
+                cFormControl
+                type="text"
+                id="title"
+                name="title"
+                required
+                placeholder="Enter title"
+                [(ngModel)]="post.title"
+                #title="ngModel"
+              />
+              <c-form-feedback [valid]="false">
+                Title is required.
+              </c-form-feedback>
+            </c-col>
+
+            <!-- Alias -->
+            <c-col md="6">
+              <label cLabel><strong>Alias</strong></label>
+              <input
+                cFormControl
+                type="text"
+                id="alias"
+                name="alias"
+                required
+                placeholder="Enter alias"
+                [(ngModel)]="post.alias"
+                #alias="ngModel"
+              />
+              <c-form-feedback [valid]="false">
+                Alias is required.
+              </c-form-feedback>
+            </c-col>
+
+            <!-- Type -->
+            <c-col md="6">
+              <label cLabel><strong>Type</strong></label>
+              <select
+                cFormControl
+                id="type"
+                name="type"
+                [(ngModel)]="post.type"
+                required
+              >
+                <option value="blog">Blog</option>
+                <option value="page">Page</option>
+                <option value="industry">Industry</option>
+              </select>
+              <c-form-feedback [valid]="false">
+                Type is required.
+              </c-form-feedback>
+            </c-col>
+
+            <!-- Tagline -->
+            <c-col md="6">
+              <label cLabel><strong>Tagline</strong></label>
+              <input
+                cFormControl
+                type="text"
+                id="tagline"
+                name="meta_tagline"
+                placeholder="e.g., Marketing Experts"
+                [(ngModel)]="post.meta.tagline"
+              />
+            </c-col>
+
+            <!-- Author -->
+            <c-col md="6">
+              <label cLabel><strong>Author</strong></label>
+              <input
+                cFormControl
+                type="text"
+                id="author"
+                name="meta_author"
+                placeholder="e.g., Jane Doe, Founder & CEO"
+                [(ngModel)]="post.meta.author"
+              />
+            </c-col>
+
+            <!-- Cover Image -->
+            <c-col md="6">
+              <label cLabel><strong>Cover Image</strong></label>
+
+              <div class="mb-2" *ngIf="post.meta?.imageUrl">
+                <img
+                  [src]="post.meta.imageUrl"
+                  alt="cover"
+                  style="max-width: 100%; height: auto; border-radius: 8px;"
+                />
+              </div>
+
+              <app-modal-upload (selectFileUrl)="onImageSelected($event)">
+              </app-modal-upload>
+            </c-col>
+
+            <!-- Content -->
+            <c-col>
+              <label cLabel><strong>Content</strong></label>
+              <app-editor
+                [content]="post.content"
+                (contentChange)="post.content = $event"
+              ></app-editor>
+            </c-col>
+
+          </c-row>
+        </c-card-body>
+
+        <c-card-footer>
+          <c-row>
+            <c-col class="text-end">
+              <button type="submit" class="btn btn-primary">
+                Create Post
+              </button>
+            </c-col>
+          </c-row>
+        </c-card-footer>
+
+      </c-card>
+    </c-col>
+  </c-row>
+</form>

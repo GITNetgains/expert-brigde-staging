@@ -1,0 +1,40 @@
+<div class="file-uploader">
+  <div
+    class="drop-zone"
+    [class.over]="hasBaseDropZoneOver"
+    (drop)="fileDrop($event)"
+    (dragover)="fileOver($event)"
+    (dragleave)="fileLeave($event)"
+  >
+    <input
+      type="file"
+      [attr.multiple]="multiple ? '' : null"
+      (change)="fileSelect($event)"
+      [accept]="options?.accept"
+    />
+    <div class="drop-text">
+      <ng-container *ngIf="!hasBaseDropZoneOver">
+        <p>{{ 'Upload or drag files here' | translate }}</p>
+      </ng-container>
+      <ng-container *ngIf="hasBaseDropZoneOver">
+        <p>{{ 'Drop files to upload' | translate }}</p>
+      </ng-container>
+    </div>
+    <button type="button" (click)="uploadAll()" class="btn btn-primary" *ngIf="queue.length && !options?.uploadOnSelect">
+      {{ 'Upload' | translate }}
+    </button>
+  </div>
+
+  <div class="queue-list" *ngIf="queue.length">
+    <div *ngFor="let item of queue; let i = index" class="queue-item">
+      <div class="info">
+        <div class="name">{{ item.file.name }}</div>
+        <div class="size">{{ (item.file.size / 1024 / 1024) | number : '1.1-2' }} MB</div>
+      </div>
+      <div class="progress">
+        <div class="bar" [style.width.%]="item.progress"></div>
+      </div>
+      <div class="state">{{ item.state }}</div>
+    </div>
+  </div>
+</div>

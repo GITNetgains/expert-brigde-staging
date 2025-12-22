@@ -1,0 +1,62 @@
+<section class="sm-padding" *ngIf="isBlogList; else blogDetailTpl">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h2>All Blogs</h2>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+      <div class="col mb-4" *ngFor="let item of posts">
+        <div class="card h-100">
+          <div class="image-container">
+          <img [src]="getImage(item)" class="card-img-top" alt="blog" />
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ item?.title }}</h5>
+            <p class="card-text">
+              <small class="text-muted">
+                {{ item?.createdAt | date:'dd MMM, yyyy' }} • {{ getAuthor(item) }}
+              </small>
+            </p>
+            <a class="btn btn-link p-0" [routerLink]="['/blogs', item?.alias || item?._id]">Read more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========== BLOG DETAIL PAGE =========== -->
+<ng-template #blogDetailTpl>
+  <section class="blog-detail-section">
+    <div class="container">
+
+      <!-- BLOG IMAGE -->
+      <div class="blog-detail-image">
+        <img class="image-blogs" [src]="getImage(page)" alt="Blog Image" />
+      </div>
+
+      <!-- TAGLINE -->
+      <div class="tagline" *ngIf="getTagline(page)">
+        {{ getTagline(page) }}
+      </div>
+
+      <!-- TITLE -->
+      <h1 class="blog-detail-title">
+        {{ page?.title }}
+      </h1>
+
+      <!-- META -->
+      <!-- <div class="blog-meta">
+        {{ page?.createdAt | date:'dd MMM, yyyy' }} • written by {{ getAuthor(page) }}
+      </div> -->
+
+      <!-- CONTENT -->
+      <div class="blog-detail-content ql-container ql-core">
+        <div class="ql-editor" [innerHTML]="page?.content"></div>
+      </div>
+
+    </div>
+  </section>
+</ng-template>
+

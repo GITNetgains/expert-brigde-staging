@@ -1,0 +1,97 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  size="lg"
+>
+  <c-card class="mb-4">
+    <c-card-header class="d-flex justify-content-between">
+      <h3>Add a new language</h3>
+      <button
+        cButton
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="closeModal()"
+      >
+        &times;
+      </button>
+    </c-card-header>
+
+    <c-card-body>
+      <form (submit)="create(frm)" #frm="ngForm">
+        <c-col>
+          <div class="mb-3">
+            <label cLabel for="name">Select languages</label>
+            <ng-select
+              class="my-select"
+              [items]="isoLangs"
+              [hideSelected]="true"
+              bindLabel="text"
+              bindValue="language.code"
+              [closeOnSelect]="true"
+              (change)="changeLang($event)"
+              [(ngModel)]="lang.key"
+              name="lang"
+              placeholder="Select languages"
+              [clearable]="true"
+            >
+            </ng-select>
+          </div>
+        </c-col>
+
+        <c-col class="mb-3">
+          <label cLabel for="name">Name</label>
+          <input
+            cFormControl
+            type="text"
+            [(ngModel)]="lang.name"
+            name="name"
+            readonly
+            #name="ngModel"
+          />
+        </c-col>
+
+        <c-col class="d-flex flex-colum gap-3">
+          <div class="form-group">
+            <label>
+              Default?
+              <input
+                type="checkbox"
+                [(ngModel)]="lang.isDefault"
+                name="default"
+              />
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              Active?
+              <input
+                type="checkbox"
+                [(ngModel)]="lang.isActive"
+                name="active"
+              />
+            </label>
+          </div>
+        </c-col>
+
+        <c-col>
+          <div class="mb-3">
+            <label cLabel for="fileUpload">files</label>
+            <app-file-uploader
+              [options]="uploadOptions"
+              #fileUploader
+            ></app-file-uploader>
+          </div>
+        </c-col>
+
+        <c-col>
+          @if(!lang._id){
+          <button class="btn btn-primary" type="submit">Create</button>
+          } @if(lang._id){
+          <button class="btn btn-primary" type="submit">Update</button>
+          }
+        </c-col>
+      </form>
+    </c-card-body>
+  </c-card>
+</c-modal>

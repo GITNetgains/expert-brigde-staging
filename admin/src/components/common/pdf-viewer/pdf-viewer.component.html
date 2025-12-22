@@ -1,0 +1,38 @@
+<div class="pdf-viewer-wrapper">
+  @if(pdfSrc) {
+  <ngx-extended-pdf-viewer
+    [src]="pdfSrc"
+    [height]="mergedConfig.height"
+    [useBrowserLocale]="mergedConfig.useBrowserLocale"
+    [showToolbar]="mergedConfig.showToolbar"
+    [showSidebarButton]="mergedConfig.showSidebarButton"
+    [showFindButton]="mergedConfig.showFindButton"
+    [showPagingButtons]="mergedConfig.showPagingButtons"
+    [showZoomButtons]="mergedConfig.showZoomButtons"
+    [showPresentationModeButton]="mergedConfig.showPresentationModeButton"
+    [showOpenFileButton]="mergedConfig.showOpenFileButton"
+    [showPrintButton]="mergedConfig.showPrintButton"
+    [showDownloadButton]="mergedConfig.showDownloadButton"
+    [showSecondaryToolbarButton]="mergedConfig.showSecondaryToolbarButton"
+    [showRotateButton]="mergedConfig.showRotateButton"
+    [showHandToolButton]="mergedConfig.showHandToolButton"
+    [showPropertiesButton]="mergedConfig.showPropertiesButton"
+    [listenToURL]="mergedConfig.listenToURL"
+    [zoom]="mergedConfig.zoom"
+    [authorization]="null"
+    [useRangeRequests]="true"
+    (pdfLoaded)="onPdfLoaded($event)"
+    (pdfLoadingFailed)="onPdfLoadingFailed($event)"
+    (pageChanged)="onPageChanged($event)"
+  >
+  </ngx-extended-pdf-viewer>
+  } @else {
+  <div class="pdf-placeholder">
+    <div class="placeholder-content">
+      <i class="icon-doc"></i>
+      <h4>No PDF to display</h4>
+      <p>Please provide a PDF source to view the document.</p>
+    </div>
+  </div>
+  }
+</div>

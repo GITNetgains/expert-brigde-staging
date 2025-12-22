@@ -1,0 +1,33 @@
+<section class="mih-section">
+  <div class="mih-container">
+
+    <h2 class="mih-title">Make it happen with ExpertBrigde</h2>
+    <p class="mih-subtitle">
+      We offer a global network of world-class talent, making it accessible to every business
+      so you can confidently grow, evolve and achieve unparalleled success.
+    </p>
+
+    <div class="marquee-wrapper">
+
+      <!-- Row 1 — Left to Right -->
+      <div class="marquee marquee-left">
+        <div class="marquee-content" *ngFor="let repeat of [1,2]">
+          <span class="brand-card" *ngFor="let item of brandsRow1">
+            {{ item }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 2 — Right to Left -->
+      <div class="marquee marquee-right">
+        <div class="marquee-content" *ngFor="let repeat of [1,2]">
+          <span class="brand-card" *ngFor="let item of brandsRow2">
+            {{ item }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>

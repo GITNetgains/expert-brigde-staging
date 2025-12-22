@@ -1,0 +1,169 @@
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Appointment Information</h4>
+      </c-card-header>
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <tbody>
+            <tr>
+              <th>Expert Name</th>
+              <td>
+                @if (appointment?.tutor) {
+                <a [routerLink]="['/tutor/update', appointment.tutor._id]">
+                  {{ appointment.tutor.name }}
+                </a>
+                }
+              </td>
+            </tr>
+            <tr>
+              <th>Client Name</th>
+              <td>
+                @if (appointment?.user) {
+                <a [routerLink]="['/users/update', appointment.user._id]">
+                  {{ appointment.user.name }}
+                </a>
+                }
+              </td>
+            </tr>
+            @if (appointment?.targetType === 'subject') {
+            <tr>
+              <th>Subject</th>
+              <td>{{ appointment?.subject?.name }}</td>
+            </tr>
+            } @if (appointment?.targetType === 'webinar') {
+            <tr>
+              <th>Group Class</th>
+              <td>{{ appointment?.webinar?.name }}</td>
+            </tr>
+            }
+            <tr>
+              <th>Start Time</th>
+              <td>{{ appointment?.startTime | date : "short" }}</td>
+            </tr>
+            <tr>
+              <th>End Time</th>
+              <td>{{ appointment?.toTime | date : "short" }}</td>
+            </tr>
+            <tr>
+              <th>Price</th>
+              <td>
+                @if (appointment?.isFree) {
+                <span class="text-success">Free</span>
+                } @else if (!appointment?.transaction?.couponCode) {
+                {{
+                  appointment?.transaction?.price
+                    | currency
+                      : config?.currencySymbol ?? "$"
+                      : "symbol"
+                      : "1.0"
+                }}
+                } @else {
+                {{
+                  appointment?.transaction?.discountAmount +
+                    appointment?.transaction?.discountPrice
+                    | currency
+                      : config?.currencySymbol ?? "$"
+                      : "symbol"
+                      : "1.0"
+                }}
+                }
+              </td>
+            </tr>
+            @if (appointment?.transaction?.couponCode) {
+            <tr>
+              <th>Discount Amount</th>
+              <td class="text-danger">
+                {{
+                  appointment?.transaction?.discountAmount
+                    | currency
+                      : config?.currencySymbol ?? "$"
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <th>Price Discount</th>
+              <td class="text-danger">
+                {{
+                  appointment?.transaction?.discountPrice
+                    | currency
+                      : config?.currencySymbol ?? "$"
+                      : "symbol"
+                      : "1.0"
+                }}
+              </td>
+            </tr>
+            } @if (appointment?.couponCode) {
+            <tr>
+              <th>Coupon code</th>
+              <td>{{ appointment?.couponCode }}</td>
+            </tr>
+            }
+
+            <tr>
+              <th>Payment Status</th>
+              <td>
+                @if (appointment?.paid) {
+                <span class="badge bg-success">Paid</span>
+                } @else {
+                <span class="badge bg-danger">Unpaid</span>
+                }
+              </td>
+            </tr>
+            <tr>
+              <th>Appointment Status</th>
+              <td>
+                @switch(appointment?.status){ @case('booked'){
+                <c-badge color="primary">Booked</c-badge>
+                }@case('pending'){
+                <c-badge color="warning">Pending</c-badge>
+                }@case('canceled'){
+                <c-badge color="danger">Canceled</c-badge>
+                }@case('progressing'){
+                <c-badge color="primary">In Progress</c-badge>
+                }@case('completed'){
+                <c-badge color="success">Completed</c-badge>
+                }@case('not-start'){
+                <c-badge color="dark">Not start</c-badge>
+                } }
+              </td>
+            </tr>
+            @if (appointment?.recordings?.shareUrl) {
+            <tr>
+              <th>Preview</th>
+              <td>
+                <a [href]="appointment.recordings.shareUrl" target="_blank">
+                  <button class="btn btn-outline-primary">
+                    <i class="fa fa-play me-1"></i> View Video
+                  </button>
+                </a>
+              </td>
+            </tr>
+            } @if (appointment?.recordings?.shareUrl &&
+            appointment?.recordings?.password) {
+            <tr>
+              <th>Record Password</th>
+              <td>
+                <div>{{ appointment.recordings.password }}</div>
+                <small class="text-muted"
+                  >If asked to enter a password when viewing the record, please
+                  use the above password.</small
+                >
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

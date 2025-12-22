@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h2 class="modal-title" translate>Your course cerificate</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+  </button>
+</div>
+<div class="modal-body" [hidden]="!stringDuration">
+  <p *ngIf="loadingCer">Loading...</p>
+  <div class="w-100 d-flex justify-content-center"> <img src="{{cerImg}}" alt=""></div>
+  <div style="position: absolute; opacity: 0; pointer-events:none;">
+    <div class="wrapper" id="my_certificate">
+      <div class="certificate text-center">
+        <h1 translate>Certificate of Completion</h1>
+        <div class="content">
+          <p>
+            <span translate>This is to certify that</span>
+            <span class="pink">&nbsp;{{userName}} &nbsp;</span>
+            <span translate>successfully completed </span><br />
+            <span translate> {{stringDuration}} of </span><span class="pink">{{myCourse?.name}}</span> <span
+              translate>online course on </span>{{myCourse?.completedAt|date:'longDate'}}
+          </p>
+        </div>
+        <h2>{{myCourse?.course?.tutor?.name}}</h2>
+        <!-- <hr> -->
+        <h5>{{myCourse?.course?.tutor?.name}},<span translate> Instructor</span></h5>
+        <h6>&</h6>
+        <img src="{{appConfig?.siteLogo || 'assets/images/logo/livelearn-header-logo.png'}}" />
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button translate (click)="exportAsPDF('my_certificate')" class="btn btn-default">Save as PDF</button>
+</div>

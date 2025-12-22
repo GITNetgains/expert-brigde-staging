@@ -1,0 +1,94 @@
+<c-container class="p-0">
+  <c-row>
+    <c-card>
+      <c-card-body>
+        @if (total!==0) {
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr class="">
+                <th>Text</th>
+                <th>Created On</th>
+                <th>#</th>
+              </tr>
+              <tr>
+                <th>
+                  <div class="input-group mb-">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Search keyword"
+                      [(ngModel)]="search.text"
+                      name="text"
+                    />
+                    <div class="input-group-append ms-2">
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        (click)="query()"
+                      >
+                        Search
+                      </button>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of items; track $index) {
+              <tr>
+                <td>{{ item.text }}</td>
+                <td>
+                  <span>{{ item.createdAt | date }}</span>
+                </td>
+                <td>
+                  <a
+                    cButton
+                    (click)="remove(item, i)"
+                    class="btn btn-sm btn-danger me-1"
+                  >
+                    <svg cIcon name="cilTrash" size="sm"></svg>
+                  </a>
+                </td>
+              </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">
+                  <div class="input-group mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Enter new text"
+                      [(ngModel)]="newText.text"
+                      name="text"
+                    />
+                    <div class="input-group-append ms-2">
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        (click)="add()"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+          @if(total !== 0){
+          <app-pagination
+            [currentPage]="page"
+            [pageSize]="pageSize"
+            [totalItems]="total"
+            [maxSize]="3"
+          ></app-pagination>
+          }
+        </div>
+        }
+      </c-card-body>
+    </c-card>
+  </c-row>
+</c-container>

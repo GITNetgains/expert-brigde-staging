@@ -1,0 +1,59 @@
+{
+  "industries": [
+    {
+      "title": "Information Technology (IT) / Technology",
+      "subcategories": [
+        "AI, cloud, cybersecurity, software, data science, product, digital transformation"
+      ],
+      "image": "assets/images/homepage/industries1.png"
+    },
+    {
+      "title": "Healthcare & Medical",
+      "subcategories": [
+        "Telemedicine, bioinformatics, medical device engineers, health tech"
+      ],
+       "image": "assets/images/homepage/industries2.png"
+    },
+    {
+      "title": "Business & Finance",
+      "subcategories": [
+        "Fintech, financial analysts, blockchain, investments, project management"
+      ],
+       "image": "assets/images/homepage/industries3.png"
+    },
+    {
+      "title": "Marketing & Advertising / Media & Communications",
+      "subcategories": [
+        "Digital marketing, social media, e-commerce, online content, SEO/SEM"
+      ],
+       "image": "assets/images/homepage/industries4.png"
+    }, {
+      "title": "Information Technology (IT) / Technology",
+      "subcategories": [
+        "AI, cloud, cybersecurity, software, data science, product, digital transformation"
+      ],
+      "image": "assets/images/homepage/industries1.png"
+    },
+    {
+      "title": "Healthcare & Medical",
+      "subcategories": [
+        "Telemedicine, bioinformatics, medical device engineers, health tech"
+      ],
+       "image": "assets/images/homepage/industries2.png"
+    },
+    {
+      "title": "Business & Finance",
+      "subcategories": [
+        "Fintech, financial analysts, blockchain, investments, project management"
+      ],
+       "image": "assets/images/homepage/industries3.png"
+    },
+    {
+      "title": "Marketing & Advertising / Media & Communications",
+      "subcategories": [
+        "Digital marketing, social media, e-commerce, online content, SEO/SEM"
+      ],
+       "image": "assets/images/homepage/industries4.png"
+    }
+  ]
+}

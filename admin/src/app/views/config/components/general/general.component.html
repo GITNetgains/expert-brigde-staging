@@ -1,0 +1,47 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'text'){
+            <c-input-group>
+              @if(item.key==='siteLogo' || item.key==='siteFavicon'
+              ||item.key==='siteBanner' || item.key==='signupImage' ||
+              item.key==='profileBanner'){
+              <app-modal-upload
+                (selectFileUrl)="getSelectedFile($event, item)"
+              ></app-modal-upload>
+              } @if(item.value){
+              <input cFormControl [(ngModel)]="item.value" />
+              }@else {
+              <input cFormControl />
+              }
+              <button
+                cButton
+                color="primary"
+                type="button"
+                (click)="onSave(item)"
+              >
+                Save
+              </button>
+            </c-input-group>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

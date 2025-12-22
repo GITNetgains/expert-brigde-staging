@@ -1,0 +1,153 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Manage Post</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col sm="12" md="3">
+            <input
+              cFormControl
+              type="text"
+              name="title"
+              (keypress)="keyPress($event)"
+              [(ngModel)]="searchFields.title"
+              placeholder="Enter title"
+            />
+          </c-col>
+          <c-col sm="12" md="3">
+            <input
+              cFormControl
+              type="text"
+              name="alias"
+              (keypress)="keyPress($event)"
+              [(ngModel)]="searchFields.alias"
+              placeholder="Enter alias"
+            />
+          </c-col>
+          <c-col sm="12" md="3">
+            <input
+              cFormControl
+              type="text"
+              name="content"
+              (keypress)="keyPress($event)"
+              [(ngModel)]="searchFields.content"
+              placeholder="Enter content"
+            />
+          </c-col>
+          <c-col sm="12" md="3">
+            <select cFormControl [(ngModel)]="searchFields.type" name="type">
+              <option [ngValue]="null">All</option>
+              <option value="blog">Blog</option>
+              <option value="page">Page</option>
+              <option value="industry">Industry</option>
+            </select>
+          </c-col>
+          <c-col sm="12" md="3">
+            <button
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="query()"
+            >
+              Filter
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Total Pages: {{ count }}</h4>
+      </c-card-header>
+      @if(count !== 0){
+      <c-card-body>
+        <table
+          cTable
+          [responsive]="true"
+          [cBorder]="1"
+          borderColor="gray"
+          bordered
+        >
+          <thead>
+            <tr>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="title"
+                  [sortOption]="sortOption"
+                  sortTitle="Title"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="alias"
+                  [sortOption]="sortOption"
+                  sortTitle="Alias"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="content"
+                  [sortOption]="sortOption"
+                  sortTitle="Content"
+                ></app-sort>
+              </th>
+              <th>
+                <app-sort
+                  (onSort)="onSort($event)"
+                  sortBy="createdAt"
+                  [sortOption]="sortOption"
+                  sortTitle="Created on"
+                ></app-sort>
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track item._id) {
+            <tr>
+              <td>{{ item?.title }}</td>
+              <td>{{ item?.alias }}</td>
+              <td>
+                <span [innerHTML]="item?.content | ellipsis:20"></span>
+              </td>
+              <td>{{ item?.createdAt | date }}</td>
+              <td>
+                <div class="d-flex flex-wrap gap-1">
+                  <a
+                    [routerLink]="['/posts/update', item._id]"
+                    class="btn btn-sm btn-primary me-1"
+                  >
+                    <svg cIcon name="cilPencil" size="sm"></svg>
+                  </a>
+                  <app-modal-delete
+                    [item]="item"
+                    (confirmDelete)="remove($event, $event._id)"
+                  ></app-modal-delete>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <c-container
+          style="background-color: #ffc12b; padding: 10px 0; border-radius: 8px"
+        >
+          <span style="padding: 10px">There are no items</span>
+        </c-container>
+      </c-card-body>
+      }
+    </c-card>
+  </c-col>
+</c-row>

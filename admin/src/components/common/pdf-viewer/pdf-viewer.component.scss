@@ -1,0 +1,98 @@
+.pdf-viewer-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+
+  ngx-extended-pdf-viewer {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.pdf-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 4px;
+  color: #6c757d;
+
+  .placeholder-content {
+    text-align: center;
+
+    i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #adb5bd;
+    }
+
+    h4 {
+      margin-bottom: 0.5rem;
+      color: #495057;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Custom styles for PDF viewer toolbar
+::ng-deep {
+  .pdf-viewer-wrapper {
+    .toolbar {
+      background-color: #fff;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .toolbarButton {
+      color: #495057;
+
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+
+    .toolbarField {
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+
+      &:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .pdf-viewer-wrapper {
+    ngx-extended-pdf-viewer {
+      height: 70vh;
+    }
+  }
+
+  .pdf-placeholder {
+    height: 300px;
+
+    .placeholder-content {
+      i {
+        font-size: 2rem;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}

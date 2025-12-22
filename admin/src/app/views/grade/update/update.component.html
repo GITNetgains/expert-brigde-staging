@@ -1,0 +1,121 @@
+<c-col md="12">
+  <c-card class="mb-4">
+    <c-card-header>
+      <h4>Update Grade</h4>
+    </c-card-header>
+    <c-card-body>
+      <form
+        cForm
+        [formGroup]="gradeForm"
+        (ngSubmit)="submit()"
+        novalidate
+        class="needs-validation"
+        [validated]="customStylesValidated"
+      >
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name">Name</label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  id="name"
+                  formControlName="name"
+                  placeholder="Enter name"
+                  required
+                />
+                @if (gradeForm.get('name')?.errors?.['required'] && isSubmitted)
+                {
+                <c-form-feedback class="text-danger fw-bold"
+                  >* Name is required</c-form-feedback
+                >
+                }
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="alias">Alias</label>
+              <input
+                cFormControl
+                id="alias"
+                formControlName="alias"
+                placeholder="Enter alias"
+              />
+            </div>
+            @if (gradeForm.get('alias')?.errors?.['required'] && isSubmitted) {
+            <small class="text-danger fw-bold">* Alias is required</small>
+            }
+          </c-col>
+        </c-row>
+
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="phoneNumber">Ordering</label>
+              <input
+                formControlName="ordering"
+                cFormControl
+                type="number"
+                required
+                id="ordering"
+                placeholder="Ordering"
+              />
+            </div>
+            @if (gradeForm.get('ordering')?.errors?.['required'] && isSubmitted)
+            {
+            <small class="text-danger fw-bold">* Ordering is required</small>
+            }
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="School Type">School Type</label>
+              <select
+                cFormControl
+                formControlName="type"
+                id="type"
+                aria-label="Default select example"
+                cSelect
+              >
+                <option value="elementary">Elementary</option>
+                <option value="middle-school">Middle school</option>
+                <option value="high-school">High school</option>
+                <option value="college">College</option>
+              </select>
+              @if (gradeForm.get('type')?.errors?.['required'] && isSubmitted) {
+              <small class="text-danger fw-bold"
+                >* School type is required</small
+              >
+              }
+            </div>
+          </c-col>
+        </c-row>
+
+        <c-row class="mb-3">
+          <label cLabel>Description</label>
+          <div cFormFloating>
+            <textarea
+              cFormControl
+              id="description"
+              formControlName="description"
+              [ngStyle]="{ 'height.px': 100 }"
+              placeholder="Description"
+            ></textarea>
+          </div>
+          @if (gradeForm.get('description')?.errors?.['required'] &&
+          isSubmitted) {
+          <small class="text-danger fw-bold">* Description is required</small>
+          } @else if (gradeForm.get('description')?.errors?.['minlength'] &&
+          isSubmitted) {
+          <small class="text-danger fw-bold"
+            >* Description must be at least 6 characters</small
+          >
+          }
+        </c-row>
+        <div class="d-flex justify-content-start">
+          <button cButton color="primary" type="submit">Save</button>
+        </div>
+      </form>
+    </c-card-body>
+  </c-card>
+</c-col>

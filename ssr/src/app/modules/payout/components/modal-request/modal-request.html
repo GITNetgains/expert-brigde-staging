@@ -1,0 +1,60 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLongTitle">Request payout</h5>
+  <button
+    type="button"
+    class="btn-close"
+    data-dismiss="modal"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <h5 class="text-secondary font-weight-bold">
+        <span translate>Total</span>: {{balance?.total | appCurrency}}
+      </h5>
+      <h5 class="text-secondary font-weight-bold">
+        <span translate>Commission:</span> {{balance?.commission |appCurrency}}
+      </h5>
+      <h5 class="text-secondary font-weight-bold">
+        <span translate>Balance:</span> {{balance?.balance | appCurrency}}
+      </h5>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="form-group input-border">
+        <label><span translate>Please select pay out account</span> (*)</label>
+        <select
+          class="form-control"
+          [(ngModel)]="payoutAccountId"
+          required
+          name="payout-account"
+          *ngIf="accounts.length"
+        >
+          <option *ngFor="let item of accounts" value="{{item?._id}}">
+            <span *ngIf="item.type === 'bank-account'"
+              ><span translate>Bank</span> - {{item?.bankName}} -
+              {{item?.accountNumber}}</span
+            >
+            <span *ngIf="item.type === 'paypal'"
+              ><span translate>Paypal</span> - {{item?.paypalAccount}}</span
+            >
+          </option>
+        </select>
+        <a *ngIf="!accounts.length" [routerLink]="['/users/payout/account']"
+          >Add your payment account!</a
+        >
+      </div>
+    </div>
+    <div class="col col-12 d-flex align-items-end gap-2">
+      <button class="btn btn-default mt-4" (click)="submitRequest()" translate>
+        Submit
+      </button>
+      <small class="form-text text-muted font-sm mt-3" translate
+        >Read the FAQ for payout related questions</small
+      >
+    </div>
+  </div>
+</div>

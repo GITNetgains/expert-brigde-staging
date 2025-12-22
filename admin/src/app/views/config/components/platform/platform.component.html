@@ -1,0 +1,92 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'mixed'){
+            @if(item.key==='platformOnline'){
+            <form cForm (ngSubmit)="onSave(item)" #platformOnlineForm="ngForm" class="row g-3">
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Select platform</strong>
+                </label>
+                <select cSelect [(ngModel)]="item.value.platform" name="platformType">
+                  <option value="lessonspace" selected>Lesson Space</option>
+                  <option value="zoomus">Zoom Us</option>
+                </select>
+              </c-col>
+              @if(item.value.platform ==='lessonspace'){
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Api key</strong>
+                </label>
+                <input cFormControl type="text" [(ngModel)]="item.value.lessonspace.apiKey" name="apiKey" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Organisation ID</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.lessonspace.organisationId" name="organisationId"
+                  type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Hook url</strong>
+                </label>
+                <input cFormControl [(ngModel)]="item.value.lessonspace.hookUrl" name="hookUrl" type="text" />
+              </c-col>
+              }
+              @if(item.value.platform ==='zoomus'){
+              <c-col md="12">
+                <label cLabel>SDK client ID</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.sdk.clientId" name="sdkClientId" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>SDK client secret</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.sdk.clientSecret" name="sdkClientSecret"
+                  type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>Oauth Server-server account ID</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.oauthServerToServer.accountId"
+                  name="oauthServerToServerAccountId" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>Oauth Server-server client ID</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.oauthServerToServer.clientId"
+                  name="oauthServerToServerClientId" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>Oauth Server-server client secret</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.oauthServerToServer.clientSecret"
+                  name="oauthServerToServerClientSecret" type="text" />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>Oauth Server-server webhook secret token</label>
+                <input cFormControl [(ngModel)]="item.value.zoomus.oauthServerToServer.secretToken"
+                  name="oauthServerToServerSecretToken" type="text" />
+              </c-col>
+              }
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            }
+            }
+            }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

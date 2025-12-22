@@ -1,0 +1,275 @@
+<div class="sm-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3 class="mb-4" translate>Payment Detail</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 mb-3">
+        <div class="card card-body">
+          <table id="table_id" class="table table-text tble-responsive">
+            <tbody>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text">Tutor Name</span>
+                </td>
+                <td>
+                  <a
+                    class="color-light-red"
+                    [routerLink]="['/tutors', transaction.tutor.username]"
+                    *ngIf="transaction && transaction.tutor"
+                    >{{transaction?.tutor?.name}}</a
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><span translate class="payment-detail-text">Type</span></td>
+                <td>
+                  <span
+                    class="label label-light-info"
+                    *ngIf="transaction?.type === 'booking'"
+                    translate
+                    >Booking</span
+                  >
+                  <span
+                    class="label label-light-warning"
+                    *ngIf="transaction?.type === 'gift'"
+                    translate
+                    >Gift</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text">Enroll Type</span>
+                </td>
+                <td>
+                  <span
+                    class="label label-light-info"
+                    *ngIf="transaction?.targetType === 'webinar'"
+                    translate
+                    >Webinar</span
+                  >
+                  <span
+                    class="label label-light-info"
+                    *ngIf="transaction?.targetType === 'subject'"
+                    translate
+                    >1 vs 1</span
+                  >
+                  <span
+                    class="label label-light-info"
+                    *ngIf="transaction?.targetType === 'course'"
+                    translate
+                    >Course</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text"
+                    >Subject / Group Class / Course</span
+                  >
+                </td>
+                <td>
+                  <span *ngIf="transaction?.tutorSubject?.name"
+                    >{{transaction?.tutorSubject?.name}} -
+                  </span>
+                  <a
+                    class="color-light-red"
+                    [routerLink]="['/groupclass',transaction.webinar && transaction.webinar.alias]"
+                    *ngIf="transaction.targetType === 'webinar'"
+                    >{{transaction.webinar && transaction.targetType ===
+                    'webinar' ? transaction?.webinar?.name : ''}}</a
+                  >
+                  <a
+                    class="color-light-red"
+                    [routerLink]="['/courses', transaction.course && transaction.course.alias]"
+                    *ngIf="transaction.targetType === 'course'"
+                    >{{transaction.course && transaction.targetType === 'course'
+                    ? transaction?.course?.name : ''}}</a
+                  >
+                  <span
+                    >{{transaction.subject && transaction.targetType ===
+                    'subject' ? transaction?.subject?.name : ''}}</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><span translate class="payment-detail-text">Code</span></td>
+                <td>
+                  <span>{{transaction?.code}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text"
+                    >Original price</span
+                  >
+                </td>
+                <td>
+                  <span
+                    >{{(transaction.originalPrice || transaction.price)
+                    |appCurrency}}</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text">Price</span>
+                </td>
+                <td>
+                  <span>{{transaction.price |appCurrency}}</span>
+                </td>
+              </tr>
+              <tr *ngIf="transaction.usedCoupon">
+                <td translate>Discount Amount</td>
+                <td>
+                  <span
+                    >{{transaction?.couponInfo?.discountAmount
+                    |appCurrency}}</span
+                  >
+                </td>
+              </tr>
+              <tr *ngIf="transaction.usedCoupon">
+                <td translate>Coupon Code</td>
+                <td><span>{{transaction?.couponInfo?.couponCode}}</span></td>
+              </tr>
+              <tr>
+                <td translate>
+                  <span class="payment-detail-text">Created On</span>
+                </td>
+                <td><span>{{transaction?.createdAt | date}}</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <span translate class="payment-detail-text">Status</span>
+                </td>
+                <td>
+                  <span
+                    class="label label-light-warning"
+                    *ngIf="transaction?.status === 'pending'"
+                    translate
+                    >Pending</span
+                  >
+                  <span
+                    class="label label-light-danger"
+                    *ngIf="transaction?.status === 'canceled'"
+                    translate
+                    >Canceled</span
+                  >
+                  <span
+                    class="label label-light-primary"
+                    *ngIf="transaction?.status === 'progressing'"
+                    translate
+                    >In Progress</span
+                  >
+                  <span
+                    class="label label-light-primary"
+                    *ngIf="transaction?.status === 'completed'"
+                    translate
+                    >Completed</span
+                  >
+                  <span
+                    class="label label-light-warning"
+                    *ngIf="transaction?.status === 'pending-refund'"
+                    translate
+                    >Pending refund</span
+                  >
+                  <span
+                    class="label label-light-primary"
+                    *ngIf="transaction?.status === 'approved-refund'"
+                    translate
+                  >
+                    Approved refund
+                  </span>
+                  <span
+                    class="label label-light-primary"
+                    *ngIf="transaction?.status === 'refunded'"
+                    translate
+                    >Refunded</span
+                  >&nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-7">
+        <div
+          *ngIf="transaction.price && transaction.price > 0 && (transaction.targetType === 'subject' || transaction.targetType === 'webinar') && transaction.status === 'completed'"
+        >
+          <div class="card card-body p-4 text-border">
+            <p
+              class="text-secondary"
+              translate
+              *ngIf="transaction.targetType === 'subject'"
+            >
+              If the tutor did not join the 1 on 1 class or If you cannot join
+              the 1 on 1 class, please send us a refund request. We will review
+              and respond to you. You can only send a refund request within 3
+              days after the class is completed.
+            </p>
+            <p
+              class="text-secondary"
+              translate
+              *ngIf="transaction.targetType === 'webinar'"
+            >
+              If the tutor did not join the group class or If you cannot join
+              the group class, please send us a refund request. We will review
+              and respond to you. You can only send a refund request within 3
+              days after the class is completed.
+            </p>
+            <form>
+              <div class="form-group">
+                <label translate>Reason</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  placeholder="{{'Enter some text here'| translate}}"
+                  [(ngModel)]="reason"
+                  name="reason"
+                ></textarea>
+              </div>
+              <!-- <button class="btn btn-default mt-3" (click)="request('before')" translate>Can't join the course</button
+              >&nbsp; -->
+              <button
+                class="btn btn-default mt-2"
+                (click)="request('after')"
+                translate
+              >
+                Refund Request
+              </button>
+            </form>
+          </div>
+        </div>
+        <div
+          class="mt-4"
+          *ngIf="transaction.price && transaction.price > 0 && transaction.targetType === 'course'"
+        >
+          <div class="card card-body p-4 text-border">
+            <form>
+              <div class="form-group">
+                <label translate>Reason</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  placeholder="{{'Enter some text here'| translate}}"
+                  [(ngModel)]="reason"
+                  name="reason"
+                ></textarea>
+              </div>
+              <button
+                class="btn btn-default mt-2"
+                (click)="request()"
+                translate
+              >
+                Request
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

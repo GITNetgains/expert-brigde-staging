@@ -1,0 +1,92 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td>
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          <td>
+            @if(item.type === 'text'){
+            <c-input-group class="mb-3">
+              <input cFormControl [(ngModel)]="item.value" />
+              <button
+                cButton
+                color="primary"
+                type="button"
+                (click)="onSave(item)"
+              >
+                Save
+              </button>
+            </c-input-group>
+            } @if(item.type === 'mixed'){ @if(item.key ==='helloBar'){
+            <form
+              cForm
+              (ngSubmit)="onSave(item)"
+              #helloBarForm="ngForm"
+              class="row g-3"
+            >
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Text</strong>
+                </label>
+                <input
+                  cFormControl
+                  [(ngModel)]="item.value.text"
+                  name="text"
+                  type="text"
+                />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Link</strong>
+                </label>
+                <input
+                  cFormControl
+                  [(ngModel)]="item.value.link"
+                  name="link"
+                  type="text"
+                />
+              </c-col>
+              <c-col md="12">
+                <label cLabel>
+                  <strong>Text Link</strong>
+                </label>
+                <input
+                  cFormControl
+                  [(ngModel)]="item.value.textLink"
+                  name="textLink"
+                  type="text"
+                />
+              </c-col>
+              <c-col md="12">
+                <c-form-check>
+                  <input
+                    cFormCheckInput
+                    type="checkbox"
+                    [(ngModel)]="item.value.isActive"
+                    name="item._id"
+                  />
+                  <label cFormCheckLabel>Active ?</label>
+                </c-form-check>
+              </c-col>
+              <c-col md="12" class="d-flex justify-content-end">
+                <button cButton color="primary" type="submit">Save</button>
+              </c-col>
+            </form>
+            } }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

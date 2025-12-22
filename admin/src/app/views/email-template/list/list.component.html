@@ -1,0 +1,172 @@
+<c-row class="mb-3">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>Manage Templates</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col xs="12" sm="12" md="10">
+            <input
+              cFormControl
+              class="input"
+              [(ngModel)]="searchFields.name"
+              placeholder="Enter name"
+            />
+          </c-col>
+          <c-col xs="12" sm="12" md="2">
+            <button
+              cButton
+              class="button"
+              color="primary"
+              style="width: 100%"
+              (click)="query()"
+            >
+              Filter
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex flex-wrap justify-content-between">
+        <h4>Total Templates: {{ count }}</h4>
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+        ></app-pagination>
+        }
+      </c-card-header>
+      <c-card-body>
+        <c-tabs [activeItemKey]="0">
+          <div style="overflow-x: auto; white-space: nowrap">
+            <c-tabs-list
+              variant="underline-border"
+              layout="fill"
+              style="
+                display: flex;
+                flex-wrap: nowrap;
+                min-width: 1500px;
+                gap: 8px;
+              "
+            >
+              @for (group of groups; track group) {
+              <button
+                cTab
+                [itemKey]="groups.indexOf(group)"
+                (click)="selectGroup(group)"
+                [class.active]="group === activeGroup"
+              >
+                {{ groupName(group) }}
+              </button>
+              }
+            </c-tabs-list>
+          </div>
+          <c-tabs-content>
+            @for (group of groups; track group) {
+            <c-tab-panel [itemKey]="groups.indexOf(group)">
+              @if(count !== 0){
+              <table
+                cTable
+                [responsive]="true"
+                [cBorder]="1"
+                borderColor="gray"
+                bordered
+                class="mt-3"
+              >
+                <thead>
+                  <tr>
+                    <th>
+                      <app-sort
+                        (onSort)="onSort($event)"
+                        sortBy="name"
+                        [sortOption]="sortOption"
+                        sortTitle="Name"
+                      ></app-sort>
+                    </th>
+                    <th>
+                      <app-sort
+                        (onSort)="onSort($event)"
+                        sortBy="subject"
+                        [sortOption]="sortOption"
+                        sortTitle="Subject"
+                      ></app-sort>
+                    </th>
+                    <th>
+                      <app-sort
+                        (onSort)="onSort($event)"
+                        sortBy="key"
+                        [sortOption]="sortOption"
+                        sortTitle="Key"
+                      ></app-sort>
+                    </th>
+                    <th>
+                      <app-sort
+                        (onSort)="onSort($event)"
+                        sortBy="description"
+                        [sortOption]="sortOption"
+                        sortTitle="Description"
+                      ></app-sort>
+                    </th>
+                    <th>
+                      <app-sort
+                        (onSort)="onSort($event)"
+                        sortBy="createdAt"
+                        [sortOption]="sortOption"
+                        sortTitle="Created On"
+                      ></app-sort>
+                    </th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for(item of items; track item._id){
+                  <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item?.subject }}</td>
+                    <td>{{ item?.key }}</td>
+                    <td>{{ item?.description }}</td>
+                    <td>
+                      <span>{{ item?.createdAt | date }}</span>
+                    </td>
+                    <td>
+                      <a
+                        [routerLink]="['/templates/update', item._id]"
+                        class="btn btn-sm btn-primary me-1"
+                      >
+                        <svg cIcon name="cilPencil" size="sm"></svg>
+                      </a>
+                    </td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+              }@else {
+              <div style="margin-top: 20px">
+                <p
+                  style="
+                    background-color: #ffc12b;
+                    padding: 10px;
+                    border-radius: 8px;
+                    width: 100%;
+                  "
+                >
+                  There are no items
+                </p>
+              </div>
+              }
+            </c-tab-panel>
+            }
+          </c-tabs-content>
+        </c-tabs>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

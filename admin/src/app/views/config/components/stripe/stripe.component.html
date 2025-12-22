@@ -1,0 +1,32 @@
+<c-container>
+  <c-row class="py-3">
+    <table bordered cTable>
+      <thead>
+        <tr>
+          <th style="width: 40%">Name</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item._id) {
+        <tr>
+          <td width="40%">
+            <strong>{{ item.name }}</strong> <br />
+            <small>{{ item.description }}</small>
+          </td>
+          @if(item.type === 'text'){
+          @if(item.key === 'stripeKey'){
+          <c-input-group>
+            <input cFormControl [(ngModel)]="item.value" />
+            <button cButton color="primary" type="button" (click)="onSave(item)">
+              Save
+            </button>
+          </c-input-group>
+          }
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+  </c-row>
+</c-container>

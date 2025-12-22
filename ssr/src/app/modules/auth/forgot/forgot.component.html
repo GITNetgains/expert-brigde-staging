@@ -1,0 +1,102 @@
+<div class="d-flex flex-column flex-root">
+  <!-- BEGIN::Login -->
+  <div class="login d-flex flex-column flex-lg-row flex-column-fluid">
+
+    <!-- BEGIN::Aside -->
+    <div class="login-aside d-flex flex-column flex-row-auto">
+      
+      <!-- Aside Top -->
+      <div class="d-flex flex-column-auto flex-column mt-3">
+        <a
+          [routerLink]="['/home']"
+          class="login-logo text-center pt-lg-25 pb-10">
+          <img src="assets/images/logo.svg" class="logo" alt="ExpertBridge" />
+        </a>
+
+        <p class="mt-4 text-center sub-content" translate>
+          Lorem Ipsum is a dummy text.
+        </p>
+      </div>
+
+      <!-- Aside Image -->
+      <div
+        class="aside-img"
+        [ngStyle]="{
+          'background-image':
+            appConfig?.signupImage
+              ? 'url(' + appConfig.signupImage + ')'
+              : 'url(assets/images/login/signup-bg.svg)'
+        }">
+      </div>
+    </div>
+    <!-- END::Aside -->
+
+    <!-- BEGIN::Content -->
+    <div class="login-content d-flex justify-content-center align-items-center">
+      <div class="d-flex justify-content-center w-100 p-5">
+
+        <!-- Forgot Password Card -->
+        <div class="login-form">
+
+          <form class="form" #frm="ngForm" (ngSubmit)="login(frm)">
+
+            <!-- Title -->
+            <div class="pb-4">
+              <h3 class="fw-bold">
+                <span translate>Forgot Password</span>
+              </h3>
+              <p class="text-muted sub-content" translate>
+                Enter your email to reset your password
+              </p>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <input
+                id="email-input"
+                class="form-control"
+                placeholder="{{ 'Email' | translate }}"
+                type="email"
+                name="email"
+                required
+                autocomplete="off"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
+                [(ngModel)]="credentials.email"
+                #email="ngModel" />
+
+              <div *ngIf="email.invalid && (email.dirty || email.touched || submitted)">
+                <p *ngIf="email.errors?.required" class="error" translate>
+                  Email is required
+                </p>
+                <p *ngIf="email.errors?.pattern" class="error" translate>
+                  Email format is invalid
+                </p>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <a [routerLink]="['/auth/login']" class="color-light-red font-sm" translate>
+                Back to Login
+              </a>
+              <a [routerLink]="['/auth/sign-up']" class="color-light-red font-sm" translate>
+                Register
+              </a>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-4">
+              <button class="btn btn-default btn-block" translate>
+                Send Reset Link
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+    <!-- END::Content -->
+
+  </div>
+</div>

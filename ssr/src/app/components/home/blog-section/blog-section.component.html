@@ -1,0 +1,56 @@
+<section class="blogs-section">
+  <div class="container">
+
+    <div class="blogs-header">
+      <div class="caption">Our Blogs</div>
+      <h2 class="title">Insights from Our Experts</h2>
+    </div>
+
+    <!-- Swiper -->
+    <swiper-container
+      #blogSwiper
+      class="blog-swiper"
+      slides-per-view="3"
+      space-between="24"
+      navigation="true"
+      loop="false"
+      pagination="true"
+      autoplay="false"
+    >
+      <swiper-slide *ngFor="let item of posts">
+        <div class="blog-card">
+          <div class="card-inner">
+
+            <div class="thumb">
+              <img [src]="getImage(item)" alt="blog" />
+            </div>
+            
+            <div class="tagline" *ngIf="getTagline(item)">
+              {{ getTagline(item) }}
+            </div>
+
+            
+              <h3 class="card-title">{{ item?.title }}</h3>
+
+              <div class="meta-row">
+                <span class="date-blog">{{ item?.createdAt | date:'dd MMM, yyyy' }}</span>
+                
+                <span class="author-blog">• written by {{ getAuthor(item) }}</span>
+              </div>
+
+              <a class="read-more" [routerLink]="['/blogs', item?.alias || item?._id]">
+                Read more   <img src="assets/images/homepage/arrowicon.svg" alt="arrow" class="arrow-icon" />
+              </a>
+            
+
+          </div>
+        </div>
+      </swiper-slide>
+    </swiper-container>
+
+    <div class="view-all">
+      <a class="btn btn-primary" [routerLink]="['/blogs']">View All</a>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,45 @@
+.upload-zone {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border: dotted 3px #ccc;
+  cursor: pointer;
+  padding: 10px;
+
+  .custom-file-upload {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    cursor: pointer;
+  }
+}
+
+.btn-upload {
+  label {
+    cursor: pointer;
+  }
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+
+  .file-list-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    .upload-btn {
+      max-width: 100px;
+    }
+  }
+}

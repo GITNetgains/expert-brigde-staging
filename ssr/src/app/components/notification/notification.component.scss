@@ -1,0 +1,101 @@
+.notification-list {
+  .notification-header {
+    background: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button.close-notification {
+      color: #fff !important;
+      background: #c8202b;
+      padding: 1px 16px;
+      border-radius: 50px;
+      font-size: 18px;
+      line-height: normal;
+      display: inline-block;
+      font-weight: bold;
+      transition: 0.3s ease;
+      border: 2px solid transparent;
+      &:hover {
+        background: #38a2f5;
+        border: 2px solid #fff;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+    h4 {
+      margin: 0;
+    }
+  }
+  ul {
+    padding: 12px;
+    list-style: none;
+    li {
+      background: #f1f1f1;
+      // height: 92px;
+      border-radius: 5px;
+      padding: 5px 5px;
+      margin-bottom: 3px;
+      a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        color: rgb(0, 0, 0);
+        h5 {
+          margin: 0;
+        }
+        p {
+          font-size: 13px;
+          font-weight: normal;
+          color: black;
+          margin: 0;
+        }
+        span {
+          font-size: 12px;
+          font-weight: normal;
+          color: darkgray;
+        }
+      }
+      &:hover {
+        background: #bbbbbb;
+        cursor: pointer;
+        a {
+          color: #fff;
+          p {
+            font-size: 13px;
+            font-weight: normal;
+            color: #fff;
+            margin: 0;
+          }
+          span {
+            font-size: 12px;
+            font-weight: normal;
+            color: #fff;
+          }
+        }
+      }
+    }
+    li.unread {
+      background: #fff;
+      &:hover {
+        background: #bbbbbb;
+        cursor: pointer;
+        a {
+          color: #fff;
+          p {
+            font-size: 13px;
+            font-weight: normal;
+            color: #fff;
+            margin: 0;
+          }
+          span {
+            font-size: 12px;
+            font-weight: normal;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+}

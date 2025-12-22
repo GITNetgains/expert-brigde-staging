@@ -1,0 +1,51 @@
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h4>System Configs</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-tabs [activeItemKey]="0">
+          <div style="overflow-x: auto; white-space: nowrap;">
+            <c-tabs-list variant="underline-border" layout="fill"
+              style="display: flex; flex-wrap: nowrap; min-width: 1500px; gap: 8px;">
+              @for (group of groups; track group) {
+              <button cTab [itemKey]="groups.indexOf(group)" (click)="selectGroup(group)"
+                [class.active]="group === activeGroup">
+                {{ groupName(group) }}
+              </button>
+              }
+            </c-tabs-list>
+          </div>
+          <c-tabs-content>
+            @for (group of groups; track group) {
+            <c-tab-panel [itemKey]="groups.indexOf(group)">
+              @switch (group) {
+              @case ('general') {
+              <app-general [items]="items" [save]="save.bind(this)"></app-general>
+              } @case ('seo') {
+              <app-seo [items]="items" [save]="save.bind(this)"></app-seo>
+              } @case ('image') {
+              <app-image [items]="items" [save]="save.bind(this)"></app-image>
+              } @case ('commission') {
+              <app-commission [items]="items" [save]="save.bind(this)"></app-commission>
+              } @case ('smtp') {
+              <app-smtp [items]="items" [save]="save.bind(this)"></app-smtp>
+              } @case ('stripe') {
+              <app-stripe [items]="items" [save]="save.bind(this)"></app-stripe>
+              } @case ('platform') {
+              <app-platform [items]="items" [save]="save.bind(this)"></app-platform>
+              } @case ('theme') {
+              <app-theme [items]="items" [save]="save.bind(this)"></app-theme>
+              } @case ('other') {
+              <app-other [items]="items" [save]="save.bind(this)"></app-other>
+              }
+              }
+            </c-tab-panel>
+            }
+          </c-tabs-content>
+        </c-tabs>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

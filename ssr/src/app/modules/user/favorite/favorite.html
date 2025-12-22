@@ -1,0 +1,36 @@
+<section class="sm-padding">
+  <div class="container">
+    <div class="row mb-2">
+      <div class="col-md-12 col-lg-12 col-sm-12">
+        <h4 class="color-light-black" translate *ngIf="type ==='tutor'">Favorite tutor</h4>
+        <h4 class="color-light-black" translate *ngIf="type ==='course'">Favorite course</h4>
+        <h4 class="color-light-black" translate *ngIf="type ==='webinar'">Favorite Group Class</h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12" *ngIf="!items.tutor?.length && !items.webinar?.length &&!items.course?.length && !loading">
+        <p>
+          <strong translate>No results</strong>
+        </p>
+      </div>
+      <div class="col-md-12" *ngIf="loading">
+        <p>
+          <strong><span translate>Loading</span>...</strong>
+        </p>
+      </div>
+      <app-tutor-card-favorite class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items?.tutor" [tutor]="item"
+        [hidden]="(!items.tutor?.length && !loading) || !item"></app-tutor-card-favorite>
+      <app-card-webinar class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items.webinar" [webinar]="item"
+        [hidden]="(!items.webinar?.length && !loading) || !item"></app-card-webinar>
+      <app-card-course class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items.course" [course]="item" [hidden]="(!items.course?.length &&
+        !loading) || !item"></app-card-course>
+    </div>
+    <div class="row mt-5" *ngIf="!loading && total > pageSize">
+      <div class="col-md-12 text-center">
+        <ngb-pagination [collectionSize]="total" [(page)]="page" [maxSize]="2" [pageSize]="pageSize"
+          (pageChange)="pageChange()" class="card-pagination pagination">
+        </ngb-pagination>
+      </div>
+    </div>
+  </div>
+</section>

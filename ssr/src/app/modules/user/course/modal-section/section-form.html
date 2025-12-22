@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h2 class="modal-title" translate>Section for course</h2>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #frm="ngForm" (submit)="submit(frm)" class="add-certification-form input-border">
+    <div class="row">
+      <div class="col col-md-12">
+        <div class="form-group">
+          <label><span translate>Title</span><span class="required">*</span></label>
+          <input type="text" name="title" class="form-control" placeholder="{{'Enter title'|translate}}"
+            [(ngModel)]="section.title" required #title="ngModel" />
+          <div *ngIf="title.errors && (title.dirty || title.touched || submitted)">
+            <p [hidden]="!title.errors['required']" style="color: red" translate>Title is required!</p>
+          </div>
+        </div>
+      </div>
+      <div class="col col-md-12">
+        <div class="form-group">
+          <label translate>Description</label>
+          <textarea name="description" rows="3" class="form-control" placeholder="{{'Enter some text here'|translate}}"
+            [(ngModel)]="section.description" #description="ngModel"></textarea>
+        </div>
+      </div>
+
+      <div class="col col-md-6">
+        <div class="form-group">
+          <label translate>Ordering</label>
+          <input type="number" name="ordering" class="form-control" placeholder="{{'0'|translate}}"
+            [(ngModel)]="section.ordering" #ordering="ngModel" />
+          <div *ngIf="ordering.value < 0">
+            <p style="color: red" translate>Order must be greater than or equal to 0!</p>
+          </div>
+        </div>
+      </div>
+      <div class="col col-md-6">
+        <div class="form-group">
+          <label translate>Video trial</label>
+          <video *ngIf="videoUrl" width="300px" style="margin-bottom: 10px" src="{{videoUrl}}" controls></video>
+          <small *ngIf="videoSelected.length">{{videoSelected[0].file.name}} is selected</small>
+          <app-file-upload [options]="videoOptions"></app-file-upload>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-default me-3" translate>Submit</button>
+        <button type="button" class="btn btn-outline-dark" (click)="activeModal.dismiss('Cross click')" translate>
+          Close
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

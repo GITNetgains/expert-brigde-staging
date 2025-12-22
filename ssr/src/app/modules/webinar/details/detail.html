@@ -1,0 +1,340 @@
+<section class="profile-page">
+  <div class="container" *ngIf="webinar">
+    <div class="detail-box">
+      <div class="detail-box-left">
+        <div class="card card-border mb-3">
+          <div class="detail-box-video show-mobile">
+            <img src="{{webinar?.mainImage?.fileUrl}}" alt="" />
+          </div>
+          <div class="card-body">
+            <div class="detail-box-title flex-column">
+              <h4 class="font-weight-bold">{{webinar?.name}}</h4>
+              <div class="course-detail-categories">
+                <a
+                  *ngFor="let cat of webinar.categories; let i = index"
+                  [routerLink]="['/groupclass']"
+                  [queryParams]="{ categoryIds: cat._id }"
+                  ><span class="badge badge-default">{{ cat.name }}</span></a
+                >
+              </div>
+            </div>
+            <div class="profile">
+              <a [routerLink]="['/tutors', webinar?.tutor?.username]">
+                <img
+                  src="{{webinar?.tutor?.avatarUrl  }}"
+                  onerror="this.src='/assets/images/default-avatar.jpg'"
+                  class="float-left cate-profile-sm box-shadow-lg me-2"
+                  alt=""
+                />
+                <h5 class="pt-2 font-sm">{{webinar?.tutor?.name}}</h5>
+              </a>
+            </div>
+            <div class="rating-stars pt-3">
+              <app-star-rating
+                [rate]="webinar?.tutor?.ratingAvg"
+              ></app-star-rating>
+              {{webinar?.tutor?.ratingAvg}}
+              <span style="padding-left: 5px"
+                >({{webinar?.tutor?.totalRating}} rating for this tutor)</span
+              >
+            </div>
+            <div class="rating-stars pt-2">
+              <app-star-rating [rate]="webinar?.ratingAvg"></app-star-rating>
+              {{webinar?.ratingAvg}}
+              <span style="padding-left: 5px"
+                >({{webinar?.totalRating}} rating for this group class)</span
+              >
+            </div>
+
+            <div class="mt-2">
+              <p class="card-text mb-1 rtxt-left">
+                <img
+                  src="assets/images/webinar/participants.svg"
+                  alt=""
+                  class="me-2 image-sm"
+                /><span translate>Participants:</span>
+                {{ webinar?.numberParticipants }}
+              </p>
+              <p class="card-text mb-1 rtxt-left">
+                <img
+                  src="assets/images/webinar/certified-img.svg"
+                  alt=""
+                  class="me-2 image-sm"
+                  translate
+                /><span translate>Completed by</span
+                ><span> {{webinar?.tutor?.completedByLearner}} </span>
+                <span translate>Learners</span>
+              </p>
+              <p class="card-text rtxt-left">
+                <img
+                  src="assets/images/webinar/clock.png"
+                  alt=""
+                  class="me-2 image-sm"
+                /><span translate>{{slotLeft}} </span
+                ><span translate *ngIf="1 < slotLeft"> Slots left </span>
+                <span translate *ngIf="1>=slotLeft"> Slot left </span>
+              </p>
+            </div>
+            <div class="course favoired-icon">
+              <a *ngIf="!webinar?.isFavorite" (click)="favorite()">
+                <i class="fi fi-rs-heart color-light-red"></i>
+              </a>
+              <a *ngIf="webinar?.isFavorite" (click)="unFavorite()">
+                <i class="fi fi-ss-heart color-light-red"></i>
+              </a>
+            </div>
+            <div class="show-mobile">
+              <div class="mt-2">
+                <h4 class="color-light-red" *ngIf="!appliedCoupon">
+                  <strong>{{ webinar?.price |appCurrency}}</strong>
+                </h4>
+                <h4 class="color-light-red mt-3" *ngIf="appliedCoupon">
+                  <small class="text-line-through me-1"
+                    >{{ webinar?.price | appCurrency}}</small
+                  >
+                  <strong>{{salePrice | appCurrency}}</strong>
+                </h4>
+              </div>
+              <div class="mt-2 button-list" *ngIf="showBooking">
+                <button
+                  [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || booked"
+                  class="btn btn-default btn-block"
+                  (click)="enrollWebinar(webinar, 'booking')"
+                >
+                  <i class="fi fi-rs-paper-plane color-white me-2"></i>
+                  <span *ngIf="!booked" translate>Book Now</span>
+                  <span *ngIf="booked" translate>Purchased</span>
+                </button>
+                <button
+                  [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || emailRecipient === (currentUser && currentUser.email)"
+                  class="btn btn-default btn-block"
+                  (click)="enrollWebinar(webinar, 'gift')"
+                >
+                  <i class="fi fi-rr-gift color-white me-2"></i>
+                  <span translate>Gift Group Class</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border card-body show-mobile mb-3">
+          <app-apply-coupon
+            [options]="optionsCoupon"
+            (doApply)="applyCoupon($event)"
+            *ngIf="webinar && webinar.price > 0"
+            (doCancel)="onCancelCoupon($event)"
+          ></app-apply-coupon>
+          <div class="mt-2" *ngIf="salePrice<=0">
+            <input
+              type="email"
+              class="form-control email-recipent-input"
+              placeholder="{{'Recipient\'s email id' | translate}}"
+              name="email"
+              [(ngModel)]="emailRecipient"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+              #emailId="ngModel"
+            />
+            <div *ngIf="emailId.errors && (emailId.dirty || emailId.touched)">
+              <p [hidden]="!emailId.errors['pattern']" class="error" translate>
+                Email is invalid format
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3">
+          <div class="card-body list-slotChunk">
+            <div class="row" *ngIf="slots.length<=6 || isShowingMoreSlots">
+              <div
+                class="col-md-6 col-sm-6 col-item-chunk"
+                *ngFor="let item of slots"
+              >
+                <div class="slot-item rmb-3 mb-2">
+                  <span class="sub-text me-2"
+                    >{{item.startTime | date: 'dd/MM/yyyy'}}, {{item.startTime |
+                    date: 'hh:mma'}} - {{item.toTime | date: 'hh:mma'}}</span
+                  ><span
+                    class="badge badge-primary"
+                    *ngIf="!item.disable"
+                    translate
+                    >Upcoming Slots</span
+                  >
+                  <span
+                    class="badge badge-secondary"
+                    *ngIf="item.disable"
+                    translate
+                    >Expired Slots</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="row" *ngIf="slots.length > 6 && !isShowingMoreSlots">
+              <div
+                class="col-md-6 col-sm-6 col-item-chunk"
+                *ngFor="let item of slots.slice(0, 6)"
+              >
+                <div class="slot-item rmb-3 mb-2">
+                  <span class="sub-text me-2"
+                    >{{item.startTime | date: 'dd/MM/yyyy'}}, {{item.startTime |
+                    date: 'hh:mma'}} - {{item.toTime | date: 'hh:mma'}}</span
+                  >
+                  <span
+                    class="badge badge-primary"
+                    *ngIf="!item.disable"
+                    translate
+                    >Upcoming Slots</span
+                  >
+                  <span
+                    class="badge badge-secondary"
+                    *ngIf="item.disable"
+                    translate
+                    >Expired Slots</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="slots.length > 6">
+              <a
+                href="javascript:void(0)"
+                class="morelink"
+                (click)="isShowingMoreSlots = true"
+                *ngIf="!isShowingMoreSlots"
+                ><span translate>Read More</span>...</a
+              >
+              <a
+                href="javascript:void(0)"
+                class="morelink"
+                (click)="isShowingMoreSlots = false"
+                *ngIf="isShowingMoreSlots"
+                >...<span translate>Read Less</span></a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="card card-border mb-3" *ngIf="webinar.description">
+          <div class="card-header">
+            <h4 class="card-title" translate>Description</h4>
+          </div>
+          <div class="card-body">
+            <app-card-text
+              [content]="webinar.description"
+              [showChar]="500"
+            ></app-card-text>
+          </div>
+        </div>
+        <div class="card card-border mb-3">
+          <div class="card-header">
+            <h4 translate>Instructor</h4>
+          </div>
+          <div class="card-body">
+            <div class="profile">
+              <a [routerLink]="['/tutors', webinar?.tutor?.username]">
+                <img
+                  src="{{webinar?.tutor?.avatarUrl  }}"
+                  onerror="this.src='/assets/images/default-avatar.jpg'"
+                  class="float-left profile-md box-shadow-lg"
+                  alt=""
+                />
+                <div class="profile-content-sm pt-4">
+                  <h5 class="profile-name">
+                    {{webinar?.tutor?.name}}<i
+                      class="fi fi-ss-badge-check color-blue ms-2"
+                    ></i>
+                  </h5>
+                  <div style="padding-left: 7px">
+                    <div class="img-flag-tutor">
+                      <img
+                        src="{{webinar?.tutor?.country?.flag}}"
+                        alt=""
+                        class="me-2 image-sm"
+                      />
+                    </div>
+                    <h5 style="margin-left: 5px; display: inline-block">
+                      {{webinar?.tutor?.country?.name}}
+                    </h5>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="pt-3">
+              <h4 class="card-title" translate>About Me</h4>
+              <app-card-text
+                [content]="webinar?.tutor?.bio || ''"
+                [showChar]="500"
+              ></app-card-text>
+            </div>
+          </div>
+        </div>
+        <app-review-list
+          [options]="optionsReview"
+          [stats]="statsReview"
+          [canWriteReview]="false"
+        ></app-review-list>
+      </div>
+      <div class="detail-box-right">
+        <div class="card card-border card-sticky show-desktop">
+          <div class="detail-box-video">
+            <img src="{{webinar?.mainImage?.fileUrl}}" alt="" />
+          </div>
+          <div class="card-body">
+            <h4 class="color-light-red" *ngIf="!appliedCoupon">
+              <strong>{{ webinar?.price | appCurrency}}</strong>
+            </h4>
+            <h4 class="color-light-red mt-3" *ngIf="appliedCoupon">
+              <small class="text-line-through me-1"
+                >{{ webinar?.price | appCurrency}}</small
+              >
+              <strong>{{salePrice |appCurrency}}</strong>
+            </h4>
+            <app-apply-coupon
+              [options]="optionsCoupon"
+              (doApply)="applyCoupon($event)"
+              *ngIf="webinar && webinar.price > 0"
+              (doCancel)="onCancelCoupon($event)"
+            ></app-apply-coupon>
+            <div class="mt-2" *ngIf="salePrice<=0">
+              <input
+                type="email"
+                class="form-control email-recipent-input"
+                placeholder="{{'Recipient\'s email id' | translate}}"
+                name="email"
+                [(ngModel)]="emailRecipient"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                #emailId="ngModel"
+              />
+              <div *ngIf="emailId.errors && (emailId.dirty || emailId.touched)">
+                <p
+                  [hidden]="!emailId.errors['pattern']"
+                  class="error"
+                  translate
+                >
+                  Email is invalid format
+                </p>
+              </div>
+            </div>
+            <div class="mt-2 d-grid gap-2 button-list" *ngIf="showBooking">
+              <button
+                [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || booked"
+                class="btn btn-default btn-block"
+                (click)="enrollWebinar(webinar, 'booking')"
+              >
+                <i class="fi fi-rs-paper-plane color-white me-2"></i>
+                <span *ngIf="!booked" translate>Book Now</span>
+                <span *ngIf="booked" translate>Purchased</span>
+              </button>
+              <button
+                [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || emailRecipient === (currentUser && currentUser.email)"
+                class="btn btn-default btn-block"
+                (click)="enrollWebinar(webinar, 'gift')"
+              >
+                <i class="fi fi-rr-gift color-white me-2"></i>
+                <span translate>Gift Group Class</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

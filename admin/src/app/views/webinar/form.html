@@ -1,0 +1,383 @@
+<c-col md="12">
+  <c-card class="mb-4">
+    <c-card-body>
+      <form
+        cForm
+        #frm="ngForm"
+        (ngSubmit)="submit(frm)"
+        ngNativeValidate
+        novalidate
+        class="needs-validation"
+        [validated]="customStylesValidated"
+      >
+        <c-row>
+          <c-col md="6">
+            <div class="mb-3">
+              <label class="fw-bold">
+                <strong>free</strong>
+                <input
+                  type="radio"
+                  name="payment"
+                  style="margin-right: 3em; margin-left: 0.5em"
+                  [value]="true"
+                  [(ngModel)]="webinar.isFree"
+                />
+              </label>
+              <label class="fw-bold ps-3">
+                <strong>paid</strong>
+                <input
+                  type="radio"
+                  style="margin-left: 0.5em"
+                  name="payment"
+                  [value]="false"
+                  [(ngModel)]="webinar.isFree"
+                />
+              </label>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          @if(webinar.tutorId && webinar.tutor){
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Tutor (*)</strong></label>
+
+              <input
+                type="text"
+                class="form-control"
+                [value]="webinar.tutor?.name"
+                placeholder="Select Tutor"
+                readonly
+                disabled
+              />
+            </div>
+          </c-col>
+          } @if(!(webinar.tutorId && webinar.tutor)){
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Tutor Name</strong></label>
+
+              <ng-select
+                cFormControl
+                [items]="tutor"
+                bindLabel="name"
+                [(ngModel)]="webinar.tutorId"
+                (ngModelChange)="selectTutor($event)"
+                name="tutorId"
+                bindValue="_id"
+                placeholder="Select Tutor"
+                class="my-select"
+              ></ng-select>
+            </div>
+          </c-col>
+          }
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="name"><strong>Name</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  cFormControl
+                  placeholder="Enter name"
+                  [(ngModel)]="webinar.name"
+                  #name="ngModel"
+                  id="name"
+                  required
+                  name="name"
+                />
+                @if(name.invalid && (name.dirty || name.touched ||
+                isSubmitted)){
+                <c-form-feedback invalid>
+                  Please enter webinar name </c-form-feedback
+                >}
+              </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="maximumStrength"
+                ><strong>Maximum Strength</strong> (*)</label
+              >
+              <c-input-group class="has-validation">
+                <input
+                  type="number"
+                  cFormControl
+                  placeholder="Enter maximum strength"
+                  [(ngModel)]="webinar.maximumStrength"
+                  required
+                  min="1"
+                  name="maximumStrength"
+                  #maximumStrength="ngModel"
+                  id="maximumStrength"
+                  step="1"
+                  pattern="[0-9]*"
+                />
+                @if(maximumStrength.invalid && (maximumStrength.dirty || maximumStrength.touched || isSubmitted)){
+                  @if(maximumStrength.errors?.['required']){
+                    <c-form-feedback invalid>
+                      Please enter maximum strength!
+                    </c-form-feedback>
+                  }
+                  @if(maximumStrength.errors?.['min']){
+                    <c-form-feedback invalid>
+                      Maximum strength must be greater than 0!
+                    </c-form-feedback>
+                  }
+                  @if(maximumStrength.errors?.['pattern']){
+                    <c-form-feedback invalid>
+                      Maximum strength must be a integer!
+                    </c-form-feedback>
+                  }
+                }
+            </c-input-group>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="price"><strong>Price</strong></label>
+              <c-input-group class="has-validation">
+                <input
+                  type="number"
+                  cFormControl
+                  placeholder="Enter price"
+                  [(ngModel)]="webinar.price"
+                  name="price"
+                  pattern="[0-9.]{0,8}$"
+                  step="any"
+                  maxlength="8"
+                  id="price"
+                  [min]="webinar.isFree ? 0 : 1"
+                  [required]="!webinar.isFree"
+                  #price="ngModel"
+                  [disabled]="webinar.isFree"
+                  [class.is-invalid]="!webinar.isFree && price.invalid && (price.dirty || price.touched || isSubmitted)"
+                />
+              @if(!webinar.isFree && (price.dirty || price.touched || isSubmitted)){
+                @if(price.errors?.['required'] || !price.value){
+                  <c-form-feedback invalid >
+                  Price is required for paid webinars!
+                  </c-form-feedback>
+                }@else if(price.errors?.['min'] || price.value === 0 || price.value < 1){
+                  <c-form-feedback invalid >
+                  Price must be greater than 0 for paid webinars!
+                  </c-form-feedback>
+                }@else if(price.value && price.value.toString().length > 8){
+                  <c-form-feedback invalid >
+                  Cannot exceed 8 characters
+                  </c-form-feedback >
+                }
+              } 
+            </c-input-group>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="imageUpload"
+                ><strong>Categories</strong></label
+              >
+              <ng-select
+                cFormControl
+                [items]="myCategories"
+                name="category"
+                multiple="true"
+                bindLabel="name"
+                bindValue="originalCategoryId"
+                placeholder="Select Category"
+                class="my-select"
+                [(ngModel)]="webinar.categoryIds"
+                #categoryId="ngModel"
+                (change)="onSelectMyCategories($event)"
+                [hideSelected]="true"
+              >
+              </ng-select>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="imageUpload"><strong>Subject</strong></label>
+              <ng-select
+                cFormControl
+                [items]="mySubjects"
+                bindLabel="name"
+                bindValue="originalSubjectId"
+                placeholder="Select Subject"
+                [(ngModel)]="webinar.subjectIds"
+                name="subject"
+                (change)="onSelectMySubjects($event)"
+                class="my-select"
+                multiple="true"
+              >
+              </ng-select>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel for="description"><strong>Topic</strong></label>
+              <ng-select
+                cFormControl
+                [items]="myTopics"
+                bindLabel="name"
+                bindValue="originalTopicId"
+                placeholder="Select Topic"
+                [(ngModel)]="webinar.topicIds"
+                class="my-select"
+                multiple="true"
+                name="topic"
+              >
+              </ng-select>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel><strong>Age</strong> (*)</label>
+              <ng-select
+                [items]="ageFilter"
+                [hideSelected]="true"
+                bindLabel="name"
+                [closeOnSelect]="true"
+                name="age"
+                placeholder="Choose age"
+                [(ngModel)]="webinar.age"
+                #age="ngModel"
+                required
+                class="my-select"
+              >
+                <ng-template ng-label-tmp let-item="item">
+                  <span>{{ item.from + ' - ' + item.to }}</span>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  <span>{{ item.from + ' - ' + item.to }}</span>
+                </ng-template>
+              </ng-select>
+              @if (age.errors && (age.dirty || age.touched || isSubmitted)) {
+              @if (age.errors?.['required']) {
+              <c-form-feedback invalid>Please choose age!</c-form-feedback>
+              } }
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel><strong>Grades</strong> (*)</label>
+              <ng-select
+                [items]="grades"
+                multiple="true"
+                [hideSelected]="true"
+                bindLabel="name"
+                [closeOnSelect]="false"
+                name="grades"
+                placeholder="Choose Grade"
+                [(ngModel)]="webinar.gradeIds"
+                bindValue="_id"
+                #gradeId="ngModel"
+                class="my-select"
+                required
+              >
+              </ng-select>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="6">
+            <div class="mb-3">
+              @if (mainImageUrl) {
+              <img
+                [src]="mainImageUrl"
+                alt="main image"
+                style="max-width: 100%; height: auto; object-fit: contain"
+              />
+              }
+              <label cLabel for="imageUpload"
+                ><strong>Webinar Image </strong>(*)</label
+              >
+              <small class="mx-1 text-muted" style="font-size: 80%;"> (Expected size: 320 x 285 pixels, Maximum size: 1024 mb)</small>
+              <app-file-uploader [options]="uploadOptions"></app-file-uploader>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              @if(medias.length){
+              <ul class="list-media-webinar">
+                @for (item of medias; track $index) {
+                <li>
+                  <span> {{item?.name}}</span>
+                  <button
+                    cButton
+                    class="btn btn-danger text-white m-2 btn-sm"
+                    (click)="removeMedia(item, $index)"
+                  >
+                    <svg cIcon name="cilTrash" size="sm"></svg>
+                  </button>
+                </li>
+
+                }
+              </ul>
+              }
+              <label cLabel for="imageUpload"
+                ><strong>Webinar files </strong></label
+              >
+              <small class="mx-1 text-muted" style="font-size: 80%;"> (Maximum size: 1024 mb)</small>
+              <app-file-uploader
+                [options]="uploadOptionsFile"
+              ></app-file-uploader>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md="12">
+            <div class="mb-3">
+              <label><strong>Is Featured?</strong> </label><br />
+              <input
+                type="checkbox"
+                [(ngModel)]="webinar.featured"
+                name="open"
+              />
+              Check the box if you want the group class to be featured.
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          @if(calendarPayload.tutorId){
+          <c-col md="12">
+            <app-calendar [payload]="calendarPayload"></app-calendar>
+          </c-col>
+          }
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel for="description"
+                ><strong>Description</strong></label
+              >
+              <!-- <textarea
+                cFormControl
+                placeholder="Enter description"
+                [(ngModel)]="webinar.description"
+                name="description"
+                id="description"
+              ></textarea> -->
+              <app-editor
+                [content]="webinar.description"
+                (contentChange)="webinar.description = $event"
+              ></app-editor>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col md="12">
+            <div class="mb-3">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </c-col>
+        </c-row>
+        <!-- Additional form fields can be added here -->
+      </form>
+    </c-card-body>
+  </c-card>
+</c-col>

@@ -1,0 +1,41 @@
+<!-- ai-query-bar.component.html -->
+<div class="query-wrapper">
+  <h1 class="query-title">
+    Frame your Query –
+    <span class="highlight">Engage Brilliance</span>
+  </h1>
+
+  <p class="query-subtitle">
+    Find top-rated experts across industries
+  </p>
+
+  <form class="query-form" (submit)="onSearch($event)">
+    <div class="query-input-wrapper">
+      <input
+        type="text"
+        name="query"
+        [(ngModel)]="query"
+        class="query-input"
+        placeholder="Provide a one line brief – our AI drafts your query - post in seconds"
+        required
+      />
+
+      <!-- Mic -->
+      <button
+        type="button"
+        class="mic-btn"
+        (click)="toggleRecording()"
+      >
+        <img
+          src="assets/images/homepage/mic.svg"
+          [class.recording]="isRecording"
+          alt="mic"
+        />
+      </button>
+    </div>
+
+    <button type="submit" class="proceed-btn">
+      Proceed
+    </button>
+  </form>
+</div>

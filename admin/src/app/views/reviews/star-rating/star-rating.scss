@@ -1,0 +1,56 @@
+.no-outline {
+  outline: transparent;
+}
+
+.rating-container {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  color: #d3d3d3;
+  margin-right: 5px;
+  cursor: pointer;
+
+  &:focus {
+    border: none;
+    outline: none;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &.filled {
+    color: #fe980f;
+  }
+}
+
+.half {
+  position: absolute;
+  display: inline-block;
+  overflow: hidden;
+  color: #fe980f;
+}
+
+.pos-line-star {
+  position: relative;
+  display: inline-block;
+  .pos-line-total {
+    position: absolute;
+    margin-left: 5px;
+  }
+}
+
+.total-count {
+  margin-left: 5px;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.font-22 {
+  font-size: 22px;
+}

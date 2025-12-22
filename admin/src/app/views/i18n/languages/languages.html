@@ -1,0 +1,163 @@
+<c-container class="p-0">
+  <c-row class="mb-4">
+    <c-col>
+      <h3>Manage Languages</h3>
+    </c-col>
+  </c-row>
+  <c-row class="mb-4">
+    <c-col>
+      <c-card>
+        <c-card-header
+          class="d-flex flex-wrap justify-content-between align-items-center"
+        >
+          <h4 class="card-title">Total Languages: {{total}}</h4>
+          <div class="d-flex justify-content-between align-items-center">
+            <button
+              cButton
+              class="btn btn-primary"
+              aria-label="open"
+              (click)="openModalCreate()"
+            >
+              add new
+            </button>
+            @if(total !== 0){
+            <div class="ps-3 pt-3">
+              <app-pagination
+                [currentPage]="page"
+                [pageSize]="pageSize"
+                [totalItems]="total"
+                [maxSize]="3"
+              ></app-pagination>
+            </div>
+            }
+          </div>
+        </c-card-header>
+        <c-card-body>
+          <div class="table-responsive">
+            <table
+              cTable
+              [responsive]="true"
+              [cBorder]="1"
+              borderColor="gray"
+              bordered
+              style="table-layout: fixed; width: 100%"
+            >
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 200px">Key</th>
+                  <th scope="col" style="width: 200px">Name</th>
+                  <th scope="col" style="width: 150px">Default</th>
+                  <th scope="col" style="width: 150px">Active</th>
+                  <th scope="col" style="width: 200px">Created on</th>
+                  <th
+                    scope="col"
+                    style="
+                      width: 150px;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items; track $index) {
+                <tr>
+                  <td>{{item.key}}</td>
+                  <td>{{item.name}}</td>
+                  <td>
+                    @if(!item.isDefault){
+                    <c-badge
+                      color="warning"
+                      class="cursor-pointer"
+                      (click)="update(item, 'isDefault', true)"
+                      >N</c-badge
+                    >}@else{
+                    <c-badge
+                      color="success"
+                      class="cursor-pointer"
+                      (click)="update(item, 'isDefault', false)"
+                      >Y</c-badge
+                    >}
+                  </td>
+                  <td>
+                    @if(!item.isActive){
+                    <c-badge
+                      color="warning"
+                      class="cursor-pointer"
+                      (click)="update(item, 'isActive', true)"
+                      >N</c-badge
+                    >}@else{
+                    <c-badge
+                      color="success"
+                      class="cursor-pointer"
+                      (click)="update(item, 'isActive', false)"
+                      >Y</c-badge
+                    >}
+                  </td>
+                  <td>{{item.createdAt | date}}</td>
+                  <td
+                    style="
+                      text-align: center;
+                      position: sticky;
+                      right: 0;
+                      z-index: 10;
+                      box-shadow: inset -1px 0 0 var(--cui-border-color),
+                        inset 1px 0 0 var(--cui-border-color);
+                    "
+                  >
+                    <a
+                      cButton
+                      (click)="openModalUpdate(item)"
+                      class="btn btn-sm btn-primary me-1"
+                    >
+                      <svg cIcon name="cilPencil" size="sm"></svg>
+                    </a>
+                    <a>
+                      <button
+                        cButton
+                        class="btn btn-sm btn-danger me-1 text-white"
+                        (click)="removeLanguage(item._id, $index)"
+                      >
+                        <svg cIcon name="cilTrash" size="sm"></svg>
+                      </button>
+                    </a>
+                    <a>
+                      <button
+                        cButton
+                        class="btn btn-sm btn-success me-1 text-white"
+                        [routerLink]="['/language/translation', item.key]"
+                      >
+                        <svg cIcon name="cilLanguage" size="sm"></svg>
+                      </button>
+                    </a>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+        <c-card-footer class="d-flex justify-content-end">
+          @if(total !== 0){
+          <app-pagination
+            [currentPage]="page"
+            [pageSize]="pageSize"
+            [totalItems]="total"
+            [maxSize]="3"
+          ></app-pagination>
+          }
+        </c-card-footer>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>
+<app-languages-model
+  [visible]="visible"
+  (modalClose)="onModalClose()"
+  [lang]="lang"
+></app-languages-model>

@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-12 col-md-3 mb-1">
+    <p class="card-text font-md">{{certificate.fromYear}} - {{certificate.toYear}}</p>
+  </div>
+  <div class="col-12 col-md-9">
+    <h5>{{certificate.title}}</h5>
+    <h5 *ngIf="certificate.verified"><img src="../assets/images/tutor/verified.svg" class="me-2" translate
+        [alt]="certificate.title" />Verified</h5>
+    <p class="card-text">{{certificate.description}}</p>
+  </div>
+</div>

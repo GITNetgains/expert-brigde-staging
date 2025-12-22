@@ -1,0 +1,192 @@
+<div class="sm-padding data-table">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-3 card-filter input-border">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <form id="table_id_filter">
+                  <!-- <label translate><span translate>Course name:</span></label> -->
+                  <input
+                    name="search"
+                    type="search"
+                    class="form-control"
+                    aria-controls="table_id"
+                    placeholder="{{'Search course name'|translate}}"
+                    (keyup)="doSearch($event)"
+                  />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-responsive">
+            <table
+              id="table_id"
+              class="table dataTable no-footer"
+              role="grid"
+              aria-describedby="table_id_info"
+            >
+              <thead>
+                <tr>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="User name: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('userName', 'asc')" translate
+                      >User name</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'userName'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Course name: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('courseName', 'asc')" translate
+                      >Course name</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'courseName'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Price: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('price', 'asc')" translate
+                      >Price</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'price'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Earnings: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('commission', 'asc')" translate
+                      >Earnings</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'commission'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="CreatedAt: activate to sort column ascending"
+                  >
+                    <span (click)="sortBy('createdAt', 'asc')" translate
+                      >Created On</span
+                    >
+                    <app-sort
+                      [sortOption]="sortOption"
+                      [sortBy]="'createdAt'"
+                      (onSort)="onSort($event)"
+                    ></app-sort>
+                  </th>
+                  <th
+                    tabindex="0"
+                    aria-controls="table_id"
+                    rowspan="1"
+                    colspan="1"
+                    aria-label="Action: activate to sort column ascending"
+                  >
+                    <a translate>Action</a>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="!transactions.length && !loading">
+                  <td translate colspan="9">There are no transactions</td>
+                </tr>
+                <tr *ngIf="loading">
+                  <td translate colspan="9">Loading...</td>
+                </tr>
+                <tr *ngFor="let item of transactions, let i = index">
+                  <!-- <td>{{item?.course?.tutor?.name}}</td> -->
+                  <td>{{item?.user?.name}}</td>
+                  <td>{{item?.course?.name}}</td>
+                  <td>{{item?.price| appCurrency }}</td>
+                  <td>{{item?.balance |appCurrency}}</td>
+                  <td>{{item.createdAt | date}}</td>
+                  <td>
+                    <a
+                      [routerLink]="['/users/transaction/course-transaction', item._id ]"
+                      class="btn btn-outline-dark btn-action"
+                    >
+                      <i class="fi fi-rr-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bottom-table">
+            <div class="input-border show-entries" id="table_id_length">
+              <span translate>Show</span>
+              <select
+                name="table_id_length"
+                aria-controls="table_id"
+                class="custom-select custom-select-sm form-control form-control-sm"
+                [(ngModel)]="pageSize"
+                (change)="query()"
+              >
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              <span translate>entries</span>
+            </div>
+            <div class="pagination-table" id="table_id_paginate">
+              <ngb-pagination
+                [collectionSize]="total"
+                [(page)]="page"
+                [pageSize]="pageSize"
+                [maxSize]="2"
+                (pageChange)="pageChange()"
+              >
+                <ng-template ngbPaginationPrevious translate
+                  ><span translate
+                    ><i class="fi fi-rr-angle-small-left"></i></span
+                ></ng-template>
+                <ng-template ngbPaginationNext translate
+                  ><span translate
+                    ><i class="fi fi-rr-angle-small-right"></i></span
+                ></ng-template>
+                <!-- <ng-template ngbPaginationNumber let-page>{{ currentPage }}</ng-template> -->
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

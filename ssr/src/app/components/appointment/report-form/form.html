@@ -1,0 +1,15 @@
+<div class="d-flex flex-column position-relative">
+    <app-loading [loading]="reportSending"></app-loading>
+    <div class="card text-border">
+        <div class="card-header"><h4 translate>Report</h4></div>
+        <div class="card-body">
+            <form>
+                <div class="form-group">
+                    <textarea class="form-control" name="issue" id="issue" rows="3" [(ngModel)]="reportData.issue"
+                        placeholder="{{'Enter issue here'| translate}}"></textarea>
+                </div>
+                <button class="btn btn-default" (click)="report()" translate>Report</button>
+            </form>
+        </div>
+    </div>
+</div>

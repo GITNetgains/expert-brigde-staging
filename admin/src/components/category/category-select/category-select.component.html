@@ -1,0 +1,29 @@
+<div class="mb-3">
+  <label *ngIf="showLabel" clabel for="category" class="mb-2"
+    ><strong>Select Category (*)</strong></label
+  >
+  <ng-select
+    id="category"
+    name="category"
+    [items]="categories"
+    [hideSelected]="true"
+    [multiple]="true"
+    bindLabel="name"
+    bindValue="_id"
+    [closeOnSelect]="true"
+    [(ngModel)]="selectedCategoryIds"
+    (ngModelChange)="onCategorySelect()"
+    placeholder="Select Category"
+    name="category"
+    required
+    [dropdownPosition]="'top'"
+    class="my-select"
+  >
+  </ng-select>
+  <!-- <select id="category" name="category">
+    <ng-container *ngFor="let category of categories; let i = index">
+      Ellipsis
+      <option value="entertainment">{{ category.name }}</option>
+    </ng-container>
+  </select> -->
+</div>

@@ -1,0 +1,15 @@
+<ul class="file-list">
+  @for(item of files; track item.file.name; let idx = $index) {
+  <li
+    [class]="{ 'file-list-item': true, 'file-list-item-success': item.isSuccess, 'file-list-item-error': item.isError }">
+    <div class="file-list-item">
+      <span><svg cIcon name="cilFile" size="sm"></svg> {{item.file.name}}</span> <span class="file-delete-btn"
+        (click)="removeFile(item)"><svg cIcon name="cilTrash" size="sm"></svg></span>
+    </div>
+    <c-progress [height]="1" [value]="item.progress" color="success" />
+  </li>
+  }
+  @empty {
+  <li>There are no items.</li>
+  }
+</ul>

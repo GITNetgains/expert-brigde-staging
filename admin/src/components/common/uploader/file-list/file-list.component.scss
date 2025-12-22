@@ -1,0 +1,41 @@
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: -5px 0;
+
+  li {
+    display: flex;
+    padding: 0.5rem 1rem;
+    border: 1px dotted #ddd;
+    border-radius: 5px;
+    flex-direction: column;
+    margin: 5px 0;
+
+    .file-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      
+      span:first-child {
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow-wrap: break-word;
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    .file-delete-btn {
+      cursor: pointer;
+    }
+
+    &.file-list-item-success {
+      border-color: #4dff77;
+    }
+
+    &.file-list-item-error {
+      border-color: #ff4d4d;
+    }
+  }
+}

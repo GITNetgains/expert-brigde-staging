@@ -1,0 +1,88 @@
+<div *ngIf="type === 'tutor'" class="sm-padding data-table">
+  <div class="container">
+    <div class="info-dashboard">
+      <div class="user-info">
+        <img
+          src="{{currentUser?.avatarUrl}}"
+          onerror="this.src='/assets/images/default-avatar.jpg'"
+          alt=""
+        />
+        <div class="txt-user-info">
+          <h3>
+            <span>Welcome, {{currentUser?.name}}</span>
+            <span class="color-primary" *ngIf="type === 'student'">Client</span>
+            <span class="color-primary" *ngIf="type === 'tutor'">Expert</span>
+          </h3>
+          <p>{{currentUser?.email}}</p>
+        </div>
+      </div>
+      <div class="right-info">
+        <a href="/users/profile" class="btn btn-default">View profile</a>
+      </div>
+    </div>
+    <div class="row" *ngFor="let menus of tutorMenus, let i = index">
+      <div class="col-md-3" *ngFor="let menu of menus, let menuIndex = index">
+        <a class="card menu-item" [routerLink]="[menu.path]" translate>
+          <div class="card-body text-center">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="img-card" id="{{menu.key}}">
+                <!-- <img src="{{menu.svg}}" /> -->
+                <i class="{{menu.icon}}"> </i>
+              </div>
+            </div>
+            <h3 class="card-title color-light-blue" translate>
+              {{ menu.title}}
+            </h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- client's dashboard -->
+<div
+  *ngIf="type === 'student' || type === 'user'"
+  class="sm-padding data-table"
+>
+  <div class="container">
+    <div class="info-dashboard">
+      <div class="user-info">
+        <img
+          src="{{currentUser?.avatarUrl}}"
+          onerror="this.src='/assets/images/default-avatar.jpg'"
+          alt=""
+        />
+        <div class="txt-user-info">
+          <h3>
+            <span>Welcome, {{currentUser?.name}}</span>
+            <span class="color-primary">Client</span>
+          </h3>
+          <p>{{currentUser?.email}}</p>
+        </div>
+      </div>
+      <div class="right-info">
+        <a href="/users/profile" class="btn btn-default">View profile</a>
+      </div>
+    </div>
+    <div class="row" *ngFor="let sMenus of studentMenus, let i = index">
+      <div
+        class="col-md-3"
+        *ngFor="let sMenu of sMenus, let sMenuIndex = index"
+      >
+        <a class="card menu-item" [routerLink]="[sMenu.path]" translate>
+          <div class="card-body text-center">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="img-card" id="{{sMenu.key}}">
+                <i class="{{sMenu.icon}}"> </i>
+              </div>
+            </div>
+            <h3 class="card-title color-light-blue" translate>
+              {{ sMenu.title}}
+            </h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,130 @@
+.process-wrapper {
+  padding: 80px 0;
+  background: #FFFFFF;
+}
+
+.process-container {
+ margin: auto;
+    padding: 0 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 1200px;
+}
+
+.process-top-label {
+  color: #0077AA;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom:-1rem !important ;
+}
+
+.process-main-title {
+  font-size: 54px;
+  font-weight: 600;
+  color: #082a4c;
+  margin-bottom: 40px;
+}
+
+.process-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 60px;
+}
+
+.process-left {
+  flex: 1;
+}
+
+.process-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  opacity: 0.4;
+  transition: all 0.4s ease;
+}
+
+.process-step.active {
+  opacity: 1;
+}
+
+.step-line {
+  width: 4px;
+  height: 80px;
+  background: #e6e6e6;
+  border-radius: 2px;
+  transition: all 0.4s ease;
+}
+
+.step-line.active {
+  background: #f05a3f;
+}
+
+.step-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #082a4c;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.process-step.active .step-title {
+  color: #092F56;
+}
+
+.process-left ul {
+  padding: 0;
+  list-style: none;
+}
+
+.process-left li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+  color: #475466;
+  font-size: 15px;
+}
+
+.process-left li i {
+  color: #f05a3f;
+  font-size: 14px;
+}
+
+/* IMAGE AREA */
+.process-right {
+  flex: 1;
+}
+
+.process-image {
+width:100%;
+  transition: opacity 0.4s ease;
+}
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .process-content {
+    flex-direction: column-reverse; /* Image goes on top */
+    align-items: center;
+  }
+
+  .process-right {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centers image */
+  }
+
+  .process-image {
+    max-width: 350px;
+    margin: 0 auto 20px auto; /* Center & spacing */
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .process-main-title {
+    font-size: 32px;
+  }
+}

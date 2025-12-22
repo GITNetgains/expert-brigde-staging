@@ -1,0 +1,9 @@
+<div class="rating-container">
+  @for(star of [1, 2, 3, 4, 5]; track star) {
+  <span class="star" [class.filled]="star <= rate">
+    <svg cIcon name="cilStar"></svg>
+  </span>
+  } @if(total) {
+  <span class="total-count">({{total}})</span>
+  }
+</div>

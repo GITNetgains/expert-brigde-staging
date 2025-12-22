@@ -1,0 +1,667 @@
+// Here you can add other styles
+@use "@coreui/coreui/scss/mixins/color-mode" as *;
+// custom .chartjs-tooltip-body-item padding
+@use "charts";
+
+// custom tweaks for scrollbar styling (wip)
+@use "scrollbar";
+
+// custom calendar today cell color
+.calendar-cell.today {
+  --cui-calendar-cell-today-color: var(--cui-info) !important;
+}
+
+// custom select week cursor pointer
+.select-week .calendar-row.current {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: #E4543C ;
+}
+a:hover {
+  color: #c92556;
+}
+.badge {
+  &.secondary {
+    background-color: #343a40;
+    color: #fff;
+  }
+}
+
+.course-content {
+  margin-top: 1.5rem;
+
+  .section-item {
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+    .section-header {
+      padding: 0.75rem 1rem;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+  }
+
+  .lecture-item {
+    border-bottom: 1px solid #dee2e6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .lecture-header {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      .lecture-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .lecture-title {
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+        }
+
+        .lecture-duration {
+          color: #6c757d;
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .files-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background-color: rgba(0, 0, 0, 0.02);
+
+      &.show {
+        max-height: 500px;
+      }
+
+      .file-item {
+        padding: 0.5rem 1rem 0.5rem 2rem;
+        border-top: 1px solid #eee;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+
+        .file-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .file-name {
+            display: flex;
+            align-items: center;
+            color: #dc3545;
+            font-weight: 500;
+          }
+
+          .file-meta {
+            display: flex;
+            gap: 1rem;
+
+            .file-type,
+            .file-duration {
+              color: #dc3545;
+              font-size: 0.875rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include color-mode(dark) {
+  .my-select,
+  c-modal .ng-select {
+    .ng-select-container {
+      border: var(--cui-border-width) solid var(--cui-border-color);
+      background-color: var(--cui-body-bg);
+      .ng-value-container {
+        .ng-value {
+          background-color: #4b4b4b !important;
+          color: #fff !important;
+        }
+        .ng-input {
+          input {
+            color: #fff !important;
+          }
+        }
+      }
+    }
+
+    &.ng-select-opened > .ng-select-container {
+      background-color: var(--cui-body-bg);
+    }
+
+    .ng-dropdown-panel {
+      background-color: var(--cui-body-bg);
+      color: #fff;
+      .ng-dropdown-panel-items {
+        .ng-option {
+          background-color: var(--cui-body-bg);
+          color: #fff;
+
+          &.ng-option-selected {
+            background-color: #4b4b4b;
+          }
+        }
+      }
+    }
+  }
+
+  .course-content {
+    .section-item {
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+
+      .section-header {
+        background-color: var(--cui-dark-bg);
+        border-color: var(--cui-border-color);
+        color: var(--cui-body-color);
+
+        &:hover {
+          background-color: var(--cui-dark-bg) !important;
+        }
+      }
+    }
+
+    .lecture-item {
+      border-color: var(--cui-border-color);
+
+      .lecture-header {
+        &:hover {
+          background-color: var(--cui-tertiary-bg) !important;
+        }
+
+        .lecture-info {
+          .lecture-title {
+            color: var(--cui-body-color);
+          }
+
+          .lecture-duration {
+            color: rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+
+      .files-container {
+        background-color: rgba(0, 0, 0, 0.2);
+
+        .file-item {
+          border-color: var(--cui-border-color);
+
+          &:hover {
+            background-color: var(--cui-dark-bg) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .lecture-item {
+    .lecture-header {
+      background-color: var(--cui-tertiary-bg);
+
+      &:hover {
+        background-color: var(--cui-tertiary-bg) !important;
+      }
+
+      .lecture-title {
+        color: var(--cui-body-color);
+      }
+
+      .lecture-duration {
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .files-container {
+      background-color: rgba(0, 0, 0, 0.2);
+
+      .file-item {
+        border-color: var(--cui-border-color);
+
+        &:hover {
+          background-color: var(--cui-dark-bg) !important;
+        }
+
+        .file-info {
+          .file-name {
+            color: var(--cui-danger) !important;
+          }
+
+          .file-meta {
+            .file-type,
+            .file-duration {
+              color: var(--cui-danger) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .lectures-container {
+    background-color: var(--cui-dark-bg);
+  }
+
+  .section-header {
+    background-color: var(--cui-dark-bg);
+
+    &:hover {
+      background-color: var(--cui-dark-bg) !important;
+    }
+  }
+}
+
+// Dark Mode for Date Range
+@include color-mode(dark) {
+  td.available.next[_ngcontent-ng-c695975861],
+  th.available.next[_ngcontent-ng-c695975861] {
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 3.7 6' xmlns='http://www.w3.org/2000/svg'><path fill='white' d='M3.7,0.7L1.4,3l2.3,2.3L3,6L0,3l3-3L3.7,0.7z'/></svg>");
+  }
+
+  td.available.prev[_ngcontent-ng-c695975861],
+  th.available.prev[_ngcontent-ng-c695975861] {
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 3.7 6' xmlns='http://www.w3.org/2000/svg'><path fill='white' d='M3.7,0.7L1.4,3l2.3,2.3L3,6L0,3l3-3L3.7,0.7z'/></svg>");
+  }
+
+  .daterangepicker {
+    background-color: var(--cui-body-bg) !important;
+    color: #fff !important;
+    border: 1px solid var(--cui-border-color);
+
+    .calendar-table,
+    .calendar-table td,
+    .calendar-table th {
+      background-color: var(--cui-body-bg) !important;
+      color: #fff !important;
+      border: none !important;
+    }
+
+    table thead {
+      color: #fff !important;
+    }
+
+    td.available,
+    th.available {
+      background-color: var(--cui-body-bg) !important;
+      color: #fff !important;
+
+      &:hover {
+        background-color: #4b4b4b !important;
+        color: #fff !important;
+      }
+    }
+
+    .drp-calendar {
+      background-color: var(--cui-body-bg) !important;
+      color: #fff !important;
+    }
+
+    .drp-buttons {
+      background-color: var(--cui-body-bg) !important;
+      border-top: 1px solid var(--cui-border-color);
+
+      .btn {
+        background-color: #4b4b4b !important;
+        color: #fff !important;
+
+        &:hover {
+          background-color: #5c5c5c !important;
+        }
+      }
+    }
+
+    .calendar-table {
+      border: 1px solid #fff !important;
+      border-radius: 0%;
+
+      td.in-range {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      td.active,
+      td.start-date,
+      td.end-date {
+        background-color: var(--cui-info) !important;
+        color: #fff !important;
+      }
+    }
+
+    input {
+      background-color: #333 !important;
+      color: #fff !important;
+      border: 1px solid var(--cui-border-color);
+    }
+
+    .ranges {
+      li {
+        background-color: var(--cui-body-bg) !important;
+        color: #fff !important;
+
+        &:hover {
+          background-color: #4b4b4b !important;
+        }
+
+        &.active {
+          background-color: var(--cui-info) !important;
+          color: #fff !important;
+        }
+      }
+    }
+  }
+}
+
+// Dark Mode for NgxEditor
+@include color-mode(dark) {
+  .NgxEditor__MenuBar {
+    background-color: var(--cui-body-bg) !important;
+    color: #fff !important;
+    border: 1px solid var(--cui-border-color);
+  }
+
+  .NgxEditor {
+    background-color: var(--cui-body-bg) !important;
+    color: #fff !important;
+
+    .ProseMirror {
+      border: 1px solid var(--cui-border-color);
+
+      // Override pasted content styles for dark mode compatibility
+      * {
+        // Force text colors to be compatible with dark mode
+        color: #fff !important;
+
+        // Remove background colors that conflict with dark mode
+        background-color: transparent !important;
+
+        // Handle specific elements that commonly have inline styles
+        &[style*="color"] {
+          color: #fff !important;
+        }
+
+        &[style*="background"] {
+          background-color: transparent !important;
+        }
+      }
+
+      // Specific overrides for common pasted elements
+      p, div, span, strong, em, b, i, u {
+        color: #fff !important;
+        background-color: transparent !important;
+      }
+
+      // Handle links in pasted content
+      a {
+        color: var(--cui-info) !important;
+        background-color: transparent !important;
+
+        &:hover {
+          color: var(--cui-info-hover, #0dcaf0) !important;
+        }
+      }
+
+      // Handle headings in pasted content
+      h1, h2, h3, h4, h5, h6 {
+        color: #fff !important;
+        background-color: transparent !important;
+      }
+
+      // Handle lists in pasted content
+      ul, ol, li {
+        color: #fff !important;
+        background-color: transparent !important;
+      }
+
+      // Handle blockquotes in pasted content
+      blockquote {
+        color: rgba(255, 255, 255, 0.8) !important;
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-left-color: var(--cui-border-color) !important;
+      }
+
+      // Handle code blocks in pasted content
+      code, pre {
+        color: #fff !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      // Handle tables in pasted content
+      table, th, td {
+        color: #fff !important;
+        background-color: transparent !important;
+        border-color: var(--cui-border-color) !important;
+      }
+    }
+  }
+}
+
+.NgxEditor {
+  .ProseMirror {
+    min-height: 100px;
+  }
+}
+
+// Underline Image
+.hover {
+  :hover {
+    text-decoration: underline;
+  }
+}
+
+.course-content-preview {
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+
+  .section-details {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  .lecture-title svg {
+    margin-right: 0.5rem;
+  }
+}
+
+@include color-mode(dark) {
+  .course-content-preview {
+    .section-details {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .NgxEditor__MenuItem {
+    &:hover .NgxEditor__MenuItem--Icon {
+      color: #000;
+    }
+  }
+
+  .NgxEditor__Dropdown {
+    &:hover {
+      color: #000;
+    }
+  }
+
+  // Additional dark mode fixes for pasted content
+  .NgxEditor .ProseMirror {
+    // Force override any pasted content with light backgrounds
+    p[style*="background"],
+    div[style*="background"],
+    span[style*="background"] {
+      background-color: transparent !important;
+      background-image: none !important;
+    }
+
+    // Force override any pasted content with dark text colors
+    p[style*="color"],
+    div[style*="color"],
+    span[style*="color"],
+    strong[style*="color"],
+    em[style*="color"],
+    b[style*="color"],
+    i[style*="color"] {
+      color: #fff !important;
+    }
+
+    // Handle pasted content that might have font specifications
+    *[style*="font-family"] {
+      font-family: inherit !important;
+    }
+
+    // Ensure proper contrast for any remaining styled elements
+    *[style] {
+      color: #fff !important;
+      background-color: transparent !important;
+    }
+  }
+}
+
+// Theme Toggle Button Styling
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0.375rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+
+  .theme-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    width: 24px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.theme-option {
+  transition: background-color 0.2s ease;
+
+  &.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+  }
+}
+
+@include color-mode(dark) {
+  .theme-toggle-btn {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .theme-option {
+    &.active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .course-content-preview {
+    .section-title {
+      color: var(--cui-body-color);
+    }
+
+    .section-details {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .lecture-item {
+    .lecture-header {
+      background-color: var(--cui-tertiary-bg);
+
+      &:hover {
+        background-color: var(--cui-tertiary-bg) !important;
+      }
+    }
+
+    .files-container {
+      background-color: rgba(0, 0, 0, 0.2);
+
+      .file-item {
+        border-color: var(--cui-border-color);
+
+        &:hover {
+          background-color: var(--cui-dark-bg) !important;
+        }
+
+        .file-info {
+          .file-name {
+            color: var(--cui-danger) !important;
+          }
+
+          .file-meta {
+            .file-type,
+            .file-duration {
+              color: var(--cui-danger) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .section-header {
+    &:hover {
+      background-color: var(--cui-dark-bg) !important;
+    }
+  }
+
+  .course-content {
+    .section-item {
+      .section-header {
+        &:hover {
+          background-color: var(--cui-dark-bg) !important;
+        }
+      }
+    }
+
+    .lecture-item {
+      .lecture-header {
+        &:hover {
+          background-color: var(--cui-tertiary-bg) !important;
+        }
+      }
+
+      .files-container {
+        .file-item {
+          &:hover {
+            background-color: var(--cui-dark-bg) !important;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+:root {
+  --grey-text: #444;
+  --primary-color: #E4543C ;
+  --primary-color-hover: #c92556;
+  --bg-white: #fff;
+  --bg-grey: #F6F6F6;
+  --border-grey: #ddd;
+}
+
+.dark-mode {
+  --grey-text: #dbdbdb;
+  --bg-white: #222222;
+  --bg-grey: #323232;
+  --border-grey: #333;
+}
+
+.main-footer {
+  color: var(--grey-text);
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+  background: none;
+  color: var(--primary-color);
+}
+
+a,
+.nav-pills .nav-link:not(.active):hover {
+  color: var(--primary-color);
+}
+
+.btn-primary,
+.page-item.active .page-link,
+.custom-control-input:checked~.custom-control-label::before {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.page-item .page-link {
+  color: var(--grey-text);
+}
+
+.sidebar-dark-danger .nav-sidebar>.nav-item>.nav-link.active,
+.sidebar-light-danger .nav-sidebar>.nav-item>.nav-link.active {
+  background-color: var(--primary-color);
+}
+
+.dark-mode {
+
+  .nav-pills .nav-link.active,
+  .nav-pills .show>.nav-link {
+    background: none;
+    color: var(--primary-color);
+  }
+
+  a,
+  .nav-pills .nav-link:not(.active):hover {
+    color: var(--primary-color);
+  }
+
+  .btn-primary,
+  .page-item.active .page-link,
+  {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.page-item .page-link {
+  color: var(--grey-text);
+}
+
+.sidebar-dark-danger .nav-sidebar>.nav-item>.nav-link.active,
+.sidebar-light-danger .nav-sidebar>.nav-item>.nav-link.active {
+  background-color: var(--primary-color);
+}
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus {
+  background: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
+}
+
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+.form-control,
+.ng-select,
+.ng-option,
+.ng-select-container {
+  background: var(--bg-white) !important;
+  border-color: var(--border-grey) !important;
+  color: var(--grey-text) !important;
+}
+
+.table thead th {
+  background-color: var(--bg-grey) !important;
+}

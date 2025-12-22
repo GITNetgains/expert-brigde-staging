@@ -1,0 +1,203 @@
+<c-modal
+  [visible]="visible"
+  (visibleChange)="handleModalChange($event)"
+  alignment="center"
+  size="lg"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Lecture</h5>
+    <button cButtonClose (click)="closeModal()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <form cForm #frm="ngForm" (submit)="submit(frm)" [validated]="submitted">
+      <c-container>
+        <c-row>
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel>Title<span class="text-danger">*</span></label>
+              <input
+                cFormControl
+                type="text"
+                name="title"
+                placeholder="Enter title"
+                [(ngModel)]="lecture.title"
+                required
+                #title="ngModel"
+              />
+              @if (title.errors && (title.dirty || title.touched || submitted))
+              { @if (title.errors['required']) {
+              <c-form-feedback invalid>Title is required!</c-form-feedback>
+              } }
+            </div>
+          </c-col>
+          <c-col md="12">
+            <div class="mb-3">
+              <label cLabel>Description</label>
+              <textarea
+                cFormControl
+                name="description"
+                rows="3"
+                placeholder="Enter some text here"
+                [(ngModel)]="lecture.description"
+                #description="ngModel"
+              ></textarea>
+            </div>
+          </c-col>
+          <c-col md="6">
+            <div class="mb-3">
+              <label cLabel>Ordering</label>
+              <input
+                cFormControl
+                type="number"
+                name="ordering"
+                placeholder="Ordering"
+                [(ngModel)]="lecture.ordering"
+                #ordering="ngModel"
+              />
+              @if (ordering.value < 0) {
+              <c-form-feedback invalid
+                >Order must be greater than or equal to 0!</c-form-feedback
+              >
+              }
+            </div>
+          </c-col>
+
+          <c-col md="12">
+            <div class="mb-4">
+              <h5>Media Content</h5>
+              @if (medias.length === 0) {
+              <p class="text-muted">No media content added yet.</p>
+              } @else { @for (media of medias; track media._id; let i = $index)
+              {
+              <div
+                class="d-flex justify-content-between align-items-center border-bottom p-2"
+              >
+                <div>
+                  @if (media.mediaType === 'video') {
+                  <svg cIcon name="cilMediaPlay" class="me-2" size="sm"></svg>
+                  } @else if (media.mediaType === 'pdf') {
+                  <svg cIcon name="cilFile" class="me-2" size="sm"></svg>
+                  } @else if (media.mediaType === 'audio') {
+                  <svg cIcon name="cilMediaPlay" class="me-2" size="sm"></svg>
+                  }
+                  <span>{{media.media?.name}}</span>
+                </div>
+                <div>
+                  <c-badge color="warning" class="me-1"
+                    >{{media.mediaType}}</c-badge
+                  >
+                  @if (media.mediaType === 'video' || media.mediaType ===
+                  'audio') {
+                  <c-badge color="primary" class="me-1"
+                    >{{returnDuration(media.media?.duration)}}</c-badge
+                  >
+                  } @else if (media.mediaType === 'pdf') {
+                  <c-badge color="primary" class="me-1"
+                    >{{returnDuration(media.totalLength)}}</c-badge
+                  >
+                  }
+                  <c-badge
+                    role="button"
+                    color="danger"
+                    class="cursor-pointer"
+                    (click)="removeMedia(media, i)"
+                  >
+                    <svg cIcon name="cilTrash" size="sm"></svg>
+                  </c-badge>
+                </div>
+              </div>
+              } }
+            </div>
+          </c-col>
+
+          <c-col md="12">
+            <h5>
+              Add lecture media content
+              <small class="text-muted ms-1" style="font-size: 80%;"
+                >(Maximum size: {{maxFileSize}} mb)</small
+              >
+            </h5>
+
+            <div class="my-3 text-center">
+              <div class="form-check form-check-inline me-3">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  (click)="checkMediaType('video')"
+                  [ngModel]="mediaType"
+                  name="media"
+                  value="video"
+                  id="video-radio"
+                  checked
+                />
+                <label class="form-check-label" for="video-radio"
+                  >Add Video (*.mp4, *.mov)</label
+                >
+              </div>
+              <div class="form-check form-check-inline me-3">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  (click)="checkMediaType('audio')"
+                  [ngModel]="mediaType"
+                  name="media"
+                  value="audio"
+                  id="audio-radio"
+                />
+                <label class="form-check-label" for="audio-radio"
+                  >Add Audio (*.mp3)</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  (click)="checkMediaType('pdf')"
+                  [ngModel]="mediaType"
+                  name="media"
+                  value="pdf"
+                  id="pdf-radio"
+                />
+                <label class="form-check-label" for="pdf-radio">Add PDF</label>
+              </div>
+            </div>
+
+            <div class="upload-container" data-uploader-container>
+              @if (mediaType === 'video') {
+              <app-file-uploader [options]="videoOptions"></app-file-uploader>
+              } @if (mediaType === 'audio') {
+              <app-file-uploader [options]="audioOptions"></app-file-uploader>
+              } @if (mediaType === 'pdf') {
+              <app-file-uploader
+                [options]="pdfOptions"
+                (onUpload)="onUpload($event)"
+              ></app-file-uploader>
+              }
+            </div>
+          </c-col>
+
+          <c-col md="12" class="mt-3">
+            <button
+              cButton
+              type="submit"
+              color="primary"
+              class="me-2"
+              [disabled]="uploading"
+            >
+              Submit
+            </button>
+            <button
+              cButton
+              type="button"
+              color="secondary"
+              variant="outline"
+              (click)="closeModal()"
+            >
+              Close
+            </button>
+          </c-col>
+        </c-row>
+      </c-container>
+    </form>
+  </c-modal-body>
+</c-modal>

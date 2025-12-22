@@ -1,0 +1,75 @@
+<div class="d-flex calendar-btn-group justify-content-between calendar-header">
+  <button class="btn btn-prev btn-default" type="button" (click)="changeWeekCalendar('prev')">&lt;&lt;</button>
+  <h4>{{ weekText }}</h4>
+  <button class="btn btn-next btn-default" type="button" (click)="changeWeekCalendar('next')">&gt;&gt;</button>
+</div>
+
+<div class="table-responsive table-available-time">
+  <table class="table">
+    <thead>
+      <tr>
+        <th *ngFor="let day of days" scope="col">
+          <span translate>{{ day }} </span>
+          <small>
+            ({{ calendar[day].length }} <span translate>{{calendar[day].length <=1 ? 'slot': 'slots'}}</span>)</small
+          >
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="!loading; else loadingTemplate">
+        <tr *ngIf="calendar?.length === 0">
+          <td colspan="7" style="padding: 20px; text-align: center">There are no entries!</td>
+        </tr>
+        <tr *ngIf="calendar?.length > 0">
+          <ng-container *ngFor="let day of days">
+            <td>
+              <ul class="list-slot-by-day">
+                <li *ngFor="let time of calendar[day]">
+                  <div class="slot-box bg-color-default" [ngClass]="time.booked || time.isDisabled ? 'booked':''">
+                    <p>{{ time.text }}</p>
+                    <p *ngIf="time.booked" class="slot-booked">Booked</p>
+                    <p *ngIf="time.isDisabled" class="slot-booked">Unavailable</p>
+                    <ng-container *ngIf="stateService.showBooking() && !reschedule">
+                      <button
+                        *ngIf="!time.booked && !time.isDisabled && !isFree"
+                        class="btn btn-default btn-sm btn-slot btn-block"
+                        type="button"
+                        (click)="addToCart(time)"
+                        [ngClass]="{'btn-default': !time.addedToCart, 'btn-success': time.addedToCart }"
+                      >
+                        <i class="fas fa-cart-plus" *ngIf="!time.addedToCart"></i>
+                        <span *ngIf="time.addedToCart">Added</span>
+                      </button>
+                      <button
+                        *ngIf="!time.booked && !time.isDisabled"
+                        class="btn btn-default btn-sm btn-buy-now btn-block"
+                        type="button"
+                        (click)="selectSlot(time)"
+                      >
+                        Book now
+                      </button>
+                    </ng-container>
+                    <button
+                      *ngIf="!time.booked && !time.isDisabled && reschedule"
+                      class="btn btn-default btn-sm btn-buy-now btn-block"
+                      type="button"
+                      (click)="selectSlot(time)"
+                    >
+                      Select
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </td>
+          </ng-container>
+        </tr>
+      </ng-container>
+      <ng-template #loadingTemplate>
+        <tr>
+          <td colspan="7" style="padding: 20px; text-align: center">Loading...</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+</div>

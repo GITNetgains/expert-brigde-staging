@@ -1,0 +1,482 @@
+<c-card>
+  <c-card-body>
+    <div class="col-md-12">
+      <div class="wizard">
+        <div class="wizard-inner">
+          <c-nav variant="tabs" class="course-tab-list">
+            <a
+              [cNavLink]="tab === 1"
+              (click)="onTabSelect(1)"
+              cNavItem
+              class="text-decoration-none"
+              [ngClass]="{'active-tab': tab === 1}"
+            >
+              Basic Info
+            </a>
+            <a
+              [cNavLink]="tab === 2"
+              (click)="onTabSelect(2)"
+              [ngClass]="{'mt-5': checkMobileBrowser, 'active-tab': tab === 2}"
+              cNavItem
+              class="text-decoration-none"
+            >
+              Course Goals
+            </a>
+            <a
+              [cNavLink]="tab === 3"
+              (click)="onTabSelect(3)"
+              [ngClass]="{'mt-5': checkMobileBrowser, 'active-tab': tab === 3}"
+              cNavItem
+              class="text-decoration-none"
+            >
+              Lecture Details
+            </a>
+            <a
+              [cNavLink]="tab === 4"
+              (click)="onTabSelect(4)"
+              [ngClass]="{'mt-5': checkMobileBrowser, 'active-tab': tab === 4}"
+              cNavItem
+              class="text-decoration-none"
+            >
+              Coupon
+            </a>
+          </c-nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content mt-2" id="main_form">
+      <div
+        class="tab-pane"
+        [ngClass]="{'active': tab === 1}"
+        role="tabpanel"
+        id="step1"
+      >
+        <form
+          cForm
+          (ngSubmit)="submit(frm)"
+          #frm="ngForm"
+          novalidate
+          class="needs-validation"
+          [validated]="customStylesValidated"
+        >
+          <c-container>
+            <c-row class="mt-3">
+              <c-col md="12">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="payment"
+                    id="free"
+                    [value]="true"
+                    [(ngModel)]="course.isFree"
+                  />
+                  <label class="form-check-label" for="free">FREE</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="payment"
+                    id="paid"
+                    [value]="false"
+                    [(ngModel)]="course.isFree"
+                  />
+                  <label class="form-check-label" for="paid">PAID</label>
+                </div>
+              </c-col>
+
+              @if (course.tutorId && course.tutor) {
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Tutor (*)</label>
+                  <input
+                    cFormControl
+                    type="text"
+                    name="tutorId"
+                    [disabled]="true"
+                    [ngModel]="course.tutor?.name"
+                  />
+                </div>
+              </c-col>
+              } @else {
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Tutor (*)</label>
+                  <ng-select
+                    [items]="tutorItems"
+                    bindLabel="name"
+                    bindValue="_id"
+                    [loading]="false"
+                    placeholder="Select tutor"
+                    [clearable]="true"
+                    [virtualScroll]="true"
+                    (open)="loadTutors()"
+                    (change)="selectTutor($event)"
+                    class="my-select"
+                    [class.is-invalid]="isSubmitted && !course.tutorId"
+                  >
+                  </ng-select>
+                  @if ((isSubmitted && !course.tutorId) || (isSubmitted && !course.tutorId)) {
+                  <c-form-feedback invalid
+                    >Please select tutor!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+              }
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Course Title (*)</label>
+                  <c-input-group class="has-validation">
+                    <input
+                      cFormControl
+                      type="text"
+                      name="title"
+                      placeholder="Enter name"
+                      [(ngModel)]="course.name"
+                      required
+                      #name="ngModel"
+                    />
+                    @if (name.errors && (name.dirty || name.touched ||
+                    isSubmitted)) { @if (name.errors?.['required']) {
+                    <c-form-feedback invalid
+                      >Please enter course title!</c-form-feedback
+                    >
+                    } }
+                  </c-input-group>
+                </div>
+              </c-col>
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel
+                    >Price ({{config?.currencySymbol ? config?.currencySymbol :
+                    '$'}})</label
+                  >
+                  <c-input-group class="has-validation">
+                    <input
+                      cFormControl
+                      type="number"
+                      placeholder="Enter price"
+                      [(ngModel)]="course.price"
+                      name="price"
+                      required
+                      [value]="course.isFree ? 0 : course.price"
+                      #price="ngModel"
+                      pattern="[0-9.]{0,8}$"
+                      step="any"
+                      [disabled]="course.isFree"
+                    />
+                    @if (price.errors && (price.dirty || price.touched ||
+                    isSubmitted)) { @if (price.errors?.['required']) {
+                    <c-form-feedback invalid
+                      >Please enter course price!</c-form-feedback
+                    >
+                    } @if (price.errors?.['pattern']) {
+                    <c-form-feedback invalid
+                      >Cannot exceed 8 characters</c-form-feedback
+                    >
+                    } } @if (price.value <= 0 && (price.dirty || price.touched
+                    || isSubmitted) && !course.isFree) {
+                    <c-form-feedback invalid
+                      >Price must be greater than 0!</c-form-feedback
+                    >
+                    }
+                  </c-input-group>
+                </div>
+              </c-col>
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Categories (*)</label>
+                  <ng-select
+                    [items]="myCategories"
+                    multiple="true"
+                    [hideSelected]="true"
+                    bindLabel="name"
+                    [closeOnSelect]="false"
+                    name="category"
+                    placeholder="Choose category"
+                    [(ngModel)]="course.categoryIds"
+                    bindValue="originalCategoryId"
+                    #categoryId="ngModel"
+                    required
+                    (change)="onSelectMyCategories($event)"
+                    class="my-select"
+                    [class.is-invalid]="(categoryId.errors && (categoryId.dirty || categoryId.touched || isSubmitted)) || (isSubmitted && (!course.categoryIds || course.categoryIds.length === 0))"
+                  >
+                  </ng-select>
+                  @if ((categoryId.errors && (categoryId.dirty ||
+                  categoryId.touched || isSubmitted)) || (isSubmitted && (!course.categoryIds || course.categoryIds.length === 0))) { 
+                  <c-form-feedback invalid
+                    >Please choose category!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+
+              @if (course?.categoryIds?.length) {
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Subjects (*)</label>
+                  <ng-select
+                    [items]="mySubjects"
+                    multiple="true"
+                    [hideSelected]="true"
+                    bindLabel="name"
+                    [closeOnSelect]="false"
+                    name="subject"
+                    placeholder="Choose subjects"
+                    [(ngModel)]="course.subjectIds"
+                    bindValue="originalSubjectId"
+                    #subjectId="ngModel"
+                    required
+                    (change)="onSelectMySubjects($event)"
+                    class="my-select"
+                    [class.is-invalid]="(subjectId.errors && (subjectId.dirty || subjectId.touched || isSubmitted)) || (isSubmitted && (!course.subjectIds || course.subjectIds.length === 0))"
+                  >
+                  </ng-select>
+                  @if ((subjectId.errors && (subjectId.dirty || subjectId.touched
+                  || isSubmitted)) || (isSubmitted && (!course.subjectIds || course.subjectIds.length === 0))) {
+                  <c-form-feedback invalid
+                    >Please choose subject!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+              } @if (course?.categoryIds?.length && course?.subjectIds?.length)
+              {
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Topics (*)</label>
+                  <ng-select
+                    [items]="myTopics"
+                    multiple="true"
+                    [hideSelected]="true"
+                    bindLabel="name"
+                    [closeOnSelect]="false"
+                    name="topic"
+                    placeholder="Choose topic"
+                    [(ngModel)]="course.topicIds"
+                    bindValue="originalTopicId"
+                    #topicId="ngModel"
+                    required
+                    class="my-select"
+                    [class.is-invalid]="(topicId.errors && (topicId.dirty || topicId.touched || isSubmitted)) || (isSubmitted && (!course.topicIds || course.topicIds.length === 0))"
+                  >
+                  </ng-select>
+                  @if ((topicId.errors && (topicId.dirty || topicId.touched ||
+                  isSubmitted)) || (isSubmitted && (!course.topicIds || course.topicIds.length === 0))) {
+                  <c-form-feedback invalid
+                    >Please choose topic!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+              }
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Age (*)</label>
+                  <ng-select
+                    [items]="ageFilter"
+                    [hideSelected]="true"
+                    bindLabel="name"
+                    [closeOnSelect]="true"
+                    name="age"
+                    placeholder="Choose age"
+                    [(ngModel)]="course.age"
+                    #age="ngModel"
+                    required
+                    class="my-select"
+                    [class.is-invalid]="(age.errors && (age.dirty || age.touched || isSubmitted)) || (isSubmitted && !course.age)"
+                  >
+                    <ng-template ng-label-tmp let-item="item">
+                      <span>{{ item.from + ' - ' + item.to }}</span>
+                    </ng-template>
+                    <ng-template ng-option-tmp let-item="item">
+                      <span>{{ item.from + ' - ' + item.to }}</span>
+                    </ng-template>
+                  </ng-select>
+                  @if ((age.errors && (age.dirty || age.touched || isSubmitted)) || (isSubmitted && !course.age)) {
+                  <c-form-feedback invalid>Please choose age!</c-form-feedback>
+                  }
+                </div>
+              </c-col>
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>Grades (*)</label>
+                  <ng-select
+                    [items]="grades"
+                    multiple="true"
+                    [hideSelected]="true"
+                    bindLabel="name"
+                    [closeOnSelect]="false"
+                    name="grades"
+                    placeholder="Choose grades"
+                    [(ngModel)]="course.gradeIds"
+                    bindValue="_id"
+                    #gradeId="ngModel"
+                    required
+                    class="my-select"
+                    [class.is-invalid]="(gradeId.errors && (gradeId.dirty || gradeId.touched || isSubmitted)) || (isSubmitted && (!course.gradeIds || course.gradeIds.length === 0))"
+                  >
+                  </ng-select>
+                  @if ((gradeId.errors && (gradeId.dirty || gradeId.touched ||
+                  isSubmitted)) || (isSubmitted && (!course.gradeIds || course.gradeIds.length === 0))) {
+                  <c-form-feedback invalid
+                    >Please choose grades!</c-form-feedback
+                  >
+                  }
+                </div>
+              </c-col>
+
+              <c-col md="6">
+                <div class="mb-3 video-in-form">
+                  <label cLabel>
+                    Course Introduction video (*)
+                    <small class="ms-1 text-muted" style="font-size: 80%;">
+                      (Maximum size: {{maxFileSize}} mb)</small
+                    >
+                  </label>
+                  <br />
+                  @if (videoUrl) {
+                  <video width="300" [src]="videoUrl" controls></video>
+                  <br />
+                  } @if (uploadingVideo) {
+                  <div class="mb-2 text-info">
+                    <span>Uploading video...</span>
+                  </div>
+                  }
+                  <app-file-uploader
+                    [options]="videoOptions"
+                    #videoUploader
+                  ></app-file-uploader>
+                </div>
+              </c-col>
+
+              <c-col md="6">
+                <div class="mb-3">
+                  <label cLabel>
+                    Course Main image (*)
+                    <small class="ms-1 text-muted" style="font-size: 80%;">
+                      (Expected size: 320 x 285 pixels, Maximum size:
+                      {{maxFileSize}} mb)</small
+                    >
+                  </label>
+                  <br />
+                  @if (mainImageUrl) {
+                  <img
+                    width="300"
+                    style="margin-bottom: 10px"
+                    [src]="mainImageUrl"
+                    alt=""
+                  />
+                  <br />
+                  } @if (uploadingImage) {
+                  <div class="mb-2 text-info">
+                    <span>Uploading image...</span>
+                  </div>
+                  }
+                  <app-file-uploader
+                    [options]="mainImageOptions"
+                    #imageUploader
+                  ></app-file-uploader>
+                </div>
+              </c-col>
+
+              <c-col md="12">
+                <div class="mb-3">
+                  <label cLabel>Description</label>
+                  <app-editor
+                    [content]="course.description"
+                    (contentChange)="course.description = $event"
+                  ></app-editor>
+                </div>
+              </c-col>
+
+              <c-col md="12">
+                <div class="mb-3">
+                  <button
+                    cButton
+                    color="primary"
+                    type="submit"
+                    [disabled]="uploadingVideo || uploadingImage"
+                  >
+                    Next step
+                  </button>
+                </div>
+                @if (!course._id) {
+                <div class="mb-3">
+                  <button
+                    cButton
+                    color="light"
+                    type="button"
+                    (click)="saveAsDraff()"
+                    [disabled]="uploadingVideo || uploadingImage"
+                  >
+                    Save as draft
+                  </button>
+                </div>
+                }
+              </c-col>
+            </c-row>
+          </c-container>
+        </form>
+      </div>
+
+      <div
+        class="tab-pane"
+        [ngClass]="{'active': tab === 2}"
+        role="tabpanel"
+        id="goal"
+      >
+        @if (!course._id) {
+        <div class="mt-2">Please enter basic information first</div>
+        } @else if (course._id && !loading) {
+        <course-goal
+          (onTabSelect)="onTabSelect($event)"
+          [course]="course"
+        ></course-goal>
+        }
+      </div>
+
+      <div
+        class="tab-pane"
+        [ngClass]="{'active': tab === 3}"
+        role="tabpanel"
+        id="lecture"
+      >
+        @if (!course._id) {
+        <div class="mt-2">Please enter basic information first</div>
+        } @else if (course._id && !loading) {
+        <course-lecture
+          (onTabSelect)="onTabSelect($event)"
+          [course]="course"
+        ></course-lecture>
+        }
+      </div>
+
+      <div
+        class="tab-pane"
+        [ngClass]="{'active': tab === 4}"
+        role="tabpanel"
+        id="coupon"
+      >
+        @if (!course._id) {
+        <div class="mt-2">Please enter basic information first</div>
+        } @else if (course._id && !loading) {
+        <course-coupon
+          [tutorId]="course.tutorId"
+          [course]="course"
+          (onTabSelect)="onTabSelect($event)"
+        ></course-coupon>
+        }
+      </div>
+    </div>
+  </c-card-body>
+</c-card>

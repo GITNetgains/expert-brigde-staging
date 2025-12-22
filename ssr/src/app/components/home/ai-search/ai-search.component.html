@@ -1,0 +1,66 @@
+<div class="ai-banner">
+
+  <!-- Background Image -->
+  <img
+    class="bg-image"
+    [src]="'assets/images/homepage/banner/header-img.png'"
+    alt="banner"
+  />
+
+  <!-- Center Content -->
+  <div class="content">
+
+    <h1 class="title">Engage Brilliance,<br />Get it Done</h1>
+    <p class="subtitle">Find top-rated experts across industries</p>
+
+    <!-- Search Box -->
+    <form (submit)="onSearch($event)" class="search-wrap">
+
+      <div class="search-box">
+
+        <!-- Input -->
+        <input
+          type="text"
+          [(ngModel)]="query"
+          name="query"
+          class="search-input"
+          placeholder="Provide a one line brief – our AI drafts your query - post in seconds"
+          required
+        />
+
+        <span class="recording-indicator" *ngIf="isRecording">
+          Listening...
+        </span>
+
+        <!-- Mic Button -->
+        <button type="button" class="mic-btn" (click)="toggleRecording()">
+          <img
+            *ngIf="!isRecording"
+            src="assets/images/homepage/mic.svg"
+            class="mic-img"
+            alt="mic"
+          />
+          <img
+            *ngIf="isRecording"
+            src="assets/images/homepage/mic.svg"
+            class="mic-img recording"
+            alt="recording"
+          />
+        </button>
+
+      </div>
+
+      <button type="submit" class="proceed-btn">Proceed</button>
+
+    </form>
+
+    <p class="desc">Describe, review and post your query in under a minute.</p>
+
+    <div class="notes">
+      <p><i class="fi fi-rr-check"></i> For those who demand brilliance, engage with industry professionals from $50 to $1000 per hour.</p>
+      <p><i class="fi fi-rr-check"></i> Market driven pricing – set by professionals and trusted by global clients.</p>
+      <p><i class="fi fi-rr-check"></i> We do not encourage race-to-the-bottom pricing or unreasonably high rates.</p>
+    </div>
+
+  </div>
+</div>

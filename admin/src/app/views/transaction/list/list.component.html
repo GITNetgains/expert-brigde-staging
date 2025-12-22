@@ -1,0 +1,360 @@
+<c-row class="mb-4">
+  <c-col>
+    <c-card>
+      <c-card-header>
+        <h3>Manage Transaction</h3>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col sm="12" md="4">
+            <ng-select
+              [items]="tutor"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="tutorId"
+              placeholder="Search tutor"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="4">
+            <ng-select
+              [items]="user"
+              bindLabel="name"
+              bindValue="_id"
+              [loading]="searching"
+              [(ngModel)]="userId"
+              placeholder="Search user"
+              [clearable]="true"
+              [virtualScroll]="true"
+              class="my-select"
+            >
+            </ng-select>
+          </c-col>
+          <c-col sm="12" md="4">
+            <input
+              cFormControl
+              type="text"
+              placeholder="Enter code"
+              [(ngModel)]="searchFields.code"
+            />
+          </c-col>
+          <c-col sm="12" md="4">
+            <select
+              cSelect
+              [(ngModel)]="searchFields.targetType"
+              placeholder="Choose enroll type"
+            >
+              <option value="" selected>All enroll type</option>
+              <option value="webinar">Group Class</option>
+              <option value="subject">One to One</option>
+              <option value="course">Course</option>
+            </select>
+          </c-col>
+          <c-col sm="12" md="4">
+            <select cSelect [(ngModel)]="searchFields.status">
+              <option value="" selected disabled>Choose status</option>
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="canceled">Canceled</option>
+              <option value="progressing">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="pending-refund">Pending refund</option>
+              <option value="approved-refund">Approved refund</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </c-col>
+          <c-col sm="12" md="4">
+            <button
+              cButton
+              color="primary"
+              style="width: 100%"
+              (click)="filter()"
+            >
+              Filter
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-row>
+  <c-col>
+    <c-card>
+      <c-card-header class="d-flex flex-wrap justify-content-between">
+        <h4>Total Transactions: {{ count }}</h4>
+        @if(count !==0 ){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
+      </c-card-header>
+      @if(count !== 0){
+      <c-card-body>
+        <div class="table-responsive">
+          <table
+            cTable
+            [responsive]="true"
+            [cBorder]="1"
+            borderColor="gray"
+            bordered
+            style="table-layout: fixed; width: 1610px"
+          >
+            <thead>
+              <tr>
+                <th style="width: 200px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="tutorId"
+                    [sortOption]="sortOption"
+                    sortTitle="Tutor Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="userId"
+                    [sortOption]="sortOption"
+                    sortTitle="User Name"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="webinarId"
+                    [sortOption]="sortOption"
+                    sortTitle="Group Class"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="subjectId"
+                    [sortOption]="sortOption"
+                    sortTitle="Subject"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="courseId"
+                    [sortOption]="sortOption"
+                    sortTitle="Course"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="type"
+                    [sortOption]="sortOption"
+                    sortTitle="Type"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="targetType"
+                    [sortOption]="sortOption"
+                    sortTitle="Enroll Type"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="code"
+                    [sortOption]="sortOption"
+                    sortTitle="Code"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="price"
+                    [sortOption]="sortOption"
+                    sortTitle="Price"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="commission"
+                    [sortOption]="sortOption"
+                    sortTitle="Commission"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="balance"
+                    [sortOption]="sortOption"
+                    sortTitle="Balance"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="createdAt"
+                    [sortOption]="sortOption"
+                    sortTitle="Created on"
+                  ></app-sort>
+                </th>
+                <th style="width: 150px">
+                  <app-sort
+                    (onSort)="onSort($event)"
+                    sortBy="status"
+                    [sortOption]="sortOption"
+                    sortTitle="Status"
+                  ></app-sort>
+                </th>
+                <th
+                  style="
+                    width: 100px;
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of transaction; track item._id) {
+              <tr>
+                <td>{{ item?.tutor?.name }}</td>
+                <td>{{ item?.user?.name }}</td>
+                <td>{{ item?.webinar ? item?.webinar?.name : "-" }}</td>
+                <td>
+                  <span *ngIf="item?.tutorSubject?.name"
+                    >{{ item?.tutorSubject?.name }} - </span
+                  >{{ item?.subject ? item?.subject?.name : "-" }}
+                </td>
+                <td>{{ item?.course ? item?.course?.name : "-" }}</td>
+                <td>
+                  @switch(item?.type){ @case('booking'){
+                  <c-badge color="primary">Booking</c-badge>
+                  } @case('gift'){
+                  <c-badge color="success">Gift</c-badge>
+                  } }
+                </td>
+                <td>
+                  @switch(item?.targetType){ @case('webinar'){
+                  <c-badge color="success">Group Class</c-badge>
+                  } @case('subject'){
+                  <c-badge color="primary">One-One</c-badge>
+                  }@case('course'){
+                  <c-badge color="warning">Course</c-badge>
+                  } }
+                </td>
+                <td>{{ item?.code }}</td>
+                <td>
+                  {{
+                    item?.price
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  {{
+                    item?.commission
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  {{
+                    item?.balance
+                      | currency
+                        : (config?.currencySymbol
+                            ? config?.currencySymbol
+                            : "$")
+                        : "symbol"
+                        : "1.0"
+                  }}
+                </td>
+                <td>
+                  <span>{{ item?.createdAt | date : "HH:mm a M/d/yy" }}</span>
+                </td>
+                <td>
+                  @switch(item?.status){ @case('pending'){
+                  <c-badge color="warning">Pending</c-badge>
+                  }@case('canceled'){
+                  <c-badge color="danger">Canceled</c-badge>
+                  }@case('progressing'){
+                  <c-badge color="primary">In Progress</c-badge>
+                  }@case('completed'){
+                  <c-badge color="success">Completed</c-badge>
+                  }@case('pending-refund'){
+                  <c-badge color="warning">Pending refund</c-badge>
+                  }@case('approved-refund'){
+                  <c-badge color="primary">Approved refund</c-badge>
+                  }@case('refunded'){
+                  <c-badge color="success">Refunded</c-badge>
+                  } }
+                </td>
+                <td
+                  style="
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    box-shadow: inset -1px 0 0 var(--cui-border-color),
+                      inset 1px 0 0 var(--cui-border-color);
+                  "
+                >
+                  <a
+                    cButton
+                    color="secondary"
+                    size="sm"
+                    [routerLink]="['/payment/transaction', item._id]"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+      }@else {
+      <c-card-body>
+        <c-container
+          style="background-color: #ffc12b; padding: 10px 0; border-radius: 8px"
+        >
+          <span style="padding: 10px">There are no items</span>
+        </c-container>
+      </c-card-body>
+      }
+
+      <c-card-footer class="d-flex justify-content-end">
+        @if(count !==0 ){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>
