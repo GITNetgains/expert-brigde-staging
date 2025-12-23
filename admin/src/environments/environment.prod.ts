@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.livelearn.info',
+  apiUrl: 'http://13.232.109.163:9000/v1',
 };

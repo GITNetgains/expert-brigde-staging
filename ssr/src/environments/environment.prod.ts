@@ -3,12 +3,14 @@ export const environment = {
   version: '0.0.1',
   build: 3,
   showBuild: false,
+YOUR_GOOGLE_CLIENT_ID:'824314878142-fb3h8plnidnug1anf52vd8dmeu05cr96.apps.googleusercontent.com',
+LINKEDIN_CLIENT_ID:'86lnkec9zaxz01',
+apiBaseUrl:'http://13.232.109.163:9000/v1',
+url:'http://13.232.109.163:4200',
+socketUrl: 'http://13.232.109.163:9000',
   maximumFileSize: 1024,
-  apiBaseUrl: 'https://api.example.com/v1',
   stripeKey: 'pk_test_51xxxxx',
-  url: 'https://example.com',
-  socketUrl: 'https://api.example.com',
-  zoomSDK: 'LYbtxxx',
+   zoomSDK: 'LYbtxxx',
   zoomSiteUrl: 'https://lesson.example.com',
-  
+
 };

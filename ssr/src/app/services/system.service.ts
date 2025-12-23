@@ -47,16 +47,24 @@ export class SystemService {
     return this.appConfig;
   }
 
-  private async fetchConfig(): Promise<any> {
-    const { apiBaseUrl } = this.stateService.getState('environment') as any;
-    const updatedUrl = apiBaseUrl
-      ? `${apiBaseUrl}/system/configs/public`
-      : 'http://localhost:9000/v1/system/configs/public';
-    return await firstValueFrom<any>(this.http.get(updatedUrl))
-      .then((resp) => resp.data)
-      .catch((err) => console.log('configerr>>>>', err));
-  }
-
+  // private async fetchConfig(): Promise<any> {
+  //   const { apiBaseUrl } = this.stateService.getState('environment') as any;
+  //   const updatedUrl = apiBaseUrl
+  //     ? `${apiBaseUrl}/system/configs/public`
+  //     : 'http://localhost:9000/v1/system/configs/public';
+  //   return await firstValueFrom<any>(this.http.get(updatedUrl))
+  //     .then((resp) => resp.data)
+  //     .catch((err) => console.log('configerr>>>>', err));
+  // }
+private async fetchConfig(): Promise<any> {
+  const env = this.stateService.getState('environment') as any;
+  const apiBaseUrl = env?.apiBaseUrl || 'http://13.232.109.163:9000/v1'; // Update fallback to your IP
+  
+  const updatedUrl = `${apiBaseUrl}/system/configs/public`;
+  return await firstValueFrom<any>(this.http.get(updatedUrl))
+    .then((resp) => resp.data)
+    .catch((err) => console.log('configerr>>>>', err));
+}
   setUserLang(lang: string) {
     this.cookies.set('userLang', lang, { path: '/' });
   }
