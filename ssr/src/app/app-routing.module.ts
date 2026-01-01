@@ -25,10 +25,10 @@ const routes: Routes = [
    {
     path: 'home',
     component: FullComponent,
-    data: { preload: true, loadAfter: 0 },
-    loadChildren: () =>
-      import('./modules/home/home.module').then((mod) => mod.HomeModule),
-    resolve: { categories: categoriesResolver }
+    children: [{ path: '', component: HomeComponent, pathMatch: 'full' }],
+    resolve: {
+      categories: categoriesResolver
+    }
   },
   {
     path: 'auth',
