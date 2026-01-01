@@ -31,7 +31,7 @@ class Kernel {
 
   startHttpServer() {
     this.httpServer = http.createServer(this.app);
-    this.httpServer.listen(process.env.PORT, null, () => {
+    this.httpServer.listen(process.env.PORT, '0.0.0.0', () => {
       // TODO - load env from config
       console.log('Express server listening on %d, in %s mode', process.env.PORT, process.env.NODE_ENV || 'development');
     });

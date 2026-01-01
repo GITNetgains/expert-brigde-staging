@@ -41,9 +41,14 @@ export class AppService {
 
   async getData(): Promise<any> {
     if (this.isServer) {
-      const host: string = this.request.get('host');
-      this.baseURL =
-        (host.startsWith('localhost') ? 'http://' : 'https://') + host;
+      const host: string = this.request?.get?.('host') || 'localhost';
+      const proto =
+        this.request?.get?.('x-forwarded-proto') ||
+        this.request?.protocol ||
+        (host.startsWith('localhost') || host.startsWith('127.0.0.1')
+          ? 'http'
+          : 'https');
+      this.baseURL = `${proto}://${host}`;
       this.environment = await this.fetchData();
       this.state.saveState('environment', this.environment);
     } else {

@@ -38,7 +38,13 @@ exports.core = kernel => {
   // Whitelist for CORS
   const whitelist = [
     nconf.get('userWebUrl')?.trim() || 'http://localhost:4200',
-    nconf.get('adminURL')?.trim() || 'http://localhost:1337'
+    nconf.get('adminURL')?.trim() || 'http://localhost:1337',
+    'http://localhost:9000',
+    'http://localhost:4200',
+    'http://localhost:1337',
+    'http://127.0.0.1:9000',
+    'http://127.0.0.1:4200',
+    'http://127.0.0.1:1337'
   ];
 
   const whitelistPublic = [
@@ -60,14 +66,34 @@ exports.core = kernel => {
     return whitelistPublic.some(item => originalUrl.includes(item));
   };
 
+  const getHostnameFromUrl = value => {
+    if (!value || typeof value !== 'string') return null;
+    try {
+      return new URL(value).hostname;
+    } catch (e) {
+      return null;
+    }
+  };
+
   const corsOptionsDelegate = (req, callback) => {
     const origin = req.header('Origin');
-    const referrer = req.header('Referrer');
+    const referrer = req.header('Referer') || req.header('Referrer');
     const host = req.get('host');
+
+    if (!origin && !referrer) {
+      callback(null, { origin: false });
+      return;
+    }
+
+    const requestHost = host ? host.split(':')[0] : null;
+    const originHost = getHostnameFromUrl(origin);
+    const referrerHost = getHostnameFromUrl(referrer);
 
     if (
       whitelist.includes(origin) ||
       whitelist.includes(referrer) ||
+      (requestHost && originHost && requestHost === originHost) ||
+      (requestHost && referrerHost && requestHost === referrerHost) ||
       host === nconf.get('host') ||
       checkOriginalUrl(req.originalUrl)
     ) {

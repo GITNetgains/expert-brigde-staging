@@ -4,14 +4,24 @@ import {
   ViewEncapsulation,
   CUSTOM_ELEMENTS_SCHEMA,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { register } from 'swiper/element/bundle';
 import { StaticPageService } from 'src/app/services';
+import { isPlatformBrowser } from '@angular/common';
 
-register();
+const SWIPER_REGISTER_FLAG = '__expert_bridge_swiper_registered__';
+
+function ensureSwiperRegistered() {
+  const g = globalThis as any;
+  if (g?.[SWIPER_REGISTER_FLAG]) return;
+  register();
+  if (g) g[SWIPER_REGISTER_FLAG] = true;
+}
 
 interface IndustryItem {
   title: string;
@@ -32,22 +42,32 @@ interface IndustryItem {
 })
 export class IndustriesCarouselComponent implements OnInit {
   industries: IndustryItem[] = [];
+  isBrowser = false;
 
   @ViewChild('swiperRef') swiperRef!: ElementRef;
 
-  constructor(private pageService: StaticPageService) {}
+  constructor(
+    private pageService: StaticPageService,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    if (this.isBrowser) ensureSwiperRegistered();
+  }
 
   ngOnInit(): void {
     this.pageService
       .search({ type: 'industry', take: 12, sort: 'createdAt', sortType: 'desc' })
       .then((resp) => {
         this.industries = resp?.data?.items || [];
-        setTimeout(() => this.initSwiper(), 50);
+        if (this.isBrowser && this.industries.length) {
+          setTimeout(() => this.initSwiper(), 50);
+        }
       })
       .catch(() => {});
   }
 
   initSwiper() {
+    if (!this.isBrowser) return;
     if (!this.swiperRef?.nativeElement) return;
 
     const swiperEl: any = this.swiperRef.nativeElement;
@@ -63,7 +83,6 @@ export class IndustriesCarouselComponent implements OnInit {
 
     swiperEl.initialize();
 
-    // Force refreshing size AFTER DOM fully settles
     setTimeout(() => {
       if (swiperEl.swiper) swiperEl.swiper.update();
     }, 150);

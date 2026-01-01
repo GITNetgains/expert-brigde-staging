@@ -18,6 +18,7 @@ export class AiSearchComponent implements OnInit {
   constructor(private router: Router, private auth: AuthService, private app: AppService) {}
 
   ngOnInit() {
+    if (!this.app.isBrowser) return;
     const SpeechRecognition =
       (window as any).webkitSpeechRecognition ||
       (window as any).SpeechRecognition;

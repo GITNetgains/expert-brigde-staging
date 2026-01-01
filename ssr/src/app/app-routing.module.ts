@@ -21,10 +21,13 @@ const routes: Routes = [
       categories: categoriesResolver
     }
   },
-  {
+ 
+   {
     path: 'home',
     component: FullComponent,
-    children: [{ path: '', component: HomeComponent, pathMatch: 'full' }],
+    data: { preload: true, loadAfter: 0 },
+    loadChildren: () =>
+      import('./modules/home/home.module').then((mod) => mod.HomeModule),
     resolve: { categories: categoriesResolver }
   },
   {

@@ -20,8 +20,6 @@ import { SharedModule } from 'src/app/shared.module';
 import { IndustriesCarouselComponent } from 'src/app/components/home/industries-section/industries-section.component';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { register } from 'swiper/element/bundle';
-register();
 @NgModule({
   declarations: [HomeComponent, SearchBarComponent, AiSearchComponent, HowItWorksComponent, MakeItHappenComponent, ProcessSectionComponent, BlogSectionComponent, PoliciesSectionComponent],
   imports: [

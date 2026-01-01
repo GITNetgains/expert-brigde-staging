@@ -1,14 +1,16 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-process-section',
   templateUrl: './process-section.component.html',
   styleUrls: ['./process-section.component.scss']
 })
-export class ProcessSectionComponent implements OnInit {
+export class ProcessSectionComponent implements OnInit, OnDestroy {
 
   activeStep = 0;
   intervalRef: any;
+  private isBrowser = false;
 
   steps = [
     {
@@ -42,8 +44,20 @@ export class ProcessSectionComponent implements OnInit {
     }
   ];
 
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
   ngOnInit() {
+    if (!this.isBrowser) return;
     this.startAutoRotation();
+  }
+
+  ngOnDestroy() {
+    if (this.intervalRef) {
+      clearInterval(this.intervalRef);
+      this.intervalRef = null;
+    }
   }
 
   /** Auto Rotate Every 4 Seconds */
@@ -65,6 +79,7 @@ export class ProcessSectionComponent implements OnInit {
   /** Scroll-Based Activation */
   @HostListener('window:scroll', [])
   onWindowScroll() {
+    if (!this.isBrowser) return;
     const section = document.querySelector('.process-wrapper');
     if (!section) return;
 

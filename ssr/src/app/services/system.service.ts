@@ -24,6 +24,12 @@ export class SystemService {
   async configs() {
     if (this.isServer) {
       this.appConfig = await this.fetchConfig();
+      if (!this.appConfig) {
+        this.appConfig = {
+          i18n: { defaultLanguage: 'en', languages: [] },
+          currencySymbol: '$'
+        };
+      }
       const userLang =
         this.cookies.get('userLang') ||
         this.appConfig.i18n.defaultLanguage ||
@@ -35,6 +41,12 @@ export class SystemService {
         this.appConfig = this.stateService.getState(STATE.CONFIG);
       } else {
         this.appConfig = await this.fetchConfig();
+        if (!this.appConfig) {
+          this.appConfig = {
+            i18n: { defaultLanguage: 'en', languages: [] },
+            currencySymbol: '$'
+          };
+        }
         const userLang =
           this.cookies.get('userLang') ||
           this.appConfig.i18n.defaultLanguage ||
@@ -47,23 +59,22 @@ export class SystemService {
     return this.appConfig;
   }
 
-  // private async fetchConfig(): Promise<any> {
-  //   const { apiBaseUrl } = this.stateService.getState('environment') as any;
-  //   const updatedUrl = apiBaseUrl
-  //     ? `${apiBaseUrl}/system/configs/public`
-  //     : 'http://localhost:9000/v1/system/configs/public';
-  //   return await firstValueFrom<any>(this.http.get(updatedUrl))
-  //     .then((resp) => resp.data)
-  //     .catch((err) => console.log('configerr>>>>', err));
-  // }
 private async fetchConfig(): Promise<any> {
   const env = this.stateService.getState('environment') as any;
-  const apiBaseUrl = env?.apiBaseUrl || 'http://13.232.109.163:9000/v1'; // Update fallback to your IP
-  
-  const updatedUrl = `${apiBaseUrl}/system/configs/public`;
+  const rawBaseUrl = (env?.apiBaseUrl || 'http://65.2.122.252:9000/v1') as string;
+  const apiBaseUrl = rawBaseUrl
+    .trim()
+    .replace(/[`"' ]+/g, '')
+    .replace(/\/+$/, '')
+    .replace(/:+$/, '');
+
+  const updatedUrl = `${apiBaseUrl}/system/configs/public`.replace(/:+$/, '');
   return await firstValueFrom<any>(this.http.get(updatedUrl))
-    .then((resp) => resp.data)
-    .catch((err) => console.log('configerr>>>>', err));
+    .then((resp) => resp?.data ?? resp)
+    .catch((err) => {
+      console.log('configerr>>>>', err);
+      return null;
+    });
 }
   setUserLang(lang: string) {
     this.cookies.set('userLang', lang, { path: '/' });

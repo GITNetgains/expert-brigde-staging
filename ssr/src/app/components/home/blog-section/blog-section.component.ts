@@ -10,7 +10,14 @@ import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { register } from 'swiper/element/bundle';
 
-register();
+const SWIPER_REGISTER_FLAG = '__expert_bridge_swiper_registered__';
+
+function ensureSwiperRegistered() {
+  const g = globalThis as any;
+  if (g?.[SWIPER_REGISTER_FLAG]) return;
+  register();
+  if (g) g[SWIPER_REGISTER_FLAG] = true;
+}
 
 @Component({
   selector: 'app-blog-section',
@@ -28,6 +35,7 @@ export class BlogSectionComponent implements OnInit, AfterViewInit {
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+    if (this.isBrowser) ensureSwiperRegistered();
   }
 
   ngOnInit(): void {
@@ -36,7 +44,7 @@ export class BlogSectionComponent implements OnInit, AfterViewInit {
       .then((resp) => {
         this.posts = resp?.data?.items || [];
 
-        if (this.isBrowser) {
+        if (this.isBrowser && this.posts.length) {
           setTimeout(() => this.initSwiper(), 50);
         }
       })
