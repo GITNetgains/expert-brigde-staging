@@ -99,7 +99,7 @@
                 </tr>
                 <tr *ngFor="let item of appointments, let i = index">
                   <td class="td-tutorname">
-                    <a class="me-1 hyperlink" target="_blank" [routerLink]="['/tutors', item?.tutor?.username]"><i
+                    <a class="me-1 hyperlink" target="_blank" [routerLink]="['/experts', item?.tutor?.username]"><i
                         class="fi fi-rr-user"></i></a>{{item?.tutor?.name}}
                   </td>
                   <td class="td-targettype">{{(item?.webinar?.name || item?.subject?.name || '') | ellipsis:50}}</td>
@@ -217,7 +217,7 @@
                 </tr>
                 <tr *ngFor="let item of transactions, let i = index">
                   <td class="td-tutorname">
-                    <a class="me-1 hyperlink" target="_blank" [routerLink]="['/tutors', item?.tutor?.username]"><i
+                    <a class="me-1 hyperlink" target="_blank" [routerLink]="['/experts', item?.tutor?.username]"><i
                         class="fi fi-rr-user"></i></a>{{item?.tutor?.name}}
                   </td>
                   <td>{{item.webinar ? item?.webinar?.name :'-'}}</td>

@@ -107,31 +107,33 @@ export class TeachWithUsComponent implements OnInit {
         this.banner_sm = this.config.teachWithUsPicture.banner_sm;
       }
     }
-    (function ($) {
-      $(document).ready(function () {
-        $('.counter').each(function (this: any) {
-          const $this = $(this);
-          const countTo = $this.attr('data-count');
+    if (this.appService.isBrowser) {
+      (function ($) {
+        $(document).ready(function () {
+          $('.counter').each(function (this: any) {
+            const $this = $(this);
+            const countTo = $this.attr('data-count');
 
-          $({ countNum: $this.text() }).animate(
-            {
-              countNum: countTo
-            },
-
-            {
-              duration: 8000,
-              easing: 'linear',
-              step: function () {
-                $this.text(Math.floor(Number(this.countNum)));
+            $({ countNum: $this.text() }).animate(
+              {
+                countNum: countTo
               },
-              complete: function () {
-                $this.text(this.countNum);
+
+              {
+                duration: 8000,
+                easing: 'linear',
+                step: function () {
+                  $this.text(Math.floor(Number(this.countNum)));
+                },
+                complete: function () {
+                  $this.text(this.countNum);
+                }
               }
-            }
-          );
+            );
+          });
         });
-      });
-    })(jQuery);
+      })(jQuery);
+    }
     this.queryTutors();
   }
 

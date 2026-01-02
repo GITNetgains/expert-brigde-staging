@@ -2,7 +2,7 @@
   <div class="badge-tag" style="font-size: 0.8em" *ngIf="tutor.featured">
     <span translate>Featured</span>
   </div>
-  <a [routerLink]="['/tutors', tutor.username]" class="card-img-top">
+  <a [routerLink]="['/experts', tutor.username]" class="card-img-top">
     <img
       [src]="tutor.avatarUrl"
       onerror="this.src='/assets/images/default-avatar.jpg'"
@@ -13,7 +13,7 @@
   <div class="card-body" id="tutor-card">
     <div class="row" style="padding-left: 15px">
       <h5>
-        <a class="hyperlink" [routerLink]="['/tutors', tutor.username]"
+        <a class="hyperlink" [routerLink]="['/experts', tutor.username]"
           >{{tutor.name}}</a
         ><i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
       </h5>
@@ -88,7 +88,7 @@
       <app-text-ellipsis
         [content]="tutor?.highlights?.join(', ') || ''"
         [showChar]="50"
-        [path]="'/tutors'"
+        [path]="'/experts'"
         [param]="tutor?.username || ''"
       ></app-text-ellipsis>
     </div>
@@ -96,7 +96,7 @@
   <div class="d-flex justify-content-between card-footer bg-transparent">
     <a
       class="btn btn-default"
-      [routerLink]="['/tutors', tutor.username, 'booking']"
+      [routerLink]="['/experts', tutor.username, 'booking']"
       [queryParams]="{ isFree: 'true' }"
     >
       <!-- <i class="fi fi-rs-paper-plane color-white me-2"></i> -->

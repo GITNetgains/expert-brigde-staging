@@ -23,7 +23,7 @@
       <div class="col-md-4" *ngFor="let item of categories">
         <div class="language-card">
           <a
-            [routerLink]="['/tutors']"
+            [routerLink]="['/experts']"
             [queryParams]="{ category: item.alias }"
           >
             <img
@@ -135,11 +135,11 @@
                 </div>
                 <hr />
               </div>
-              <div class="tutor-list text-start">
-                <h6 translate>I Can Tutor:</h6>
-                <p class="color-blue text-line-break">
+              <div class="col-md-12 text-center" *ngIf="tutor.subjects.length > 0">
+                <p class="card-text text-truncate">
+                  <span translate>Teaches: </span>
                   <a
-                    [routerLink]="['/tutors']"
+                    [routerLink]="['/experts']"
                     *ngFor="let subject of tutor.subjects; let i = index"
                     >{{ subject.name
                     }}<span *ngIf="i < tutor.subjects.length - 1">, </span>
@@ -150,7 +150,7 @@
             <div class="d-grid gap-2">
               <a
                 class="btn btn-footer btn-block"
-                [routerLink]="['/tutors', tutor.username, 'booking']"
+                [routerLink]="['/experts', tutor.username, 'booking']"
                 [queryParams]="{ isFree: 'true' }"
                 ><i class="fi fi-rs-paper-plane color-white me-2"></i>
                 <span> <span translate>Free Trial</span></span>

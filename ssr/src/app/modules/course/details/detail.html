@@ -34,9 +34,9 @@
             <div class="row row-cols-md-1 row-cols-lg-2">
               <div class="col-md-6">
                 <div class="profile">
-                  <a [routerLink]="['/tutors', course?.tutor?.username]">
-                    <img
-                      src="{{course?.tutor?.avatarUrl}}"
+              <a [routerLink]="['/experts', course?.tutor?.username]">
+                <img
+                  src="{{course?.tutor?.avatarUrl}}"
                       class="float-left cate-profile box-shadow-lg me-2"
                       alt=""
                       onerror="this.src='/assets/images/default-avatar.jpg'"
@@ -556,7 +556,7 @@
           </div>
           <div class="card-body">
             <div class="profile">
-              <a [routerLink]="['/tutors', course?.tutor?.username]">
+              <a [routerLink]="['/experts', course?.tutor?.username]">
                 <img
                   src="{{(course?.tutor?.avatarUrl ) }}"
                   onerror="this.src='/assets/images/default-avatar.jpg'"

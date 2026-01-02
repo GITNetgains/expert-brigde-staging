@@ -43,12 +43,16 @@ export class APIRequest {
     if (response.status === 401) {
       await this.cookieService.delete('accessToken');
       await this.cookieService.delete('isLoggedin');
-      window.location.href = '/auth/login'
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/login';
+      }
       throw new Error('Please login!');
     }
 
     if (response.status === 404) {
-      window.location.href = 'pages/404-not-found';
+      if (typeof window !== 'undefined') {
+        window.location.href = 'pages/404-not-found';
+      }
       throw new Error('Not found!');
     }
     throw response.error;

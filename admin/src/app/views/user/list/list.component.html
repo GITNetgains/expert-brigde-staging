@@ -1,9 +1,11 @@
 <c-row>
   <c-col md="12">
+    <!-- FILTER CARD -->
     <c-card class="mb-4">
       <c-card-header>
         <h4>Manage Clients</h4>
       </c-card-header>
+
       <c-card-body>
         <c-row>
           <c-col md="3">
@@ -11,44 +13,51 @@
               <input
                 cFormControl
                 type="text"
-                name="name"
-                [(ngModel)]="searchFields.name"
                 placeholder="Enter name"
+                [(ngModel)]="searchFields.name"
               />
             </div>
           </c-col>
+
           <c-col md="3">
             <div class="mb-3">
               <input
                 cFormControl
                 type="text"
-                name="email"
-                [(ngModel)]="searchFields.email"
                 placeholder="Enter email"
+                [(ngModel)]="searchFields.email"
               />
             </div>
           </c-col>
+
           <c-col md="2">
             <div class="mb-3">
               <select cSelect [(ngModel)]="searchFields.isActive">
-                <option value="" selected>Active?</option>
+                <option value="">Active?</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
             </div>
           </c-col>
+
           <c-col md="2">
             <div class="mb-3">
               <select cSelect [(ngModel)]="searchFields.emailVerified">
-                <option value="" selected>Email verified?</option>
+                <option value="">Email verified?</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
             </div>
           </c-col>
+
           <c-col md="2">
             <div class="mb-3">
-              <button cButton color="primary" class="w-100" (click)="filter()">
+              <button
+                cButton
+                color="primary"
+                class="w-100"
+                (click)="filter()"
+              >
                 Filter
               </button>
             </div>
@@ -57,184 +66,147 @@
       </c-card-body>
     </c-card>
 
+    <!-- TABLE CARD -->
     <c-card>
       <c-card-header>
-        <div
-          class="d-flex flex-wrap justify-content-between align-items-center"
-        >
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
           <h4 class="mb-0">Total Clients: {{ count }}</h4>
-          @if(count !== 0){
+
           <app-pagination
+            *ngIf="count > 0"
             [currentPage]="currentPage"
             [pageSize]="pageSize"
             [totalItems]="count"
             [maxSize]="3"
             (pageChanged)="onPageChange($event)"
           ></app-pagination>
-          }
         </div>
       </c-card-header>
-      @if(count !== 0){
-      <c-card-body>
+
+      <!-- TABLE -->
+      <c-card-body *ngIf="count > 0; else noData">
         <div class="table-responsive">
           <table
             cTable
+            bordered
             [responsive]="true"
             [cBorder]="1"
             borderColor="gray"
-            bordered
             style="table-layout: fixed; width: 1610px"
           >
             <thead>
               <tr>
-                <th style="width: 150px">
+                <th style="width:150px">
                   <app-sort
-                    (onSort)="onSort($event)"
                     sortBy="name"
-                    [sortOption]="sortOption"
                     sortTitle="Name"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
                   ></app-sort>
                 </th>
-                <th style="width: 150px">
+
+                <th style="width:150px">
                   <app-sort
-                    (onSort)="onSort($event)"
                     sortBy="email"
-                    [sortOption]="sortOption"
                     sortTitle="Email"
-                  ></app-sort>
-                </th>
-                <th style="width: 100px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="isActive"
                     [sortOption]="sortOption"
-                    sortTitle="Active"
-                  ></app-sort>
-                </th>
-                <th style="width: 100px">
-                  <app-sort
                     (onSort)="onSort($event)"
-                    sortBy="emailVerified"
-                    [sortOption]="sortOption"
-                    sortTitle="Email verified"
                   ></app-sort>
                 </th>
-                <th style="width: 100px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="createdAt"
-                    [sortOption]="sortOption"
-                    sortTitle="Created On"
-                  ></app-sort>
-                </th>
-                <th style="width: 300px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="bio"
-                    [sortOption]="sortOption"
-                    sortTitle="Description"
-                  ></app-sort>
-                </th>
+
+                <th style="width:100px">Active</th>
+                <th style="width:100px">Email verified</th>
+                <th style="width:120px">Created On</th>
+                <th style="width:300px">Description</th>
+
                 <th
                   style="
-                    width: 50px;
+                    width:50px;
                     position: sticky;
                     right: 0;
                     z-index: 10;
-                    box-shadow: inset -1px 0 0 var(--cui-border-color),
-                      inset 1px 0 0 var(--cui-border-color);
+                    background: white;
                   "
                 >
                   Action
                 </th>
               </tr>
             </thead>
+
             <tbody>
-              @for(item of items; track item._id; let i = $index){
-              <tr>
+              <tr *ngFor="let item of items; trackBy: trackById">
                 <td>{{ item.name }}</td>
                 <td>{{ item.email }}</td>
+
                 <td>
-                  @if(!item.isActive){
                   <span
-                    class="badge bg-warning cursor-pointer"
-                    (click)="update(item, 'isActive', true)"
-                    >N</span
+                    class="badge cursor-pointer"
+                    [ngClass]="item.isActive ? 'bg-success' : 'bg-warning'"
+                    (click)="update(item, 'isActive', !item.isActive)"
                   >
-                  }@else{
-                  <span
-                    class="badge bg-success cursor-pointer"
-                    (click)="update(item, 'isActive', false)"
-                    >Y</span
-                  >}
-                </td>
-                <td>
-                  @if(!item.emailVerified){
-                  <span
-                    class="badge bg-warning cursor-pointer"
-                    (click)="update(item, 'emailVerified', true)"
-                    >N</span
-                  >}@else{
-                  <span
-                    class="badge bg-success cursor-pointer"
-                    (click)="update(item, 'emailVerified', false)"
-                    >Y</span
-                  >}
-                </td>
-                <td>
-                  {{ item.createdAt | date }}
-                </td>
-                <td>
-                  <span [title]="item.bio">
-                    {{ (item.bio || '-') | slice:0:120 }}{{ item.bio && item.bio.length > 120 ? '...' : '' }}
+                    {{ item.isActive ? 'Y' : 'N' }}
                   </span>
                 </td>
+
+                <td>
+                  <span
+                    class="badge cursor-pointer"
+                    [ngClass]="item.emailVerified ? 'bg-success' : 'bg-warning'"
+                    (click)="update(item, 'emailVerified', !item.emailVerified)"
+                  >
+                    {{ item.emailVerified ? 'Y' : 'N' }}
+                  </span>
+                </td>
+
+                <td>{{ item.createdAt | date }}</td>
+
+                <td>
+                  <span [title]="item.bio">
+                    {{ item.bio ? (item.bio | slice:0:120) : '-' }}
+                    {{ item.bio?.length > 120 ? '...' : '' }}
+                  </span>
+                </td>
+
                 <td
                   style="
                     position: sticky;
                     right: 0;
                     z-index: 10;
-                    box-shadow: inset -1px 0 0 var(--cui-border-color),
-                      inset 1px 0 0 var(--cui-border-color);
+                    background: white;
                   "
                 >
                   <a
                     cButton
-                    [routerLink]="['/users/update', item._id]"
                     class="btn btn-sm btn-primary me-1"
+                    [routerLink]="['/users/update', item._id]"
                   >
                     <svg cIcon name="cilPencil" size="sm"></svg>
                   </a>
-                  <a
+
+                  <button
                     cButton
-                    class="btn btn-sm btn-danger me-1"
-                    size="sm"
-                    (click)="remove(item, item._id)"
+                    class="btn btn-sm btn-danger"
+                    (click)="remove(item)"
                   >
-                    <svg
-                      class="text-white"
-                      cIcon
-                      name="cilTrash"
-                      size="sm"
-                    ></svg>
-                  </a>
+                    <svg cIcon name="cilTrash" size="sm"></svg>
+                  </button>
                 </td>
               </tr>
-              }
             </tbody>
           </table>
         </div>
       </c-card-body>
-      }@else {
-      <c-card-body>
-        <div style="background-color: #ffc12b; border-radius: 8px">
-          <span style="padding: 10px; display: block">There are no items</span>
-        </div>
-      </c-card-body>
-      }
 
-      <c-card-footer class="d-flex justify-content-end">
-        @if(count !== 0){
+      <!-- NO DATA -->
+      <ng-template #noData>
+        <c-card-body>
+          <div class="p-3 bg-warning rounded">
+            There are no items
+          </div>
+        </c-card-body>
+      </ng-template>
+
+      <c-card-footer class="d-flex justify-content-end" *ngIf="count > 0">
         <app-pagination
           [currentPage]="currentPage"
           [pageSize]="pageSize"
@@ -242,7 +214,6 @@
           [maxSize]="3"
           (pageChanged)="onPageChange($event)"
         ></app-pagination>
-        }
       </c-card-footer>
     </c-card>
   </c-col>

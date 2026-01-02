@@ -37,9 +37,10 @@ const routes: Routes = [
       import('./modules/auth/auth.module').then((mod) => mod.AuthModule)
   },
   {
-    path: 'tutors',
+    path: 'experts',
     component: FullComponent,
     data: { preload: true, loadAfter: 0 },
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./modules/tutor/tutor.module').then((mod) => mod.TutorModule),
     resolve: { categories: categoriesResolver }

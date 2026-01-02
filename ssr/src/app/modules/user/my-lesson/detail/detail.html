@@ -16,7 +16,7 @@
                 <td>
                   <a
                     class="color-light-red"
-                    [routerLink]="['/tutors', appointment.tutor.username]"
+                    [routerLink]="['/experts', appointment.tutor.username]"
                     *ngIf="appointment && appointment.tutor"
                   >
                     {{appointment?.tutor?.name}}

@@ -282,7 +282,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
   }
   gradeChange() {
     this.page = 1;
-    this.router.navigate(['/tutors'], {
+    this.router.navigate(['/experts'], {
       queryParams: {
         subjectId: this.searchFields.subjectId,
         grade: this.searchFields.grade,
@@ -295,7 +295,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
   subjectChange() {
     this.page = 1;
     // this.query();
-    this.router.navigate(['/tutors'], {
+    this.router.navigate(['/experts'], {
       queryParams: {
         subjectId: this.searchFields.subjectId,
         grade: this.searchFields.grade,

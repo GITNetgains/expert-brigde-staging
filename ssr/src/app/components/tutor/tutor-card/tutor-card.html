@@ -50,7 +50,7 @@
 
   <!-- ACTIONS -->
   <div class="card-actions">
-    <a [routerLink]="['/tutors', tutor.username]">Watch</a>
+    <a [routerLink]="['/experts', tutor.username]">Watch</a>
     <a>Engage</a>
     <a (click)="favorite()" *ngIf="!tutor.isFavorite">Shortlist</a>
     <a (click)="unFavorite()" *ngIf="tutor.isFavorite">Remove</a>

@@ -37,9 +37,9 @@ export class SearchBarComponent implements OnInit {
 
   submit() {
     if (!this.selectedCategory) {
-      this.router.navigate(['/tutors']);
+      this.router.navigate(['/experts']);
     } else
-      this.router.navigate(['/tutors'], {
+      this.router.navigate(['/experts'], {
         queryParams: { category: this.selectedCategory.alias }
       });
   }
