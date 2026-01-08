@@ -21,7 +21,7 @@ export class ProcessSectionComponent implements OnInit, OnDestroy {
         "Edit or submit your expert request.",
         "Validate your email to post the query"
       ],
-      image: "assets/images/homepage/process1.png"
+      image: "assets/images/homepage/Define.png"
     },
     {
       title: "Select",
@@ -30,7 +30,7 @@ export class ProcessSectionComponent implements OnInit, OnDestroy {
         "Review profiles, ask questions, and engage.",
         "Receive vetted experts within 72 hours of submitting your brief."
       ],
-      image: "assets/images/homepage/process1.png"
+      image: "assets/images/homepage/Select.png"
     },
     {
       title: "Engage",
@@ -40,7 +40,7 @@ export class ProcessSectionComponent implements OnInit, OnDestroy {
         "Connect with multiple experts or switch anytime.",
         "No minimum commitment – enjoy the pay-as-you-go model."
       ],
-      image: "assets/images/homepage/process1.png"
+      image: "assets/images/homepage/Engage.png"
     }
   ];
 

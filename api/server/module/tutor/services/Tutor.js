@@ -198,13 +198,13 @@ exports.zoomAccountChangeStatus = async (zoomInfo, status) => {
 
 exports.updatePrice = async tutorId => {
   try {
-    const topic = await DB.MyTopic.find({ tutorId, isDeleted: false, isActive: true })
+    const subject = await DB.MySubject.find({ tutorId, isDeleted: false, isActive: true })
       .sort({
         price: 1
       })
       .skip(0)
       .limit(1);
-    const price = topic && topic.length > 0 ? topic[0].price : 0;
+    const price = subject && subject.length > 0 ? subject[0].price : 0;
     await DB.User.update(
       {
         _id: tutorId

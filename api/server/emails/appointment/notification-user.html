@@ -17,6 +17,6 @@
   <strong>Time: </strong> {{startTime}} - {{toTime}} <br />
   {% if appointment.targetType === 'webinar' && appointment.webinar %} <strong>Webinar name: </strong>
   {{appointment.webinar.name}} {% endif %} {% if
-  appointment.targetType === 'subject' && appointment.topic %} <strong>Topic name: </strong> {{appointment.topic.name}}
+  appointment.targetType === 'subject' && appointment.subject %} <strong>Subject name: </strong> {{appointment.subject.name}}
   {% endif %}
 </p>

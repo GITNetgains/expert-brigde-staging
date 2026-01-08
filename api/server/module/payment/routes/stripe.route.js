@@ -20,4 +20,5 @@ module.exports = router => {
    */
 
   router.post('/v1/payment/stripe/hook', Middleware.Request.log, stripeController.hook, Middleware.Response.success('hook'));
+  router.post('/v1/payment/stripe/confirm', Middleware.isAuthenticated, stripeController.confirm, Middleware.Response.success('confirm'));
 };

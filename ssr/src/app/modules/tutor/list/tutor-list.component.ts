@@ -132,6 +132,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
     private appService: AppService
   ) {
     this.seoService.setMetaTitle('List Tutor');
+
     this.seoService.setMetaDescription(
       "If you're looking for someone to help make calculus sound sensical , you've come to the right place.Below you'll find some of our top calculus tutors."
     );
@@ -160,7 +161,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
     this.config = this.stateService.getState(STATE.CONFIG);
   }
 
-  @HostListener('window:scroll', ['$event']) scrollHandler() {
+  @HostListener('window:scroll', ['$event']) scrollHandler(event?: Event) {
     if (this.activeTutor && !this.isHoverTutor) {
       this.activeTutor = null;
     }
@@ -360,12 +361,6 @@ toggleFilter(key: keyof typeof this.openFilter) {
   }
 
   selectSubject() {
-    if (this.searchFields.subjectIds) {
-      this.queryTopic();
-    } else {
-      this.searchFields.topicIds = [];
-      this.topics = [];
-    }
     this.query();
   }
 
@@ -409,21 +404,6 @@ toggleFilter(key: keyof typeof this.openFilter) {
     this.query();
   }
 
-  queryTopic() {
-    this.topicService
-      .search({
-        subjectIds: this.searchFields.subjectIds,
-        take: 1000,
-        isActive: true
-      })
-      .then((resp) => {
-        if (resp.data && resp.data.items && resp.data.items.length > 0) {
-          this.topics = resp.data.items;
-        } else {
-          this.topics = [];
-        }
-      });
-  }
 
   updateStatesFilter() {
     const code = this.searchFields.countryCode || '';

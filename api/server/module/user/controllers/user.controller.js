@@ -86,7 +86,7 @@ exports.update = async (req, res, next) => {
       'avatar'
     ];
     if (req.user.role === 'admin') {
-      publicFields = publicFields.concat(['isActive', 'emailVerified', 'role', 'type', 'email']);
+      publicFields = publicFields.concat(['isActive', 'emailVerified', 'role', 'type', 'email', 'assignedTutors']);
     }
 
     const fields = _.pick(validate.value, publicFields);
@@ -113,7 +113,8 @@ exports.findOne = async (req, res, next) => {
   try {
     const user = await DB.User.findOne({
       _id: req.params.id
-    });
+    })
+    .populate('assignedTutors', 'name _id email avatarUrl');
 
     res.locals.user = user;
     next();

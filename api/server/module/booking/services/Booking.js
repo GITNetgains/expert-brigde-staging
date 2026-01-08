@@ -44,12 +44,7 @@ exports.create = async options => {
       throw new Error('Start time cannot be over to time');
     }
 
-    const topic = await DB.MyTopic.findOne({ _id: options.targetId });
-    if (!topic) {
-      throw new Error('Topic not found');
-    }
-
-    const subject = await DB.MySubject.findOne({ _id: topic.mySubjectId });
+    const subject = await DB.MySubject.findOne({ _id: options.targetId });
     if (!subject) {
       throw new Error('Subject not found');
     }
@@ -99,9 +94,8 @@ exports.create = async options => {
     const appointment = new DB.Appointment(
       Object.assign(options, {
         description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
-        topicId: options.targetId,
-        subjectId: topic.mySubjectId,
-        categoryId: topic.myCategoryId,
+        subjectId: subject._id,
+        categoryId: subject.myCategoryId,
         status: 'canceled',
         tutorInfo: {
           name: tutor.name,
@@ -118,12 +112,12 @@ exports.create = async options => {
       appointmentId: appointment._id,
       name: `Book appointment with ${tutor.name}`,
       description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
-      price: topic.price || tutor.price1On1Class, // TODO - remove me
+      price: subject.price || tutor.price1On1Class,
       redirectSuccessUrl: options.redirectSuccessUrl,
       cancelUrl: options.cancelUrl,
       userId: options.userId,
       targetType: options.targetType,
-      target: topic,
+      target: subject,
       tutorId: tutor._id,
       couponCode: options.couponCode,
       type: 'booking'
@@ -137,7 +131,7 @@ exports.create = async options => {
       const transaction = new DB.Transaction({
         tutorId: tutor._id,
         userId: user._id,
-        targetId: topic._id,
+        targetId: subject._id,
         description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
         targetType: options.targetType,
         type: 'booking',
@@ -215,8 +209,7 @@ exports.checkout = async (
     const createdTransactions = [];
     let totalPrice = 0;
     for (const time of data.times) {
-      const topic = await DB.MyTopic.findOne({ _id: time.targetId });
-      const subject = topic ? await DB.MySubject.findOne({ _id: topic.mySubjectId }) : null;
+      const subject = await DB.MySubject.findOne({ _id: time.targetId });
 
       const canAddAppoiment = await Service.Appointment.canAdd({
         tutorId: data.tutorId,
@@ -231,8 +224,8 @@ exports.checkout = async (
         type: data.targetType
       });
 
-      if (valid && canAddAppoiment && subject && topic) {
-        let itemPrice = topic.price || tutor.price1On1Class;
+      if (valid && canAddAppoiment && subject) {
+        let itemPrice = subject.price || tutor.price1On1Class;
         let discountPrice = 0;
         let discountAmount = 0;
         let discountValue = 0;
@@ -249,7 +242,7 @@ exports.checkout = async (
 
           if (appliedCoupon) {
             const dataDiscount = await Service.Coupon.calculate({
-              price: topic.price || tutor.price1On1Class,
+              price: subject.price || tutor.price1On1Class,
               couponId: appliedCoupon
             });
             totalPrice += dataDiscount.discountPrice;
@@ -269,15 +262,14 @@ exports.checkout = async (
             couponCode = appliedCoupon.code;
           }
         } else {
-          totalPrice += topic.price || tutor.price1On1Class;
+          totalPrice += subject.price || tutor.price1On1Class;
         }
 
         const appointment = new DB.Appointment(
           Object.assign(time, {
             description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
-            topicId: time.targetId,
-            subjectId: topic.mySubjectId,
-            categoryId: topic.myCategoryId,
+            subjectId: subject._id,
+            categoryId: subject.myCategoryId,
             status: itemPrice <= 0 ? 'booked' : 'created',
             paid: itemPrice <= 0,
             isFree: itemPrice <= 0,
@@ -290,10 +282,10 @@ exports.checkout = async (
         const childrenTransaction = new DB.Transaction({
           tutorId: data.tutorId,
           userId: user._id,
-          targetId: appointment.topicId,
+          targetId: appointment.subjectId,
           description: appointment.description,
           targetType: data.targetType,
-          originalPrice: topic.price || tutor.price1On1Class,
+          originalPrice: subject.price || tutor.price1On1Class,
           type: 'booking',
           paymentGateway: 'stripe',
           price: itemPrice,

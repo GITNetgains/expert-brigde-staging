@@ -122,6 +122,43 @@
           </div>
         </div>
 
+        <!-- PERSONAL INFO -->
+        <div *ngIf="step === 'personalInfo'">
+          <div class="mb-3">
+            <label>Name</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter your full name"
+              [(ngModel)]="studentProfile.name"
+              name="studentName"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Phone Number</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter your phone number"
+              [(ngModel)]="studentProfile.phoneNumber"
+              name="studentPhone"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Address</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter your address"
+              [(ngModel)]="studentProfile.address"
+              name="studentAddress"
+              required
+            />
+          </div>
+        </div>
+
         <!-- TERMS -->
         <div class="mt-3">
           
@@ -150,7 +187,16 @@
           *ngIf="step === 'createPassword'"
           (click)="submit(frm)"
         >
-          Save Password & Go To Dashboard
+          Save Password & Continue
+        </button>
+
+        <button
+          class="btn btn-primary w-100 mt-2 mb-3"
+          type="button"
+          *ngIf="step === 'personalInfo'"
+          (click)="submit(frm)"
+        >
+          Save & Go To Dashboard
         </button>
 
         

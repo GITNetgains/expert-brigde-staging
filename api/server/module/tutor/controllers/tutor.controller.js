@@ -286,6 +286,14 @@ exports.list = async (req, res, next) => {
 
     query.type = 'tutor';
 
+    if (req.user && req.user.role === 'user') {
+      if (req.user.assignedTutors && req.user.assignedTutors.length) {
+        query._id = { $in: req.user.assignedTutors };
+      } else {
+        query._id = { $in: [] };
+      }
+    }
+
     // ✅ SKILL FILTER
     if (req.query.skillIds) {
       query.skillIds = { $in: req.query.skillIds.split(',') };

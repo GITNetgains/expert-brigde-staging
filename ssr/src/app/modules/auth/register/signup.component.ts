@@ -341,7 +341,8 @@ import {
   AppService,
   StateService,
   STATE,
-  UserService
+  UserService,
+  TutorService
 } from 'src/app/services';
 
 @Component({
@@ -354,7 +355,7 @@ export class SignupComponent implements AfterViewInit {
     type: ''
   };
 
-  public step: 'email' | 'otp' | 'createPassword' = 'email';
+  public step: 'email' | 'otp' | 'createPassword' | 'personalInfo' | 'tutorProfile' = 'email';
   public otpToken: string = '';
   public submitted = false;
   public loading = false;
@@ -363,6 +364,26 @@ export class SignupComponent implements AfterViewInit {
   public newPassword: string = '';
   public confirmPassword: string = '';
   public allowPersonalEmail = false;
+  public tutorProfile: {
+    highlightsText: string;
+    workHistoryText: string;
+    consultationFee: number | null;
+    yearsExperience: number | null;
+  } = {
+    highlightsText: '',
+    workHistoryText: '',
+    consultationFee: null,
+    yearsExperience: null
+  };
+  public studentProfile: {
+    name: string;
+    phoneNumber: string;
+    address: string;
+  } = {
+    name: '',
+    phoneNumber: '',
+    address: ''
+  };
 
   constructor(
     private auth: AuthService,
@@ -373,7 +394,8 @@ export class SignupComponent implements AfterViewInit {
     public stateService: StateService,
     private googleAuth: GoogleAuthService,
     private linkedinAuth: LinkedinAuthService,
-    private userService: UserService
+    private userService: UserService,
+    private tutorService: TutorService
   ) {
   const appConfig: any = this.stateService.getState(STATE.CONFIG);
 
@@ -482,11 +504,57 @@ if (appConfig?.siteName) {
         .then(() => this.auth.getCurrentUser())
         .then((user: any) => {
           this.appService.toastSuccess('Password set successfully');
-          // Always require fresh login after registration
-          this.auth.removeToken();
-          this.router.navigate(['/auth/login'], { queryParams: { email: this.account.email.toLowerCase() } });
+          if (user && user.type === 'tutor') {
+            this.step = 'tutorProfile';
+          } else {
+            this.step = 'personalInfo';
+          }
         })
         .catch((err: any) => this.appService.toastError(err));
+    }
+    if (this.step === 'personalInfo') {
+      const name = (this.studentProfile.name || '').trim();
+      const phoneNumber = (this.studentProfile.phoneNumber || '').trim();
+      const address = (this.studentProfile.address || '').trim();
+      if (!name || !phoneNumber || !address) {
+        return this.appService.toastError('Please fill name, phone number and address');
+      }
+      return this.userService
+        .updateMe({ name, phoneNumber, address })
+        .then(() => {
+          this.appService.toastSuccess('Profile details saved');
+          this.router.navigate(['/users/dashboard']);
+        })
+        .catch((err: any) => this.appService.toastError(err));
+    }
+    if (this.step === 'tutorProfile') {
+      const highlights = (this.tutorProfile.highlightsText || '')
+        .split('\n')
+        .map((s) => s.trim())
+        .filter((s) => !!s);
+      const workHistory = (this.tutorProfile.workHistoryText || '')
+        .split('\n')
+        .map((s) => s.trim())
+        .filter((s) => !!s);
+      const consultationFee = Number(this.tutorProfile.consultationFee || 0);
+      const yearsExperience = Number(this.tutorProfile.yearsExperience || 0);
+
+      if (!highlights.length || !workHistory.length || consultationFee <= 0) {
+        return this.appService.toastError('Please fill highlights, work history and fee.');
+      }
+
+      return this.tutorService
+        .update({
+          highlights,
+          workHistory,
+          consultationFee,
+          yearsExperience
+        })
+        .then(() => {
+          this.appService.toastSuccess('Profile submitted. Pending admin approval.');
+          this.router.navigate(['/users/dashboard']);
+        })
+        .catch((err) => this.appService.toastError(err));
     }
   }
 

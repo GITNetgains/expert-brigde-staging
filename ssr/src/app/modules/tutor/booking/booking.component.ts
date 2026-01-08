@@ -238,7 +238,7 @@ export class BookingComponent implements OnInit {
     }
 
     if (this.booking.targetId === '' || this.booking.subjectId === null) {
-      this.appService.toastError('Please choose category, subject and topic');
+      this.appService.toastError('Please choose category and subject');
       this.submitted = false;
       this.loading = false;
       return;
@@ -249,7 +249,7 @@ export class BookingComponent implements OnInit {
         ...this.timeSelected,
         targetId: this.booking.targetId,
         targetInfo: {
-          name: this.topic.name
+          name: this.subject?.name
         }
       },
       quantity: 1,
@@ -278,7 +278,7 @@ export class BookingComponent implements OnInit {
     }
 
     if (this.booking.targetId === '' || this.booking.subjectId === null) {
-      this.appService.toastError('Please choose subject and topic');
+      this.appService.toastError('Please choose subject');
       this.submitted = false;
       this.loading = false;
       return;
@@ -436,16 +436,6 @@ export class BookingComponent implements OnInit {
     languageKeys.forEach((key: string) => {
       this.languageNames.push(this.objectLanguage[key]);
     });
-  }
-
-  changeTopic() {
-    this.topic = this.myTopics.find(
-      (item) => item._id === this.booking.targetId
-    ) as IMyTopic;
-    if (this.topic) {
-      this.price = this.topic.price;
-      this.optionsCoupon.topicId = this.topic._id;
-    }
   }
 
   queryWebinar() {
@@ -619,7 +609,6 @@ export class BookingComponent implements OnInit {
   selectMyCategory() {
     this.filterMySubject.myCategoryId = this.selectedCategoryId;
     this.mySubjects = [];
-    this.myTopics = [];
     this.booking.targetId = '';
     this.selectedSubjectId = '';
     this.booking.targetId = '';
@@ -653,42 +642,18 @@ export class BookingComponent implements OnInit {
   }
 
   selectMySubject() {
-    this.filterMyTopic.mySubjectId = this.selectedSubjectId;
-    this.filterMyTopic.myCategoryId = this.selectedCategoryId;
-    this.myTopics = [];
     this.booking.targetId = '';
     if (this.selectedSubjectId && this.selectedCategoryId) {
-      this.queryMyTopics();
       this.subject = this.mySubjects.find(
         (item) => item._id === this.selectedSubjectId
       ) as IMySubject;
+      if (this.subject) {
+        this.booking.targetId = this.subject._id;
+        this.price = this.subject.price || this.tutor.price1On1Class;
+      }
     }
   }
 
-  queryMyTopics() {
-    this.filterMyTopic.loading = true;
-    this.myTopicService
-      .search({
-        page: this.filterMyTopic.currentPage,
-        take: this.filterMyTopic.pageSize,
-        sort: `${this.filterMyTopic.sortOption.sortBy}`,
-        sortType: `${this.filterMyTopic.sortOption.sortType}`,
-        mySubjectId: this.filterMyTopic.mySubjectId,
-        myCategoryId: this.filterMyTopic.myCategoryId,
-        tutorId: this.tutor._id
-      })
-      .then((resp) => {
-        if (resp.data && resp.data.items) {
-          this.filterMyTopic.total = resp.data.count;
-          this.myTopics = resp.data.items;
-        }
-        this.filterMyTopic.loading = false;
-      })
-      .catch((err) => {
-        this.filterMyTopic.loading = false;
-        return this.appService.toastError(err);
-      });
-  }
   getCategories(course: ICourse): string {
     let categories = '';
     if (course.categories.length > 0) {

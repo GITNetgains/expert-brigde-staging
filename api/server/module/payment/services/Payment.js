@@ -89,14 +89,21 @@ exports.updatePayment = async transactionId => {
       const paymentChecking = await Service.Paydunya.checking(transaction.paymentToken);
       transaction.paymentInfo = paymentChecking;
       transaction.status = paymentChecking.status;
-    } else if (process.env.PAYMENT_SERVICE === 'stripe') {
+    } else {
+      const isStripeSucceeded =
+        (paymentInfo && paymentInfo.paid === true) ||
+        (paymentInfo && paymentInfo.status === 'succeeded') ||
+        (paymentInfo &&
+          paymentInfo.charges &&
+          Array.isArray(paymentInfo.charges.data) &&
+          paymentInfo.charges.data.some(c => c && c.captured === true));
       transaction.status =
-        (paymentInfo && paymentInfo.paid) ||
+        isStripeSucceeded ||
         (transaction.usedCoupon && transaction.discountPrice <= 0) ||
         transaction.price <= 0 ||
         process.env.PAYMENT_MODE === 'test'
           ? 'completed'
-          : 'failed';
+          : 'pending';
     }
 
     transaction.paid = transaction.status === 'completed' ? true : false;
@@ -141,7 +148,7 @@ exports.updatePayment = async transactionId => {
           ? await DB.Webinar.findOne({ _id: targetId })
           : targetType === 'course'
           ? await DB.Course.findOne({ _id: targetId })
-          : await DB.MyTopic.findOne({ _id: targetId });
+          : await DB.MySubject.findOne({ _id: targetId });
 
       if (!target) {
         throw new Error('Target not found');
@@ -213,7 +220,14 @@ exports.updatePaymentMutilple = async transactionId => {
     const tutor = await DB.User.findOne({ _id: transaction.tutorId });
 
     const { paymentInfo } = transaction;
-    if (paymentInfo && paymentInfo.captured) {
+    const isSucceeded =
+      (paymentInfo && paymentInfo.captured === true) ||
+      (paymentInfo && paymentInfo.status === 'succeeded') ||
+      (paymentInfo &&
+        paymentInfo.charges &&
+        Array.isArray(paymentInfo.charges.data) &&
+        paymentInfo.charges.data.some(c => c && c.captured === true));
+    if (isSucceeded) {
       transaction.paid = true;
       transaction.status = 'completed';
       await transaction.save();

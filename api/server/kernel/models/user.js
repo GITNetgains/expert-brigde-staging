@@ -30,6 +30,14 @@ exports.model = {
       twitter: {},
       google: {},
       github: {},
+      assignedTutors: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }],
+      assignedStudents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }],
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }
     }, {

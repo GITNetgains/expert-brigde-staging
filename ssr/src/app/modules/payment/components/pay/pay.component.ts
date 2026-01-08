@@ -216,6 +216,11 @@ export class PayComponent implements OnInit {
           result.paymentIntent &&
           result.paymentIntent.status === 'succeeded'
         ) {
+          if (this.paymentIntent && this.paymentIntent._id) {
+            this.paymentService
+              .confirmStripe({ transactionId: this.paymentIntent._id })
+              .catch(() => {});
+          }
           localStorage.removeItem('title');
           localStorage.removeItem('paymentParams');
           localStorage.removeItem('cartInfo');

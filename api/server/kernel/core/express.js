@@ -145,8 +145,8 @@ exports.core = kernel => {
 
   // app.use(express.static(exports.config.publicPath));
   //navjot
-  // app.use('/public', express.static(exports.config.publicPath));
-  app.use(express.static(exports.config.publicPath));
+  app.use('/public', express.static(exports.config.publicPath));
+  // app.use(express.static(exports.config.publicPath));
   // app.use('/docs', express.static(exports.config.APIDocsPath));
 
   app.get('/api-author', (req, res) => {

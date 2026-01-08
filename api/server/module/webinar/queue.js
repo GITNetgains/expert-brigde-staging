@@ -231,8 +231,8 @@ enrollQ.process(async (job, done) => {
             isMultipleBooking = parentTransaction && parentTransaction.type === 'booking-multiple';
           }
           const user = await DB.User.findOne({ _id: appointment.userId });
-          const topic = await DB.MyTopic.findOne({ _id: appointment.topicId });
-          if (!topic) throw new Error('Topic not found');
+          const subject = await DB.MySubject.findOne({ _id: appointment.subjectId });
+          if (!subject) throw new Error('Subject not found');
           const startTimeTutor = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
           const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
           const duration = moment(appointment.toTime).diff(moment(appointment.startTime), 'minutes');
@@ -290,7 +290,7 @@ enrollQ.process(async (job, done) => {
               tutor: tutor.getPublicProfile(),
               transaction: transaction.toObject(),
               appointment: appointment.toObject(),
-              topic: topic.toObject(),
+              subject: subject.toObject(),
               startTime: startTimeTutor,
               toTime: toTimeTutor,
               duration
@@ -310,6 +310,7 @@ enrollQ.process(async (job, done) => {
                 subject: `Payment successfully made for the reservation #${transaction.code}`,
                 user: user.getPublicProfile(),
                 transaction: transaction.toObject(),
+                subject: subject.toObject(),
                 subject_replace_fields: {
                   transactionCode: transaction.code
                 },

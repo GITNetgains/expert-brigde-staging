@@ -14,7 +14,6 @@ exports.User = schema => {
       default: 'user',
       index: true
     },
-    // ... [Your existing fields kept same] ...
     passwordResetToken: { type: String, index: true },
     isActive: { type: Boolean, default: true },
     emailVerified: { type: Boolean, default: false },

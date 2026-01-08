@@ -32,7 +32,7 @@ export class MySubjectFormComponent implements OnInit {
     if (!frm.valid) {
       return this.toasty.error(this.translate.instant('Please complete the required fields!'));
     }
-    return this.activeModal.close(pick(this.mySubject, ['isActive', 'originalSubjectId']));
+    return this.activeModal.close(pick(this.mySubject, ['isActive', 'originalSubjectId', 'price']));
   }
 
   querySubjects() {

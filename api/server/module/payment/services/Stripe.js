@@ -47,6 +47,9 @@ exports.createPaymentIntent = async transaction => {
     });
     const currency = dataConfig.currency ? dataConfig.currency || '' : 'usd';
     const stripeKey = dataConfig.stripeKey ? dataConfig.stripeKey : process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey || !/^sk_/.test(stripeKey)) {
+      throw new Error('Invalid Stripe secret key. Please configure a server-side secret key starting with "sk_".');
+    }
     const _stripe = new Stripe(stripeKey);
     const isZeroDecimalCurrency = zeroDecimalCurrencies.indexOf(currency.toUpperCase()) > -1 ? true : false;
     const amount = isZeroDecimalCurrency ? parseInt(transaction.priceForPayment, 10) : parseInt(transaction.priceForPayment * 100, 10);

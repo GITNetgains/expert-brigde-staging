@@ -54,6 +54,7 @@ export interface IUser {
   introVideo?: any;
   defaultSlotDuration?: number;
   password?: string;
+  assignedTutors?: string[];
   role?: string;
   avatar?: string;
   createdAt?: Date;

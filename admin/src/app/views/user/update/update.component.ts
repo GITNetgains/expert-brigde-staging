@@ -2,7 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UserService, UtilService } from 'src/services';
+import { UserService, UtilService, TutorService, CategoryService, SubjectService } from 'src/services';
+import { NgSelectModule } from '@ng-select/ng-select';
 import {
   ButtonDirective,
   CardComponent,
@@ -40,6 +41,7 @@ import { IUser } from 'src/interfaces';
     ColComponent,
     ProfileCardComponent,
     GutterDirective,
+    NgSelectModule
   ],
 })
 export class UpdateComponent implements OnInit {
@@ -50,14 +52,26 @@ export class UpdateComponent implements OnInit {
   public userId: string | null = null;
   public loading = false;
   public customStylesValidated = false;
+  public tutors: any[] = [];
+  public assignedTutorObjects: any[] = [];
+  
+  public categories: any[] = [];
+  public subjects: any[] = [];
+  public selectedCategoryId: string = '';
+  public selectedSubjectId: string = '';
 
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private userService = inject(UserService);
   private utilService = inject(UtilService);
+  private tutorService = inject(TutorService);
+  private categoryService = inject(CategoryService);
+  private subjectService = inject(SubjectService);
 
   ngOnInit() {
     this.userId = this.route.snapshot.paramMap.get('id');
+    this.loadCategories();
+    
     if (this.userId) {
       this.loadUserData();
     } else {
@@ -65,11 +79,80 @@ export class UpdateComponent implements OnInit {
     }
   }
 
+  loadCategories() {
+    this.categoryService.search({ take: 100, sort: 'ordering', sortType: 'asc' }).subscribe((resp) => {
+      this.categories = resp.data.items;
+    });
+  }
+
+  onCategoryChange(category: any) {
+    const categoryId = category && category._id ? category._id : category;
+    this.selectedCategoryId = categoryId;
+    this.subjects = [];
+    this.selectedSubjectId = '';
+    
+    // Reset tutors to only assigned ones when category changes
+    this.tutors = [...this.assignedTutorObjects];
+
+    if (categoryId) {
+      this.subjectService.search({ take: 100, categoryIds: categoryId, sort: 'ordering', sortType: 'asc' }).subscribe((resp) => {
+        this.subjects = resp.data.items;
+      });
+    }
+  }
+
+  onSubjectChange(subject: any) {
+    const subjectId = subject && subject._id ? subject._id : subject;
+    this.selectedSubjectId = subjectId;
+    
+    if (subjectId) {
+      this.loadFilteredTutors();
+    } else {
+      // Reset if subject is cleared
+      this.tutors = [...this.assignedTutorObjects];
+    }
+  }
+
+  loadFilteredTutors() {
+    if (!this.selectedSubjectId) return;
+
+    const params: any = {
+      take: 1000,
+      subjectIds: this.selectedSubjectId,
+      pendingApprove: false,
+      rejected: false,
+      isActive: true
+    };
+
+    this.tutorService.search(params).subscribe({
+      next: (resp) => {
+        const newTutors = resp.data.items;
+        // Merge with assignedTutorObjects to ensure assigned tutors are still visible
+        const merged = [...this.assignedTutorObjects, ...newTutors];
+        this.tutors = Array.from(new Map(merged.map(item => [item._id, item])).values());
+      },
+      error: (err) => {
+        console.error('Failed to load tutors', err);
+      }
+    });
+  }
+
   private loadUserData() {
     this.loading = true;
     this.userService.findOne(this.userId as string).subscribe({
       next: (resp) => {
         this.user = resp.data;
+        const assigned = resp.data.assignedTutors || [];
+        let assignedIds: any[] = [];
+        
+        if (assigned.length > 0 && typeof assigned[0] === 'object') {
+          this.assignedTutorObjects = assigned;
+          this.tutors = [...assigned];
+          assignedIds = assigned.map((t: any) => t._id);
+        } else {
+          assignedIds = assigned;
+        }
+
         this.info = {
           _id: resp.data._id,
           name: resp.data.name,
@@ -83,6 +166,7 @@ export class UpdateComponent implements OnInit {
           phoneNumber: resp.data.phoneNumber,
           avatarUrl: resp.data.avatarUrl,
           createdAt: resp.data.createdAt,
+          assignedTutors: assignedIds,
           password: '',
         };
         this.avatarUrl = resp.data.avatarUrl;

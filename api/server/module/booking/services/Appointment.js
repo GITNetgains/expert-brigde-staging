@@ -7,7 +7,7 @@ const { PLATFORM_ONLINE } = require('../../meeting');
 exports.cancel = async (appointmentId, reason, cancelBy) => {
   try {
     const appointment = await DB.Appointment.findOne({ _id: appointmentId })
-      .populate({ path: 'topic', select: '_id name alias' })
+      .populate({ path: 'subject', select: '_id name alias' })
       .populate({ path: 'webinar', select: '_id name price alias' });
     if (!appointment) {
       throw new Error('Appointment not found');
@@ -126,7 +126,7 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
       appointmentId instanceof DB.Appointment
         ? appointmentId
         : await DB.Appointment.findOne({ _id: appointmentId })
-            .populate({ path: 'topic', select: '_id name alias' })
+            .populate({ path: 'subject', select: '_id name alias' })
             .populate({ path: 'webinar', select: '_id name price alias' });
     if (!appointment) {
       throw new Error('Appointment not found');
@@ -316,7 +316,7 @@ exports.checkNotStart = async appointmentId => {
       appointmentId instanceof DB.Appointment
         ? appointmentId
         : await DB.Appointment.findOne({ _id: appointmentId })
-            .populate({ path: 'topic', select: '_id name alias' })
+            .populate({ path: 'subject', select: '_id name alias' })
             .populate({ path: 'webinar', select: '_id name price alias' });
     if (!appointment) {
       throw new Error('Appointment not found');
@@ -424,7 +424,7 @@ exports.canAdd = async options => {
 exports.sendNotify = async appointmentId => {
   try {
     const appointment = await DB.Appointment.findOne({ _id: appointmentId })
-      .populate({ path: 'topic', select: '_id name alias' })
+      .populate({ path: 'subject', select: '_id name alias' })
       .populate({ path: 'webinar', select: '_id name price alias' });
     if (!appointment) {
       return false;

@@ -3,7 +3,7 @@
 <p>
   {{user.name}} has booked your {% if transaction.targetType === 'webinar' && webinar %} <b>{{webinar.name}}</b> group
   {% endif %} {% if
-  transaction.targetType === 'subject' && topic && appointment %} <b>{{topic.name}}</b> 1 on 1 {% endif %} class.
+  transaction.targetType === 'subject' && subject && appointment %} <b>{{subject.name}}</b> 1 on 1 {% endif %} class.
 </p>
 <br />
 <p><strong>Transaction code: </strong>#{{transaction.code}}</p>

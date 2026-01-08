@@ -9,9 +9,7 @@ import {
   ICategory,
   IMyCategory,
   IMySubject,
-  IMyTopic,
-  ISubject,
-  ITopic
+  ISubject
 } from 'src/app/interface';
 import {
   AppService,
@@ -30,7 +28,6 @@ export class MyCategoriesComponent implements OnInit {
   public categories: ICategory[] = [];
   public myCategories: IMyCategory[] = [];
   public mySubjects: IMySubject[] = [];
-  public myTopics: IMyTopic[] = [];
   public filterMyCategory: any = {
     currentPage: 1,
     pageSize: 10,
@@ -54,18 +51,6 @@ export class MyCategoriesComponent implements OnInit {
     loading: false
   };
 
-  public filterMyTopic: any = {
-    currentPage: 1,
-    pageSize: 10,
-    sortOption: {
-      sortBy: 'createdAt',
-      sortType: 'desc'
-    },
-    mySubjectId: '',
-    total: 0,
-    loading: false
-  };
-
   public tab = 'category';
   public checkMobileBrowser = false;
   public loading = false;
@@ -76,7 +61,6 @@ export class MyCategoriesComponent implements OnInit {
   constructor(
     private myCategoryService: MyCategoryService,
     private mySubjectService: MySubjectService,
-    private myTopicService: MyTopicService,
     private route: ActivatedRoute,
     private modalService: NgbModal,
     public stateService: StateService,
@@ -113,7 +97,6 @@ export class MyCategoriesComponent implements OnInit {
         }
         this.filterMyCategory.loading = false;
         this.mySubjects = [];
-        this.myTopics = [];
       })
       .catch((err) => {
         this.filterMyCategory.loading = false;
@@ -137,7 +120,6 @@ export class MyCategoriesComponent implements OnInit {
           this.mySubjects = resp.data.items;
         }
         this.filterMySubject.loading = false;
-        this.myTopics = [];
       })
       .catch((err) => {
         this.filterMySubject.loading = false;
@@ -145,43 +127,17 @@ export class MyCategoriesComponent implements OnInit {
       });
   }
 
-  queryMyTopics() {
-    this.filterMyTopic.loading = true;
-    this.myTopicService
-      .getListOfMe({
-        page: this.filterMyTopic.currentPage,
-        take: this.filterMyTopic.pageSize,
-        sort: `${this.filterMyTopic.sortOption.sortBy}`,
-        sortType: `${this.filterMyTopic.sortOption.sortType}`,
-        mySubjectId: this.filterMyTopic.mySubjectId,
-        myCategoryId: this.selectedCategory._id
-      })
-      .then((resp) => {
-        if (resp.data && resp.data.items) {
-          this.filterMyTopic.total = resp.data.count;
-          this.myTopics = resp.data.items;
-        }
-        this.filterMyTopic.loading = false;
-      })
-      .catch((err) => {
-        this.filterMyTopic.loading = false;
-        return this.appService.toastError(err);
-      });
-  }
-
-  pageChange(target: 'subject' | 'category' | 'topic') {
+  pageChange(target: 'subject' | 'category') {
     $('html, body').animate({ scrollTop: 0 });
     if (target === 'category') {
       this.queryMyCategories();
     } else if (target === 'subject') {
       this.queryMySubjects();
-    } else {
-      this.queryMyTopics();
     }
   }
 
   sortBy(
-    target: 'subject' | 'category' | 'topic',
+    target: 'subject' | 'category',
     field: string,
     type: string
   ) {
@@ -193,23 +149,16 @@ export class MyCategoriesComponent implements OnInit {
       this.filterMySubject.sortOption.sortBy = field;
       this.filterMySubject.sortOption.sortType = type;
       this.queryMySubjects();
-    } else {
-      this.filterMyTopic.sortOption.sortBy = field;
-      this.filterMyTopic.sortOption.sortType = type;
-      this.queryMyTopics();
     }
   }
 
-  onSort(target: 'subject' | 'category' | 'topic', evt: any) {
+  onSort(target: 'subject' | 'category', evt: any) {
     if (target === 'category') {
       this.filterMyCategory.sortOption = evt;
       this.queryMyCategories();
     } else if (target === 'subject') {
       this.filterMySubject.sortOption = evt;
       this.queryMySubjects();
-    } else {
-      this.filterMyTopic.sortOption = evt;
-      this.queryMyTopics();
     }
   }
 
@@ -261,10 +210,8 @@ export class MyCategoriesComponent implements OnInit {
   selectMyCategory(category: IMyCategory) {
     this.selectedCategory = category;
     this.selectedSubject = null as any;
-    this.tab = 'subject';
     this.filterMySubject.myCategoryId = category._id;
     this.mySubjects = [];
-    this.myTopics = [];
     this.queryMySubjects();
   }
 
@@ -314,68 +261,14 @@ export class MyCategoriesComponent implements OnInit {
 
   selectMySubject(subject: IMySubject) {
     this.selectedSubject = subject;
-    this.tab = 'topic';
-    this.filterMyTopic.mySubjectId = subject._id;
-    this.myTopics = [];
-    this.queryMyTopics();
+    this.tab = 'subject';
   }
 
-  submitTopic(myTopic = { isActive: true } as IMyTopic) {
-    const modalRef = this.modalService.open(MyTopicFormComponent, {
-      centered: true,
-      backdrop: 'static',
-      size: 'md'
-    });
-    modalRef.componentInstance.selectedSubject = this.selectedSubject;
-    modalRef.componentInstance.myTopic = myTopic;
-    modalRef.result.then(
-      (res) => {
-        if (myTopic._id) {
-          this.myTopicService
-            .update(myTopic._id, {
-              ...res,
-              myCategoryId: this.selectedCategory._id,
-              mySubjectId: this.selectedSubject._id
-            })
-            .then((resp) => {
-              if (resp.data) {
-                this.appService.toastSuccess('Updated successfully!');
-              }
-            })
-            .catch((err) => {
-              this.appService.toastError(err);
-            });
-        } else {
-          this.myTopicService
-            .create({
-              ...res,
-              myCategoryId: this.selectedCategory._id,
-              mySubjectId: this.selectedSubject._id
-            })
-            .then((resp) => {
-              if (resp.data) {
-                this.myTopics.push({ ...resp.data });
-                this.appService.toastSuccess('Created successfully!');
-              }
-            })
-            .catch((err) => {
-              this.appService.toastError(err);
-            });
-        }
-      },
-      () => {
-        return;
-      }
-    );
-  }
-
-  changeStatus(type: 'subject' | 'category' | 'topic', item: any) {
+  changeStatus(type: 'subject' | 'category', item: any) {
     const service =
       type === 'category'
         ? this.myCategoryService
-        : type === 'subject'
-        ? this.mySubjectService
-        : this.myTopicService;
+        : this.mySubjectService;
     service
       .changeStatus(item._id)
       .then((resp) => {
@@ -383,36 +276,18 @@ export class MyCategoriesComponent implements OnInit {
         this.appService.toastSuccess(
           `${!item.isActive ? 'Deactivated' : 'Activated'} successfully!`
         );
-        // if (!item.isActive) {
-        //   if (
-        //     type === 'category' &&
-        //     this.selectedCategory &&
-        //     item._id === this.selectedCategory._id
-        //   ) {
-        //     this.mySubjects = [];
-        //     this.myTopics = [];
-        //   } else if (
-        //     type === 'subject' &&
-        //     this.selectedSubject &&
-        //     item._id === this.selectedSubject._id
-        //   ) {
-        //     this.myTopics = [];
-        //   }
-        // }
       })
       .catch((err) => {
         this.appService.toastError(err);
       });
   }
 
-  remove(type: 'subject' | 'category' | 'topic', item: any, index: number) {
+  remove(type: 'subject' | 'category', item: any, index: number) {
     if (window.confirm(`Are you sure want to remove this ${type}?`)) {
       const service =
         type === 'category'
           ? this.myCategoryService
-          : type === 'subject'
-          ? this.mySubjectService
-          : this.myTopicService;
+          : this.mySubjectService;
 
       service.delete(item._id).then((resp) => {
         this.appService.toastSuccess(`Remove ${type} successfully`);
@@ -425,7 +300,7 @@ export class MyCategoriesComponent implements OnInit {
           if (this.selectedSubject && item._id === this.selectedSubject._id) {
             this.queryMySubjects();
           } else this.mySubjects.splice(index, 1);
-        } else this.myTopics.splice(index, 1);
+        }
       });
     }
   }

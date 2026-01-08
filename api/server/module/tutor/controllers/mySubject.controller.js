@@ -5,6 +5,7 @@ const validateSchema = Joi.object().keys({
   originalSubjectId: Joi.string().required(),
   isActive: Joi.boolean().allow(null, '').optional(),
   myCategoryId: Joi.string().required(),
+  price: Joi.number().optional(),
   tutorId: Joi.string().allow([null, '']).optional()
 });
 
@@ -60,6 +61,7 @@ exports.create = async (req, res, next) => {
         }
       }
     );
+    await Service.Tutor.updatePrice(tutorId);
     res.locals.subject = mySubject;
     return next();
   } catch (e) {
@@ -98,6 +100,8 @@ exports.update = async (req, res, next) => {
             })
       }
     );
+
+    await Service.Tutor.updatePrice(req.mySubject.tutorId);
 
     res.locals.update = req.mySubject;
     return next();

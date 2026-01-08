@@ -21,6 +21,10 @@ const schema = new Schema(
       type: Boolean,
       default: true
     },
+    price: {
+      type: Number,
+      default: 0
+    },
     myCategoryId: {
       type: Schema.Types.ObjectId,
       index: true,

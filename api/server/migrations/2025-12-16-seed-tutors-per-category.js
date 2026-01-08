@@ -32,6 +32,7 @@ module.exports.up = async function(next) {
           country: { name: c.name, code: c.code },
           countryCode: c.code,
           state,
+          isZoomAccount: true,
           bio: 'Seeded tutor for filter testing',
           highlights: ['experienced', 'patient'],
           workHistory: ['Company A', 'Company B']

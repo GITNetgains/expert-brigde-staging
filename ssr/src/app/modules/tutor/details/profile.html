@@ -110,7 +110,7 @@
                 />
                 <span translate>1-on-1</span>
               </button>
-              <button
+              <!-- <button
                 class="btn btn-default no-hover scrollTo"
                 id="btn-view-webinars"
               >
@@ -133,7 +133,7 @@
                   translate
                 />
                 <span translate>View Courses</span>
-              </button>
+              </button> -->
             </div>
             <div class="tutor-info-m">
               <div class="item-tutor-info">
@@ -158,7 +158,7 @@
               </div>
               <div class="item-tutor-info">
                 <h5 translate *ngIf="tutor.subjects.length">
-                  Subjects which they specialize in
+                Expertise which they specialize in
                 </h5>
                 <div class="text-secondary">
                   <span *ngFor="let subject of tutor.subjects; let i = index"
@@ -258,7 +258,7 @@
             ></app-card-text>
           </div>
         </div>
-
+<!-- 
         <div class="card card-border mb-3" id="view-webinars">
           <div class="card-header">
             <h4 class="color-light-black" translate>Group Classes</h4>
@@ -343,10 +343,10 @@
                   >
                 </div>
               </div>
-            </div>
+            </div> -->
             <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
             [hidden]="!webinarOptions.webinars.length" class="col-md-4 mb-4"></app-card-webinar> -->
-            <div class="row mt-3">
+            <!-- <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="webinarOptions.count>webinarOptions.pageSize"
@@ -363,9 +363,9 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
-        <div class="card card-border mb-3" id="view-courses">
+        <!-- <div class="card card-border mb-3" id="view-courses">
           <div class="card-header">
             <h4 class="color-light-black" translate>Courses</h4>
           </div>
@@ -433,10 +433,10 @@
                   >
                 </div>
               </div>
-            </div>
+            </div> -->
             <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
             [hidden]="!courseOptions.courses.length" class="col-md-4 mb-4"></app-card-course> -->
-            <div class="row mt-3">
+            <!-- <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="courseOptions.count>courseOptions.pageSize"
@@ -453,7 +453,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <app-review-list
           [options]="optionsReview"
           [canWriteReview]="false"

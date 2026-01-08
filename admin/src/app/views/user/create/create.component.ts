@@ -2,8 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService, UtilService } from 'src/services';
+import { UserService, UtilService, TutorService, CategoryService, SubjectService } from 'src/services';
 import { ToasterPlacement } from '@coreui/angular';
+import { NgSelectModule } from '@ng-select/ng-select';
 import {
   ButtonDirective,
   CardComponent,
@@ -40,6 +41,7 @@ import { IUser } from 'src/interfaces';
     ColComponent,
     ProfileCardComponent,
     GutterDirective,
+    NgSelectModule
   ],
 })
 export class CreateComponent implements OnInit {
@@ -56,17 +58,80 @@ export class CreateComponent implements OnInit {
     avatarUrl: '',
     avatar: '',
     password: '',
+    assignedTutors: []
   };
   public isSubmitted = false;
   public loading = false;
   public userId: string | null = null;
   public customStylesValidated = false;
+  public tutors: any[] = [];
+
+  public categories: any[] = [];
+  public subjects: any[] = [];
+  public selectedCategoryId: string = '';
+  public selectedSubjectId: string = '';
 
   private router = inject(Router);
   private userService = inject(UserService);
   private utilService = inject(UtilService);
+  private tutorService = inject(TutorService);
+  private categoryService = inject(CategoryService);
+  private subjectService = inject(SubjectService);
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.categoryService.search({ take: 100, sort: 'ordering', sortType: 'asc' }).subscribe((resp) => {
+      this.categories = resp.data.items;
+    });
+  }
+
+  onCategoryChange(category: any) {
+    const categoryId = category && category._id ? category._id : category;
+    this.selectedCategoryId = categoryId;
+    this.subjects = [];
+    this.selectedSubjectId = '';
+    this.tutors = []; // Clear tutors when category changes
+
+    if (categoryId) {
+      this.subjectService.search({ take: 100, categoryIds: categoryId, sort: 'ordering', sortType: 'asc' }).subscribe((resp) => {
+        this.subjects = resp.data.items;
+      });
+    }
+  }
+
+  onSubjectChange(subject: any) {
+    const subjectId = subject && subject._id ? subject._id : subject;
+    this.selectedSubjectId = subjectId;
+    this.tutors = []; // Clear tutors when subject changes
+
+    if (subjectId) {
+      this.loadFilteredTutors();
+    }
+  }
+
+  loadFilteredTutors() {
+    if (!this.selectedSubjectId) return;
+
+    const params: any = {
+      take: 1000,
+      subjectIds: this.selectedSubjectId,
+      pendingApprove: false,
+      rejected: false,
+      isActive: true
+    };
+
+    this.tutorService.search(params).subscribe({
+      next: (resp) => {
+        this.tutors = resp.data.items;
+      },
+      error: (err) => {
+        console.error('Failed to load tutors', err);
+      }
+    });
+  }
 
   submit(form: any) {
     this.isSubmitted = true;
@@ -90,6 +155,7 @@ export class CreateComponent implements OnInit {
       password: this.info.password,
       phoneNumber: this.info.phoneNumber,
       avatar: this.info.avatar,
+      assignedTutors: this.info.assignedTutors
     };
 
     this.loading = true;
