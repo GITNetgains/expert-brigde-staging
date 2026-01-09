@@ -61,7 +61,7 @@ export class SystemService {
 
 private async fetchConfig(): Promise<any> {
   const env = this.stateService.getState('environment') as any;
-  const rawBaseUrl = (env?.apiBaseUrl || 'http://65.2.122.252:9000/v1') as string;
+  const rawBaseUrl = (env?.apiBaseUrl || 'https://api.expertbridge.co/v1') as string;
   const apiBaseUrl = rawBaseUrl
     .trim()
     .replace(/[`"' ]+/g, '')

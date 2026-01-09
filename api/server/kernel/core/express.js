@@ -37,6 +37,7 @@ exports.core = kernel => {
   const whitelist = [
     nconf.get('userWebUrl')?.trim() || 'http://localhost:4200',
     nconf.get('adminURL')?.trim() || 'http://localhost:1337',
+    'https://www.expertbridge.co',
     'http://localhost:9000',
     'http://localhost:4200',
     'http://localhost:1337',
@@ -148,8 +149,8 @@ exports.core = kernel => {
 
   // app.use(express.static(exports.config.publicPath));
   //navjot
-  app.use('/public', express.static(exports.config.publicPath));
-  // app.use(express.static(exports.config.publicPath));
+  // app.use('/public', express.static(exports.config.publicPath));
+  app.use(express.static(exports.config.publicPath));
   // app.use('/docs', express.static(exports.config.APIDocsPath));
 
   app.get('/api-author', (req, res) => {
