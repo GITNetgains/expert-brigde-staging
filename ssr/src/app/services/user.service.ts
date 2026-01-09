@@ -13,6 +13,11 @@ export class UserService extends APIRequest {
     return this.put('/users', data);
   }
 
+  // ai query save
+  addAiQuery(data: any): Promise<any> {
+    return this.post('/users/ai-query', data);
+  }
+
   findOne(id: string): Promise<any> {
     return this.get(`/users/${id}`);
   }

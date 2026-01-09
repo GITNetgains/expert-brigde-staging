@@ -24,18 +24,7 @@
     </div>
   </c-card-body>
   <c-card-footer>
-    @if(attachments && attachments.length){
-    <div class="mb-3">
-      <small class="text-muted">Client Attachments</small>
-      <ul class="mt-2" style="max-height: 240px; overflow:auto;">
-        @for (att of attachments; track att._id) {
-        <li>
-          <a [href]="att.fileUrl || att.url" target="_blank">{{ att.name || 'Attachment' }}</a>
-        </li>
-        }
-      </ul>
-    </div>
-    }
+  
     <div class="mb-3">
       <small class="text-muted">Email Address</small>
       <h6>{{ user?.email || "N/A" }}</h6>

@@ -116,7 +116,7 @@
               </c-col>
 
               <!-- ASSIGN EXPERT -->
-              <c-col md="12">
+              <!-- <c-col md="12">
                 <div class="mb-3 mt-3">
                   <h6 class="mb-3 text-primary"></h6>
                   <c-row>
@@ -168,7 +168,7 @@
                     </c-col>
                   </c-row>
                 </div>
-              </c-col>
+              </c-col> -->
 
 
 
@@ -227,6 +227,9 @@
                 </button>
               </c-col>
 
+
+
+
             </c-row>
           </form>
         </ng-template>
@@ -236,3 +239,188 @@
   </c-col>
 
 </c-row>
+<!-- ================= AI QUERIES SECTION ================= -->
+<div *ngIf="isUpdateMode">
+  <c-card class="mt-4" *ngIf="aiQueries.length">
+
+   <c-card-header class="d-flex justify-content-between align-items-center">
+  <h5 class="mb-0">ALL Queries</h5>
+
+  <select
+    class="form-select form-select-sm w-auto"
+    (change)="sortAiQueries($event.target.value)">
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+  </select>
+</c-card-header>
+
+
+    <c-card-body class="p-0">
+
+      <!-- Responsive wrapper -->
+      <div class="table-responsive">
+
+        <table class="table table-bordered align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="min-width: 140px;">Time</th>
+              <th style="min-width: 220px;">Description</th>
+              <th style="min-width: 180px;">Attachments</th>
+              <th style="min-width: 200px;">Assigned Experts</th>
+              <th style="min-width: 160px;" class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let q of aiQueries">
+
+              <!-- TIME -->
+              <td>
+                {{ q.createdAt | date:'short' }}
+              </td>
+
+              <!-- DESCRIPTION -->
+             <td>
+  <div class="text-truncate" style="max-width: 260px;">
+    {{ q.description }}
+  </div>
+
+  <a
+  *ngIf="isUpdateMode"
+  href="javascript:void(0)"
+  class="text-primary small"
+  (click)="openDescriptionModal(q)">
+  View
+</a>
+
+</td>
+
+              <!-- ATTACHMENTS -->
+              <td>
+                <ng-container *ngIf="q.aiAttachmentIds?.length; else noAttach">
+                  <a *ngFor="let a of q.aiAttachmentIds"
+                     [href]="a.url"
+                     target="_blank"
+                     class="d-block text-primary text-decoration-none">
+                    {{ a.name }}
+                  </a>
+                </ng-container>
+                <ng-template #noAttach>
+                  <span class="text-muted">—</span>
+                </ng-template>
+              </td>
+
+              <!-- ASSIGNED TUTORS -->
+              <td>
+                <ng-container *ngIf="q.assignedTutors?.length; else notAssigned">
+                  <span *ngFor="let t of q.assignedTutors; let last = last">
+                    {{ t.name }}<span *ngIf="!last">, </span>
+                  </span>
+                </ng-container>
+                <ng-template #notAssigned>
+                  <span class="text-muted">Not assigned</span>
+                </ng-template>
+              </td>
+
+              <!-- ACTIONS -->
+              <td class="text-center">
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                  <button
+                    cButton
+                    size="sm"
+                    color="primary"
+                    (click)="openAssignTutorModal(q)">
+                    Assign Experts
+                  </button>
+
+                  <button
+                    cButton
+                    size="sm"
+                    color="danger"
+                    (click)="deleteAiQuery(q)">
+                    Delete
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </c-card-body>
+
+  </c-card>
+</div>
+
+
+<c-modal *ngIf="isUpdateMode" [(visible)]="showAssignModal">
+  <c-modal-header>
+    <h5>Assign Tutor</h5>
+  </c-modal-header>
+
+  <c-modal-body>
+
+    <ng-select
+      [items]="categories"
+      bindLabel="name"
+      bindValue="_id"
+      placeholder="Select Category"
+      [(ngModel)]="assign.categoryId"
+      (change)="loadSubjects()">
+    </ng-select>
+
+    <ng-select
+      class="mt-2"
+      [items]="assign.subjects"
+      bindLabel="name"
+      bindValue="_id"
+      placeholder="Subject"
+      [(ngModel)]="assign.subjectId"
+      (change)="loadTutors()">
+    </ng-select>
+
+    <ng-select
+      class="mt-2"
+      [items]="assign.tutors"
+      bindLabel="name"
+      bindValue="_id"
+      [multiple]="true"
+      placeholder="Tutors"
+      [(ngModel)]="assign.tutorIds">
+    </ng-select>
+
+  </c-modal-body>
+
+  <div class="modal-footer">
+    <button cButton color="secondary" (click)="showAssignModal=false">
+      Cancel
+    </button>
+
+    <button cButton color="success" (click)="saveTutorAssignment()">
+      Save
+    </button>
+  </div>
+</c-modal>
+<c-modal *ngIf="isUpdateMode" [(visible)]="showDescriptionModal">
+
+  <c-modal-header>
+    <h5>AI Query Description</h5>
+  </c-modal-header>
+
+  <c-modal-body>
+    <p class="mb-0">
+      {{ activeDescription }}
+    </p>
+  </c-modal-body>
+
+  <div class="modal-footer">
+    <button cButton color="secondary" (click)="showDescriptionModal = false">
+      Close
+    </button>
+  </div>
+</c-modal>
+
+
+
+

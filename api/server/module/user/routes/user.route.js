@@ -145,6 +145,36 @@ module.exports = router => {
     Middleware.Response.success('adminUploadAvatar')
   );
 
+router.post(
+  '/v1/users/ai-query',
+  Middleware.isAuthenticated,
+  userController.addAiQuery,
+  Middleware.Response.success('aiQuery')
+);
+
+// GET AI queries
+router.get(
+  '/v1/users/:userId/ai-queries',
+  Middleware.isAuthenticated,
+  userController.getAiQueries
+);
+
+
+// ASSIGN tutor to AI query
+router.put(
+  '/v1/users/:userId/ai-queries/:queryId/assign-tutors',
+  Middleware.hasRole('admin'),
+  userController.assignTutorToAiQuery,
+  Middleware.Response.success('aiQuery')
+);
+router.delete(
+  '/v1/users/:userId/ai-queries/:queryId',
+  Middleware.hasRole('admin'),
+  userController.deleteAiQuery
+);
+
+
+
   /**
    * @apiGroup User
    * @apiVersion 4.0.0

@@ -217,10 +217,11 @@ export class AiResultComponent implements OnInit, OnDestroy {
       return;
     }
 
-    await this.userService.updateMe({
-      bio: this.editableText,
-      aiAttachmentIds: this.aiAttachmentIds
-    });
+    await this.userService.addAiQuery({
+  query: this.query,
+  description: this.editableText,
+  aiAttachmentIds: this.aiAttachmentIds
+});
 
     this.appService.toastSuccess('Saved to your profile');
     this.submittedSuccess = true;

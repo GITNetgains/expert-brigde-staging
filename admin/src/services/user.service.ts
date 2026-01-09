@@ -14,6 +14,7 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/users`, credentials);
   }
 
+  
   search(params: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/search`, { params });
   }
@@ -57,4 +58,25 @@ export class UserService {
   removeGroup(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/users/groups/${id}`);
   }
+  getAiQueries(userId: string) {
+  return this.http.get(`${this.apiUrl}/users/${userId}/ai-queries`);
+}
+
+assignTutorToAiQuery(
+  userId: string,
+  queryId: string,
+  tutorIds: string[]
+) {
+  return this.http.put(
+    `${this.apiUrl}/users/${userId}/ai-queries/${queryId}/assign-tutors`,
+    { tutorIds }
+  );
+}
+deleteAiQuery(userId: string, queryId: string) {
+  return this.http.delete(
+    `${this.apiUrl}/users/${userId}/ai-queries/${queryId}`
+  );
+}
+
+
 }

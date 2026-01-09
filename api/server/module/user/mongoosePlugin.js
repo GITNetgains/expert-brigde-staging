@@ -31,12 +31,23 @@ exports.User = schema => {
     zipCode: { type: String, default: '' },
     lessonSpaceUserId: { type: Number, default: '' },
     lessonSpaceUserInfo: { type: mongoose.Schema.Types.Mixed },
+   aiQueries: [
+  {
+    query: { type: String },
+    description: { type: String },
+
     aiAttachmentIds: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Media'
-      }
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Media' }
     ],
+
+    assignedTutors: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
+
+    createdAt: { type: Date, default: Date.now }
+  }
+],
+
 
   
     // ----------------------------

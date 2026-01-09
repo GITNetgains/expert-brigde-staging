@@ -18,6 +18,9 @@ import {
   RowComponent,
   ColComponent,
   GutterDirective,
+  ModalComponent,
+ModalHeaderComponent,
+ModalBodyComponent
 } from '@coreui/angular';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
 import { IUser } from 'src/interfaces';
@@ -41,7 +44,10 @@ import { IUser } from 'src/interfaces';
     ColComponent,
     ProfileCardComponent,
     GutterDirective,
-    NgSelectModule
+    NgSelectModule,
+    ModalComponent,
+ModalHeaderComponent,
+ModalBodyComponent
   ],
 })
 export class CreateComponent implements OnInit {
@@ -101,6 +107,25 @@ export class CreateComponent implements OnInit {
       });
     }
   }
+  // ===== UPDATE-ONLY SAFE DEFAULTS =====
+isUpdateMode = false;
+
+showAssignModal = false;
+
+assign = {
+  categoryId: '',
+  subjectId: '',
+  subjects: [],
+  tutors: [],
+  tutorIds: []
+};
+
+loadSubjects() {}
+loadTutors() {}
+saveTutorAssignment() {}
+openAssignTutorModal(_: any) {}
+deleteAiQuery(_: any) {}
+
 
   onSubjectChange(subject: any) {
     const subjectId = subject && subject._id ? subject._id : subject;

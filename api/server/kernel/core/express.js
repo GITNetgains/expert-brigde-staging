@@ -42,7 +42,10 @@ exports.core = kernel => {
     'http://localhost:1337',
     'http://127.0.0.1:9000',
     'http://127.0.0.1:4200',
-    'http://127.0.0.1:1337'
+    'http://127.0.0.1:1337',
+    'https://expertbridge.co',
+    'https://admin.expertbridge.co',
+    'https://api.expertbridge.co'
   ];
 
   const whitelistPublic = [

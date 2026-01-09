@@ -5,6 +5,7 @@ const path = require('path');
 const Image = require('../../media/components/image');
 const url = require('url');
 const nconf = require('nconf');
+const mongoose = require('mongoose');
 
 /**
  * Create a new user
@@ -83,7 +84,8 @@ exports.update = async (req, res, next) => {
       'state',
       'city',
       'zipCode',
-      'avatar'
+      'avatar',
+      'aiQueries'
     ];
     if (req.user.role === 'admin') {
       publicFields = publicFields.concat(['isActive', 'emailVerified', 'role', 'type', 'email', 'assignedTutors']);
@@ -214,6 +216,145 @@ exports.search = async (req, res, next) => {
     next(e);
   }
 };
+
+// ai query save
+
+exports.getAiQueries = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Invalid userId'
+      });
+    }
+
+    const user = await DB.User.findById(userId)
+      .select('aiQueries')
+      .populate('aiQueries.aiAttachmentIds')
+      .populate('aiQueries.assignedTutors', 'name email avatar');
+
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        message: 'User not found'
+      });
+    }
+
+    return res.json({
+      code: 200,
+      data: user.aiQueries || []
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      code: 500,
+      message: err.message
+    });
+  }
+};
+
+exports.deleteAiQuery = async (req, res) => {
+  await DB.User.updateOne(
+    { _id: req.params.userId },
+    { $pull: { aiQueries: { _id: req.params.queryId } } }
+  );
+
+  res.json({ code: 200 });
+};
+
+
+
+// ================= AI QUERY CREATE =================
+exports.addAiQuery = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { query, description, aiAttachmentIds = [] } = req.body;
+
+    const user = await DB.User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          aiQueries: {
+            query,
+            description,
+            aiAttachmentIds,
+            assignedTutors: []
+          }
+        }
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return next(PopulateResponse.notFound());
+    }
+
+    res.locals.aiQuery = {
+      success: true
+    };
+
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+
+
+// controllers/user.controller.js
+
+exports.assignTutorToAiQuery = async (req, res) => {
+  try {
+    const { userId, queryId } = req.params;
+    const { tutorIds } = req.body;
+
+    if (!Array.isArray(tutorIds)) {
+      return res.status(400).json({
+        code: 400,
+        message: 'tutorIds must be an array'
+      });
+    }
+
+    const user = await DB.User.findOneAndUpdate(
+      {
+        _id: userId,
+        'aiQueries._id': queryId
+      },
+      {
+        $set: {
+          'aiQueries.$.assignedTutors': tutorIds
+        }
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        message: 'User or query not found'
+      });
+    }
+
+    return res.json({
+      code: 200,
+      message: 'Tutors updated successfully'
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      code: 500,
+      message: err.message
+    });
+  }
+};
+
+
+
+
+
+
 
 exports.remove = async (req, res, next) => {
   try {
