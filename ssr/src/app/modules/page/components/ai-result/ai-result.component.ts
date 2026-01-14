@@ -59,18 +59,9 @@ export class AiResultComponent implements OnInit, OnDestroy {
       // prevent experts + force login
       onFileSelect: async (resp: any[]) => {
 
-        if (!this.auth.isLoggedin()) {
-          this.appService.toastError("Please login first");
-          this.goToLogin();
-          return false;
-        }
+       
 
-        const current = await this.auth.getCurrentUser();
-        if (!current || current.type === 'tutor') {
-          this.appService.toastError("Only clients can attach files");
-          return false;
-        }
-
+     
         const last = resp[resp.length - 1];
         const file = last.file;
         const ext = (file?.name || '').split('.').pop()?.toLowerCase() || '';
@@ -186,55 +177,40 @@ export class AiResultComponent implements OnInit, OnDestroy {
     this.editableText = this.answer;
   }
 
-  goToLogin() {
-    const returnUrl = this.router.createUrlTree(
-      ['/pages/ai-result'],
-      { queryParams: { q: this.query } }
-    ).toString();
+lead = {
+  name: '',
+  email: '',
+  phone: ''
+};
+goToLogin() { const returnUrl = this.router.createUrlTree( ['/pages/ai-result'], { queryParams: { q: this.query } } ).toString(); this.router.navigate(['/auth/login'], { queryParams: { returnUrl } }); }
 
-    this.router.navigate(['/auth/login'], { queryParams: { returnUrl } });
+ async submit() {
+  if (!this.editableText.trim()) return;
+
+  if (!this.lead.name || !this.lead.email || !this.lead.phone) {
+    this.appService.toastError('Please fill all contact details');
+    return;
   }
 
-  async submit() {
-    if (!this.editableText.trim()) return;
+  await this.userService.addAiQuery({
+    query: this.query,
+    description: this.editableText,
+    lead: this.lead,
+    aiAttachmentIds: this.aiAttachmentIds
+  });
 
-    if (!this.auth.isLoggedin()) {
-      const returnUrl = this.router
-        .createUrlTree(['/pages/ai-result'], { queryParams: { q: this.query } })
-        .toString();
+  this.appService.toastSuccess('Request submitted successfully');
+  this.submittedSuccess = true;
 
-      localStorage.setItem('pendingAiSubmission', JSON.stringify({ text: this.editableText, query: this.query }));
-      this.router.navigate(['/auth/login'], { queryParams: { returnUrl } });
-      return;
+  this.countdownInterval = setInterval(() => {
+    this.countdown--;
+    if (this.countdown === 0) {
+      clearInterval(this.countdownInterval);
+      this.router.navigate(['/']);
     }
-    const current = await this.auth.getCurrentUser();
-    const isTutor = current && current.type === 'tutor';
-    if (isTutor) {
-      this.appService.toastError('Experts cannot post queries.');
-      setTimeout(() => {
-        this.router.navigate(['/']);
-      }, 1500);
-      return;
-    }
+  }, 1000);
+}
 
-    await this.userService.addAiQuery({
-  query: this.query,
-  description: this.editableText,
-  aiAttachmentIds: this.aiAttachmentIds
-});
-
-    this.appService.toastSuccess('Saved to your profile');
-    this.submittedSuccess = true;
-
-    this.countdownInterval = setInterval(() => {
-      this.countdown--;
-      if (this.countdown === 0) {
-        clearInterval(this.countdownInterval);
-        this.countdownInterval = null;
-        this.router.navigate(['/']);
-      }
-    }, 1000);
-  }
 
   ngOnDestroy() {
     if (this.countdownInterval) {

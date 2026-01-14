@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  zoomSDK: 'LYbt6hoGJDKCws6ZbWVTrfStwudNNHwayl0x',
+  zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA',
   mainUrl: 'http://localhost:4200',
   apiBaseUrl: 'http://localhost:9000/v1'
 };

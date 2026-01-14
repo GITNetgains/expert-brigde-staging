@@ -59,16 +59,19 @@ exports.update = async (req, res, next) => {
       return next(PopulateResponse.validationError(validate.error));
     }
 
-    // prevent mongoose hook create new pw
     if (!validate.value.password) {
       delete validate.value.password;
     }
+    
     let countryCode = '';
     if (validate.value.country) {
       countryCode = validate.value.country.code || '';
     }
 
     const user = req.params.id ? await DB.User.findOne({ _id: req.params.id }) : req.user;
+    
+    // 1. REMOVE 'aiQueries' from this list. 
+    // Queries should only be managed by the specific assign/delete endpoints.
     let publicFields = [
       'name',
       'password',
@@ -84,17 +87,24 @@ exports.update = async (req, res, next) => {
       'state',
       'city',
       'zipCode',
-      'avatar',
-      'aiQueries'
+      'avatar'
+      // 'aiQueries' // REMOVED
     ];
+
     if (req.user.role === 'admin') {
       publicFields = publicFields.concat(['isActive', 'emailVerified', 'role', 'type', 'email', 'assignedTutors']);
     }
 
     const fields = _.pick(validate.value, publicFields);
+    
+    // 2. Logic for Global Tutor Assignment Sync
+    // If an admin is updating the global 'assignedTutors' list directly from the form,
+    // we use _.assign. If 'assignedTutors' is provided in the body, it will update.
     _.assign(user, fields);
+    
     user.countryCode = countryCode;
     await user.save();
+
     if (fields.password) {
       await Service.User.newPassword(user, fields.password);
     }
@@ -269,11 +279,38 @@ exports.deleteAiQuery = async (req, res) => {
 // ================= AI QUERY CREATE =================
 exports.addAiQuery = async (req, res, next) => {
   try {
-    const userId = req.user._id;
-    const { query, description, aiAttachmentIds = [] } = req.body;
+    
+    const { query, description, aiAttachmentIds,lead = [] } = req.body;
 
-    const user = await DB.User.findByIdAndUpdate(
-      userId,
+    let user = await DB.User.findOne({ email: lead.email });
+    
+    
+
+    if (!user) {
+  user = await DB.User.create({
+    name: lead.name,
+    email: lead.email,
+    phoneNumber: lead.phone,
+    type: 'student',
+    role:'user',
+    type:'student',
+     aiQueries: {
+            query,
+            description,
+            aiAttachmentIds,
+            assignedTutors: []
+          }
+  });
+}else{
+   if (user.type === 'tutor') {
+      return res.status(403).json({
+        code: 403,
+        message: 'Only clients can create AI queries'
+      });
+    }
+
+ await DB.User.findByIdAndUpdate(
+      user._id,
       {
         $push: {
           aiQueries: {
@@ -285,7 +322,7 @@ exports.addAiQuery = async (req, res, next) => {
         }
       },
       { new: true }
-    );
+    );}
 
     if (!user) {
       return next(PopulateResponse.notFound());
@@ -311,42 +348,41 @@ exports.assignTutorToAiQuery = async (req, res) => {
     const { tutorIds } = req.body;
 
     if (!Array.isArray(tutorIds)) {
-      return res.status(400).json({
-        code: 400,
-        message: 'tutorIds must be an array'
-      });
+      return res.status(400).json({ message: 'tutorIds must be an array' });
     }
 
+    // Convert IDs to ObjectIds to ensure Mongoose matches correctly
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const queryObjectId = new mongoose.Types.ObjectId(queryId);
+    const tutorObjectIds = tutorIds.map(id => new mongoose.Types.ObjectId(id));
+
+    // 1. Update the specific query's assigned tutors
     const user = await DB.User.findOneAndUpdate(
-      {
-        _id: userId,
-        'aiQueries._id': queryId
+      { 
+        _id: userObjectId, 
+        'aiQueries._id': queryObjectId 
       },
-      {
-        $set: {
-          'aiQueries.$.assignedTutors': tutorIds
-        }
+      { 
+        $set: { 'aiQueries.$.assignedTutors': tutorObjectIds } 
       },
       { new: true }
     );
 
     if (!user) {
-      return res.status(404).json({
-        code: 404,
-        message: 'User or query not found'
-      });
+      return res.status(404).json({ message: 'User or query not found' });
     }
 
-    return res.json({
-      code: 200,
-      message: 'Tutors updated successfully'
-    });
+    // 2. Add these tutors to the global list (avoiding duplicates)
+    await DB.User.findByIdAndUpdate(
+      userObjectId,
+      { 
+        $addToSet: { assignedTutors: { $each: tutorObjectIds } } 
+      }
+    );
 
+    return res.json({ code: 200, message: 'Tutors updated successfully' });
   } catch (err) {
-    return res.status(500).json({
-      code: 500,
-      message: err.message
-    });
+    return res.status(500).json({ message: err.message });
   }
 };
 

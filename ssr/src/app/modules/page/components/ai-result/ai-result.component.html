@@ -49,6 +49,22 @@
         [options]="aiFileUploadOptions">
       </app-file-upload>
 
+      <div class="editor-card">
+  <h3>Contact Details</h3>
+
+  <input type="text"
+         [(ngModel)]="lead.name"
+         placeholder="Full Name *" />
+
+  <input type="email"
+         [(ngModel)]="lead.email"
+         placeholder="Email Address *" />
+
+  <input type="tel"
+         [(ngModel)]="lead.phone"
+         placeholder="Phone Number *" />
+</div>
+
       <!-- Show uploaded files -->
       <div *ngIf="uploadedAttachments.length" class="mt-2" style="text-align:left">
         <strong>Attached files ({{ uploadedAttachments.length }})</strong>

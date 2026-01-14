@@ -2,11 +2,12 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DOCUMENT } from '@angular/common';
 
-import ZoomMtgEmbedded from '@zoomus/websdk/embedded';
+// @ts-ignore
+const ZoomMtgEmbedded = (window as any).ZoomMtgEmbedded;
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component1.html',
+  templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {

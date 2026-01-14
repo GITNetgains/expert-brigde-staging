@@ -70,16 +70,13 @@ export class UpdateComponent implements OnInit {
   public avatarUrl = '';
 
   // ===== TUTORS / CATEGORY =====
-  public tutors: any[] = [];
-  public assignedTutorObjects: any[] = [];
-  public categories: any[] = [];
-  public subjects: any[] = [];
-  public selectedCategoryId = '';
-  public selectedSubjectId = '';
+ public tutors: any[] = [];
+public assignedTutorObjects: any[] = [];
+public categories: any[] = [];
+public subjects: any[] = [];
 
-  // ===== AI QUERIES =====
-
-  aiQueries: any[] = [];
+// AI QUERIES
+public aiQueries: any[] = [];
 
   // ===== SERVICES =====
   private router = inject(Router);
@@ -121,14 +118,19 @@ isUpdateMode = true;
 showAssignModal = false;
 activeQuery: any = null;
 
-assign = {
+public assign: {
+  categoryId: string;
+  subjectId: string;
+  subjects: any[];
+  tutors: any[];
+  tutorIds: string[];
+} = {
   categoryId: '',
   subjectId: '',
   subjects: [],
   tutors: [],
   tutorIds: []
 };
-
 openAssignTutorModal(q: any) {
   this.activeQuery = q;
 
@@ -182,23 +184,61 @@ loadTutors() {
     this.assign.tutors = res.data.items || [];
   });
 }
-
 saveTutorAssignment() {
+  const selectedTutorIds = this.assign.tutorIds as string[];
+  const queryId = this.activeQuery?._id || this.activeQuery?.id;
+
+  if (!queryId) {
+    this.utilService.toastError({ message: 'Query ID not found' });
+    return;
+  }
+
   this.userService.assignTutorToAiQuery(
     this.userId!,
-    this.activeQuery._id,
-    this.assign.tutorIds
-  ).subscribe(() => {
-    this.activeQuery.assignedTutors =
-      this.assign.tutors.filter(t =>
-        (this.assign.tutorIds as string[]).includes((t as any)._id)
+    queryId,
+    selectedTutorIds
+  ).subscribe({
+    next: () => {
+      // 1. Update the table list (aiQueries)
+      const updatedTutorObjects = this.assign.tutors.filter((t: any) =>
+        selectedTutorIds.includes(t._id || t.id)
       );
 
-    this.showAssignModal = false;
-    this.utilService.toastSuccess({ message: 'Tutors assigned' });
+      const queryIndex = this.aiQueries.findIndex((q: any) => (q._id || q.id) === queryId);
+      if (queryIndex !== -1) {
+        this.aiQueries[queryIndex].assignedTutors = updatedTutorObjects;
+      }
+
+      // 2. IMPORTANT: Update the main 'info' object. 
+      // This ensures that when you click the main "Save" button, 
+      // the data sent to the backend includes these assignments.
+      if (this.info) {
+        // Sync global assignedTutors (Unique list)
+        const currentGlobalIds = new Set<string>(this.info.assignedTutors || []);
+        selectedTutorIds.forEach(id => currentGlobalIds.add(id));
+        this.info.assignedTutors = Array.from(currentGlobalIds);
+
+        // Sync the specific query inside info.aiQueries if it exists
+        if ((this.info as any).aiQueries) {
+          const infoQueryIdx = (this.info as any).aiQueries.findIndex((q: any) => (q._id || q.id) === queryId);
+          if (infoQueryIdx !== -1) {
+            (this.info as any).aiQueries[infoQueryIdx].assignedTutors = selectedTutorIds;
+          }
+        }
+      }
+
+      this.showAssignModal = false;
+      this.utilService.toastSuccess({ message: 'Tutors assigned successfully' });
+      
+      // Reload to ensure frontend and backend are perfectly in sync
+      this.loadUserData();
+      this.loadAiQueries();
+    },
+    error: (err) => {
+      this.utilService.toastError({ message: 'Failed to assign tutors' });
+    }
   });
 }
-
 deleteAiQuery(q: any) {
   if (!confirm('Delete this AI query?')) return;
 
@@ -309,69 +349,80 @@ onAiSubjectChange(q: any) {
 
   // ================== USER DATA ==================
 
-  private loadUserData() {
-    this.loading = true;
+private loadUserData() {
+  this.loading = true;
 
-    this.userService.findOne(this.userId as string).subscribe({
-      next: (resp) => {
-        const assigned = resp.data.assignedTutors || [];
+  this.userService.findOne(this.userId as string).subscribe({
+    next: (resp) => {
+      const assigned = resp.data.assignedTutors || [];
 
-        this.assignedTutorObjects = typeof assigned[0] === 'object'
-          ? assigned
-          : [];
+      // Store the full tutor objects
+      this.assignedTutorObjects = typeof assigned[0] === 'object'
+        ? assigned
+        : [];
 
-        this.tutors = [...this.assignedTutorObjects];
+      this.tutors = [...this.assignedTutorObjects];
 
-        this.info = {
-          ...resp.data,
-          assignedTutors: assigned.map((t: any) => t._id),
-          password: ''
-        };
+      // ✅ Extract just the IDs for the form
+      const assignedTutorIds = assigned.map((t: any) => 
+        typeof t === 'object' ? t._id : t
+      );
 
-        this.avatarUrl = resp.data.avatarUrl;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        this.utilService.toastError({
-          title: 'Error',
-          message: 'Could not load user data'
-        });
-      }
-    });
-  }
+      this.info = {
+        ...resp.data,
+        assignedTutors: assignedTutorIds,
+        password: ''
+      };
+
+      console.log('📦 Loaded user data:', {
+        assignedTutorIds,
+        assignedTutorObjects: this.assignedTutorObjects
+      });
+
+      this.avatarUrl = resp.data.avatarUrl;
+      this.loading = false;
+    },
+    error: () => {
+      this.loading = false;
+      this.utilService.toastError({
+        title: 'Error',
+        message: 'Could not load user data'
+      });
+    }
+  });
+}
 
   // ================== SAVE ==================
+submit(form: any) {
+  this.isSubmitted = true;
+  this.customStylesValidated = true;
 
-  submit(form: any) {
-    this.isSubmitted = true;
-    this.customStylesValidated = true;
+  if (!form.valid) return;
 
-    if (!form.valid) return;
+  // Clone data
+  const data = { ...this.info };
+  
+  // Clean up password
+  if (!data.password) delete data.password;
 
-    const data = { ...this.info };
-    if (!data.password) delete data.password;
+  // CRITICAL: Ensure the latest aiQueries are attached to the payload
+  // so the main update doesn't wipe them out.
+  (data as any).aiQueries = this.aiQueries;
 
-    this.loading = true;
-
-    this.userService.update(this.userId as string, data).subscribe({
-      next: () => {
-        this.loading = false;
-        this.utilService.toastSuccess({
-          title: 'Success',
-          message: 'User updated successfully'
-        });
-        this.router.navigate(['/users/list']);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.utilService.toastError({
-          title: 'Error',
-          message: err.error?.message || 'Update failed'
-        });
-      }
-    });
-  }
+  this.loading = true;
+  this.userService.update(this.userId as string, data).subscribe({
+    next: () => {
+      this.loading = false;
+      this.utilService.toastSuccess({ message: 'User updated successfully' });
+      this.loadUserData();
+      this.loadAiQueries();
+    },
+    error: (err) => {
+      this.loading = false;
+      this.utilService.toastError({ message: err.error?.message || 'Update failed' });
+    }
+  });
+}
 
   afterUpload(evt: any) {
     this.info.avatar = evt;

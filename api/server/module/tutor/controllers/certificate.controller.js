@@ -7,9 +7,9 @@ const validateSchema = Joi.object().keys({
   fromYear: Joi.number().required(),
   toYear: Joi.number().optional(),
   type: Joi.string().required(),
-  verified: Joi.boolean().required(),
+  verified: Joi.boolean().optional().default(false),
   ordering: Joi.number().allow([null, '']).optional(),
-  documentId: Joi.string().required(),
+  documentId: Joi.string().allow([null, '']).optional(),
   tutorId: Joi.string().optional()
 });
 

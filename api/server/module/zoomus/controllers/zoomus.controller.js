@@ -88,7 +88,7 @@ exports.inviteUser = async (req, res, next) => {
     } else {
       await Service.ZoomUs.createUser({ email: tutor.email });
     }
-    await Service.Mailer.send('tutor/invite-to-join-zoom.html', tutor.email, {
+    await Service.Mailer.send('tutor-invite-to-join-zoom', tutor.email, {
       subject: `Welcome back to our system.!`,
       tutor: tutor.toObject(),
       appName: process.env.APP_NAME,

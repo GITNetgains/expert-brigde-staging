@@ -10,13 +10,12 @@ const { PLATFORM_ONLINE } = require('../../meeting/index.js');
  * =========================
  */
 const validateSchema = Joi.object().keys({
-  name: Joi.string().required(),
   username: Joi.string().allow([null, '']).optional(),
-
+  name: Joi.string().allow([null, '']).optional(),
   // ✅ SKILLS ADDED
   skillIds: Joi.array().items(Joi.string()).optional().default([]),
 
-  email: Joi.string().email().required(),
+  email: Joi.string().email().allow([null, '']).optional(),
   password: Joi.string().allow([null, '']).optional(),
   isActive: Joi.boolean().allow(null).optional(),
   emailVerified: Joi.boolean().allow(null).optional(),
@@ -48,6 +47,9 @@ const validateSchema = Joi.object().keys({
   city: Joi.string().allow([null, '']).optional(),
   introYoutubeId: Joi.string().allow([null, '']).optional(),
   introVideoId: Joi.string().allow([null, '']).optional(),
+  issueDocument: Joi.string().allow([null, '']).optional(),
+  resumeDocument: Joi.string().allow([null, '']).optional(),
+  certificationDocument: Joi.string().allow([null, '']).optional(),
   defaultSlotDuration: Joi.number().allow([null, '']).optional(),
   role: Joi.string().allow([null, '']).optional(),
   type: Joi.string().allow([null, '']).optional()
@@ -346,10 +348,7 @@ exports.list = async (req, res, next) => {
         PLATFORM_ONLINE.ZOOM_US
       );
       if (isZoomPlatform) {
-        query.$or = [
-          { isZoomAccount: true },
-          { isZoomAccount: { $exists: false } }
-        ];
+      query.isZoomAccount = true;
       }
     }
 

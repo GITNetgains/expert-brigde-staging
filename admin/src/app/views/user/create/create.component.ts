@@ -119,7 +119,7 @@ assign = {
   tutors: [],
   tutorIds: []
 };
-
+public aiQueries: any[] = [];
 loadSubjects() {}
 loadTutors() {}
 saveTutorAssignment() {}

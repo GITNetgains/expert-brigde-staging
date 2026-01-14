@@ -19,7 +19,7 @@ describe('AppComponent', () => {
   it(`should have as title 'meetingsdk-sample-angular'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('meetingsdk-sample-angular');
+    expect((app as any).title).toEqual('meetingsdk-sample-angular');
   });
 
   it('should render title', () => {

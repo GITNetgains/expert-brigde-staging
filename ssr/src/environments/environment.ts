@@ -10,7 +10,7 @@ socketUrl: 'http://localhost:9000',
 YOUR_GOOGLE_CLIENT_ID:'824314878142-fb3h8plnidnug1anf52vd8dmeu05cr96.apps.googleusercontent.com',
 // LINKEDIN_CLIENT_ID:'86gxmpsxr87k0c',
 LINKEDIN_CLIENT_ID:'86lnkec9zaxz01',
-zoomSDK: 'xxx', // Zoom sdk client ID
+zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA', // Zoom sdk client ID
  zoomDomain: 'localhost',
  zoomSiteUrl: 'http://localhost:1338',
    maximumFileSize: 1024,

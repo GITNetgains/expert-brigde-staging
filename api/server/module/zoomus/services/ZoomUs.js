@@ -56,8 +56,10 @@ exports.createUser = async options => {
         },
         (error, response, body) => {
           if (error) {
+            console.error('Zoom API Error:', error);
             return reject(error);
           }
+          console.log('Zoom API Response:', body); // Add logging
           return resolve(body);
         }
       )

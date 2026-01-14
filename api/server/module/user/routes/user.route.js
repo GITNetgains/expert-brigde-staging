@@ -147,7 +147,6 @@ module.exports = router => {
 
 router.post(
   '/v1/users/ai-query',
-  Middleware.isAuthenticated,
   userController.addAiQuery,
   Middleware.Response.success('aiQuery')
 );
