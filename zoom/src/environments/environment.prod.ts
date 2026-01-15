@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  zoomSDK: 'LYbt6hoGJDKCws6ZbWVTrfStwudNNHwayl0x',
-  mainUrl: 'https://v2.livelearn.info',
-  apiBaseUrl: 'https://v2-api.livelearn.info/v1'
+  zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA',
+  mainUrl: 'https://expertbridge.co',
+  apiBaseUrl: 'https://api.expertbridge.co/v1'
 };

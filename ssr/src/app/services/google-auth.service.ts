@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export class GoogleAuthService {
 
   private clientId = (environment as any).YOUR_GOOGLE_CLIENT_ID || '';
-  private redirectUri = 'http://localhost:4200/auth/google/callback';
+  private redirectUri = (environment as any).YOUR_GOOGLE_REDIRECT_URI || '';
 
   constructor() {}
 

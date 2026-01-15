@@ -186,64 +186,93 @@
   </c-card-header>
 
   <c-card-body>
-    <table class="table table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Description</th>
-          <th>Attachments</th>
-          <th>Assigned Tutors</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
 
-      <tbody>
-        <tr *ngFor="let q of aiQueries">
-          <td>{{ q.createdAt | date:'short' }}</td>
+    <!-- ✅ RESPONSIVE WRAPPER -->
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Time</th>
+            <th>Description</th>
+            <th>Attachments</th>
+            <th>Assigned Tutors</th>
+            <th class="text-nowrap">Actions</th>
+          </tr>
+        </thead>
 
-          <td>{{ q.description }}</td>
+        <tbody>
+          <tr *ngFor="let q of aiQueries">
 
-          <td>
-            <a *ngFor="let a of q.aiAttachmentIds"
-               [href]="a.url"
-               target="_blank"
-               class="d-block">
-              {{ a.name }}
-            </a>
-          </td>
+            <!-- TIME -->
+            <td class="text-nowrap">
+              {{ q.createdAt | date:'short' }}
+            </td>
 
-          <td>
-            <span *ngFor="let t of q.assignedTutors; let last = last">
-              {{ t.name }}<span *ngIf="!last">, </span>
-            </span>
-            <span *ngIf="!q.assignedTutors?.length" class="text-muted">
-              Not assigned
-            </span>
-          </td>
+            <!-- DESCRIPTION (BUTTON) -->
+            <td>
+              <button
+                cButton
+                size="sm"
+                color="info"
+                (click)="openDescriptionModal(q)">
+                View
+              </button>
+            </td>
 
-          <td>
-            <button
-              cButton
-              size="sm"
-              color="primary"
-              (click)="openAssignTutorModal(q)">
-              Assign Tutor
-            </button>
+            <!-- ATTACHMENTS -->
+            <td>
+              <ng-container *ngIf="q.aiAttachmentIds?.length; else noAttach">
+                <a
+                  *ngFor="let a of q.aiAttachmentIds"
+                  [href]="a.url"
+                  target="_blank"
+                  class="d-block text-truncate"
+                  style="max-width: 180px;">
+                  {{ a.name }}
+                </a>
+              </ng-container>
 
-            <button
-              cButton
-              size="sm"
-              color="danger"
-              class="ms-2"
-              (click)="deleteAiQuery(q)">
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <ng-template #noAttach>
+                <span class="text-muted">—</span>
+              </ng-template>
+            </td>
+
+            <!-- ASSIGNED TUTORS -->
+            <td style="max-width: 220px;">
+              <span *ngFor="let t of q.assignedTutors; let last = last">
+                {{ t.name }}<span *ngIf="!last">, </span>
+              </span>
+              <span *ngIf="!q.assignedTutors?.length" class="text-muted">
+                Not assigned
+              </span>
+            </td>
+
+            <!-- ACTIONS -->
+            <td class="text-nowrap">
+              <button
+                cButton
+                size="sm"
+                color="primary"
+                (click)="openAssignTutorModal(q)">
+                Assign
+              </button>
+
+              <button
+                cButton
+                size="sm"
+                color="danger"
+                class="ms-2"
+                (click)="deleteAiQuery(q)">
+                Delete
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </c-card-body>
-
 </c-card>
 
 <c-modal [(visible)]="showAssignModal">
@@ -296,4 +325,22 @@
   </div>
 </c-modal>
 
+
+<c-modal [(visible)]="showDescriptionModal" size="lg">
+  <c-modal-header>
+    <h5>Description</h5>
+  </c-modal-header>
+
+  <c-modal-body>
+    <p class="mb-0 white-space-pre-line">
+      {{ activeDescription }}
+    </p>
+  </c-modal-body>
+
+  <div class="modal-footer">
+    <button cButton color="secondary" (click)="showDescriptionModal=false">
+      Close
+    </button>
+  </div>
+</c-modal>
 

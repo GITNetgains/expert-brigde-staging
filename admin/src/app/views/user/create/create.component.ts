@@ -14,7 +14,6 @@ import {
   FormDirective,
   FormLabelDirective,
   FormFeedbackComponent,
-  InputGroupComponent,
   RowComponent,
   ColComponent,
   GutterDirective,
@@ -39,7 +38,6 @@ import { IUser } from 'src/interfaces';
     FormDirective,
     FormLabelDirective,
     FormFeedbackComponent,
-    InputGroupComponent,
     RowComponent,
     ColComponent,
     ProfileCardComponent,
@@ -111,7 +109,8 @@ export class CreateComponent implements OnInit {
 isUpdateMode = false;
 
 showAssignModal = false;
-
+showDescriptionModal = false;
+activeDescription = '';
 assign = {
   categoryId: '',
   subjectId: '',

@@ -15,7 +15,7 @@ import {
   CardComponent,
   CardBodyComponent,
   CardHeaderComponent,
-  InputGroupComponent,
+  
   FormControlDirective,
   FormDirective,
   FormLabelDirective,
@@ -41,7 +41,7 @@ import { IUser } from 'src/interfaces';
     CardComponent,
     CardBodyComponent,
     CardHeaderComponent,
-    InputGroupComponent,
+   
     FormControlDirective,
     FormDirective,
     FormLabelDirective,

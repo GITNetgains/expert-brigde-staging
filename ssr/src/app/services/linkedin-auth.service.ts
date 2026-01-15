@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export class LinkedinAuthService {
 
   private clientId = (environment as any).LINKEDIN_CLIENT_ID || '';
-  private redirectUri = 'http://localhost:4200/auth/linkedin/callback';
+  private redirectUri = (environment as any).YOUR_LINKEDIN_REDIRECT_URI || '';
 
   constructor() {}
 

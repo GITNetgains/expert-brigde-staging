@@ -2,6 +2,11 @@
 
   <!-- LEFT IMAGE -->
   <div class="left-pane">
+     <img
+    *ngIf="!account.type"
+    src="assets/images/signup-expert.png"
+    alt="Signup"
+  />
     <img
       *ngIf="account.type === 'tutor'"
       src="assets/images/signup-expert.png"
