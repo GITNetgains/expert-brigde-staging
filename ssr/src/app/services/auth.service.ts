@@ -184,19 +184,22 @@ loginVerifyOtp(payload: any): Promise<any> {
     registerTutor(info: any): Promise<any> {
       return this.post('/tutors/register', info);
     }
-    sendOtp(payload: any): Promise<any> {
+
+   sendOtp(payload: any) {
   return this.post('/auth/sendOtp', payload);
 }
-verifyOtp(payload: any): Promise<any> {
-  return this.post('/auth/verifyOtp', payload).then((resp: any) => {
-    // Save token in cookie so dashboard persists after reload
-    this.mycookie.set('accessToken', resp.data.data.token, { path: '/' });
-    this.mycookie.set('isLoggedin', 'yes', { path: '/' });
 
-    // Load current user
-    return this.getCurrentUser();
-  });
+verifyOtp(payload: any) {
+  return this.post('/auth/verifyOtp', payload);
 }
+
+setPassword(payload: any) {
+  return this.post('/auth/setPassword', payload);
+}
+updateStudentPersonalInfo(payload: any) {
+  return this.post('/auth/student/personal-info', payload);
+}
+
 
 
 

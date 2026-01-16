@@ -169,6 +169,16 @@ router.post('/v1/auth/sendOtp',
   authController.sendOtp, Middleware.Response.success('sendOtp',),);
 router.post('/v1/auth/verifyOtp', authController.verifyOtp, Middleware.Response.success('verifyOtp'));
 
+router.post(
+  '/v1/auth/setPassword',
+  authController.setPassword,
+  Middleware.Response.success('setPassword')
+);
+router.post(
+  '/v1/auth/student/personal-info',
+  authController.updateStudentPersonalInfo,
+  Middleware.Response.success('updateStudentPersonalInfo')
+);
 
 // =====================================
 // OTP LOGIN ROUTES (NON-BREAKING)

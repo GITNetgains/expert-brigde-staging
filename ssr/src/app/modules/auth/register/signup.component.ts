@@ -330,7 +330,12 @@
 //changes by navjot 10-12-25 11.27 
 
 
-import { AfterViewInit, Component } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GoogleAuthService } from 'src/app/services/google-auth.service';
 import { LinkedinAuthService } from 'src/app/services/linkedin-auth.service';
@@ -341,242 +346,327 @@ import {
   AppService,
   StateService,
   STATE,
-  UserService,
   TutorService
 } from 'src/app/services';
+
+const SIGNUP_PROGRESS_KEY = 'signup_progress_v1';
 
 @Component({
   templateUrl: 'signup.component.html',
   styleUrls: ['signup.component.scss']
 })
-export class SignupComponent implements AfterViewInit {
+export class SignupComponent
+  implements OnInit, AfterViewInit, OnDestroy {
+
+  /* =========================
+   * BASIC STATE
+   * ========================= */
   public account: any = {
     email: '',
     type: ''
   };
 
-  public step: 'email' | 'otp' | 'createPassword' | 'personalInfo' | 'tutorProfile' = 'email';
-  public otpToken: string = '';
+  public step:
+    | 'email'
+    | 'otp'
+    | 'createPassword'
+    | 'personalInfo'
+    | 'tutorProfile' = 'email';
+
+  public lockType = false;
   public submitted = false;
   public loading = false;
   public isAgreeWithTerms = true;
-  public lockType = false;
-  public newPassword: string = '';
-  public confirmPassword: string = '';
-  public allowPersonalEmail = false;
-  public tutorProfile: {
-    highlightsText: string;
-    workHistoryText: string;
-    consultationFee: number | null;
-    yearsExperience: number | null;
-  } = {
-    highlightsText: '',
-    workHistoryText: '',
-    consultationFee: null,
-    yearsExperience: null
-  };
-  public studentProfile: {
-    name: string;
-    phoneNumber: string;
-    address: string;
-  } = {
+
+  /* =========================
+   * OTP
+   * ========================= */
+  public otpToken = '';
+  public otpResendTimer = 0;
+  private otpInterval: any = null;
+
+  /* =========================
+   * PASSWORD
+   * ========================= */
+  public newPassword = '';
+  public confirmPassword = '';
+
+  /* =========================
+   * STUDENT PROFILE
+   * ========================= */
+  public studentProfile = {
     name: '',
     phoneNumber: '',
     address: ''
   };
 
+  /* =========================
+   * TUTOR PROFILE
+   * ========================= */
+  public tutorProfile = {
+    highlightsText: '',
+    workHistoryText: '',
+    consultationFee: null as number | null,
+    yearsExperience: null as number | null
+  };
+
   constructor(
     private auth: AuthService,
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
     private seoService: SeoService,
     private appService: AppService,
-    public stateService: StateService,
+    private stateService: StateService,
     private googleAuth: GoogleAuthService,
     private linkedinAuth: LinkedinAuthService,
-    private userService: UserService,
     private tutorService: TutorService
   ) {
-  const appConfig: any = this.stateService.getState(STATE.CONFIG);
-
-if (appConfig?.siteName) {
-  this.seoService.setMetaTitle(appConfig.siteName + ' - Sign Up');
-}
-
+    const config: any = this.stateService.getState(STATE.CONFIG);
+    if (config?.siteName) {
+      this.seoService.setMetaTitle(config.siteName + ' - Sign Up');
+    }
 
     const t = this.route.snapshot.queryParams['type'];
-    if (t === 'tutor' || t === 'student') {
+    if (t === 'student' || t === 'tutor') {
       this.account.type = t;
       this.lockType = true;
     }
   }
 
-  ngAfterViewInit() {
-    const target = document.getElementById('email-input') as any;
-    if (target) {
-      target.addEventListener(
-        'paste',
-        (event: any) => {
-          event.preventDefault();
-          const clipboard = event.clipboardData;
-          const text = clipboard.getData('Text');
-          event.target.value = text.trim();
-          this.account.email = text.trim();
-        },
-        false
-      );
+  /* =========================
+   * INIT + RESTORE STATE
+   * ========================= */
+  ngOnInit() {
+    const saved = localStorage.getItem(SIGNUP_PROGRESS_KEY);
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+      if (data?.email && data?.step) {
+        this.account.email = data.email;
+        this.account.type = data.type;
+        this.step = data.step;
+
+        if (this.step === 'otp') {
+          this.startOtpTimer(60);
+        }
+      }
+    } catch {
+      localStorage.removeItem(SIGNUP_PROGRESS_KEY);
     }
   }
 
+  ngAfterViewInit() {
+    const input = document.getElementById('email-input') as any;
+    if (input) {
+      input.addEventListener('paste', (e: any) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData('Text').trim();
+        input.value = text;
+        this.account.email = text;
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.otpInterval) {
+      clearInterval(this.otpInterval);
+    }
+  }
+
+  /* =========================
+   * SOCIAL LOGIN
+   * ========================= */
   loginWithGoogle() {
     this.googleAuth.redirectToGoogleLogin();
   }
+
   loginWithLinkedin() {
-  this.linkedinAuth.redirectToLinkedinLogin();
-}
+    this.linkedinAuth.redirectToLinkedinLogin();
+  }
 
-
-  public async submit(frm: any) {
+  /* =========================
+   * SIGNUP SUBMIT HANDLER
+   * ========================= */
+  submit(frm: any) {
     this.submitted = true;
 
-    /**
-     * ===================================================
-     * STEP 1: SEND OTP (for Expert + Student)
-     * ===================================================
-     */
+    /* ---------- STEP 1: SEND OTP ---------- */
     if (this.step === 'email') {
       if (frm.invalid) return;
-      if (this.account.type === 'student' && !this.allowPersonalEmail) {
-        if (!this.isCompanyEmail(this.account.email)) {
-          return this.appService.toastError('Please use company email domain or click Sign Up below');
-        }
-      }
 
-      const payload = {
+      return this.auth.sendOtp({
         email: this.account.email.toLowerCase(),
         type: this.account.type
-      };
-
-      return this.auth
-        .sendOtp(payload)
-        .then(() => {
-          this.appService.toastSuccess('A verification code has been sent to your email.');
-          this.step = 'otp';
-        })
-        .catch((err) => this.appService.toastError(err));
+      })
+      .then(() => {
+        this.step = 'otp';
+        this.startOtpTimer(60);
+        this.saveSignupProgress();
+        this.appService.toastSuccess('OTP sent to your email');
+      })
+      .catch(err => this.appService.toastError(err));
     }
 
-    /**
-     * ===================================================
-     * STEP 2: VERIFY OTP (auto-register + auto-login)
-     * ===================================================
-     */
+    /* ---------- STEP 2: VERIFY OTP ---------- */
     if (this.step === 'otp') {
       if (!this.otpToken.trim()) {
-        return this.appService.toastError('Please enter OTP');
+        return this.appService.toastError('Enter OTP');
       }
 
-      const payload = {
+      return this.auth.verifyOtp({
         email: this.account.email.toLowerCase(),
         otp: this.otpToken.trim()
-      };
-
-      return this.auth
-        .verifyOtp(payload)
-        .then(() => this.auth.getCurrentUser())
-        .then((user: any) => {
-          if (!user) return;
-          this.step = 'createPassword';
-          this.appService.toastSuccess('Verified. Create a new password');
-        })
-        .catch((err) => this.appService.toastError(err));
+      })
+      .then(() => {
+        this.step = 'createPassword';
+        this.saveSignupProgress();
+        this.appService.toastSuccess('Verified. Create password');
+      })
+      .catch(err => this.appService.toastError(err));
     }
 
+    /* ---------- STEP 3: CREATE PASSWORD ---------- */
     if (this.step === 'createPassword') {
-      if (!this.newPassword || this.newPassword.length < 6) {
+      if (this.newPassword.length < 6) {
         return this.appService.toastError('Password must be at least 6 characters');
       }
       if (this.newPassword !== this.confirmPassword) {
-        return this.appService.toastError('Confirm password does not match');
+        return this.appService.toastError('Passwords do not match');
       }
-      return this.userService
-        .updateMe({ password: this.newPassword })
-        .then(() => this.auth.getCurrentUser())
-        .then((user: any) => {
-          this.appService.toastSuccess('Password set successfully');
-          if (user && user.type === 'tutor') {
-            this.step = 'tutorProfile';
-          } else {
-            this.step = 'personalInfo';
-          }
-        })
-        .catch((err: any) => this.appService.toastError(err));
+
+      return this.auth.setPassword({
+        email: this.account.email.toLowerCase(),
+        password: this.newPassword
+      })
+      .then(() => {
+        if (this.account.type === 'student') {
+          this.step = 'personalInfo';
+          this.saveSignupProgress();
+          this.appService.toastSuccess('Password set. Complete personal info');
+        } else {
+          this.clearSignupProgress();
+          this.appService.toastSuccess('Account created. Please login.');
+          this.router.navigate(['/auth/login']);
+        }
+      })
+      .catch(err => this.appService.toastError(err));
     }
+
+    /* ---------- STEP 4: STUDENT PERSONAL INFO ---------- */
     if (this.step === 'personalInfo') {
-      const name = (this.studentProfile.name || '').trim();
-      const phoneNumber = (this.studentProfile.phoneNumber || '').trim();
-      const address = (this.studentProfile.address || '').trim();
-      if (!name || !phoneNumber || !address) {
-        return this.appService.toastError('Please fill name, phone number and address');
+      const { name, phoneNumber, address } = this.studentProfile;
+
+      if (!name.trim() || !phoneNumber.trim() || !address.trim()) {
+        return this.appService.toastError(
+          'Please fill name, phone number and address'
+        );
       }
-      return this.userService
-        .updateMe({ name, phoneNumber, address })
-        .then(() => {
-          this.appService.toastSuccess('Profile details saved');
-          this.router.navigate(['/users/dashboard']);
-        })
-        .catch((err: any) => this.appService.toastError(err));
+
+      return this.auth.updateStudentPersonalInfo({
+        email: this.account.email.toLowerCase(),
+        name: name.trim(),
+        phoneNumber: phoneNumber.trim(),
+        address: address.trim()
+      })
+      .then(() => {
+        this.clearSignupProgress();
+        this.appService.toastSuccess('Account created. Please login.');
+        this.router.navigate(['/auth/login']);
+      })
+      .catch(err => this.appService.toastError(err));
     }
-    if (this.step === 'tutorProfile') {
-      const highlights = (this.tutorProfile.highlightsText || '')
-        .split('\n')
-        .map((s) => s.trim())
-        .filter((s) => !!s);
-      const workHistory = (this.tutorProfile.workHistoryText || '')
-        .split('\n')
-        .map((s) => s.trim())
-        .filter((s) => !!s);
-      const consultationFee = Number(this.tutorProfile.consultationFee || 0);
-      const yearsExperience = Number(this.tutorProfile.yearsExperience || 0);
 
-      if (!highlights.length || !workHistory.length || consultationFee <= 0) {
-        return this.appService.toastError('Please fill highlights, work history and fee.');
+    /* ---------- STEP 5: TUTOR PROFILE ---------- */
+    if (this.step === 'tutorProfile') {
+      const highlights = this.tutorProfile.highlightsText
+        .split('\n').map(s => s.trim()).filter(Boolean);
+      const workHistory = this.tutorProfile.workHistoryText
+        .split('\n').map(s => s.trim()).filter(Boolean);
+
+      if (!highlights.length || !workHistory.length || !this.tutorProfile.consultationFee) {
+        return this.appService.toastError('Please complete tutor profile');
       }
 
-      return this.tutorService
-        .update({
-          highlights,
-          workHistory,
-          consultationFee,
-          yearsExperience
-        })
-        .then(() => {
-          this.appService.toastSuccess('Profile submitted. Pending admin approval.');
-          this.router.navigate(['/users/dashboard']);
-        })
-        .catch((err) => this.appService.toastError(err));
+      return this.tutorService.update({
+        highlights,
+        workHistory,
+        consultationFee: this.tutorProfile.consultationFee,
+        yearsExperience: this.tutorProfile.yearsExperience
+      })
+      .then(() => {
+        this.clearSignupProgress();
+        this.appService.toastSuccess('Profile submitted. Pending admin approval.');
+        this.router.navigate(['/users/dashboard']);
+      })
+      .catch(err => this.appService.toastError(err));
     }
   }
 
+  /* =========================
+   * OTP TIMER + RESEND
+   * ========================= */
+  startOtpTimer(seconds = 60) {
+    this.otpResendTimer = seconds;
+    if (this.otpInterval) clearInterval(this.otpInterval);
+
+    this.otpInterval = setInterval(() => {
+      this.otpResendTimer--;
+      if (this.otpResendTimer <= 0) {
+        clearInterval(this.otpInterval);
+        this.otpInterval = null;
+      }
+    }, 1000);
+  }
+
+  resendOtp() {
+    if (this.otpResendTimer > 0 || this.loading) return;
+
+    this.loading = true;
+    this.auth.sendOtp({
+      email: this.account.email.toLowerCase(),
+      type: this.account.type
+    })
+    .then(() => {
+      this.loading = false;
+      this.startOtpTimer(60);
+      this.appService.toastSuccess('OTP resent successfully');
+    })
+    .catch(err => {
+      this.loading = false;
+      this.appService.toastError(err);
+    });
+  }
+
+  /* =========================
+   * LOCAL STORAGE HELPERS
+   * ========================= */
+  saveSignupProgress() {
+    localStorage.setItem(
+      SIGNUP_PROGRESS_KEY,
+      JSON.stringify({
+        email: this.account.email,
+        type: this.account.type,
+        step: this.step
+      })
+    );
+  }
+
+  clearSignupProgress() {
+    localStorage.removeItem(SIGNUP_PROGRESS_KEY);
+  }
+
+  /* =========================
+   * EMAIL DOMAIN CHECK
+   * ========================= */
   isCompanyEmail(email: string): boolean {
-    const at = email.indexOf('@');
-    if (at === -1) return false;
-    const domain = email.slice(at + 1).toLowerCase();
-    if (!domain || domain.indexOf('.') === -1) return false;
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (!domain) return false;
+
     const personal = [
-      'gmail.com',
-      'yahoo.com',
-      'hotmail.com',
-      'outlook.com',
-      'live.com',
-      'icloud.com',
-      'aol.com',
-      'protonmail.com',
-      'zoho.com',
-      'yandex.com',
-      'mail.com',
-      'gmx.com'
+      'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+      'icloud.com', 'aol.com', 'protonmail.com'
     ];
-    return personal.indexOf(domain) === -1;
+    return !personal.includes(domain);
   }
 }

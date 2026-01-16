@@ -71,6 +71,51 @@ exports.register = async (req, res, next) => {
   }
 };
 
+exports.updateStudentPersonalInfo = async (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    name: Joi.string().required(),
+    phoneNumber: Joi.string().required(),
+    address: Joi.string().required()
+  });
+
+  const { error, value } = schema.validate(req.body);
+  if (error) {
+    return next(PopulateResponse.validationError(error));
+  }
+
+  try {
+    const user = await DB.User.findOne({
+      email: value.email.toLowerCase(),
+      type: 'student'
+    });
+
+    if (!user) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Student not found' },
+          'ERR_USER_NOT_FOUND'
+        )
+      );
+    }
+
+    user.name = value.name;
+    user.phoneNumber = value.phoneNumber;
+    user.address = value.address;
+
+    await user.save();
+
+    res.locals.updateStudentPersonalInfo = PopulateResponse.success(
+      { message: 'Personal information saved successfully' },
+      'PROFILE_UPDATED'
+    );
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+
 exports.verifyEmail = async (req, res, next) => {
   const schema = Joi.object().keys({
     token: Joi.string().required()
@@ -316,90 +361,87 @@ exports.sendOtp = async (req, res, next) => {
 //
 exports.verifyOtp = async (req, res, next) => {
   try {
-    const schema = Joi.object().keys({
+    const schema = Joi.object({
       email: Joi.string().email().required(),
       otp: Joi.string().required()
     });
 
-    const validate = Joi.validate(req.body, schema);
-    if (validate.error) {
-      return next(PopulateResponse.validationError(validate.error));
-    }
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
 
-    const email = validate.value.email.toLowerCase();
-    const otp = validate.value.otp;
+    const email = value.email.toLowerCase();
 
-    // Find OTP record
-    const record = await DB.EmailOtp.findOne({ email, otp });
-
+    const record = await DB.EmailOtp.findOne({ email, otp: value.otp });
     if (!record) {
       return next(
-        PopulateResponse.error(
-          { message: 'Invalid OTP' },
-          'ERR_INVALID_OTP'
-        )
+        PopulateResponse.error({ message: 'Invalid OTP' }, 'ERR_INVALID_OTP')
       );
     }
 
-    // Check expiry
     if (record.expiresAt < new Date()) {
       await DB.EmailOtp.deleteMany({ email });
       return next(
-        PopulateResponse.error(
-          { message: 'OTP expired' },
-          'ERR_OTP_EXPIRED'
-        )
+        PopulateResponse.error({ message: 'OTP expired' }, 'ERR_OTP_EXPIRED')
       );
     }
 
-    // Delete used OTP
     await DB.EmailOtp.deleteMany({ email });
 
-    // Generate random password
-    const password = Helper.String.randomString(12);
-
-    // Username generation
     let username = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
-    const usernameExists = await DB.User.count({ username });
-
-    if (usernameExists) {
+    if (await DB.User.count({ username })) {
       username = `${username}-${Helper.String.randomString(5)}`;
     }
 
-    // Create user
     const user = await DB.User.create({
       email,
-      password,
       username,
       type: record.type,
       emailVerified: true
     });
-// JWT token using existing login JWT helper
-const expireTokenDuration = 60 * 60 * 24 * 30; // 30 days
-
-const token = signToken(
-  user._id,
-  user.role || user.type, 
-  expireTokenDuration
-);
-
 
     res.locals.verifyOtp = PopulateResponse.success(
       {
-        message: 'OTP verified successfully',
-        token,
-        user,
-        redirectTo: '/users/dashboard'
-            
+        message: 'OTP verified. Please create password.'
       },
       'OTP_VERIFIED'
     );
-
     next();
   } catch (e) {
-    return next(e);
+    next(e);
   }
 };
+
+exports.setPassword = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required()
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const user = await DB.User.findOne({ email: value.email.toLowerCase() });
+    if (!user) {
+      return next(
+        PopulateResponse.error({ message: 'User not found' }, 'ERR_USER_NOT_FOUND')
+      );
+    }
+
+    user.password = value.password;
+    await user.save();
+
+    res.locals.setPassword = PopulateResponse.success(
+      { message: 'Password set successfully. Please login.' },
+      'PASSWORD_SET'
+    );
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+
 
 exports.resetPasswordView = async (req, res, next) => {
   try {

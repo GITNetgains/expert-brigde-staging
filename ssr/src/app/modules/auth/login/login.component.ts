@@ -21,7 +21,9 @@ import { isPlatformBrowser } from '@angular/common';
 export class LoginComponent implements OnInit, AfterViewInit {
   public step: 'email' | 'otp' | 'password' = 'email';
   public loginMode: 'otp' | 'password' = 'otp';
-
+public otpResendTimer = 0;
+private otpInterval: any = null;
+public loading = false;
   public credentials = {
     email: '',
     password: ''
@@ -69,6 +71,44 @@ export class LoginComponent implements OnInit, AfterViewInit {
       }
     }
   }
+startOtpTimer(seconds = 60) {
+  this.otpResendTimer = seconds;
+
+  if (this.otpInterval) {
+    clearInterval(this.otpInterval);
+  }
+
+  this.otpInterval = setInterval(() => {
+    this.otpResendTimer--;
+    if (this.otpResendTimer <= 0) {
+      clearInterval(this.otpInterval);
+      this.otpInterval = null;
+    }
+  }, 1000);
+}
+ngOnDestroy() {
+  if (this.otpInterval) {
+    clearInterval(this.otpInterval);
+  }
+}
+
+
+resendOtp() {
+  if (this.otpResendTimer > 0 || this.loading) return;
+
+  this.loading = true;
+
+  this.auth.loginSendOtp({ email: this.credentials.email })
+    .then(() => {
+      this.loading = false;
+      this.startOtpTimer(60);
+      this.appService.toastSuccess('OTP resent successfully');
+    })
+    .catch(err => {
+      this.loading = false;
+      this.appService.toastError(err);
+    });
+}
 
   login(frm: any) {
     this.submitted = true;
@@ -82,6 +122,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
           .then(() => {
             this.appService.toastSuccess('Verification code sent to your email.');
             this.step = 'otp';
+            this.startOtpTimer(60);
           })
           .catch((err) => this.appService.toastError(err));
       }

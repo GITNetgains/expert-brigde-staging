@@ -65,6 +65,23 @@
             required
           />
         </div>
+        <!-- RESEND OTP -->
+<div
+  *ngIf="loginMode === 'otp' && step === 'otp'"
+  class="text-center mt-2"
+>
+  <a
+    href="javascript:void(0)"
+    (click)="resendOtp()"
+    [class.disabled]="otpResendTimer > 0 || loading"
+  >
+    Resend OTP
+    <span *ngIf="otpResendTimer > 0">
+      ({{ otpResendTimer }}s)
+    </span>
+  </a>
+</div>
+
 
         <!-- SUBMIT -->
         <button class="btn primary-btn w-100 mt-4">

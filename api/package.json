@@ -49,6 +49,7 @@
     "paydunya": "^1.0.11",
     "postal-codes-js": "^2.5.2",
     "query-string": "^7.1.1",
+    "razorpay": "^2.9.6",
     "request": "^2.87.0",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
