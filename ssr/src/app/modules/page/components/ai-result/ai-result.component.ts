@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { AiService } from 'src/app/services/ai.service';
 import { AppService, StateService, STATE, UserService, AuthService } from 'src/app/services';
 import { environment } from 'src/environments/environment';
+import { isPlatformBrowser } from '@angular/common'; // Added isPlatformBrowser
 declare var grecaptcha: any;
 
 @Component({
@@ -49,7 +50,8 @@ export class AiResultComponent implements OnInit, OnDestroy {
     private appService: AppService,
     private stateService: StateService,
     private router: Router,
-    public auth: AuthService
+    public auth: AuthService,
+    @Inject(PLATFORM_ID) private platformId: any
   ) {}
 
   ngOnInit() {
@@ -100,26 +102,27 @@ export class AiResultComponent implements OnInit, OnDestroy {
     };
 
     // determine user type
-    this.auth.getCurrentUser().then((u: any) => {
+  this.auth.getCurrentUser().then((u: any) => {
       this.isClientUser = !!u && u.type !== 'tutor';
     });
-    
 
-    // read query params
     this.route.queryParams.subscribe(async (params) => {
       this.query = params['q'] || '';
       this.extractKeywords(this.query);
 
       if (this.query) await this.fetch();
 
-      const pending = localStorage.getItem('pendingAiSubmission');
-      if (pending && this.auth.isLoggedin()) {
-        try {
-          const data = JSON.parse(pending);
-          if (data && data.text) this.editableText = data.text;
-        } catch {}
-        localStorage.removeItem('pendingAiSubmission');
-        this.submit();
+      // 2. Wrap localStorage in a Browser Check
+      if (isPlatformBrowser(this.platformId)) {
+        const pending = localStorage.getItem('pendingAiSubmission');
+        if (pending && this.auth.isLoggedin()) {
+          try {
+            const data = JSON.parse(pending);
+            if (data && data.text) this.editableText = data.text;
+          } catch {}
+          localStorage.removeItem('pendingAiSubmission');
+          this.submit();
+        }
       }
     });
 
