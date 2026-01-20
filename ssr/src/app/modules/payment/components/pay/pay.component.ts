@@ -111,43 +111,61 @@ buy(): void {
 
   this.loading = true;
 
-  const enrollPayload = {
-    tutorId: this.paymentParams.tutorId,
-    targetId: this.paymentParams.targetId,
-    targetType: 'subject',
-    redirectSuccessUrl: this.paymentParams.redirectSuccessUrl,
-    cancelUrl: this.paymentParams.cancelUrl,
-    couponCode: '',
-    emailRecipient: ''
-  };
-
-  this.paymentService.enroll(enrollPayload)
-    .then(resp => {
-
-      // ✅ CORRECT RESPONSE ACCESS
-      const payment = resp?.data;
-
-      console.log('PAYMENT INIT RESPONSE:', payment);
-
-      if (!payment?.razorpayOrderId || !payment?.amount || !payment?.transactionId) {
-        throw new Error('Payment init failed');
-      }
-
-      this.loading = false;
-
-      this.openRazorpay({
-        transactionId: payment.transactionId,
-        razorpayOrderId: payment.razorpayOrderId,
-        amount: payment.amount
+  // ✅ Create appointment (single or multiple sessions)
+  if (this.paymentParams?.times && this.paymentParams.times.length > 0) {
+    // Multiple sessions
+    this.appointmentService.checkout(this.paymentParams)
+      .then(resp => {
+        const payment = resp?.data;
+        
+        if (!payment?.razorpayOrderId || !payment?.amount || !payment?.transactionId) {
+          throw new Error('Payment init failed');
+        }
+        
+        this.paymentIntent = payment;
+        this.loading = false;
+        
+        this.openRazorpay({
+          transactionId: payment.transactionId,
+          razorpayOrderId: payment.razorpayOrderId,
+          amount: payment.amount
+        });
+      })
+      .catch(err => {
+        this.loading = false;
+        this.submitted = false;
+        this.cleanup();
+        this.appService.toastError(err.message || err);
       });
-
-    })
-    .catch(err => {
-      this.loading = false;
-      this.appService.toastError(err.message || err);
-    });
+      
+  } else {
+    // Single session
+    this.appointmentService.create(this.paymentParams)
+      .then(resp => {
+        const payment = resp?.data;
+        
+        if (!payment?.razorpayOrderId || !payment?.amount || !payment?.transactionId) {
+          throw new Error('Payment init failed');
+        }
+        
+        this.paymentIntent = payment;
+        this.loading = false;
+        
+        this.openRazorpay({
+          transactionId: payment.transactionId,
+          razorpayOrderId: payment.razorpayOrderId,
+          amount: payment.amount
+        });
+      })
+      .catch(err => {
+        this.loading = false;
+        this.submitted = false;
+        this.cleanup();
+        this.appService.toastError(err.message || err);
+        this.router.navigate(['/payments/cancel']);
+      });
+  }
 }
-
 
 
 

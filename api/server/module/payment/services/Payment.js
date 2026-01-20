@@ -26,7 +26,7 @@ exports.createOrderByRazorpay = async options => {
   const transaction = new DB.Transaction({
     tutorId: options.tutorId,
     userId: options.userId,
-    targetId: options.target._id,
+    targetId: options.target && options.target._id,
     description: options.description,
     targetType: options.targetType,
     originalPrice: options.price,
@@ -78,6 +78,13 @@ exports.createOrderByRazorpay = async options => {
 
   await transaction.save();
 
+  if (options.appointmentId) {
+    await DB.Appointment.update(
+      { _id: options.appointmentId },
+      { $set: { transactionId: transaction._id } }
+    );
+  }
+
   // 💸 FREE PAYMENT
   if (transaction.price <= 0) {
     transaction.status = 'completed';
@@ -107,6 +114,54 @@ exports.createOrderByRazorpay = async options => {
   };
 };
 
+exports.updatePaymentMutilple = async transactionId => {
+  const transaction =
+    transactionId instanceof DB.Transaction
+      ? transactionId
+      : await DB.Transaction.findOne({ _id: transactionId });
+  if (!transaction) throw new Error('Transaction not found');
+  const paymentInfo = transaction.paymentInfo;
+  const isSuccess =
+    paymentInfo && paymentInfo.status === 'captured';
+  transaction.status = isSuccess ? 'completed' : 'pending';
+  transaction.paid = isSuccess;
+  await transaction.save();
+  if (!isSuccess) return transaction;
+  const user = await DB.User.findOne({ _id: transaction.userId });
+  const tutor = await DB.User.findOne({ _id: transaction.tutorId });
+  let commissionRate = process.env.COMMISSION_RATE;
+  const config = await DB.Config.findOne({ key: 'commissionRate' });
+  if (config) commissionRate = config.value;
+  if (commissionRate > 1) commissionRate /= 100;
+  const children = await DB.Transaction.find({
+    parentTransactionId: transaction._id
+  });
+  await Promise.all(
+    children.map(async child => {
+      const price = child.price;
+      const commission =
+        price * (tutor.commissionRate || commissionRate);
+      await DB.Transaction.update(
+        { _id: child._id },
+        {
+          $set: {
+            status: 'completed',
+            paid: true,
+            commission,
+            balance: price - commission
+          }
+        }
+      );
+      const appointment = await DB.Appointment.findOne({
+        transactionId: child._id
+      });
+      if (appointment) {
+        await enrollQ.createAppointmentSolo(appointment._id);
+      }
+    })
+  );
+  return transaction;
+};
 
 
 

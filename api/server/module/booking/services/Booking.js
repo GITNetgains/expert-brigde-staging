@@ -148,7 +148,21 @@ exports.create = async options => {
     }
     await appointment.save();
 
-    return Service.Payment.createPaymentIntentByStripe(data);
+    return Service.Payment.createOrderByRazorpay({
+  appointmentId: appointment._id,
+  userId: options.userId,
+  tutorId: tutor._id,
+  targetType: options.targetType,
+  target: subject,
+  price: subject.price || tutor.price1On1Class,
+  name: `Book appointment with ${tutor.name}`,
+  description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
+  redirectSuccessUrl: options.redirectSuccessUrl,
+  cancelUrl: options.cancelUrl,
+  couponCode: options.couponCode,
+  type: 'booking'
+});
+
   } catch (e) {
     throw e;
   }
@@ -287,7 +301,7 @@ exports.checkout = async (
           targetType: data.targetType,
           originalPrice: subject.price || tutor.price1On1Class,
           type: 'booking',
-          paymentGateway: 'stripe',
+          paymentGateway: 'razorpay',
           price: itemPrice,
           discountPrice,
           discountAmount,
@@ -318,18 +332,19 @@ exports.checkout = async (
           targetType: data.targetType,
           target: { isFree: false },
           tutorId: tutor._id,
-          type: 'booking'
+          type: 'booking-multiple'
         };
-        // parent transaction
-        const transaction = await Service.Payment.createPaymentCheckout(paymentData);
-        if (transaction && transaction.stripeClientSecret) {
+        const payment = await Service.Payment.createOrderByRazorpay(paymentData);
+        if (payment && payment.transactionId) {
           for (const t of createdTransactions) {
-            t.parentTransactionId = transaction._id;
+            t.parentTransactionId = payment.transactionId;
             await t.save();
           }
           return {
             total: createdAppointments.length,
-            stripeClientSecret: transaction.stripeClientSecret
+            transactionId: payment.transactionId,
+            razorpayOrderId: payment.razorpayOrderId,
+            amount: payment.amount
           };
         }
       }
