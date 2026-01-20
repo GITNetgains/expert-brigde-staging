@@ -34,6 +34,10 @@ export class AiResultComponent implements OnInit, OnDestroy {
   aiFileUploadOptions: any;
   aiAttachmentIds: string[] = [];
   uploadedAttachments: { id: string; name: string }[] = [];
+  removeAttachment(index: number) {
+    this.aiAttachmentIds.splice(index, 1);
+    this.uploadedAttachments.splice(index, 1);
+}
 
   isClientUser = false;
   private _uploadResolver: ((value: any) => void) | null = null;
@@ -58,10 +62,6 @@ export class AiResultComponent implements OnInit, OnDestroy {
 
       // prevent experts + force login
       onFileSelect: async (resp: any[]) => {
-
-       
-
-     
         const last = resp[resp.length - 1];
         const file = last.file;
         const ext = (file?.name || '').split('.').pop()?.toLowerCase() || '';
@@ -75,6 +75,7 @@ export class AiResultComponent implements OnInit, OnDestroy {
         return true;
       },
 
+      
       // after upload, save files
       onFinish: (res: any | any[]) => {
         const items = Array.isArray(res) ? res : [res];
@@ -102,6 +103,7 @@ export class AiResultComponent implements OnInit, OnDestroy {
     this.auth.getCurrentUser().then((u: any) => {
       this.isClientUser = !!u && u.type !== 'tutor';
     });
+    
 
     // read query params
     this.route.queryParams.subscribe(async (params) => {
@@ -182,35 +184,75 @@ lead = {
   email: '',
   phone: ''
 };
-goToLogin() { const returnUrl = this.router.createUrlTree( ['/pages/ai-result'], { queryParams: { q: this.query } } ).toString(); this.router.navigate(['/auth/login'], { queryParams: { returnUrl } }); }
 
- async submit() {
-  if (!this.editableText.trim()) return;
+// Inside AiResultComponent class
 
-  if (!this.lead.name || !this.lead.email || !this.lead.phone) {
-    this.appService.toastError('Please fill all contact details');
-    return;
+startCountdown() {
+  // Clear any existing interval first to prevent overlaps
+  if (this.countdownInterval) {
+    clearInterval(this.countdownInterval);
   }
 
-  await this.userService.addAiQuery({
-    query: this.query,
-    description: this.editableText,
-    lead: this.lead,
-    aiAttachmentIds: this.aiAttachmentIds
-  });
-
-  this.appService.toastSuccess('Request submitted successfully');
-  this.submittedSuccess = true;
+  this.countdown = 10; // Reset to 10 seconds
 
   this.countdownInterval = setInterval(() => {
     this.countdown--;
-    if (this.countdown === 0) {
+    
+    if (this.countdown <= 0) {
       clearInterval(this.countdownInterval);
       this.router.navigate(['/']);
     }
   }, 1000);
 }
 
+// ai-result.component.ts logic tweaks
+submitting = false; // New flag for production safety
+
+async submit() {
+  if (!this.editableText.trim() || this.submitting) return;
+
+  // 1. Validation Logic
+  if (!this.auth.isLoggedin()) {
+    if (!this.lead.name || !this.lead.email || !this.lead.phone) {
+      this.appService.toastError('Please fill all contact details');
+      return;
+    }
+  } else {
+    const u = await this.auth.getCurrentUser();
+    this.lead.email = u.email;
+    this.lead.name = u.name;
+    this.lead.phone = u.phoneNumber;
+  }
+
+  try {
+    this.submitting = true; // Start loading state
+    await this.userService.addAiQuery({
+      query: this.query,
+      description: this.editableText,
+      lead: this.lead,
+      aiAttachmentIds: this.aiAttachmentIds
+    });
+
+    this.appService.toastSuccess('Request submitted successfully');
+    this.submittedSuccess = true;
+    this.startCountdown(); 
+    
+  } catch (err: any) {
+    // Extract specific backend error message if available
+    const msg = err?.error?.message || 'An error occurred. Please try again.';
+    this.appService.toastError(msg);
+  } finally {
+    this.submitting = false; // Reset loading state
+  }
+}
+
+goToLogin() { 
+  const returnUrl = this.router.createUrlTree(
+    ['/pages/ai-result'], 
+    { queryParams: { q: this.query } }
+  ).toString(); 
+  this.router.navigate(['/auth/login'], { queryParams: { returnUrl } }); 
+}
 
   ngOnDestroy() {
     if (this.countdownInterval) {

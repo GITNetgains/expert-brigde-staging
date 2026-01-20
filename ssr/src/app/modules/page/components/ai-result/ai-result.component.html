@@ -1,9 +1,7 @@
 <div class="ai-result-wrapper">
 
-  <!-- BEFORE SUBMISSION -->
   <div *ngIf="!submittedSuccess" class="result-container">
 
-    <!-- Heading -->
     <h1 class="heading">
       Your search posting for
       <span class="highlight">{{ extractedRole }}</span>
@@ -12,15 +10,14 @@
       is shared below:
     </h1>
 
-    <!-- Subtitle - Left Aligned -->
-    <p class="subtitle-left">
-      Fine tweak the below response before submitting your request
-    </p>
+    <div class="content-container">
+        <p class="subtitle-left">
+        Fine tweak the below response before submitting your request
+        </p>
+    </div>
 
-    <!-- Error -->
-    <div *ngIf="error" class="error-msg">{{ error }}</div>
+    <div *ngIf="error" class="error-msg content-container">{{ error }}</div>
 
-    <!-- Text Editor Card -->
     <div class="editor-card">
       <textarea
         [(ngModel)]="editableText"
@@ -29,60 +26,65 @@
       ></textarea>
     </div>
 
-    <!-- Attachments Block -->
-    <div class="editor-card">
-      <label>Attach File (pdf, docx, jpg, png)</label>
+  <div class="editor-card attachment-card">
+    <label class="card-label">Attach File (pdf, docx, jpg, png)</label>
 
-      <!-- If not logged in -->
-      <div *ngIf="!auth.isLoggedin()" style="color:#b91c1c; text-align:left; margin-top:10px">
-        Please <a (click)="goToLogin()" style="cursor:pointer;color:#0645AD">login</a> to attach files.
-      </div>
-
-      <!-- If logged in but NOT a client -->
-      <div *ngIf="auth.isLoggedin() && !isClientUser" style="color:#b91c1c; text-align:left; margin-top:10px">
-        Only clients can attach files. Experts cannot attach or submit.
-      </div>
-
-      <!-- File uploader visible ONLY to client users -->
-      <app-file-upload
-        *ngIf="auth.isLoggedin() && isClientUser"
-        [options]="aiFileUploadOptions">
-      </app-file-upload>
-
-      <div class="editor-card">
-  <h3>Contact Details</h3>
-
-  <input type="text"
-         [(ngModel)]="lead.name"
-         placeholder="Full Name *" />
-
-  <input type="email"
-         [(ngModel)]="lead.email"
-         placeholder="Email Address *" />
-
-  <input type="tel"
-         [(ngModel)]="lead.phone"
-         placeholder="Phone Number *" />
-</div>
-
-      <!-- Show uploaded files -->
-      <div *ngIf="uploadedAttachments.length" class="mt-2" style="text-align:left">
-        <strong>Attached files ({{ uploadedAttachments.length }})</strong>
-        <ul>
-          <li *ngFor="let f of uploadedAttachments">{{ f.name }}</li>
-        </ul>
-      </div>
+    <div *ngIf="!auth.isLoggedin()" class="auth-prompt">
+        Please <a (click)="goToLogin()" class="link-text">login</a> to attach files.
     </div>
 
-    <!-- Buttons - Right aligned -->
-    <div class="actions-right">
+    <app-file-upload
+        *ngIf="auth.isLoggedin() && isClientUser"
+        [options]="aiFileUploadOptions">
+    </app-file-upload>
+
+    <div *ngIf="uploadedAttachments.length > 0" class="attached-files-container">
+        <p class="attached-title">Attached Files:</p>
+        <div *ngFor="let file of uploadedAttachments; let i = index" class="file-badge">
+            <span class="file-icon">📄</span>
+            <span class="file-name">{{ file.name }}</span>
+            <button class="remove-btn" (click)="removeAttachment(i)">×</button>
+        </div>
+    </div>
+</div>
+
+    <div class="editor-card signup-card" *ngIf="!auth.isLoggedin()">
+      <div class="form-header">
+        <h3>Kindly Signup to submit your query</h3>
+        <p>Already Sign up? <a (click)="goToLogin()" class="link-text">Please login</a></p>
+      </div>
+
+      <div class="form-row">
+          <div class="form-group">
+              <label for="fullName">Name</label>
+              <input type="text" id="fullName" [(ngModel)]="lead.name" placeholder="Enter your full name" class="form-control" />
+          </div>
+          <div class="form-group">
+              <label for="emailAddr">Email</label>
+              <input type="email" id="emailAddr" [(ngModel)]="lead.email" placeholder="Enter your email address" class="form-control" />
+          </div>
+          <div class="form-group full-width">
+              <label for="phoneNo">Phone No.</label>
+              <input type="tel" id="phoneNo" [(ngModel)]="lead.phone" placeholder="Enter your phone no" class="form-control" />
+           </div>
+      </div>
+       <!-- <div class="form-row">
+           <div class="form-group full-width">
+              <label for="phoneNo">Phone No.</label>
+              <input type="tel" id="phoneNo" [(ngModel)]="lead.phone" placeholder="Enter your phone no" class="form-control" />
+           </div>
+       </div> -->
+    </div>
+
+    <div class="actions-right content-container">
       <button type="button" class="btn reset-btn" (click)="reset()">Reset</button>
-      <button type="button" class="btn submit-btn" (click)="submit()">Submit</button>
+      <button type="button" class="btn submit-btn" (click)="submit()" [disabled]="loading">
+        {{ loading ?'Submit' : 'Submit' }}
+      </button>
     </div>
 
   </div>
 
-  <!-- AFTER SUBMISSION -->
   <div *ngIf="submittedSuccess" class="confirmation">
     {{ confirmationText }}
 
@@ -92,7 +94,6 @@
   </div>
 </div>
 
-<!-- Additional Sections -->
 <app-blog-section></app-blog-section>
 <app-make-it-happen></app-make-it-happen>
 <app-policies-section></app-policies-section>

@@ -58,6 +58,11 @@ exports.register = async (req, res, next) => {
       subject: 'Verify email address',
       emailVerifyLink: url.resolve(nconf.get('baseUrl'), `v1/auth/verifyEmail/${user.emailVerifiedToken}`)
     });
+    await Service.Mailer.send('student-new-account-register', process.env.ADMIN_EMAIL, {
+      subject: 'New Registered Client',
+      user: user.toObject(),
+      adminUrl: nconf.get('adminWebUrl') || nconf.get('adminURL')
+    });
 
     res.locals.register = PopulateResponse.success(
       {

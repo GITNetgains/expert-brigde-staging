@@ -279,65 +279,77 @@ exports.deleteAiQuery = async (req, res) => {
 // ================= AI QUERY CREATE =================
 exports.addAiQuery = async (req, res, next) => {
   try {
-    
-    const { query, description, aiAttachmentIds,lead = [] } = req.body;
+    const { query, description, aiAttachmentIds, lead = {} } = req.body;
+
+    if (!lead.email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
 
     let user = await DB.User.findOne({ email: lead.email });
-    
-    
 
     if (!user) {
-  user = await DB.User.create({
-    name: lead.name,
-    email: lead.email,
-    phoneNumber: lead.phone,
-    type: 'student',
-    role:'user',
-    type:'student',
-     aiQueries: {
-            query,
-            description,
-            aiAttachmentIds,
-            assignedTutors: []
-          }
-  });
-}else{
-   if (user.type === 'tutor') {
-      return res.status(403).json({
-        code: 403,
-        message: 'Only clients can create AI queries'
+      // Logic for NEW USER
+      user = await DB.User.create({
+        name: lead.name,
+        email: lead.email,
+        phoneNumber: lead.phone, // Ensure this matches frontend 'lead.phone'
+        type: 'student',
+        role: 'user',
+        aiQueries: [{
+          query,
+          description,
+          aiAttachmentIds,
+          assignedTutors: []
+        }]
       });
-    }
+    } else {
+      // Logic for REGISTERED USER
+      if (user.type === 'tutor') {
+        return res.status(403).json({
+          code: 403,
+          message: 'Only clients can create AI queries'
+        });
+      }
 
- await DB.User.findByIdAndUpdate(
-      user._id,
-      {
-        $push: {
-          aiQueries: {
-            query,
-            description,
-            aiAttachmentIds,
-            assignedTutors: []
+      await DB.User.findByIdAndUpdate(
+        user._id,
+        {
+          $push: {
+            aiQueries: {
+              query,
+              description,
+              aiAttachmentIds,
+              assignedTutors: []
+            }
           }
-        }
-      },
-      { new: true }
-    );}
-
-    if (!user) {
-      return next(PopulateResponse.notFound());
+        },
+        { new: true }
+      );
     }
 
-    res.locals.aiQuery = {
-      success: true
-    };
+   // Define the Admin URL from configuration
+const adminUrl = nconf.get('adminWebUrl') || nconf.get('adminURL');
 
+// Construct the raw HTML body
+const emailBody = `
+  <p>Dear Admin,</p>
+  <br />
+  <p>A new AI query lead has been created by ${user.name} (${user.email})</p>
+  <p><strong>Query</strong>: ${query}</p>
+  <p><strong>Description</strong>: ${description}</p>
+  <br />
+  <p>Review and assign tutors from the admin panel:</p>
+  <p><a href="${adminUrl}/users/update/${user._id}">${adminUrl}/users/update/${user._id}</a></p>
+`;
+
+// Use Mailer.raw to send the email directly
+await  Service.Mailer.sendRawNow(process.env.ADMIN_EMAIL, 'New AI Query Lead', emailBody);
+    res.locals.aiQuery = { success: true };
     return next();
   } catch (err) {
     return next(err);
   }
 };
-
 
 
 // controllers/user.controller.js

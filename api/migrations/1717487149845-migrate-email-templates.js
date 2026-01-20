@@ -334,6 +334,20 @@ const templates = {
     path: 'tutor/new-account-register.html',
     group: 'tutor'
   },
+  // 'student-new-account-register': {
+  //   name: 'New Registered Client',
+  //   subject: 'New Registered Client',
+  //   description: 'Notify to admin when a new client registers',
+  //   path: 'user/new-account-register.html',
+  //   group: 'user'
+  // },
+  'admin-new-ai-query': {
+    name: 'New AI Query Lead',
+    subject: 'New AI Query Lead',
+    description: 'Notify to admin when a new AI query is created',
+    path: 'user/new-ai-query.html',
+    group: 'user'
+  },
   'tutor-reject': {
     name: 'Reject tutor',
     subject: 'Your profile has been rejected!',

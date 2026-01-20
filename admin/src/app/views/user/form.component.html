@@ -224,7 +224,7 @@
               <ng-container *ngIf="q.aiAttachmentIds?.length; else noAttach">
                 <a
                   *ngFor="let a of q.aiAttachmentIds"
-                  [href]="a.url"
+                  [href]="a.fileUrl"
                   target="_blank"
                   class="d-block text-truncate"
                   style="max-width: 180px;">
