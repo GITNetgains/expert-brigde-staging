@@ -123,18 +123,21 @@ exports.enroll = async (req, res, next) => {
       }
     }
 
-    const data = await Service.Payment.createPaymentIntentByStripe(Object.assign(
-      {
-        userId: req.user._id,
-        tutorId: validate.value.tutorId,
-        price: targetType === 'subject' ? subject.price : target.price,
-        name: target.name || 'No name',
-        targetType,
-        target,
-        description: `${req.user.name} buy ${targetType} "${target.name}" of tutor ${tutor.name}`
-      },
-      validate.value
-    ));
+  const data = await Service.Payment.createOrderByRazorpay(
+  Object.assign(
+    {
+      userId: req.user._id,
+      tutorId: validate.value.tutorId,
+      price: targetType === 'subject' ? subject.price : target.price,
+      name: target.name || 'No name',
+      targetType,
+      target,
+      description: `${req.user.name} buy ${targetType} "${target.name}" of tutor ${tutor.name}`
+    },
+    validate.value
+  )
+);
+
     // if (!data.stripeClientSecret) {
     //   return next(PopulateResponse.error({ message: 'No transaction is possible! Please try again' }));
     // }

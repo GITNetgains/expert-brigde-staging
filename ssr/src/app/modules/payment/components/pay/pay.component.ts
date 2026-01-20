@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { StripeService, StripeCardComponent } from 'ngx-stripe';
-import { StripeElementsOptions } from '@stripe/stripe-js';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { filter } from 'rxjs/operators';
 import { IUser } from 'src/app/interface';
+import {environment} from 'src/environments/environment';
+
 import {
   AuthService,
   AppointmentService,
@@ -14,47 +14,32 @@ import {
   AppService
 } from 'src/app/services';
 
+declare var Razorpay: any;
+
 @Component({
   selector: 'app-pay',
   templateUrl: './pay.html'
 })
 export class PayComponent implements OnInit {
-  @ViewChild(StripeCardComponent) card: StripeCardComponent;
-  public cardHolderName: any = '';
-  public cardOptions: any = {
-    hidePostalCode: true,
-    style: {
-      base: {
-        iconColor: '#666EE8',
-        color: '#31325F',
-        fontWeight: 300,
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSize: '18px',
-        '::placeholder': {
-          color: 'rgba(0, 157, 151, 0.75)'
-        }
-      }
-    }
-  };
-  // optional parameters
-  public elementsOptions: StripeElementsOptions = {
-    locale: 'en'
-  };
-  public stripeTest: FormGroup;
+
+  public paymentForm!: FormGroup;
   public loading = false;
-  public paymentParams: any;
-  public type: string;
-  public targetType: string;
-  public paymentIntent: any;
   public submitted = false;
-  public countries: any;
-  public targetName: string;
-  public tutorName: string;
-  public currentUser: IUser;
+
+  public paymentParams: any;
+  public paymentIntent: any;
+
+  public type!: string;
+  public targetType!: string;
+  public targetName!: string;
+  public tutorName!: string;
   public title = '';
+
+  public countries: any;
+  public currentUser!: IUser;
+
   constructor(
     private router: Router,
-    private stripeService: StripeService,
     private fb: FormBuilder,
     private auth: AuthService,
     private route: ActivatedRoute,
@@ -65,171 +50,167 @@ export class PayComponent implements OnInit {
     private appService: AppService
   ) {
     if (this.auth.isLoggedin()) {
-      this.auth.getCurrentUser().then((resp) => (this.currentUser = resp));
+      this.auth.getCurrentUser().then(user => {
+        this.currentUser = user;
+      });
     }
+
     this.type = this.route.snapshot.queryParams.type;
     this.targetType = this.route.snapshot.queryParams.targetType;
     this.targetName = this.route.snapshot.queryParams.targetName;
     this.tutorName = this.route.snapshot.queryParams.tutorName;
     this.title = this.route.snapshot.queryParams.title;
+
     this.router.events
-      .pipe(filter((e) => e instanceof NavigationEnd))
+      .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        const navigation = this.router.getCurrentNavigation();
-        if (navigation && navigation.extras && navigation.extras.state) {
-          this.paymentParams = navigation.extras.state;
+        const nav = this.router.getCurrentNavigation();
+        if (nav?.extras?.state) {
+          this.paymentParams = nav.extras.state;
         }
       });
   }
-  ngOnInit() {
+
+  ngOnInit(): void {
     if (!this.paymentParams) {
       const params = localStorage.getItem('paymentParams');
       if (params) {
         this.paymentParams = JSON.parse(params);
       } else {
         this.router.navigate(['/home']);
+        return;
       }
     }
+
     this.countries = this.countryService.getCountry();
-    this.stripeTest = this.fb.group({
-      name: ['', [Validators.required]],
-      emailRecipient: ['', [Validators.email]],
-      address_line1: ['', [Validators.required]],
-      address_city: ['', [Validators.required]],
-      address_state: ['', [Validators.required]],
-      address_country: [undefined, [Validators.required]]
+
+    this.paymentForm = this.fb.group({
+      name: ['', Validators.required],
+      emailRecipient: ['', Validators.email],
+      address_line1: ['', Validators.required],
+      address_city: ['', Validators.required],
+      address_state: ['', Validators.required],
+      address_country: [null, Validators.required]
     });
   }
 
-  buy() {
-    this.submitted = true;
-    if (this.stripeTest.invalid) {
-      return this.appService.toastError('Please complete the required fields');
-    }
-    this.loading = true;
-    const name = this.stripeTest.get('name')?.value;
-    const emailRecipient = this.stripeTest.get('emailRecipient')?.value;
-    if (this.type === 'gift' && !emailRecipient) {
-      this.loading = false;
-      return this.appService.toastError('Please enter email of recipient');
-    }
-    if (!name) {
-      this.loading = false;
-      return this.appService.toastError('Please enter your name');
-    }
-    if (!this.paymentParams) {
-      return this.appService.toastError(
-        'Can not found payment info, please try again!'
-      );
-    }
-    if (this.targetType === 'webinar' || this.targetType === 'course') {
-      this.paymentParams.emailRecipient = emailRecipient || '';
-      this.paymentService
-        .enroll(this.paymentParams)
-        .then((resp) => {
-          this.submitted = false;
-          this.paymentIntent = resp.data;
-          if (this.paymentIntent.paymentMode === 'test')
-            return this.router.navigate(['/payments/success']);
-          this.confirmPayment();
-        })
-        .catch((err) => {
-          this.loading = false;
-          this.submitted = false;
-          this.appService.toastError(err);
-          this.router.navigate(['/payments/cancel']);
-        });
-    } else {
-      if (
-        this.paymentParams &&
-        this.paymentParams.times &&
-        this.paymentParams.times.length > 0
-      ) {
-        return this.appointmentService
-          .checkout(this.paymentParams)
-          .then((resp) => {
-            this.submitted = false;
-            this.paymentIntent = resp.data;
-            if (this.paymentIntent.paymentMode === 'test')
-              return this.router.navigate(['/payments/success']);
-            this.confirmPayment();
-          })
-          .catch((err) => {
-            this.loading = false;
-            this.submitted = false;
-            localStorage.removeItem('title');
-            localStorage.removeItem('paymentParams');
-            localStorage.removeItem('cartInfo');
-            this.cartService.removeCart();
-            this.appService.toastError(err);
-            // this.router.navigate(['/payments/cancel']);
-          });
-      }
-      this.appointmentService
-        .create(this.paymentParams)
-        .then((resp) => {
-          this.submitted = false;
-          this.paymentIntent = resp.data;
-          if (this.paymentIntent.paymentMode === 'test')
-            return this.router.navigate(['/payments/success']);
-          this.confirmPayment();
-        })
-        .catch((err) => {
-          this.loading = false;
-          this.submitted = false;
-          localStorage.removeItem('title');
-          localStorage.removeItem('paymentParams');
-          this.appService.toastError(err);
-          this.router.navigate(['/payments/cancel']);
-        });
-    }
+  // ==========================
+  // BUY
+buy(): void {
+  this.submitted = true;
+
+  if (this.paymentForm.invalid) {
+    this.appService.toastError('Please complete the required fields');
+    return;
   }
 
-  confirmPayment() {
-    const name = this.stripeTest.get('name')?.value;
-    const address_line1 = this.stripeTest.get('address_line1')?.value;
-    const address_city = this.stripeTest.get('address_city')?.value;
-    const address_state = this.stripeTest.get('address_state')?.value;
-    const address_country = this.stripeTest.get('address_country')?.value;
-    this.stripeService
-      .confirmCardPayment(this.paymentIntent.stripeClientSecret, {
-        payment_method: {
-          card: this.card.element,
-          billing_details: {
-            name
-          }
-        },
-        shipping: {
-          name: name,
-          address: {
-            line1: address_line1,
-            city: address_city,
-            country: address_country,
-            state: address_state
-          }
-        }
-      })
-      .subscribe((result) => {
-        this.loading = false;
-        if (
-          result &&
-          result.paymentIntent &&
-          result.paymentIntent.status === 'succeeded'
-        ) {
-          if (this.paymentIntent && this.paymentIntent._id) {
-            this.paymentService
-              .confirmStripe({ transactionId: this.paymentIntent._id })
-              .catch(() => {});
-          }
-          localStorage.removeItem('title');
-          localStorage.removeItem('paymentParams');
-          localStorage.removeItem('cartInfo');
-          this.cartService.removeCart();
-          return this.router.navigate(['/payments/success']);
-        } else if (result && result.error) {
-          this.appService.toastError(result.error.message || '');
-          return this.router.navigate(['/payments/cancel']);
-        }
+  if (this.type === 'gift' && !this.paymentForm.value.emailRecipient) {
+    this.appService.toastError('Please enter recipient email');
+    return;
+  }
+
+  this.loading = true;
+
+  const enrollPayload = {
+    tutorId: this.paymentParams.tutorId,
+    targetId: this.paymentParams.targetId,
+    targetType: 'subject',
+    redirectSuccessUrl: this.paymentParams.redirectSuccessUrl,
+    cancelUrl: this.paymentParams.cancelUrl,
+    couponCode: '',
+    emailRecipient: ''
+  };
+
+  this.paymentService.enroll(enrollPayload)
+    .then(resp => {
+
+      // ✅ CORRECT RESPONSE ACCESS
+      const payment = resp?.data;
+
+      console.log('PAYMENT INIT RESPONSE:', payment);
+
+      if (!payment?.razorpayOrderId || !payment?.amount || !payment?.transactionId) {
+        throw new Error('Payment init failed');
+      }
+
+      this.loading = false;
+
+      this.openRazorpay({
+        transactionId: payment.transactionId,
+        razorpayOrderId: payment.razorpayOrderId,
+        amount: payment.amount
       });
+
+    })
+    .catch(err => {
+      this.loading = false;
+      this.appService.toastError(err.message || err);
+    });
+}
+
+
+
+
+
+
+  // ==========================
+  // RAZORPAY CHECKOUT
+  // ==========================
+openRazorpay(payment: any): void {
+
+  if (!payment?.razorpayOrderId || !payment?.amount) {
+    console.error('Invalid Razorpay payload', payment);
+    this.loading = false;
+    this.appService.toastError('Payment initialization failed');
+    return;
+  }
+
+  const options = {
+    key: environment.razorpayKey,
+    amount: payment.amount * 100,
+    currency: 'INR',
+    name: 'Expert Bridge',
+    description: this.title || 'Payment',
+    order_id: payment.razorpayOrderId,
+
+    prefill: {
+      name: this.paymentForm.value.name,
+      email: this.currentUser?.email
+    },
+
+    handler: (response: any) => {
+      this.paymentService
+        .confirmRazorpay({
+          transactionId: payment.transactionId,
+          razorpayPaymentId: response.razorpay_payment_id
+        })
+        .finally(() => {
+          this.cleanup();
+          this.router.navigate(['/payments/success']);
+        });
+    },
+
+    modal: {
+      ondismiss: () => {
+        this.loading = false;
+        this.router.navigate(['/payments/cancel']);
+      }
+    }
+  };
+
+  new Razorpay(options).open();
+}
+
+  // ==========================
+  // CLEANUP
+  // ==========================
+  cleanup(): void {
+    this.loading = false;
+    this.submitted = false;
+
+    localStorage.removeItem('title');
+    localStorage.removeItem('paymentParams');
+    localStorage.removeItem('cartInfo');
+    this.cartService.removeCart();
   }
 }

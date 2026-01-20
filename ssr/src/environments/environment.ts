@@ -12,7 +12,7 @@ YOUR_GOOGLE_CLIENT_ID:'824314878142-fb3h8plnidnug1anf52vd8dmeu05cr96.apps.google
 LINKEDIN_CLIENT_ID:'86lnkec9zaxz01',
 YOUR_GOOGLE_REDIRECT_URI:'http://localhost:4200/auth/google/callback',
 YOUR_LINKEDIN_REDIRECT_URI:'http://localhost:4200/auth/linkedin/callback',
-
+razorpayKey:'rzp_test_S29C3LRyS1b61W',
 zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA', // Zoom sdk client ID
  zoomDomain: 'localhost',
  zoomSiteUrl: 'http://localhost:1338',

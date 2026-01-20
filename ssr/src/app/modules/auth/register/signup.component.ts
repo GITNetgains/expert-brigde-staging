@@ -349,7 +349,7 @@ import {
   TutorService
 } from 'src/app/services';
 
-const SIGNUP_PROGRESS_KEY = 'signup_progress_v1';
+
 
 @Component({
   templateUrl: 'signup.component.html',
@@ -436,25 +436,9 @@ export class SignupComponent
   /* =========================
    * INIT + RESTORE STATE
    * ========================= */
-  ngOnInit() {
-    const saved = localStorage.getItem(SIGNUP_PROGRESS_KEY);
-    if (!saved) return;
-
-    try {
-      const data = JSON.parse(saved);
-      if (data?.email && data?.step) {
-        this.account.email = data.email;
-        this.account.type = data.type;
-        this.step = data.step;
-
-        if (this.step === 'otp') {
-          this.startOtpTimer(60);
-        }
-      }
-    } catch {
-      localStorage.removeItem(SIGNUP_PROGRESS_KEY);
-    }
-  }
+ ngOnInit() {
+  // No persisted signup state
+}
 
   ngAfterViewInit() {
     const input = document.getElementById('email-input') as any;
@@ -502,7 +486,7 @@ export class SignupComponent
       .then(() => {
         this.step = 'otp';
         this.startOtpTimer(60);
-        this.saveSignupProgress();
+        
         this.appService.toastSuccess('OTP sent to your email');
       })
       .catch(err => this.appService.toastError(err));
@@ -520,7 +504,7 @@ export class SignupComponent
       })
       .then(() => {
         this.step = 'createPassword';
-        this.saveSignupProgress();
+        
         this.appService.toastSuccess('Verified. Create password');
       })
       .catch(err => this.appService.toastError(err));
@@ -542,11 +526,10 @@ export class SignupComponent
       .then(() => {
         if (this.account.type === 'student') {
           this.step = 'personalInfo';
-          this.saveSignupProgress();
+          
           this.appService.toastSuccess('Password set. Complete personal info');
         } else {
-          this.clearSignupProgress();
-          this.appService.toastSuccess('Account created. Please login.');
+                    this.appService.toastSuccess('Account created. Please login.');
           this.router.navigate(['/auth/login']);
         }
       })
@@ -570,8 +553,7 @@ export class SignupComponent
         address: address.trim()
       })
       .then(() => {
-        this.clearSignupProgress();
-        this.appService.toastSuccess('Account created. Please login.');
+                this.appService.toastSuccess('Account created. Please login.');
         this.router.navigate(['/auth/login']);
       })
       .catch(err => this.appService.toastError(err));
@@ -595,8 +577,7 @@ export class SignupComponent
         yearsExperience: this.tutorProfile.yearsExperience
       })
       .then(() => {
-        this.clearSignupProgress();
-        this.appService.toastSuccess('Profile submitted. Pending admin approval.');
+                this.appService.toastSuccess('Profile submitted. Pending admin approval.');
         this.router.navigate(['/users/dashboard']);
       })
       .catch(err => this.appService.toastError(err));
@@ -641,20 +622,7 @@ export class SignupComponent
   /* =========================
    * LOCAL STORAGE HELPERS
    * ========================= */
-  saveSignupProgress() {
-    localStorage.setItem(
-      SIGNUP_PROGRESS_KEY,
-      JSON.stringify({
-        email: this.account.email,
-        type: this.account.type,
-        step: this.step
-      })
-    );
-  }
-
-  clearSignupProgress() {
-    localStorage.removeItem(SIGNUP_PROGRESS_KEY);
-  }
+ 
 
   /* =========================
    * EMAIL DOMAIN CHECK

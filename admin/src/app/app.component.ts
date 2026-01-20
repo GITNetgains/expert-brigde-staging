@@ -10,6 +10,7 @@ import { iconSubset } from './icons/icon-subset';
 
 @Component({
     selector: 'app-root',
+     standalone: true, 
     template: '<router-outlet />',
     imports: [RouterOutlet]
 })

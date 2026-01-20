@@ -19,7 +19,6 @@ import { environment } from 'src/environments/environment';
     PaymentRoutingModule,
     NgSelectModule,
     TranslateModule.forChild(),
-    NgxStripeModule.forRoot(environment.stripeKey),
     ReactiveFormsModule
   ],
   declarations: [PaymentSuccessComponent, PaymentCancelComponent, PayComponent],
