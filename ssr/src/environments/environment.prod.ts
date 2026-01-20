@@ -9,6 +9,7 @@ stripeKey: 'pk_test_51SmSo0ANXuVqq380ESby15NFCosOt9UwntUXi1CWydct9BZW5WycxynCd5L
 YOUR_GOOGLE_REDIRECT_URI:'https://expertbridge.co/auth/google/callback',
 YOUR_LINKEDIN_REDIRECT_URI:'https://expertbridge.co/auth/linkedin/callback',
 apiBaseUrl:'https://api.expertbridge.co/v1',
+razorpayKey:'rzp_test_S29C3LRyS1b61W',
 url:'https://expertbridge.co',
 socketUrl: 'https://api.expertbridge.co',
   maximumFileSize: 1024,
