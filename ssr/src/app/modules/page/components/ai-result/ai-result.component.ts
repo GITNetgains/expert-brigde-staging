@@ -145,10 +145,13 @@ export class AiResultComponent implements OnInit, OnDestroy {
  async fetch() {
   this.loading = true;
   try {
-    const token = await grecaptcha.execute(
-      '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
-      { action: 'ai_search' }
-    );
+    let token = '';
+    if (isPlatformBrowser(this.platformId)) {
+      token = await grecaptcha.execute(
+        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
+        { action: 'ai_search' }
+      );
+    }
 
     const resp = await this.ai.search(this.query, token);
     const data: any = resp?.data ?? {};
