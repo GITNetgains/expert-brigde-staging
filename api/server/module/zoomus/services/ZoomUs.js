@@ -36,13 +36,11 @@ exports.generateSignature = async meetingPayload => {
 exports.createUser = async options => {
   try {
     const headers = await getZoomRequestHeader();
-    console.log(headers);
     return new Promise((resolve, reject) =>
       request(
         {
           uri: 'https://api.zoom.us/v2/users',
           method: 'POST',
-          // https://zoom.github.io/api/#create-a-user
           json: {
             action: options.action || 'create',
             user_info: {
@@ -54,12 +52,29 @@ exports.createUser = async options => {
           },
           headers
         },
-        (error, response, body) => {
+        async (error, response, body) => { 
           if (error) {
             console.error('Zoom API Error:', error);
             return reject(error);
           }
-          console.log('Zoom API Response:', body); // Add logging
+
+          if (response.statusCode === 201 || (body && body.id)) {
+            try {
+              await DB.User.updateOne(
+                { email: options.email },
+                { 
+                  $set: { 
+                    isZoomAccount: true,
+                    zoomAccountInfo: body 
+                  } 
+                }
+              );
+              console.log(`Database updated: ${options.email} is now a Zoom account.`);
+            } catch (dbErr) {
+              console.error('DB Update Error:', dbErr);
+            }
+          }
+
           return resolve(body);
         }
       )
