@@ -18,13 +18,6 @@ exports.config = {
   publicPath: path.resolve('./public')
   // APIDocsPath: path.resolve('./docs')
 };
-global.FormData = require("formdata-node").FormData;
-if (!global.fetch) {
-  global.fetch = (...args) =>
-    import('node-fetch').then(({ default: fetch }) => fetch(...args));
-}
-
-
 
 // Expose app
 exports.core = kernel => {
