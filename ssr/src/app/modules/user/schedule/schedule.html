@@ -11,7 +11,7 @@
             >Schedule</a
           >
         </li>
-        <li role="presentation" [ngClass]="{'active': tab === 'coupon'}">
+        <!-- <li role="presentation" [ngClass]="{'active': tab === 'coupon'}">
           <a href="javascript:void(0)" (click)="onTabSelect('coupon')" translate
             >Coupon</a
           >
@@ -20,7 +20,7 @@
           <a translate href="javascript:void(0)" (click)="onTabSelect('free')"
             >Free Session</a
           >
-        </li>
+        </li> -->
       </ul>
       <div class="tab-content card-body" id="main_form">
         <div class="" id="step1" [hidden]="tab !=='schedule'">
@@ -28,7 +28,7 @@
             <div class="row mb-4">
               <div class="col-md-12 d-flex justify-content-between">
                 <h5 class="color-light-black" translate>
-                  Create slot for 1on1 classes
+                  Create slot for 1on1 sessions
                 </h5>
 
                 <button
@@ -36,7 +36,7 @@
                   (click)="addRecurring(false)"
                   translate
                 >
-                  Add Bulk classes
+                  Add Bulk sessions
                 </button>
               </div>
             </div>

@@ -59,8 +59,9 @@ export class AiResultComponent implements OnInit, OnDestroy {
       url: environment.apiBaseUrl + '/media/files',
       multiple: true,
       uploadOnSelect: true,
+      maxFileSize: 10 * 1024 * 1024, // 10MB limit
       accept:
-        'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png',
+        'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png,image/jpg',
 
       // prevent experts + force login
       onFileSelect: async (resp: any[]) => {
@@ -71,6 +72,11 @@ export class AiResultComponent implements OnInit, OnDestroy {
 
         if (!allowed.includes(ext)) {
           this.appService.toastError('Invalid file type');
+          return false;
+        }
+
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          this.appService.toastError('File size too large. Maximum allowed is 10MB.');
           return false;
         }
 
@@ -98,7 +104,12 @@ export class AiResultComponent implements OnInit, OnDestroy {
         }
       },
 
-      onUploading: (state: boolean) => (this.loading = state)
+      onUploading: (state: boolean) => (this.loading = state),
+
+      onError: (error: any) => {
+        this.appService.toastError('File upload failed. Please try again.');
+        console.error('Upload error:', error);
+      }
     };
 
     // determine user type

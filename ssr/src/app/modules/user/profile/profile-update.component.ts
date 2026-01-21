@@ -336,7 +336,7 @@ export class ProfileUpdateComponent implements OnInit {
         .update(data)
         .then((resp) => {
           console.log(resp);
-
+this.info.password = '';
           this.info = _.merge(resp.data, this.info);
           this.languageNames = [];
           this.mapLanguageName(this.info.languages);
@@ -354,6 +354,7 @@ export class ProfileUpdateComponent implements OnInit {
     return this.userService
       .updateMe(this.info)
       .then((resp: IResponse<any>) => {
+        this.info.password = '';
         this.info = _.merge(resp.data, this.info);
         this.appService.toastSuccess('Updated successfully!');
         this.utilService.notifyEvent('profileUpdate', this.info);

@@ -7,34 +7,34 @@ export const tutorMenus = [
     key: 'menu-my-profile-1'
   },
 
-  {
-    icon: 'fi fi-rs-chalkboard-user',
-    title: 'Group Class',
-    description: 'Group classes posted by the expert will be displayed here.',
-    path: '/users/groupclass',
-    key: 'menu-webinar-list'
-  },
-  {
-    icon: 'fi fi-rs-chalkboard-user',
-    title: 'Create a group class',
-    description: 'The expert can create a new group class from here.',
-    path: '/users/groupclass/create',
-    key: 'menu-webinar-create'
-  },
-  {
-    icon: 'fi fi-rr-book-alt',
-    title: 'Courses List',
-    description: 'Courses created by the expert will be listed here.',
-    path: '/users/courses',
-    key: 'menu-course-list'
-  },
-  {
-    icon: 'fi fi-rr-book-alt',
-    title: 'Create a course',
-    description: 'The expert can create a new course.',
-    path: '/users/courses/create',
-    key: 'menu-course-create'
-  },
+  // {
+  //   icon: 'fi fi-rs-chalkboard-user',
+  //   title: 'Group Class',
+  //   description: 'Group classes posted by the expert will be displayed here.',
+  //   path: '/users/groupclass',
+  //   key: 'menu-webinar-list'
+  // },
+  // {
+  //   icon: 'fi fi-rs-chalkboard-user',
+  //   title: 'Create a group class',
+  //   description: 'The expert can create a new group class from here.',
+  //   path: '/users/groupclass/create',
+  //   key: 'menu-webinar-create'
+  // },
+  // {
+  //   icon: 'fi fi-rr-book-alt',
+  //   title: 'Courses List',
+  //   description: 'Courses created by the expert will be listed here.',
+  //   path: '/users/courses',
+  //   key: 'menu-course-list'
+  // },
+  // {
+  //   icon: 'fi fi-rr-book-alt',
+  //   title: 'Create a course',
+  //   description: 'The expert can create a new course.',
+  //   path: '/users/courses/create',
+  //   key: 'menu-course-create'
+  // },
 
   {
     icon: 'fi fi-rs-coins',
@@ -57,13 +57,13 @@ export const tutorMenus = [
     path: '/users/appointments',
     key: 'menu-my-appointment'
   },
-  {
-    icon: 'fi fi-rr-calendar-check',
-    title: 'Group class bookings',
-    description: 'Appointments scheduled by the expert for group classes.',
-    path: '/users/appointments',
-    key: 'menu-my-appointment-1'
-  },
+  // {
+  //   icon: 'fi fi-rr-calendar-check',
+  //   title: 'Group class bookings',
+  //   description: 'Appointments scheduled by the expert for group classes.',
+  //   path: '/users/appointments',
+  //   key: 'menu-my-appointment-1'
+  // },
   {
     icon: 'fi fi-rr-chart-histogram',
     title: 'Earnings dashboard',

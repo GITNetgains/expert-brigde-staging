@@ -40,21 +40,21 @@
                   <app-sort [sortOption]="sortOption" [sortBy]="'userInfo.name'" (doSort)="onSort($event)"></app-sort>
                 </th>
                 <th>
-                  <span (click)="sortBy('webinarId', 'desc')" translate>Subject / Group Class</span>
+                  <span (click)="sortBy('webinarId', 'desc')" translate>Session type</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'webinarId'" (doSort)="onSort($event)"></app-sort>
                 </th>
-                <th>
+                <!-- <th>
                   <span (click)="sortBy('type', 'desc')" translate>Enroll type</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'type'" (doSort)="onSort($event)"></app-sort>
-                </th>
+                </th> -->
                 <th>
                   <span (click)="sortBy('paid', 'desc')" translate>Paid</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'paid'" (doSort)="onSort($event)"></app-sort>
                 </th>
-                <th>
+                <!-- <th>
                   <span (click)="sortBy('isFree', 'desc')" translate>Lesson Type</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'isFree'" (doSort)="onSort($event)"></app-sort>
-                </th>
+                </th> -->
                 <th>
                   <span (click)="sortBy('startTime', 'desc')" translate>Start Time</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'startTime'" (doSort)="onSort($event)"></app-sort>
