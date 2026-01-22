@@ -23,7 +23,7 @@
           </div>
           <div class="dashboard-profile-content pt-1">
             <h4 class="color-white">{{info.name}}</h4>
-            <p class="color-white font-weight-bold" translate>{{info.type}}</p>
+            <p class="color-white font-weight-bold" translate>{{ info.type === 'tutor' ? 'Expert' : 'Client' }}</p>
             <button
               class="btn btn-outline border-radius-md font-weight-bold"
               (click)="isEditProfile=!isEditProfile"

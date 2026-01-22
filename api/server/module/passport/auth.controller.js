@@ -200,7 +200,7 @@ exports.completeTutorProfile = async (req, res, next) => {
     await user.save();
 
     res.locals.completeTutorProfile = PopulateResponse.success(
-      { message: 'Tutor profile saved. Pending admin approval.' },
+      { message:'Thanks for submitting your profile details. You will be notified once approved via email.' },
       'TUTOR_PROFILE_COMPLETED'
     );
     next();

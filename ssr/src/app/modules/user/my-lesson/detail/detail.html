@@ -27,8 +27,7 @@
                 <td><span translate>Subject / Group Class</span></td>
                 <td>
                   <span *ngIf="appointment.targetType === 'subject'"
-                    >{{appointment.subject ? appointment.subject?.name : 'No
-                    name'}}</span
+                    >{{appointment.subject ? appointment.subject?.name : 'name'}}</span>
                   >
                   <a
                     class="color-light-red"
@@ -47,7 +46,7 @@
                 <td><span translate>Topic</span></td>
                 <td>{{appointment?.topic?.name}}</td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <td><span translate>Lesson Type</span></td>
                 <td>
                   <span
@@ -67,7 +66,7 @@
                     : 'Paid Lesson'}}</span
                   >
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td><span translate>Start Time</span></td>
                 <td><span> {{appointment.startTime | date:'short'}} </span></td>

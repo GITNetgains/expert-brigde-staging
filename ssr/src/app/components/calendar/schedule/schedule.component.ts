@@ -462,8 +462,8 @@ export class ScheduleEditComponent implements OnInit {
           if (this.type === 'subject') {
             message =
               this.isFree === false
-                ? 'Paid 1 on 1 class created successfully!'
-                : 'Free 1 on 1 class created successfully!';
+                ? 'Paid 1 on 1 session created successfully!'
+                : 'Free 1 on 1 session created successfully!';
           }
           this.appService.toastSuccess(message);
           this.doChange.emit(this.isFree);

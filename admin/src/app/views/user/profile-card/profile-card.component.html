@@ -13,7 +13,10 @@
         <!-- <svg cIcon name="cilUser" size="xl"></svg> -->
       }
       <h4 class="mb-1">{{ user?.name || "User" }}</h4>
-      <h6 class="text-muted">{{ user?.type || "N/A" }}</h6>
+      <h6 class="text-muted">
+  {{ user?.type === 'tutor' ? 'Expert' : user?.type === 'student' ? 'Client' : 'N/A' }}
+</h6>
+
     </div>
     <div class="mb-3">
       <label class="form-label">
