@@ -1,82 +1,144 @@
+/* ===============================
+   GLOBAL LOCK (DESKTOP ONLY)
+   =============================== */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ===============================
+   MAIN WRAPPER
+   =============================== */
 .login-wrapper {
-  min-height: 100vh;
-.btn-link{
- background-color: transparent !important;
- border:  none;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
 }
-  .left-pane {
-    flex: 1;
 
-    img {
-      width: 100%;
-      height: 100vh;
-      object-fit: cover;
-    }
-  }
+/* ===============================
+   LEFT IMAGE PANE (FIXED)
+   =============================== */
+.left-pane {
+  width: 50%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 
-  .right-pane {
-    flex: 1;
-    background: #fff;
-    padding: 40px;
-
-    .form-box {
-      width: 100%;
-      max-width: 420px;
-      padding: 40px;
-
-      .logo {
-        height: 56px;
-      }
-
-      h2 {
-        font-weight: 700;
-        color: #152238;
-      }
-
-      label {
-        font-weight: 600;
-        margin-bottom: 6px;
-      }
-
-      .form-control {
-        height: 48px;
-        border-radius: 8px;
-        padding-left: 14px;
-      }
-
-      .primary-btn {
-        background: #ef5230;
-        color: #fff;
-        height: 48px;
-        font-size: 16px;
-        border-radius: 8px;
-        font-weight: 600;
-      }
-
-      a {
-        color: #1a73e8;
-        font-weight: 500;
-      }
-    }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 }
 
-/* MOBILE FIX */
-@media (max-width: 992px) {
-  .left-pane {
-    display: none;
+/* ===============================
+   RIGHT FORM PANE (SCROLLABLE)
+   =============================== */
+.right-pane {
+  width: 50%;
+  height: 100vh;
+  background: #fff;
+  padding: 40px;
+
+  overflow-y: auto;          // ✅ only this scrolls
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;   // ✅ prevents top cut
+}
+
+/* ===============================
+   FORM BOX
+   =============================== */
+.form-box {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 0;
+
+  .logo {
+  width: 120px;
   }
 
-  .right-pane {
-    flex: 1;
-    padding: 20px;
+  h2 {
+    font-weight: 700;
+    color: #152238;
+  }
 
-    .form-box {
-      padding: 24px;
-    }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    height: 48px;
+    border-radius: 8px;
+    padding-left: 14px;
+  }
+
+  .primary-btn {
+    background: #ef5230;
+    color: #fff;
+    height: 48px;
+    font-size: 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+  }
+
+  a {
+    color: #1a73e8;
+    font-weight: 500;
   }
 }
+
+/* ===============================
+   BUTTON / LINKS
+   =============================== */
+.btn-link {
+  background: transparent !important;
+  border: none;
+  padding: 0;
+}
+
 a.disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+/* ===============================
+   MOBILE & TABLET
+   =============================== */
+@media (max-width: 992px) {
+
+  html,
+  body {
+    overflow: auto;      // ✅ restore normal scroll
+  }
+
+  .login-wrapper {
+    height: auto;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .left-pane {
+    display: none !important;
+  }
+
+  .right-pane {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    overflow: visible;
+    align-items: flex-start;
+  }
+
+  .form-box {
+    max-width: 100%;
+    padding: 24px 0;
+  }
 }

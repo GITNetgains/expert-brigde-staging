@@ -1,11 +1,13 @@
 /* eslint prefer-arrow-callback: 0 */
-const Schema = require('mongoose').Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const schema = new Schema(
   {
     email: {
       type: String,
       required: true,
+      lowercase: true,
       index: true
     },
     otp: {
@@ -17,18 +19,22 @@ const schema = new Schema(
       enum: ['student', 'tutor'],
       required: true
     },
+    attempts: {
+      type: Number,
+      default: 0
+    },
     expiresAt: {
       type: Date,
-      required: true
+      required: true,
+      index: { expires: 0 } // TTL auto delete
     }
   },
   {
-    timestamps: {
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt'
-    }
+    timestamps: true
   }
 );
 
-module.exports = schema;
+// Prevent duplicate OTPs
+schema.index({ email: 1, otp: 1 });
 
+module.exports = schema;

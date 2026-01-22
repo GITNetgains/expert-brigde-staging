@@ -21,7 +21,7 @@
   </div>
 
   <!-- RIGHT SIDE -->
-  <div class="right-pane d-flex justify-content-center align-items-center">
+  <div class="right-pane d-flex justify-content-center align-items-start py-5">
     <div class="form-box">
 
       <!-- Brand Logo -->
@@ -52,7 +52,7 @@
       </div>
 
       <!-- SOCIAL LOGIN FOR EXPERT -->
-      <div *ngIf="account.type === 'tutor'">
+      <div *ngIf="account.type === 'tutor' && step === 'email'">
         <button class="btn social-btn w-100 mb-2" (click)="loginWithGoogle()">
           <img src="assets/images/google-icon.svg" /> Continue With Google
         </button>
@@ -103,64 +103,200 @@
           />
         </div>
 
-        <!-- CREATE PASSWORD -->
-        <div *ngIf="step === 'createPassword'">
-          <div class="mb-3">
-            <label>New Password</label>
-            <input
-              type="password"
-              class="form-control"
-              placeholder="Create a new password"
-              [(ngModel)]="newPassword"
-              name="newPassword"
-            />
+        <!-- DETAILS -->
+        <div *ngIf="step === 'details'">
+          <div *ngIf="account.type === 'student'">
+            <div class="mb-3">
+              <label>Name</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your full name"
+                [(ngModel)]="studentProfile.name"
+                name="studentName"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Password</label>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Create a password"
+                [(ngModel)]="newPassword"
+                name="newPassword"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirm your password"
+                [(ngModel)]="confirmPassword"
+                name="confirmPassword"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Phone Number</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your phone number"
+                [(ngModel)]="studentProfile.phoneNumber"
+                name="studentPhone"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Address</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your address"
+                [(ngModel)]="studentProfile.address"
+                name="studentAddress"
+                required
+              />
+            </div>
           </div>
-          <div class="mb-3">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              class="form-control"
-              placeholder="Confirm your password"
-              [(ngModel)]="confirmPassword"
-              name="confirmPassword"
-            />
-          </div>
-        </div>
 
-        <!-- PERSONAL INFO -->
-        <div *ngIf="step === 'personalInfo'">
-          <div class="mb-3">
-            <label>Name</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter your full name"
-              [(ngModel)]="studentProfile.name"
-              name="studentName"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label>Phone Number</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter your phone number"
-              [(ngModel)]="studentProfile.phoneNumber"
-              name="studentPhone"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label>Address</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter your address"
-              [(ngModel)]="studentProfile.address"
-              name="studentAddress"
-              required
-            />
+          <div *ngIf="account.type === 'tutor'">
+            <div class="mb-3">
+              <label>Name</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your full name"
+                [(ngModel)]="tutorProfile.name"
+                name="tutorName"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Password</label>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Create a password"
+                [(ngModel)]="newPassword"
+                name="tutorPassword"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirm your password"
+                [(ngModel)]="confirmPassword"
+                name="tutorConfirmPassword"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Timezone</label>
+              <app-timezone
+                [userTz]="tutorProfile.timezone"
+                (timezoneChange)="onTimezoneChange($event)"
+              ></app-timezone>
+            </div>
+            <div class="mb-3">
+              <label>Country</label>
+              <select class="form-control" name="country" [(ngModel)]="tutorProfile.country" (ngModelChange)="onCountrySelect($event?.code)">
+                <option [ngValue]="null">Select country</option>
+                <option *ngFor="let c of countries" [ngValue]="c">{{ c.name }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Address</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your address"
+                [(ngModel)]="tutorProfile.address"
+                name="tutorAddress"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your phone"
+                [(ngModel)]="tutorProfile.phoneNumber"
+                name="tutorPhone"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label>Zipcode</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter your zipcode"
+                [(ngModel)]="tutorProfile.zipCode"
+                name="tutorZip"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label>Issue Document</label>
+              <app-file-upload
+                [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
+                (finishUpload)="onIssueUploadFinish($event)"
+              ></app-file-upload>
+                  <div class="text-success small mt-1" *ngIf="tutorProfile.issueDocumentId">Uploaded ✓</div>
+            </div>
+            <div class="mb-3">
+              <label>Resume Document</label>
+              <app-file-upload
+                [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
+                (finishUpload)="onResumeUploadFinish($event)"
+              ></app-file-upload>
+                            <div class="text-success small mt-1" *ngIf="tutorProfile.resumeDocumentId">Uploaded ✓</div>
+
+            </div>
+            <div class="mb-3">
+              <label>Certification Document</label>
+              <app-file-upload
+                [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
+                (finishUpload)="onCertUploadFinish($event)"
+              ></app-file-upload>
+                 <div class="text-success small mt-1" *ngIf="tutorProfile.certificationDocumentId">Uploaded ✓</div>
+            </div>
+
+            <div class="mb-3">
+              <label>Intro Video</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="introType" [value]="'upload'" [(ngModel)]="tutorProfile.introVideoType">
+                <label class="form-check-label">Upload video</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="introType" [value]="'youtube'" [(ngModel)]="tutorProfile.introVideoType">
+                <label class="form-check-label">YouTube link</label>
+              </div>
+              <div *ngIf="tutorProfile.introVideoType === 'upload'" class="mt-2">
+                <app-file-upload
+                  [options]="{ url: introUploadUrl, accept: 'video/*', uploadOnSelect: true }"
+                  (finishUpload)="onIntroUploadFinish($event)"
+                ></app-file-upload>
+              </div>
+              <div *ngIf="tutorProfile.introVideoType === 'youtube'" class="mt-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter YouTube URL"
+                  [(ngModel)]="tutorProfile.introYoutubeId"
+                  name="introYoutube"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -204,19 +340,10 @@
         <button
           class="btn btn-primary w-100 mt-2 mb-3"
           type="button"
-          *ngIf="step === 'createPassword'"
+          *ngIf="step === 'details'"
           (click)="submit(frm)"
         >
-          Save Password & Continue
-        </button>
-
-        <button
-          class="btn btn-primary w-100 mt-2 mb-3"
-          type="button"
-          *ngIf="step === 'personalInfo'"
-          (click)="submit(frm)"
-        >
-          Save & login
+          Create Account
         </button>
 
         

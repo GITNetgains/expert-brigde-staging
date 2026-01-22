@@ -120,6 +120,95 @@ exports.updateStudentPersonalInfo = async (req, res, next) => {
   }
 };
 
+exports.completeTutorProfile = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      name: Joi.string().required(),
+      timezone: Joi.string().required(),
+      country: Joi.object().required(),
+      address: Joi.string().required(),
+      phoneNumber: Joi.string().required(),
+      zipCode: Joi.string().required(),
+      issueDocumentId: Joi.string().allow('', null).optional(),
+      resumeDocumentId: Joi.string().allow('', null).optional(),
+      certificationDocumentId: Joi.string().allow('', null).optional(),
+      introVideoId: Joi.string().allow('', null).optional(),
+      introYoutubeId: Joi.string().allow('', null).optional(),
+      idYoutube: Joi.string().allow('', null).optional()
+    });
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return next(PopulateResponse.validationError(error));
+    }
+
+    const user = await DB.User.findOne({
+      email: value.email.toLowerCase(),
+      type: 'tutor'
+    });
+    if (!user) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Tutor not found' },
+          'ERR_USER_NOT_FOUND'
+        )
+      );
+    }
+
+    const issueDocument = value.issueDocumentId || null;
+    const resumeDocument = value.resumeDocumentId || null;
+    const certificationDocument = value.certificationDocumentId || null;
+
+    user.name = value.name;
+    user.timezone = value.timezone;
+    user.country = value.country;
+    user.address = value.address;
+    user.phoneNumber = value.phoneNumber;
+    user.zipCode = value.zipCode;
+    if (issueDocument) user.issueDocument = issueDocument;
+    if (resumeDocument) user.resumeDocument = resumeDocument;
+    if (certificationDocument) user.certificationDocument = certificationDocument;
+
+    if (value.introVideoId) {
+      user.introVideo = value.introVideoId;
+      user.introYoutubeId = '';
+      user.idYoutube = '';
+    } else if (value.introYoutubeId || value.idYoutube) {
+      const yid = value.introYoutubeId || value.idYoutube || '';
+      user.introYoutubeId = yid;
+      user.idYoutube = yid;
+      user.introVideo = null;
+    }
+
+    user.pendingApprove = true;
+    user.rejected = false;
+
+    const mediaIds = [issueDocument, resumeDocument, certificationDocument].filter(Boolean);
+    if (mediaIds.length) {
+      await DB.Media.updateMany(
+        { _id: { $in: mediaIds } },
+        { $set: { uploaderId: user._id, ownerId: user._id } }
+      );
+    }
+    if (value.introVideoId) {
+      await DB.Media.updateMany(
+        { _id: { $in: [value.introVideoId] } },
+        { $set: { uploaderId: user._id, ownerId: user._id } }
+      );
+    }
+
+    await user.save();
+
+    res.locals.completeTutorProfile = PopulateResponse.success(
+      { message: 'Tutor profile saved. Pending admin approval.' },
+      'TUTOR_PROFILE_COMPLETED'
+    );
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
 
 exports.verifyEmail = async (req, res, next) => {
   const schema = Joi.object().keys({
@@ -293,21 +382,18 @@ exports.forgot = async (req, res, next) => {
 //
 exports.sendOtp = async (req, res, next) => {
   try {
-    const schema = Joi.object().keys({
+    const schema = Joi.object({
       email: Joi.string().email().required(),
       type: Joi.string().valid('student', 'tutor').required()
     });
 
-    const validate = Joi.validate(req.body, schema);
-    if (validate.error) {
-      return next(PopulateResponse.validationError(validate.error));
-    }
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
 
-    const email = validate.value.email.toLowerCase();
-    const type = validate.value.type;
+    const email = value.email.toLowerCase();
 
-    // Check existing user
-    const existing = await DB.User.findOne({ email });
+    // Prevent existing user signup
+    const existing = await DB.User.exists({ email });
     if (existing) {
       return next(
         PopulateResponse.error(
@@ -317,45 +403,38 @@ exports.sendOtp = async (req, res, next) => {
       );
     }
 
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Remove previous OTPs
     await DB.EmailOtp.deleteMany({ email });
 
-    // Store new OTP
     await DB.EmailOtp.create({
       email,
       otp,
-      type,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+      type: value.type,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     });
 
-    // Send Email
- await Service.Mailer.sendRawNow(
-  email,
-  'Your Verification Code',
-  `
-    <div style="font-family: Arial; padding: 20px;">
-      <h2>Your OTP Code</h2>
-      <p>Your verification code is:</p>
-      <h1 style="letter-spacing: 4px; font-size: 32px;">${otp}</h1>
-      <p>This OTP will expire in 10 minutes.</p>
-      <br/>
-      <p>If you did not request this, please ignore this email.</p>
-    </div>
-  `
-);
-
+    await Service.Mailer.sendRawNow(
+      email,
+      'Your Verification Code',
+      `
+        <div style="font-family:Arial;padding:20px">
+          <h2>Email Verification</h2>
+          <p>Your OTP code:</p>
+          <h1 style="letter-spacing:4px">${otp}</h1>
+          <p>Expires in 10 minutes.</p>
+        </div>
+      `
+    );
 
     res.locals.sendOtp = PopulateResponse.success(
-      { message: 'OTP sent to your email.' },
+      { message: 'OTP sent successfully.' },
       'OTP_SENT'
     );
 
     next();
   } catch (e) {
-    return next(e);
+    next(e);
   }
 };
 
@@ -368,7 +447,7 @@ exports.verifyOtp = async (req, res, next) => {
   try {
     const schema = Joi.object({
       email: Joi.string().email().required(),
-      otp: Joi.string().required()
+      otp: Joi.string().length(6).required()
     });
 
     const { error, value } = schema.validate(req.body);
@@ -377,6 +456,7 @@ exports.verifyOtp = async (req, res, next) => {
     const email = value.email.toLowerCase();
 
     const record = await DB.EmailOtp.findOne({ email, otp: value.otp });
+
     if (!record) {
       return next(
         PopulateResponse.error({ message: 'Invalid OTP' }, 'ERR_INVALID_OTP')
@@ -390,14 +470,26 @@ exports.verifyOtp = async (req, res, next) => {
       );
     }
 
-    await DB.EmailOtp.deleteMany({ email });
-
-    let username = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
-    if (await DB.User.count({ username })) {
-      username = `${username}-${Helper.String.randomString(5)}`;
+    if (record.attempts >= 5) {
+      await DB.EmailOtp.deleteMany({ email });
+      return next(
+        PopulateResponse.error(
+          { message: 'OTP locked. Please resend OTP.' },
+          'ERR_OTP_LOCKED'
+        )
+      );
     }
 
-    const user = await DB.User.create({
+    await DB.EmailOtp.deleteMany({ email });
+
+    const baseUsername = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
+    let username = baseUsername;
+
+    if (await DB.User.exists({ username })) {
+      username = `${baseUsername}-${Helper.String.randomString(5)}`;
+    }
+
+    await DB.User.create({
       email,
       username,
       type: record.type,
@@ -405,11 +497,10 @@ exports.verifyOtp = async (req, res, next) => {
     });
 
     res.locals.verifyOtp = PopulateResponse.success(
-      {
-        message: 'OTP verified. Please create password.'
-      },
+      { message: 'OTP verified. Please set password.' },
       'OTP_VERIFIED'
     );
+
     next();
   } catch (e) {
     next(e);
@@ -420,7 +511,13 @@ exports.setPassword = async (req, res, next) => {
   try {
     const schema = Joi.object({
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required()
+      password: Joi.string()
+        .min(8)
+        .regex(/[a-z]/)
+        .regex(/[A-Z]/)
+        .regex(/\d/)
+        .regex(/[@$!%*?&]/)
+        .required()
     });
 
     const { error, value } = schema.validate(req.body);
@@ -440,6 +537,7 @@ exports.setPassword = async (req, res, next) => {
       { message: 'Password set successfully. Please login.' },
       'PASSWORD_SET'
     );
+
     next();
   } catch (e) {
     next(e);

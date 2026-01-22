@@ -1,5 +1,6 @@
 // search.js (AzureOpenAI version)
-
+const { FormData } = require('formdata-node');
+global.FormData = FormData;
 const { AzureOpenAI } = require("openai");
 
 const endpoint = process.env.AZURE_OPENAI_ENDPOINT;   

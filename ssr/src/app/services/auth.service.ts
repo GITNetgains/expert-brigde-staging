@@ -141,6 +141,10 @@
       return this.post('/auth/verifyEmail', { token });
     }
 
+    completeRegistration(payload: any) {
+      return this.post('/auth/complete-registration', payload);
+    }
+
     getAccessToken(): any {
       if (!this.accessToken) {
         this.accessToken = this.mycookie.get('accessToken') || '';
@@ -202,6 +206,7 @@ updateStudentPersonalInfo(payload: any) {
 
 
 
-
-    
+  completeTutorProfile(payload: any) {
+    return this.post('/auth/tutor/complete-profile', payload);
+  }
   }

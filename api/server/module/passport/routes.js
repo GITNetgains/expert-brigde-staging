@@ -179,6 +179,11 @@ router.post(
   authController.updateStudentPersonalInfo,
   Middleware.Response.success('updateStudentPersonalInfo')
 );
+router.post(
+  '/v1/auth/tutor/complete-profile',
+  authController.completeTutorProfile,
+  Middleware.Response.success('completeTutorProfile')
+);
 
 // =====================================
 // OTP LOGIN ROUTES (NON-BREAKING)
