@@ -13,8 +13,7 @@ module.exports = (router) => {
   router.post(
     "/v1/ai/search",
     Middleware.loadUser,
-    aiLimiter,                 // throttling
-    verifyCaptcha,  
+    aiLimiter,                 // throttling 
     aiController.search,       // controller
     Middleware.Response.success("searchResult")  // send JSON response
   );

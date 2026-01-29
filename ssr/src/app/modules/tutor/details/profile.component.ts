@@ -135,17 +135,17 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
     @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.tutor = this.route.snapshot.data['tutor'];
-    this.seoService.setMetaTitle(this.tutor.name);
+    this.seoService.setMetaTitle(this.tutor.showPublicIdOnly === true ? String(this.tutor.userId) : this.tutor.name);
     this.config = this.stateService.getState(STATE.CONFIG);
     this.webUrl = environment.url;
     this.seoService.addMetaTags([
       {
         property: 'og:title',
-        content: this.tutor.name
+        content: this.tutor.showPublicIdOnly === true ? String(this.tutor.userId) : this.tutor.name
       },
       {
         property: 'og:image',
-        content: this.tutor.avatarUrl
+        content: this.tutor.showPublicIdOnly === true ? '' : this.tutor.avatarUrl
       },
       {
         property: 'og:description',

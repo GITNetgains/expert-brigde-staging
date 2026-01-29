@@ -34,7 +34,7 @@
   font-size: 18px;
   color: #566b7e;
   margin: 0 0 20px 0;
-  text-align: left;
+  text-align: center;
 }
 
 .error-msg {
@@ -247,6 +247,27 @@
   &:active:not(:disabled) { transform: translateY(0); }
 }
 
+.domain-check {
+  display: flex;
+  align-items: center;
+  color: #28a745;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.domain-check .dot {
+  width: 8px;
+  height: 8px;
+  background-color: #28a745;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 4px;
+}
 
 /* --- Confirmation Section --- */
 .confirmation {

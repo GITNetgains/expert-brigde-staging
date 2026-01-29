@@ -279,6 +279,18 @@ export const navItems: INavData[] = [
     ],
   },
   {
+    name: 'Contacts',
+    url: '/contacts',
+    iconComponent: { name: 'cil-address-book' },
+    children: [
+      {
+        name: 'Listing',
+        url: '/contacts/list',
+        icon: 'nav-icon-bullet',
+      },
+    ],
+  },
+  {
     name: 'Language',
     url: '/language',
     iconComponent: { name: 'cil-language' },

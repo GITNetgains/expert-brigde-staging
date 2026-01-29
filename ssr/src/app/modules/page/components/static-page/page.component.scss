@@ -1,9 +1,16 @@
 /* ===========================
    BLOG LIST PAGE STYLING
    =========================== */
+.page-card-wrapper {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  padding: 24px;
+}
 
 .blogs-section {
   padding: 60px 0;
+  
 
   .blogs-header {
     margin-bottom: 40px;
@@ -115,6 +122,7 @@
       height: 240px;
     }
   }
+  
 
   .tagline {
     color: #00a3ff;

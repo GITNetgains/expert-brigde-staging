@@ -73,6 +73,9 @@ kernel.loadModule(require('./module/email-template'));
 kernel.loadModule(require('./module/report'));
 kernel.loadModule(require('./module/search'));
 
+
+
+
 // NOTE - compose at last
 kernel.compose();
 

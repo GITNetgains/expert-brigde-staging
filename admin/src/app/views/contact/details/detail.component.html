@@ -1,0 +1,44 @@
+<c-container>
+  <c-row>
+    <c-col md="12">
+      <a routerLink="/contacts/list" cButton color="secondary" class="mb-3">Back to list</a>
+      <c-card>
+        <c-card-header>
+          <h4>Contact Details</h4>
+        </c-card-header>
+        <c-card-body>
+          <div class="table-responsive">
+            <table cTable bordered [cBorder]="1" borderColor="gray" style="table-layout: fixed; width: 100%">
+              <tbody>
+                <tr>
+                  <th style="width:220px">Name</th>
+                  <td>{{ item?.name || '-' }}</td>
+                </tr>
+                <tr>
+                  <th>Email</th>
+                  <td>{{ item?.email || '-' }}</td>
+                </tr>
+                <tr>
+                  <th>Company</th>
+                  <td>{{ item?.companyName || '-' }}</td>
+                </tr>
+                <tr>
+                  <th>Phone</th>
+                  <td>{{ item?.phoneNumber || '-' }}</td>
+                </tr>
+                <tr>
+                  <th>Created On</th>
+                  <td>{{ item?.createdAt | date : 'medium' }}</td>
+                </tr>
+                <tr>
+                  <th>Message</th>
+                  <td style="white-space: pre-line">{{ item?.message || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

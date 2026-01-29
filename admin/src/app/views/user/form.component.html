@@ -195,7 +195,7 @@
             <th>Time</th>
             <th>Description</th>
             <th>Attachments</th>
-            <th>Assigned Tutors</th>
+            <th>Assigned Experts</th>
             <th class="text-nowrap">Actions</th>
           </tr>
         </thead>
@@ -240,8 +240,10 @@
             <!-- ASSIGNED TUTORS -->
             <td style="max-width: 220px;">
               <span *ngFor="let t of q.assignedTutors; let last = last">
-                {{ t.name }}<span *ngIf="!last">, </span>
-              </span>
+  {{ t.name }}
+  <small class="text-muted">({{ t.userId }})</small>
+  <span *ngIf="!last">, </span>
+</span>
               <span *ngIf="!q.assignedTutors?.length" class="text-muted">
                 Not assigned
               </span>
@@ -301,15 +303,43 @@
       (change)="loadTutors()">
     </ng-select>
 
-    <ng-select
-      class="mt-2"
-      [items]="assign.tutors"
-      bindLabel="name"
-      bindValue="_id"
-      [multiple]="true"
-      placeholder="Tutors"
-      [(ngModel)]="assign.tutorIds">
-    </ng-select>
+<ng-select
+  class="mt-2"
+  [items]="assign.tutors"
+  bindLabel="name"
+  bindValue="_id"
+  [multiple]="true"
+  [closeOnSelect]="false"
+  [clearable]="true"
+  placeholder="Select Tutors"
+  [(ngModel)]="assign.tutorIds">
+
+  <!-- Selected value (chip with cross ❌) -->
+  <ng-template ng-label-tmp let-item="item" let-clear="clear">
+    <span>
+      {{ item.name }}
+      <small class="text-muted">({{ item.userId }})</small>
+    </span>
+    <span
+      class="ng-value-icon right"
+      (click)="clear(item)"
+      aria-hidden="true">
+      ×
+    </span>
+  </ng-template>
+
+  <!-- Dropdown option -->
+  <ng-template ng-option-tmp let-item="item">
+    <div class="d-flex justify-content-between">
+      <span>
+        {{ item.name }}
+        <small class="text-muted">({{ item.userId }})</small>
+      </span>
+    </div>
+  </ng-template>
+
+</ng-select>
+
 
   </c-modal-body>
 

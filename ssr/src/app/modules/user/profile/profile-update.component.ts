@@ -384,6 +384,22 @@ this.info.password = '';
       .catch((err: any) => this.appService.toastError(err));
   }
 
+  changeShowPublicIdOnly() {
+    (this.info as any).showPublicIdOnly = !(this.info as any).showPublicIdOnly;
+    const data = _.pick(this.info as any, ['showPublicIdOnly']);
+    this.userService
+      .updateMe(data)
+      .then((resp: IResponse<any>) => {
+        this.info = _.merge(resp.data, this.info);
+        if ((this.info as any).showPublicIdOnly) {
+          this.appService.toastSuccess('Privacy: showing only your ID to clients');
+        } else {
+          this.appService.toastSuccess('Privacy: showing personal info to clients');
+        }
+      })
+      .catch((err: any) => this.appService.toastError(err));
+  }
+
   inviteFriend() {
     this.userService
       .inviteFriend({ email: this.emailInvite })

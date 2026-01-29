@@ -134,21 +134,28 @@ public assign: {
 openAssignTutorModal(q: any) {
   this.activeQuery = q;
 
+  // 1️⃣ Extract assigned tutor IDs
+  const assignedTutorIds = q.assignedTutors?.map((t: any) => t._id) || [];
+
+  // 2️⃣ Seed tutors list with already assigned tutors
+  const assignedTutorObjects = q.assignedTutors || [];
+
   this.assign = {
     categoryId: q.categoryId || '',
     subjectId: q.subjectId || '',
     subjects: [],
-    tutors: [],
-    tutorIds: q.assignedTutors?.map((t: any) => t._id) || []
+    tutors: [...assignedTutorObjects], // ✅ KEY FIX
+    tutorIds: assignedTutorIds
   };
 
   this.showAssignModal = true;
 
-  // Load subjects if category already exists
+  // 3️⃣ Load subjects → tutors (will MERGE later)
   if (this.assign.categoryId) {
     this.loadSubjects(true);
   }
 }
+
 
 loadSubjects(preselect = false) {
   this.assign.subjects = [];
@@ -170,8 +177,6 @@ loadSubjects(preselect = false) {
 }
 
 loadTutors() {
-  this.assign.tutors = [];
-
   if (!this.assign.subjectId) return;
 
   this.tutorService.search({
@@ -181,9 +186,17 @@ loadTutors() {
     isActive: true,
     take: 1000
   }).subscribe(res => {
-    this.assign.tutors = res.data.items || [];
+    const fetchedTutors = res.data.items || [];
+
+    // ✅ MERGE assigned + fetched, remove duplicates
+    const merged = [...this.assign.tutors, ...fetchedTutors];
+
+    this.assign.tutors = Array.from(
+      new Map(merged.map(t => [t._id, t])).values()
+    );
   });
 }
+
 saveTutorAssignment() {
   const selectedTutorIds = this.assign.tutorIds as string[];
   const queryId = this.activeQuery?._id || this.activeQuery?.id;

@@ -198,6 +198,23 @@
               name="address"
             />
           </div>
+          <div class="item-profile-form" *ngIf="info && info.type === 'tutor'">
+            <div class="d-flex justify-content-between align-items-center">
+              <h6><span translate>Your Expert ID</span></h6>
+              <p class="text-secondary2 mb-0">{{ info.userId }}</p>
+            </div>
+            <div class="d-flex align-items-center mt-2">
+              <h6 class="me-3 mb-0"><span translate>Show only my ID (hide personal info)</span></h6>
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  [checked]="!!info.showPublicIdOnly"
+                  (change)="changeShowPublicIdOnly()"
+                />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
           <div
             class="item-profile-form"
             [ngClass]="{'d-flex':!isEditProfile}"
@@ -216,7 +233,7 @@
               name="years-experience"
             />
           </div>
-          <div
+          <!-- <div
             class="item-profile-form"
             [ngClass]="{'d-flex':!isEditProfile}"
             *ngIf="info && info.type === 'tutor'"
@@ -233,7 +250,7 @@
               [(ngModel)]="consultationFeeProxy"
               name="consultation-fee"
             />
-          </div>
+          </div> -->
           <div
             class="item-profile-form"
             [ngClass]="{'d-flex':!isEditProfile}"
@@ -1274,7 +1291,7 @@
             </ngb-tabset> -->
           </div>
         </div>
-        <div class="card mt-3" *ngIf="info && info.type==='student'">
+        <!-- <div class="card mt-3" *ngIf="info && info.type==='student'">
           <div class="card-header">
             <h4 translate>My course certificates</h4>
           </div>
@@ -1311,7 +1328,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </div> -->
         <div *ngIf="info && info.type !=='tutor'" class="card mt-4 mb-4">
           <div class="card-header">
             <h4 translate>Invite Friend</h4>

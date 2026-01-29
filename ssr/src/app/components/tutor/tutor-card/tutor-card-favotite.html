@@ -4,6 +4,7 @@
   </div>
   <a [routerLink]="['/experts', tutor.username]" class="card-img-top">
     <img
+      *ngIf="tutor.showPublicIdOnly !== true"
       [src]="tutor.avatarUrl"
       onerror="this.src='/assets/images/default-avatar.jpg'"
       [alt]="tutor.username"
@@ -14,7 +15,7 @@
     <div class="row" style="padding-left: 15px">
       <h5>
         <a class="hyperlink" [routerLink]="['/experts', tutor.username]"
-          >{{tutor.name}}</a
+          >{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</a
         ><i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
       </h5>
     </div>

@@ -161,7 +161,12 @@ if (this.appConfig?.i18n?.languages?.length) {
     );
   }
 
-  openAuth(type: 'tutor' | 'student') {
-    this.router.navigate(['/auth/sign-up'], { queryParams: { type } });
-  }
+ openAuth(type: 'tutor' | 'student') {
+  const urlType = type === 'tutor' ? 'expert' : 'client';
+
+  this.router.navigate(['/auth/sign-up'], {
+    queryParams: { type: urlType }
+  });
+}
+
 }

@@ -6,3 +6,57 @@
 @import "./styles/app.scss";
 @import "./styles/custom.scss";
 @import "./styles/responsive.scss";
+
+/* =========================
+   FAQ ACCORDION (FINAL)
+   ========================= */
+
+.ql-editor .faq {
+  margin-top: 24px;
+}
+
+.ql-editor .faq-item {
+  border-bottom: 1px solid #eee;
+  padding: 18px 0;
+  overflow-anchor: none; /* prevents scroll jump */
+}
+
+/* QUESTION */
+.ql-editor .faq-question {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #0d2b3e;
+  position: relative;
+  padding-right: 30px;
+}
+
+/* PLUS / MINUS ICON */
+.ql-editor .faq-question::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 600;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.25s ease;
+}
+
+.ql-editor .faq-item.open .faq-question::after {
+  content: '–';
+}
+
+/* ANSWER */
+.ql-editor .faq-answer {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s ease;
+  color: #6d7a88;
+  line-height: 1.7;
+  will-change: height;
+}
+

@@ -5,6 +5,8 @@ import { IWebinar } from './webinar';
 export interface IUser {
   _id: string;
   name: string;
+  userId?: number;
+  showPublicIdOnly?: boolean;
   username: string;
   phoneNumber: string;
   email: string;

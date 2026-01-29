@@ -16,6 +16,9 @@ import { AiResultComponent } from './components/ai-result/ai-result.component';
 import { HomeModule } from '../home/home.module';
 import { FileUploadComponent } from 'src/app/components/media/file-upload/file-upload.component';
 import { AiQueryBarComponent } from './components/ai-query-bar/ai-query-bar.component';
+import { AboutComponent } from './components/about/about.component';
+import { ContactUsComponent } from './components/contact-us/contact-us.component';
+import { ServicesComponent } from './components/services/services.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -35,7 +38,10 @@ import { AiQueryBarComponent } from './components/ai-query-bar/ai-query-bar.comp
     PageErrorComponent,
     StaticPageComponent,
    AiQueryBarComponent,
-    AiResultComponent
+    AiResultComponent,
+    AboutComponent,
+    ContactUsComponent,
+    ServicesComponent
   ],
   exports: [AiQueryBarComponent],
   entryComponents: [],

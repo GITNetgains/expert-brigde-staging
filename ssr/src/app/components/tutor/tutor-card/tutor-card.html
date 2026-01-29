@@ -3,6 +3,7 @@
   <!-- HEADER -->
   <div class="expert-header">
     <img
+      *ngIf="tutor.showPublicIdOnly !== true"
       class="avatar"
       [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'"
       alt="avatar"
@@ -10,7 +11,7 @@
 
     <div class="expert-meta">
       <div class="name-location">
-      <h3 class="name">{{ tutor.name }}</h3>
+      <h3 class="name">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h3>
 
       <p class="location">
         {{ tutor.state }}{{ tutor.country?.name ? ', ' + tutor.country.name : '' }}
@@ -19,7 +20,7 @@
 
       <p class="fee">
         <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" /> Consultation Fee:
-        <a>{{ $any(tutor).consultationFee | appCurrency }}/hr</a>
+        <a>{{ $any(tutor).price1On1Class | appCurrency }}/hr</a>
       </p>
     </div>
   </div>

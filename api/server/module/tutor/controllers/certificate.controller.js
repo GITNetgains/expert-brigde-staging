@@ -3,6 +3,7 @@ const Joi = require('joi');
 
 const validateSchema = Joi.object().keys({
   title: Joi.string().required(),
+  organization: Joi.string().required(), 
   description: Joi.string().allow([null, '']).optional(),
   fromYear: Joi.number().required(),
   toYear: Joi.number().optional(),
@@ -12,6 +13,7 @@ const validateSchema = Joi.object().keys({
   documentId: Joi.string().allow([null, '']).optional(),
   tutorId: Joi.string().optional()
 });
+
 
 exports.findOne = async (req, res, next) => {
   try {

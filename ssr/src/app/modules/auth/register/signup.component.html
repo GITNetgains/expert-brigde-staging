@@ -119,14 +119,44 @@
             </div>
             <div class="mb-3">
               <label>Password</label>
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Create a password"
-                [(ngModel)]="newPassword"
-                name="newPassword"
-                required
-              />
+             <input
+  type="password"
+  class="form-control"
+  placeholder="Create a password"
+  [(ngModel)]="newPassword"
+  name="studentPassword"
+  (input)="checkPasswordRules(newPassword)"
+  required
+/>
+ <ul
+    class="password-checklist"
+    *ngIf="newPassword?.length"
+  >
+    <li [class.valid]="passwordRules.length">
+      <span>{{ passwordRules.length ? '✔' : '✖' }}</span>
+      At least 8 characters
+    </li>
+
+    <li [class.valid]="passwordRules.uppercase">
+      <span>{{ passwordRules.uppercase ? '✔' : '✖' }}</span>
+      One uppercase letter
+    </li>
+
+    <li [class.valid]="passwordRules.lowercase">
+      <span>{{ passwordRules.lowercase ? '✔' : '✖' }}</span>
+      One lowercase letter
+    </li>
+
+    <li [class.valid]="passwordRules.number">
+      <span>{{ passwordRules.number ? '✔' : '✖' }}</span>
+      One number
+    </li>
+
+    <li [class.valid]="passwordRules.special">
+      <span>{{ passwordRules.special ? '✔' : '✖' }}</span>
+      One special character (@$!%*?&)
+    </li>
+  </ul>
             </div>
             <div class="mb-3">
               <label>Confirm Password</label>
@@ -177,14 +207,44 @@
             </div>
             <div class="mb-3">
               <label>Password</label>
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Create a password"
-                [(ngModel)]="newPassword"
-                name="tutorPassword"
-                required
-              />
+             <input
+  type="password"
+  class="form-control"
+  placeholder="Create a password"
+  [(ngModel)]="newPassword"
+  name="tutorPassword"
+  (input)="checkPasswordRules(newPassword)"
+  required
+/>
+ <ul
+    class="password-checklist"
+    *ngIf="newPassword?.length"
+  >
+    <li [class.valid]="passwordRules.length">
+      <span>{{ passwordRules.length ? '✔' : '✖' }}</span>
+      At least 8 characters
+    </li>
+
+    <li [class.valid]="passwordRules.uppercase">
+      <span>{{ passwordRules.uppercase ? '✔' : '✖' }}</span>
+      One uppercase letter
+    </li>
+
+    <li [class.valid]="passwordRules.lowercase">
+      <span>{{ passwordRules.lowercase ? '✔' : '✖' }}</span>
+      One lowercase letter
+    </li>
+
+    <li [class.valid]="passwordRules.number">
+      <span>{{ passwordRules.number ? '✔' : '✖' }}</span>
+      One number
+    </li>
+
+    <li [class.valid]="passwordRules.special">
+      <span>{{ passwordRules.special ? '✔' : '✖' }}</span>
+      One special character (@$!%*?&)
+    </li>
+  </ul>
             </div>
             <div class="mb-3">
               <label>Confirm Password</label>
@@ -246,7 +306,7 @@
             </div>
 
             <div class="mb-3">
-              <label>Issue Document</label>
+              <label>Verification Document</label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
                 (finishUpload)="onIssueUploadFinish($event)"
@@ -271,7 +331,7 @@
                  <div class="text-success small mt-1" *ngIf="tutorProfile.certificationDocumentId">Uploaded ✓</div>
             </div>
 
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label>Intro Video</label>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="introType" [value]="'upload'" [(ngModel)]="tutorProfile.introVideoType">
@@ -296,7 +356,7 @@
                   name="introYoutube"
                 />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -359,6 +419,11 @@ By signing in, you agree to our Terms and Conditions          </label>
         <div class="text-center mt-2" >
           Already have an account? <a routerLink="/auth/login">Sign In</a>
         </div>
+        <div class="text-center mt-3">
+  <a routerLink="/" class="back-home-link">
+    ← Back to Home
+  </a>
+</div>
 
       </form>
     </div>

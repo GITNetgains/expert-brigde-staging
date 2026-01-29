@@ -1,0 +1,95 @@
+<section class="page-section contact-page">
+  <div class="container">
+
+    <!-- PAGE HEADER -->
+    
+
+    <!-- CONTACT GRID -->
+    <div class="contact-wrapper">
+
+      <!-- LEFT INFO -->
+      <div class="contact-info">
+        <h3 class="page-title">Connect With Us</h3>
+
+        <p class="info-title">Registered Office</p>
+        <p class="info-text">
+          ELEVATEXCEL CONSULTING PRIVATE LIMITED<br />
+          PLOT NO-361, INDUSTRIAL AREA, PHASE-1,<br />
+          CHANDIGARH (India)-160002
+        </p>
+
+        <p class="info-title">Email</p>
+        <p class="info-text">
+          <a href="mailto:team@expertbridge.co">team@expertbridge.co</a>
+        </p>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="contact-form-card">
+        <h2 class="form-title">GET IN TOUCH</h2>
+        <p class="form-desc">
+          Thank you for your interest in reaching out to us! In case someone has
+          referred us, please call us directly, else contact us via the form below.
+        </p>
+
+    <form class="contact-form" (ngSubmit)="submit()" #contactForm="ngForm">
+
+  <div class="form-row">
+    <input
+      type="text"
+      name="name"
+      [(ngModel)]="model.name"
+      placeholder="Name*"
+      required
+    />
+
+    <input
+      type="text"
+      name="companyName"
+      [(ngModel)]="model.companyName"
+      placeholder="Company Name*"
+      required
+    />
+  </div>
+
+  <div class="form-row">
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="model.email"
+      placeholder="Email*"
+      required
+    />
+
+    <input
+      type="tel"
+      name="phoneNumber"
+      [(ngModel)]="model.phoneNumber"
+      placeholder="Phone Number*"
+      required
+    />
+  </div>
+
+  <textarea
+    rows="4"
+    name="message"
+    [(ngModel)]="model.message"
+    placeholder="Message*"
+    required
+  ></textarea>
+
+  <button
+    type="submit"
+    class="btn-submit"
+    [disabled]="loading || !contactForm.valid"
+  >
+    {{ loading ? 'Sending...' : 'Submit' }}
+  </button>
+
+</form>
+
+      </div>
+
+    </div>
+  </div>
+</section>

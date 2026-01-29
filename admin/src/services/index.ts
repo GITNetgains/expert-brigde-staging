@@ -29,4 +29,4 @@ export * from './my-category.service';
 export * from './my-subject.service';
 export * from './my-topic.service';
 export * from './industry.service';
-
+export * from './contact.service';

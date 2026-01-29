@@ -17,6 +17,9 @@ export class UserService extends APIRequest {
   addAiQuery(data: any): Promise<any> {
     return this.post('/users/ai-query', data);
   }
+  searchAiQueries(userId: string, params: any): Promise<any> {
+    return this.get(this.buildUrl(`/users/${userId}/ai-queries`, params));
+  }
 
   findOne(id: string): Promise<any> {
     return this.get(`/users/${id}`);

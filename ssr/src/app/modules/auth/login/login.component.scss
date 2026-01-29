@@ -94,6 +94,16 @@ body {
     font-weight: 500;
   }
 }
+.back-home-link {
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 14px;
+
+  &:hover {
+    color: #000;
+    text-decoration: underline;
+  }
+}
 
 /* ===============================
    BUTTON / LINKS

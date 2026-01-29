@@ -327,17 +327,23 @@ exports.list = async (req, res, next) => {
       }
     }
 
-    const minFeeRaw = req.query.minConsultationFee;
-    const maxFeeRaw = req.query.maxConsultationFee;
-    const minFee = minFeeRaw !== undefined && minFeeRaw !== '' ? parseFloat(minFeeRaw) : undefined;
-    const maxFee = maxFeeRaw !== undefined && maxFeeRaw !== '' ? parseFloat(maxFeeRaw) : undefined;
-    const hasMin = Number.isFinite(minFee);
-    const hasMax = Number.isFinite(maxFee);
-    if (hasMin || hasMax) {
-      query.consultationFee = {};
-      if (hasMin) query.consultationFee.$gte = minFee;
-      if (hasMax) query.consultationFee.$lte = maxFee;
-    }
+  const minFeeRaw = req.query.minPrice1On1Class;
+const maxFeeRaw = req.query.maxPrice1On1Class;
+
+const minFee =
+  minFeeRaw !== undefined && minFeeRaw !== '' ? parseFloat(minFeeRaw) : undefined;
+const maxFee =
+  maxFeeRaw !== undefined && maxFeeRaw !== '' ? parseFloat(maxFeeRaw) : undefined;
+
+const hasMin = Number.isFinite(minFee);
+const hasMax = Number.isFinite(maxFee);
+
+if (hasMin || hasMax) {
+  query.price1On1Class = {};
+  if (hasMin) query.price1On1Class.$gte = minFee;
+  if (hasMax) query.price1On1Class.$lte = maxFee;
+}
+
 
     if (!req.user || req.user.role !== 'admin') {
       query.isActive = true;

@@ -25,6 +25,7 @@ import {
 } from '@coreui/angular';
 @Component({
   selector: 'app-create-grade',
+  standalone: true,
   templateUrl: '../form.component.html',
   imports: [
     FormDirective,

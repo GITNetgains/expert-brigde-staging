@@ -59,7 +59,7 @@ export class WebinarListingComponent implements OnInit {
     public stateService: StateService,
     private router: Router
   ) {
-    this.seoService.setMetaTitle('List Group Classes');
+    this.seoService.setMetaTitle('List Sessions');
     this.config = this.stateService.getState(STATE.CONFIG);
     this.route.queryParams.subscribe((params: any) => {
       this.currentPage = params.page ? parseInt(params.page, 10) : 1;

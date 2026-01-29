@@ -1,0 +1,197 @@
+<c-row>
+  <c-col md="12">
+    <c-card class="mb-4">
+      <c-card-header>
+        <h4>Manage Contacts</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row>
+          <c-col md="3">
+            <div class="mb-3">
+              <input
+                cFormControl
+                type="text"
+                placeholder="Enter name"
+                [(ngModel)]="searchFields.name"
+              />
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="mb-3">
+              <input
+                cFormControl
+                type="text"
+                placeholder="Enter email"
+                [(ngModel)]="searchFields.email"
+              />
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="mb-3">
+              <input
+                cFormControl
+                type="text"
+                placeholder="Enter company"
+                [(ngModel)]="searchFields.companyName"
+              />
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="mb-3">
+              <input
+                cFormControl
+                type="text"
+                placeholder="Enter phone number"
+                [(ngModel)]="searchFields.phoneNumber"
+              />
+            </div>
+          </c-col>
+          <c-col md="2">
+            <div class="mb-3">
+              <button cButton color="primary" class="w-100" (click)="filter()">
+                Filter
+              </button>
+            </div>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+
+    <c-card>
+      <c-card-header>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          <h4 class="mb-0">Total Contacts: {{ count }}</h4>
+          <app-pagination
+            *ngIf="count > 0"
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </div>
+      </c-card-header>
+      <c-card-body *ngIf="count > 0; else noData">
+        <div class="table-responsive">
+          <table
+            cTable
+            bordered
+            [responsive]="true"
+            [cBorder]="1"
+            borderColor="gray"
+            style="table-layout: fixed; width: 1400px"
+          >
+            <thead>
+              <tr>
+                <th style="width:160px">
+                  <app-sort
+                    sortBy="name"
+                    sortTitle="Name"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
+                  ></app-sort>
+                </th>
+                <th style="width:200px">
+                  <app-sort
+                    sortBy="email"
+                    sortTitle="Email"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
+                  ></app-sort>
+                </th>
+                <th style="width:160px">
+                  <app-sort
+                    sortBy="companyName"
+                    sortTitle="Company"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
+                  ></app-sort>
+                </th>
+                <th style="width:140px">
+                  <app-sort
+                    sortBy="phoneNumber"
+                    sortTitle="Phone"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
+                  ></app-sort>
+                </th>
+                <th style="width:180px">
+                  <app-sort
+                    sortBy="createdAt"
+                    sortTitle="Created On"
+                    [sortOption]="sortOption"
+                    (onSort)="onSort($event)"
+                  ></app-sort>
+                </th>
+                <th style="width:300px">Message</th>
+                <th
+                  style="
+                    width:80px;
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    background: white;
+                  "
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items; index as i">
+                <td>{{ item.name }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.companyName }}</td>
+                <td>{{ item.phoneNumber }}</td>
+                <td>{{ item.createdAt | date }}</td>
+                <td>
+                  <span [title]="item.message">
+                    {{ item.message ? (item.message | slice:0:120) : '-' }}
+                    {{ item.message?.length > 120 ? '...' : '' }}
+                  </span>
+                </td>
+                <td
+                  style="
+                    position: sticky;
+                    right: 0;
+                    z-index: 10;
+                    background: white;
+                  "
+                >
+                  <a
+                    cButton
+                    class="btn btn-sm btn-primary me-1"
+                    [routerLink]="['/contacts/details', item._id]"
+                  >
+                    <app-eye-icon></app-eye-icon>
+                  </a>
+                  <button
+                    cButton
+                    class="btn btn-sm btn-danger"
+                    (click)="remove(item, i)"
+                  >
+                    <svg cIcon name="cilTrash" size="sm"></svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+      <ng-template #noData>
+        <c-card-body>
+          <div class="p-3 bg-warning rounded">There are no items</div>
+        </c-card-body>
+      </ng-template>
+      <c-card-footer class="d-flex justify-content-end" *ngIf="count > 0">
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>

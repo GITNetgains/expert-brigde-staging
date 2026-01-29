@@ -6,6 +6,7 @@
           <div class="card-body">
             <div class="profile-img">
               <img
+                *ngIf="tutor.showPublicIdOnly !== true"
                 src="{{tutor.avatarUrl}}"
                 onerror="this.src='/assets/images/default-avatar.jpg'"
                 alt="tutor avatar"
@@ -21,10 +22,13 @@
             </div>
             <div class="profile-info">
               <h5 class="font-weight-bold">
-                {{tutor.name}}<i
+                {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}<i
                   class="fi fi-ss-badge-check color-blue ms-1 font-sm"
                 ></i>
               </h5>
+              <p class="text-secondary mb-2" *ngIf="tutor.showPublicIdOnly === true">
+                ID: {{ tutor.userId }}
+              </p>
               <div class="rating-stars">
                 <ul id="stars">
                   <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>

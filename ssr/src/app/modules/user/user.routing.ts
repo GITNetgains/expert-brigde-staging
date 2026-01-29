@@ -22,11 +22,17 @@ import { ListLessonComponent } from './my-lesson/list/list.component';
 import { ScheduleDetailComponent } from './my-schedule/detail/detail.component';
 import { ListScheduleComponent } from './my-schedule/list/list.component';
 import { LessonSpaceComponent } from './lesson-space/lesson-space.component';
+import { AiQueryListComponent } from './ai-queries/list/list.component';
 
 const routes: Routes = [
   {
     path: 'profile',
     component: ProfileUpdateComponent,
+    resolve: {}
+  },
+  {
+    path: 'ai-queries',
+    component: AiQueryListComponent,
     resolve: {}
   },
   {

@@ -33,6 +33,10 @@
       <h6>{{ user?.email || "N/A" }}</h6>
     </div>
     <div class="mb-3">
+      <small class="text-muted">{{ user?.type === 'tutor' ? 'Tutor ID' : 'User ID' }}</small>
+      <h6>{{ user?.userId || "N/A" }}</h6>
+    </div>
+    <div class="mb-3">
       <small class="text-muted">Phone</small>
       <h6>{{ user?.phoneNumber || "N/A" }}</h6>
     </div>
@@ -73,4 +77,5 @@
       <h6>{{ user?.createdAt | date }}</h6>
     </div>
   </c-card-footer>
+  
 </c-card>

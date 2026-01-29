@@ -54,8 +54,7 @@ export interface FormlyFieldProps extends CoreFormlyFieldProps {
       } @if (props.description) {
       <small class="form-text text-muted">{{ props.description }}</small>
       }
-    </div>
-  `,
+    </div>`,
   animations: [
     trigger('slideDownUp', [
       transition(':enter', [

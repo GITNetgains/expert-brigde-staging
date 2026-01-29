@@ -17,6 +17,12 @@
             <span translate>Upcoming Appointments</span>
           </a>
         </li>
+        <li *ngIf="currentUser.type === 'student'">
+          <a [routerLink]="['/users/ai-queries']" [routerLinkActive]="'active'">
+            <i class="fi fi-rr-comment-alt"></i>
+            <span translate>AI Query History</span>
+          </a>
+        </li>
         <li>
           <a [routerLink]="['/users/profile']" [routerLinkActive]="'active'">
             <i class="fi fi-rr-user"></i>

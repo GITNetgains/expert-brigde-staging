@@ -56,8 +56,8 @@ export class TutorListComponent implements OnInit {
     skillIds: '',
     rating: '',
     yearsExperience: '',
-    minConsultationFee: '',
-    maxConsultationFee: ''
+    minPrice1On1Class: '',
+  maxPrice1On1Class: ''
   };
   public grades: any = [];
   public loading = false;
@@ -238,8 +238,9 @@ toggleFilter(key: keyof typeof this.openFilter) {
       };
       params.rejected = false;
       params.pendingApprove = false;
-      if (!params.minConsultationFee) delete params.minConsultationFee;
-      if (!params.maxConsultationFee) delete params.maxConsultationFee;
+      if (!params.minPrice1On1Class) delete params.minPrice1On1Class;
+if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
+
       this.tutorService
         .search(params)
         .then((resp) => {

@@ -3,16 +3,12 @@
   <div *ngIf="!submittedSuccess" class="result-container">
 
     <h1 class="heading">
-      Your search posting for
-      <span class="highlight">{{ extractedRole }}</span>
-      in
-      <span class="highlight">{{ extractedIndustry }}</span>
-      is shared below:
+    Your search query is shared below
     </h1>
 
     <div class="content-container">
         <p class="subtitle-left">
-        Fine tweak the below response before submitting your request
+        Review the query below before submitting your request
         </p>
     </div>
 
@@ -29,12 +25,8 @@
   <div class="editor-card attachment-card">
     <label class="card-label">Attach File (pdf, docx, jpg, png)</label>
 
-    <div *ngIf="!auth.isLoggedin()" class="auth-prompt">
-        Please <a (click)="goToLogin()" class="link-text">login</a> to attach files.
-    </div>
-
     <app-file-upload
-        *ngIf="auth.isLoggedin() && isClientUser"
+        *ngIf="!auth.isLoggedin() || isClientUser"
         [options]="aiFileUploadOptions">
     </app-file-upload>
 
@@ -49,10 +41,10 @@
 </div>
 
     <div class="editor-card signup-card" *ngIf="!auth.isLoggedin()">
-      <div class="form-header">
+      <!-- <div class="form-header">
         <h3>Kindly Signup to submit your query</h3>
         <p>Already Sign up? <a (click)="goToLogin()" class="link-text">Please login</a></p>
-      </div>
+      </div> -->
 
       <div class="form-row">
           <div class="form-group">
@@ -60,9 +52,27 @@
               <input type="text" id="fullName" [(ngModel)]="lead.name" placeholder="Enter your full name" class="form-control" />
           </div>
           <div class="form-group">
-              <label for="emailAddr">Email</label>
-              <input type="email" id="emailAddr" [(ngModel)]="lead.email" placeholder="Enter your email address" class="form-control" />
-          </div>
+  <label for="emailAddr">Work Email</label>
+  <input
+    type="email"
+    id="emailAddr"
+    [(ngModel)]="lead.email"
+    placeholder="Enter your company email address"
+    class="form-control"
+  />
+
+  <!-- DOMAIN UX -->
+  <div *ngIf="lead.email">
+    <div class="domain-check" *ngIf="isCompanyEmail(lead.email)">
+      <span class="dot"></span> valid domain
+    </div>
+
+    <div class="error" *ngIf="!isCompanyEmail(lead.email)">
+      Please use your company email address
+    </div>
+  </div>
+</div>
+
           <div class="form-group full-width">
               <label for="phoneNo">Phone No.</label>
               <input type="tel" id="phoneNo" [(ngModel)]="lead.phone" placeholder="Enter your phone no" class="form-control" />
@@ -78,7 +88,16 @@
 
     <div class="actions-right content-container">
       <button type="button" class="btn reset-btn" (click)="reset()">Reset</button>
-      <button type="button" class="btn submit-btn" (click)="submit()" [disabled]="loading">
+      <button
+  type="button"
+  class="btn submit-btn"
+  (click)="submit()"
+  [disabled]="
+    loading ||
+    (!auth.isLoggedin() && !isCompanyEmail(lead.email))
+  "
+>
+
         {{ loading ?'Submit' : 'Submit' }}
       </button>
     </div>
@@ -89,8 +108,10 @@
     {{ confirmationText }}
 
     <div class="redirect-note">
-      Redirecting to homepage in {{ countdown }} seconds...
-    </div>
+  Redirecting to
+  {{ auth.isLoggedin() ? 'dashboard' : 'homepage' }}
+  in {{ countdown }} seconds...
+</div>
   </div>
 </div>
 

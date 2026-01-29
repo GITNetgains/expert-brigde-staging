@@ -1,0 +1,102 @@
+<div class="sm-padding data-table">
+  <div class="container">
+    <div class="info-dashboard">
+      <h3>AI Query History</h3>
+    </div>
+
+    <div *ngIf="loading" class="text-center">
+      <span>Loading...</span>
+    </div>
+
+    <div *ngIf="!loading && items.length === 0" class="text-center">
+      <p>No AI queries found.</p>
+    </div>
+
+    <div *ngIf="!loading && items.length > 0" class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Description</th>
+            <th>Attachments</th>
+            <th>Assigned Tutors</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let q of items">
+            <!-- Timestamp -->
+            <td>{{ q.createdAt | date:'medium' }}</td>
+
+            <!-- Description (View button) -->
+            <td>
+              <button
+                class="btn btn-sm btn-outline-primary color-white"
+                (click)="openDescription(q)"
+              >
+                View
+              </button>
+            </td>
+
+            <!-- Attachments -->
+            <td>
+              <ng-container *ngIf="q.aiAttachmentIds?.length; else noFiles">
+                <a
+                  href="javascript:void(0)"
+                  (click)="openAttachments(q.aiAttachmentIds)"
+                >
+                  {{ q.aiAttachmentIds.length }} file(s)
+                </a>
+              </ng-container>
+              <ng-template #noFiles>
+                <span>-</span>
+              </ng-template>
+            </td>
+
+            <!-- Assigned Tutors -->
+            <td>
+              <ng-container *ngIf="q.assignedTutors?.length; else noTutors">
+                <span *ngFor="let t of q.assignedTutors; let i = index">
+                  <a (click)="openTutorProfile(t)">
+                    {{ getTutorDisplayName(t) }}
+                  </a>
+                  <span *ngIf="i < q.assignedTutors.length - 1">, </span>
+                </span>
+              </ng-container>
+              <ng-template #noTutors>
+                <span>Not assigned</span>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 🔽 Simple Description Modal -->
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="selectedQuery" (click)="closeDescription()"></div>
+
+<!-- Modal -->
+<div class="custom-modal" *ngIf="selectedQuery">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h5>Description</h5>
+      <button class="close-btn" (click)="closeDescription()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p style="white-space: pre-line">
+        {{ selectedQuery.description }}
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" (click)="closeDescription()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+

@@ -1,4 +1,4 @@
-<section class="sm-padding" *ngIf="isBlogList; else blogDetailTpl">
+<section class="sm-padding page-card-wrapper" *ngIf="isBlogList; else blogDetailTpl">
   <div class="container">
     <div class="row mb-4">
       <div class="col-md-12">
@@ -28,13 +28,21 @@
 
 <!-- =========== BLOG DETAIL PAGE =========== -->
 <ng-template #blogDetailTpl>
-  <section class="blog-detail-section">
+  <section class="blog-detail-section page-card-wrapper">
     <div class="container">
 
       <!-- BLOG IMAGE -->
-      <div class="blog-detail-image">
-        <img class="image-blogs" [src]="getImage(page)" alt="Blog Image" />
-      </div>
+     <div
+  class="blog-detail-image"
+  *ngIf="(page?.type === 'blog' || page?.type === 'industry') && getImage(page)"
+>
+  <img
+    class="image-blogs"
+    [src]="getImage(page)"
+    alt="Blog Image"
+  />
+</div>
+
 
       <!-- TAGLINE -->
       <div class="tagline" *ngIf="getTagline(page)">
@@ -53,7 +61,7 @@
 
       <!-- CONTENT -->
       <div class="blog-detail-content ql-container ql-core">
-        <div class="ql-editor" [innerHTML]="page?.content"></div>
+        <div class="ql-editor" [innerHTML]="decodeHtml(page?.content)"></div>
       </div>
 
     </div>

@@ -82,18 +82,32 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private linkedinAuth: LinkedinAuthService,
     private tutorService: TutorService,
     private countryService: CountryService
+    
   ) {
     const config: any = this.stateService.getState(STATE.CONFIG);
     if (config?.siteName) {
       this.seoService.setMetaTitle(config.siteName + ' - Sign Up');
     }
+    
 
-    const t = this.route.snapshot.queryParams['type'];
-    if (t === 'student' || t === 'tutor') {
-      this.account.type = t;
-      this.lockType = true;
-    }
+  const viewType = this.route.snapshot.queryParams['type'];
+const mappedType = this.mapViewTypeToAccountType(viewType);
+
+if (mappedType) {
+  this.account.type = mappedType; // tutor | student
+  this.lockType = true;
+}
+
+
   }
+ private mapViewTypeToAccountType(
+  viewType: string
+): 'tutor' | 'student' | '' {
+  if (viewType === 'expert') return 'tutor';
+  if (viewType === 'client') return 'student';
+  return '';
+}
+ 
 
   /* =========================
    * LIFECYCLE HOOKS
@@ -133,6 +147,26 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
   loginWithLinkedin(): void {
     this.linkedinAuth.redirectToLinkedinLogin();
   }
+
+  passwordRules = {
+  length: false,
+  uppercase: false,
+  lowercase: false,
+  number: false,
+  special: false
+};
+
+checkPasswordRules(password: string): void {
+  this.passwordRules.length = password.length >= 8;
+  this.passwordRules.uppercase = /[A-Z]/.test(password);
+  this.passwordRules.lowercase = /[a-z]/.test(password);
+  this.passwordRules.number = /\d/.test(password);
+  this.passwordRules.special = /[@$!%*?&]/.test(password);
+}
+
+isPasswordValid(): boolean {
+  return Object.values(this.passwordRules).every(Boolean);
+}
 
   /* =========================
    * PASSWORD VALIDATION
@@ -405,13 +439,13 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
       errors.push('Please upload certification');
     }
 
-    if (this.tutorProfile.introVideoType === 'upload' && !this.tutorProfile.introVideoId) {
-      errors.push('Please upload intro video');
-    }
+    // if (this.tutorProfile.introVideoType === 'upload' && !this.tutorProfile.introVideoId) {
+    //   errors.push('Please upload intro video');
+    // }
 
-    if (this.tutorProfile.introVideoType === 'youtube' && !this.tutorProfile.introYoutubeId.trim()) {
-      errors.push('Please enter YouTube video URL');
-    }
+    // if (this.tutorProfile.introVideoType === 'youtube' && !this.tutorProfile.introYoutubeId.trim()) {
+    //   errors.push('Please enter YouTube video URL');
+    // }
 
     return errors;
   }

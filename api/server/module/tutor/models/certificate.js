@@ -5,6 +5,9 @@ const schema = new Schema(
     title: {
       type: String
     },
+    organization: {
+      type: String   // ✅ NEW FIELD
+    },
     description: {
       type: String
     },
@@ -47,20 +50,9 @@ const schema = new Schema(
       createdAt: 'createdAt',
       updatedAt: 'updatedAt'
     },
-    toJSON: {
-      virtuals: true
-    },
-    toObject: {
-      virtuals: true
-    }
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
-
-schema.virtual('document', {
-  ref: 'Media',
-  localField: 'documentId',
-  foreignField: '_id',
-  justOne: true
-});
 
 module.exports = schema;

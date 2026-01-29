@@ -134,7 +134,8 @@ export class CustomBreadcrumbComponent implements OnInit {
       'Refund request': '/refunds/refund-list',
       'System Configs': '/config/list',
       'Transaction': '/transactions/transaction',
-      'Manage Transaction': '/transactions/transaction'
+      'Manage Transaction': '/transactions/transaction',
+      'Contacts': '/contacts/list'
     };
 
     return sectionUrlMap[sectionName] || '/dashboard';

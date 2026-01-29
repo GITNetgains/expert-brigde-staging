@@ -22,7 +22,7 @@ module.exports = router => {
    * }
    * @apiPermission all
    */
-  router.post('/v1/newsletter/contact', contactController.register, Middleware.Response.success('register'));
+  // router.post('/v1/newsletter/contact', contactController.register, Middleware.Response.success('register'));
 
   /**
    * @apiGroup Newsletter
@@ -44,7 +44,7 @@ module.exports = router => {
    * }
    * @apiPermission admin
    */
-  router.get('/v1/newsletter/contact', Middleware.hasRole('admin'), contactController.list, Middleware.Response.success('list'));
+  // router.get('/v1/newsletter/contact', Middleware.hasRole('admin'), contactController.list, Middleware.Response.success('list'));
 
   /**
    * @apiGroup Newsletter
@@ -63,5 +63,15 @@ module.exports = router => {
    * }
    * @apiPermission admin
    */
-  router.delete('/v1/newsletter/contact/:contactId', Middleware.hasRole('admin'), contactController.remove, Middleware.Response.success('remove'));
+  // router.delete('/v1/newsletter/contact/:contactId', Middleware.hasRole('admin'), contactController.remove, Middleware.Response.success('remove'));
+router.post(
+  '/v1/contact-us',
+  contactController.submit,
+  Middleware.Response.success('submit')
+);
+
+router.get('/v1/contact-us', Middleware.hasRole('admin'), contactController.list, Middleware.Response.success('list'));
+router.get('/v1/contact-us/:contactId', Middleware.hasRole('admin'), contactController.get, Middleware.Response.success('get'));
+router.delete('/v1/contact-us/:contactId', Middleware.hasRole('admin'), contactController.remove, Middleware.Response.success('remove'));
+
 };

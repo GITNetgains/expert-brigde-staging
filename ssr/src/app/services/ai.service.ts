@@ -9,8 +9,8 @@ export interface AiSearchResponse {
 export class AiService {
   private api = inject(APIRequest);
 
-  async search(query: string, captchaToken: string): Promise<IResponse<AiSearchResponse>> {
-    return this.api.post('/ai/search', { query, captchaToken });
+  async search(query: string): Promise<IResponse<AiSearchResponse>> {
+    return this.api.post('/ai/search', { query });
   }
 }
 

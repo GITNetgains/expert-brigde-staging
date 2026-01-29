@@ -216,12 +216,12 @@ exports.verifyEmail = async (req, res, next) => {
   });
 
   const validate = Joi.validate(req.body, schema);
-  if (validate.error) {
+  if (validate.error) {           
     return next(PopulateResponse.validationError(validate.error));
-  }
+  } 
 
   try {
-    const user = await DB.User.findOne({
+          const user = await DB.User.findOne({
       emailVerifiedToken: req.body.token
     });
     if (!user) {

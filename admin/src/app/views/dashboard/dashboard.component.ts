@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { firstPageService } from '../../../services/firstPage.service';
 import { ActivatedRoute } from '@angular/router';
+import { ContactService } from '@services/contact.service';
 import { Subscription } from 'rxjs';
 import { StatItem } from '../../../interfaces/dashboard.interface';
 import { 
@@ -131,6 +132,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       color: 'danger',
       path: '/courses/list',
     },
+    totalContacts: {
+      title: 'Contacts',
+      icon: 'cilContact',
+      color: 'primary',
+      path: '/contacts/list',
+    },
     totalRevenue: {
       title: 'Commission',
       icon: 'cilCreditCard',
@@ -160,7 +167,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }> = [];
   constructor(
     private starterService: firstPageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private contactService: ContactService
   ) {
     this.config = this.route.snapshot.data['appConfig'];
   }
@@ -176,6 +184,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
             value: data[key] ?? 0,
           };
         });
+
+        if (data['totalContacts'] === undefined || data['totalContacts'] === null) {
+          this.contactService.search({ page: 1, take: 1 }).subscribe((cResp) => {
+            const count = cResp?.data?.count ?? 0;
+            this.starts = this.starts.map((item) =>
+              item.title === this.start['totalContacts'].title
+                ? { ...item, value: count }
+                : item
+            );
+          });
+        }
 
         this.loading = false;
       },

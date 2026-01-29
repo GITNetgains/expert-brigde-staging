@@ -1,27 +1,42 @@
 const Schema = require('mongoose').Schema;
 
-const schema = new Schema({
-  name: {
-    type: String
+const schema = new Schema(
+  {
+    name: {
+      type: String
+    },
+
+    companyName: {
+      type: String
+    },
+
+    email: {
+  type: String,
+  index: true,
+  lowercase: true,
+  trim: true
+},
+
+phoneNumber: {
+  type: String,
+  trim: true
+},
+
+    message: {
+      type: String
+    },
+
+    // keep this if used elsewhere
+    address: {
+      type: String
+    }
   },
-  email: {
-    type: String,
-    index: true
-  },
-  address: {
-    typ: String
-  },
-  createdAt: {
-    type: Date
-  },
-  updatedAt: {
-    type: Date
+  {
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt'
+    }
   }
-}, {
-  timestamps: {
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  }
-});
+);
 
 module.exports = schema;

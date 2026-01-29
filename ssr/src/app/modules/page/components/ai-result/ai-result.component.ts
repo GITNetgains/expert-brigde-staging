@@ -56,7 +56,7 @@ export class AiResultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.aiFileUploadOptions = {
-      url: environment.apiBaseUrl + '/media/files',
+      url: environment.apiBaseUrl + '/tutors/upload-document',
       multiple: true,
       uploadOnSelect: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
@@ -156,15 +156,10 @@ export class AiResultComponent implements OnInit, OnDestroy {
  async fetch() {
   this.loading = true;
   try {
-    let token = '';
-    if (isPlatformBrowser(this.platformId)) {
-      token = await grecaptcha.execute(
-        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
-        { action: 'ai_search' }
-      );
-    }
+    
 
-    const resp = await this.ai.search(this.query, token);
+   const resp = await this.ai.search(this.query);
+
     const data: any = resp?.data ?? {};
 
     const answer =
@@ -217,7 +212,11 @@ startCountdown() {
     
     if (this.countdown <= 0) {
       clearInterval(this.countdownInterval);
-      this.router.navigate(['/']);
+        if (this.auth.isLoggedin()) {
+        this.router.navigate(['/users/dashboard']); // ✅ logged-in
+      } else {
+        this.router.navigate(['/']);           // ✅ guest
+      }
     }
   }, 1000);
 }
@@ -228,13 +227,19 @@ submitting = false; // New flag for production safety
 async submit() {
   if (!this.editableText.trim() || this.submitting) return;
 
-  // 1. Validation Logic
+  // 1. Validation
   if (!this.auth.isLoggedin()) {
-    if (!this.lead.name || !this.lead.email || !this.lead.phone) {
-      this.appService.toastError('Please fill all contact details');
-      return;
-    }
-  } else {
+  if (!this.lead.email) {
+    this.appService.toastError('Email is required');
+    return;
+  }
+
+  if (!this.isCompanyEmail(this.lead.email)) {
+    this.appService.toastError('Please use your company email address');
+    return;
+  }
+}
+ else {
     const u = await this.auth.getCurrentUser();
     this.lead.email = u.email;
     this.lead.name = u.name;
@@ -242,26 +247,37 @@ async submit() {
   }
 
   try {
-    this.submitting = true; // Start loading state
+    this.submitting = true;
+
+    // ✅ EXECUTE reCAPTCHA ONLY HERE
+    let captchaToken = '';
+    if (isPlatformBrowser(this.platformId)) {
+      captchaToken = await grecaptcha.execute(
+        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
+        { action: 'ai_query_submit' }
+      );
+    }
+
     await this.userService.addAiQuery({
       query: this.query,
       description: this.editableText,
       lead: this.lead,
-      aiAttachmentIds: this.aiAttachmentIds
+      aiAttachmentIds: this.aiAttachmentIds,
+      captchaToken          // ✅ SEND TOKEN
     });
 
     this.appService.toastSuccess('Request submitted successfully');
     this.submittedSuccess = true;
-    this.startCountdown(); 
-    
+    this.startCountdown();
+
   } catch (err: any) {
-    // Extract specific backend error message if available
     const msg = err?.error?.message || 'An error occurred. Please try again.';
     this.appService.toastError(msg);
   } finally {
-    this.submitting = false; // Reset loading state
+    this.submitting = false;
   }
 }
+
 
 goToLogin() { 
   const returnUrl = this.router.createUrlTree(
@@ -270,6 +286,30 @@ goToLogin() {
   ).toString(); 
   this.router.navigate(['/auth/login'], { queryParams: { returnUrl } }); 
 }
+isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+isCompanyEmail(email: string): boolean {
+  if (!email) return false;
+
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain) return false;
+
+  const personalDomains = [
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'outlook.com',
+    'icloud.com',
+    'aol.com',
+    'protonmail.com'
+  ];
+
+  return !personalDomains.includes(domain);
+}
+
 
   ngOnDestroy() {
     if (this.countdownInterval) {

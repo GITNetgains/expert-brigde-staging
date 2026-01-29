@@ -101,6 +101,7 @@ exports.stats = async (req, res, next) => {
     const totalAppointments = await DB.Appointment.count();
 
     const totalCoursePendingApproved = await DB.Course.count({ approved: false });
+    const totalContacts = await DB.Contact.count();
 
     res.locals.stats = {
       totalStudents,
@@ -117,7 +118,8 @@ exports.stats = async (req, res, next) => {
       totalPendingRefundRequest,
       totalAppointments,
       totalTutorRejected,
-      totalCoursePendingApproved
+      totalCoursePendingApproved,
+      totalContacts
     };
     return next();
   } catch (e) {

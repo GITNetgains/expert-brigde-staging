@@ -2,6 +2,9 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
 
+require('./models/Counter')
+
+
 exports.User = schema => {
   schema.add({
     avatar: { type: String, default: '' },
@@ -31,6 +34,18 @@ exports.User = schema => {
     zipCode: { type: String, default: '' },
     lessonSpaceUserId: { type: Number, default: '' },
     lessonSpaceUserInfo: { type: mongoose.Schema.Types.Mixed },
+userId: {
+  type: String,
+  unique: true,
+  sparse: true,
+  index: true
+},
+
+showPublicIdOnly: {
+  type: Boolean,
+  default: false
+},
+
    aiQueries: [
   {
     query: { type: String },
@@ -112,4 +127,26 @@ exports.User = schema => {
     const newFilePath = filePath || 'public/assets/default-avatar.jpg';
     return Helper.App.getPublicFileUrl(newFilePath);
   });
+
+const Counter = mongoose.model('Counter');
+schema.pre('save', async function (next) {
+  try {
+    if (this.type !== 'tutor') return next();
+    if (this.userId) return next();
+
+    if (!this.isNew && !this.isModified('type')) return next();
+
+    const counter = await Counter.findOneAndUpdate(
+      { _id: 'tutor' },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
+    this.userId = `EB-${String(counter.seq).padStart(4, '0')}`;
+    next();
+  } catch (e) {
+    next(e);
+  }
+});
+
 };

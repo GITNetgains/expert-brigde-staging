@@ -79,6 +79,7 @@ exports.update = async (req, res, next) => {
       'phoneNumber',
       'notificationSettings',
       'bio',
+      'showPublicIdOnly',
       'aiAttachmentIds',
       'paypalEmailId',
       'timezone',
@@ -126,7 +127,7 @@ exports.findOne = async (req, res, next) => {
     const user = await DB.User.findOne({
       _id: req.params.id
     })
-    .populate('assignedTutors', 'name _id email avatarUrl');
+    .populate('assignedTutors', 'name _id email avatarUrl userId');
 
     res.locals.user = user;
     next();
@@ -243,7 +244,7 @@ exports.getAiQueries = async (req, res) => {
     const user = await DB.User.findById(userId)
       .select('aiQueries')
       .populate('aiQueries.aiAttachmentIds')
-      .populate('aiQueries.assignedTutors', 'name email avatar');
+      .populate('aiQueries.assignedTutors', 'name email avatar userId');
 
     if (!user) {
       return res.status(404).json({
@@ -277,22 +278,58 @@ exports.deleteAiQuery = async (req, res) => {
 
 
 // ================= AI QUERY CREATE =================
+
 exports.addAiQuery = async (req, res, next) => {
   try {
     const { query, description, aiAttachmentIds, lead = {} } = req.body;
 
+    // 1️⃣ Email is mandatory
     if (!lead.email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({
+        message: 'Email is required'
+      });
     }
 
-    let user = await DB.User.findOne({ email: lead.email });
+    const email = lead.email.toLowerCase().trim();
+
+    // 2️⃣ Basic email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: 'Invalid email format'
+      });
+    }
+
+    // 3️⃣ Block personal email domains
+    const blockedDomains = new Set([
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+      'icloud.com',
+      'aol.com',
+      'protonmail.com',
+      'zoho.com',
+      'yandex.com',
+      'gmx.com'
+    ]);
+
+    const domain = email.split('@')[1];
+
+    if (blockedDomains.has(domain)) {
+      return res.status(400).json({
+        message: 'Please use your company email address'
+      });
+    }
+
+    // 4️⃣ Continue with existing logic
+    let user = await DB.User.findOne({ email });
 
     if (!user) {
-      // Logic for NEW USER
       user = await DB.User.create({
-        name: lead.name,
-        email: lead.email,
-        phoneNumber: lead.phone, // Ensure this matches frontend 'lead.phone'
+        name: lead.name || '',           // optional
+        email,
+        phoneNumber: lead.phone || '',   // optional
         type: 'student',
         role: 'user',
         aiQueries: [{
@@ -303,49 +340,48 @@ exports.addAiQuery = async (req, res, next) => {
         }]
       });
     } else {
-      // Logic for REGISTERED USER
       if (user.type === 'tutor') {
         return res.status(403).json({
-          code: 403,
           message: 'Only clients can create AI queries'
         });
       }
 
-      await DB.User.findByIdAndUpdate(
-        user._id,
-        {
-          $push: {
-            aiQueries: {
-              query,
-              description,
-              aiAttachmentIds,
-              assignedTutors: []
-            }
+      await DB.User.findByIdAndUpdate(user._id, {
+        $push: {
+          aiQueries: {
+            query,
+            description,
+            aiAttachmentIds,
+            assignedTutors: []
           }
-        },
-        { new: true }
-      );
+        }
+      });
     }
 
-   // Define the Admin URL from configuration
-const adminUrl = nconf.get('adminWebUrl') || nconf.get('adminURL');
+    // email notification logic unchanged
+    const adminUrl = nconf.get('adminWebUrl') || nconf.get('adminURL');
 
-// Construct the raw HTML body
-const emailBody = `
-  <p>Dear Admin,</p>
-  <br />
-  <p>A new AI query lead has been created by ${user.name} (${user.email})</p>
-  <p><strong>Query</strong>: ${query}</p>
-  <p><strong>Description</strong>: ${description}</p>
-  <br />
-  <p>Review and assign tutors from the admin panel:</p>
-  <p><a href="${adminUrl}/users/update/${user._id}">${adminUrl}/users/update/${user._id}</a></p>
-`;
+    const emailBody = `
+      <p>Dear Admin,</p>
+      <p>A new AI query lead has been created by ${email}</p>
+      <p><strong>Query</strong>: ${query}</p>
+      <p><strong>Description</strong>: ${description}</p>
+      <p>
+        <a href="${adminUrl}/users/update/${user._id}">
+          Review in Admin Panel
+        </a>
+      </p>
+    `;
 
-// Use Mailer.raw to send the email directly
-await  Service.Mailer.sendRawNow(process.env.ADMIN_EMAIL, 'New AI Query Lead', emailBody);
+    await Service.Mailer.sendRawNow(
+      process.env.ADMIN_EMAIL,
+      'New AI Query Lead',
+      emailBody
+    );
+
     res.locals.aiQuery = { success: true };
     return next();
+
   } catch (err) {
     return next(err);
   }

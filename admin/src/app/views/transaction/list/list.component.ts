@@ -39,6 +39,7 @@ import { UtilService } from '@services/util.service';
 import { ISortOption } from 'src/interfaces';
 import { EyeIconComponent } from '@components/common/icons/eye-icon/eye-icon.component';
 
+
 @Component({
   selector: 'app-list',
   standalone: true,

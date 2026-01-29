@@ -3,6 +3,8 @@ exports.toResponse = function (tutor, showPrivate = false, isAdmin = false) {
     id: tutor.id,
     _id: tutor._id,
     name: tutor.name,
+    userId: tutor.userId,
+    showPublicIdOnly: tutor.showPublicIdOnly,
     totalRating: tutor.totalRating,
     username: tutor.username,
     bio: tutor.bio || '',
@@ -43,6 +45,13 @@ exports.toResponse = function (tutor, showPrivate = false, isAdmin = false) {
     paypalEmailId: tutor.paypalEmailId,
     timezone: tutor.timezone
   };
+
+  if (tutor.showPublicIdOnly === true) {
+    delete publicData.name;
+    delete publicData.email;
+    delete publicData.phoneNumber;
+    delete publicData.avatarUrl;
+  }
 
   if (isAdmin) {
     return Object.assign(tutor, { isFavorite: false });

@@ -46,14 +46,14 @@ export const tutorMenus = [
   {
     icon: 'fi fi-rr-calendar-clock',
     title: 'Set your calendar',
-    description: 'Allows the expert to book appointments for 1‑on‑1 classes.',
+    description: 'Allows the expert to book appointments for 1‑on‑1 sessions.',
     path: '/users/1on1classes',
     key: 'menu-my-schedule'
   },
   {
     icon: 'fi fi-rr-calendar',
     title: 'Upcoming appointments',
-    description: 'Appointments scheduled by the expert for 1‑on‑1 classes.',
+    description: 'Appointments scheduled by the expert for 1‑on‑1 sessions.',
     path: '/users/appointments',
     key: 'menu-my-appointment'
   },
@@ -96,6 +96,13 @@ export const studentMenus = [
     path: '/users/profile',
     key: 'menu-my-profile-1'
   },
+  {
+    icon: 'fi fi-rr-comment-alt',
+    title: 'AI Query History',
+    description: 'View your AI query submissions and assigned experts.',
+    path: '/users/ai-queries',
+    key: 'menu-ai-queries'
+  },
   // {
   //   icon: 'fi fi-rs-chalkboard-user',
   //   title: 'Browse Group class categories',
@@ -113,7 +120,7 @@ export const studentMenus = [
   {
     icon: 'fi fi-rr-calendar',
     title: 'Upcoming appointments',
-    description: 'Appointments booked by the client for 1‑on‑1 classes.',
+    description: 'Appointments booked by the client for 1‑on‑1 sessions.',
     path: '/users/lessons',
     key: 'menu-my-lesson'
   },

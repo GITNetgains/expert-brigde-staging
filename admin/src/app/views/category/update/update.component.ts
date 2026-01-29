@@ -20,11 +20,13 @@ import {
   FormFeedbackComponent,
   InputGroupComponent,
   Tabs2Module,
+  
   TabsComponent,
 } from '@coreui/angular';
 
 @Component({
   selector: 'app-update-grade',
+  standalone: true,
   templateUrl: '../form.component.html',
 
   imports: [
@@ -36,9 +38,9 @@ import {
     CardComponent,
     CardBodyComponent,
     CardHeaderComponent,
-    RowComponent,
+    RowComponent, // Only valid in standalone component
     ColComponent,
-    ReactiveFormsModule,
+    ReactiveFormsModule, // Only valid in standalone component
     FormsModule,
     FormFeedbackComponent,
     InputGroupComponent,

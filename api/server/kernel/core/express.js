@@ -27,6 +27,8 @@ exports.core = kernel => {
   app.engine('swig', swig.renderFile);
   app.engine('html', swig.renderFile);
   app.set('view engine', 'swig');
+  app.set('trust proxy', true); // ✅ REQUIRED for correct IP
+
   app.set('views', path.join(__dirname, '..', '..', 'views'));
   app.set('view cache', false);
   app.disable('x-powered-by');

@@ -134,6 +134,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/i18n/language.routing').then((m) => m.routes),
       },
+      {
+        path: 'contacts',
+        loadChildren: () =>
+          import('./views/contact/contact.routing').then((m) => m.routes),
+      },
     ],
   },
 
