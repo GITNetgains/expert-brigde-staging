@@ -37,6 +37,21 @@
     }
   }
 }
+.form-label {
+  font-weight: 500;
+}
+
+.required-star {
+  color: #dc3545; // bootstrap danger red
+  margin-left: 4px;
+}
+
+.optional-text {
+  color: #6c757d;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
 
 a.disabled {
   pointer-events: none;

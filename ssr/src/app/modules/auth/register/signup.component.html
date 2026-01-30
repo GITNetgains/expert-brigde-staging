@@ -174,10 +174,10 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Enter your phone number"
+                placeholder="Enter your phone number (optional)"
                 [(ngModel)]="studentProfile.phoneNumber"
                 name="studentPhone"
-                required
+                
               />
             </div>
             <div class="mb-3">
@@ -185,10 +185,10 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Enter your address"
+                placeholder="Enter your address (optional)"
                 [(ngModel)]="studentProfile.address"
                 name="studentAddress"
-                required
+                
               />
             </div>
           </div>
@@ -276,14 +276,14 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Enter your address"
+                placeholder="Enter your address (optional)"
                 [(ngModel)]="tutorProfile.address"
                 name="tutorAddress"
-                required
+                
               />
             </div>
             <div class="mb-3">
-              <label>Phone</label>
+              <label>Phone</label> 
               <input
                 type="text"
                 class="form-control"
@@ -298,15 +298,15 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Enter your zipcode"
+                placeholder="Enter your zipcode (optional)"
                 [(ngModel)]="tutorProfile.zipCode"
                 name="tutorZip"
-                required
+                
               />
             </div>
 
             <div class="mb-3">
-              <label>Verification Document</label>
+              <label>Verification Document <span class="optional-text">(Optional)</span></label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
                 (finishUpload)="onIssueUploadFinish($event)"
@@ -314,7 +314,7 @@
                   <div class="text-success small mt-1" *ngIf="tutorProfile.issueDocumentId">Uploaded ✓</div>
             </div>
             <div class="mb-3">
-              <label>Resume Document</label>
+              <label>Resume Document <span class="optional-text">(Optional)</span></label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
                 (finishUpload)="onResumeUploadFinish($event)"
@@ -323,7 +323,7 @@
 
             </div>
             <div class="mb-3">
-              <label>Certification Document</label>
+              <label>Certification Document <span class="optional-text">(Optional)</span></label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
                 (finishUpload)="onCertUploadFinish($event)"

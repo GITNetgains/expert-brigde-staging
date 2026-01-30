@@ -80,8 +80,9 @@ exports.updateStudentPersonalInfo = async (req, res, next) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
     name: Joi.string().required(),
-    phoneNumber: Joi.string().required(),
-    address: Joi.string().required()
+ phoneNumber: Joi.string().allow('', null).optional(),
+address: Joi.string().allow('', null).optional()
+
   });
 
   const { error, value } = schema.validate(req.body);
@@ -127,9 +128,9 @@ exports.completeTutorProfile = async (req, res, next) => {
       name: Joi.string().required(),
       timezone: Joi.string().required(),
       country: Joi.object().required(),
-      address: Joi.string().required(),
+     address: Joi.string().allow('', null).optional(),
       phoneNumber: Joi.string().required(),
-      zipCode: Joi.string().required(),
+      zipCode: Joi.string().allow('', null).optional(),
       issueDocumentId: Joi.string().allow('', null).optional(),
       resumeDocumentId: Joi.string().allow('', null).optional(),
       certificationDocumentId: Joi.string().allow('', null).optional(),

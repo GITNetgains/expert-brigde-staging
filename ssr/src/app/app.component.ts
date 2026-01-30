@@ -48,7 +48,9 @@ export class AppComponent implements OnInit {
       if (evt instanceof NavigationEnd) {
         const url = evt.urlAfterRedirects || evt.url;
         this.isAuthPage =
-          url.startsWith('/auth/login') || url.startsWith('/auth/sign-up');
+          url.startsWith('/auth/login') ||
+          url.startsWith('/auth/sign-up') ||
+          url.startsWith('/auth/forgot');
       }
     });
 

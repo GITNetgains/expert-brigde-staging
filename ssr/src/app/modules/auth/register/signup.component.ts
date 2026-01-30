@@ -310,18 +310,15 @@ isPasswordValid(): boolean {
       this.loading = false;
       return;
     }
+if (phoneNumber && !this.isValidPhone(phoneNumber)) {
+  this.appService.toastError('Please enter valid phone number');
+  return;
+}
 
-    if (!phoneNumber.trim() || !this.isValidPhone(phoneNumber)) {
-      this.appService.toastError('Please enter valid phone number');
-      this.loading = false;
-      return;
-    }
-
-    if (!address.trim() || address.length < 5) {
-      this.appService.toastError('Please enter valid address');
-      this.loading = false;
-      return;
-    }
+if (address && address.length < 5) {
+  this.appService.toastError('Please enter valid address');
+  return;
+}
 
     try {
       // Set password first
@@ -415,29 +412,29 @@ isPasswordValid(): boolean {
       errors.push('Please select country');
     }
 
-    if (!this.tutorProfile.address.trim() || this.tutorProfile.address.length < 5) {
-      errors.push('Please enter valid address');
-    }
+    // if (!this.tutorProfile.address.trim() || this.tutorProfile.address.length < 5) {
+    //   errors.push('Please enter valid address');
+    // }
 
     if (!this.tutorProfile.phoneNumber.trim() || !this.isValidPhone(this.tutorProfile.phoneNumber)) {
       errors.push('Please enter valid phone number');
     }
 
-    if (!this.tutorProfile.zipCode.trim() || this.tutorProfile.zipCode.length < 3) {
-      errors.push('Please enter valid zip code');
-    }
+    // if (!this.tutorProfile.zipCode.trim() || this.tutorProfile.zipCode.length < 3) {
+    //   errors.push('Please enter valid zip code');
+    // }
 
-    if (!this.tutorProfile.issueDocumentId) {
-      errors.push('Please upload ID document');
-    }
+    // if (!this.tutorProfile.issueDocumentId) {
+    //   errors.push('Please upload ID document');
+    // }
 
-    if (!this.tutorProfile.resumeDocumentId) {
-      errors.push('Please upload resume');
-    }
+    // if (!this.tutorProfile.resumeDocumentId) {
+    //   errors.push('Please upload resume');
+    // }
 
-    if (!this.tutorProfile.certificationDocumentId) {
-      errors.push('Please upload certification');
-    }
+    // if (!this.tutorProfile.certificationDocumentId) {
+    //   errors.push('Please upload certification');
+    // }
 
     // if (this.tutorProfile.introVideoType === 'upload' && !this.tutorProfile.introVideoId) {
     //   errors.push('Please upload intro video');

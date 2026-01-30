@@ -54,7 +54,7 @@
                     <strong> {{balance?.total | appCurrency}} </strong>
                   </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                   <td>
                     <strong
                       ><span translate>Commission to the site</span></strong
@@ -63,10 +63,10 @@
                   <td class="text-end">
                     <strong> {{balance?.commission| appCurrency}} </strong>
                   </td>
-                </tr>
+                </tr> -->
                 <tr>
                   <td>
-                    <strong><span translate>Tutor Earnings</span></strong>
+                    <strong><span translate>Expert Earnings</span></strong>
                   </td>
                   <td class="text-end">
                     <strong> {{balance?.balance| appCurrency}} </strong>
@@ -75,9 +75,7 @@
                 <tr>
                   <td colspan="2">
                     <small translate
-                      >Earnings will be accumulated after 3 days of the class
-                      completion to avoid refunds from students after the class
-                      is completed.
+                      >Earnings will be processed after a 5 day holding period to account for any disputes/refunds
                     </small>
                   </td>
                 </tr>
@@ -130,23 +128,23 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <h5 translate>Pending</h5>
-            <strong>
+            <!-- <strong>
               <span translate>Commission:</span> {{stats?.pending?.commission |
               appCurrency}} </strong
-            ><br />
+            ><br /> -->
             <strong>
-              <span translate>Tutor Balance:</span> {{stats?.pending?.balance |
+              <span translate>Expert Balance:</span> {{stats?.pending?.balance |
               appCurrency}}
             </strong>
           </div>
           <div class="col-md-6">
             <h5 translate>Approved</h5>
-            <strong>
+            <!-- <strong>
               <span translate>Commission:</span> {{stats?.approved?.commission |
               appCurrency}} </strong
-            ><br />
+            ><br /> -->
             <strong>
-              <span translate>Tutor Balance:</span> {{stats?.approved?.balance |
+              <span translate>Expert Balance:</span> {{stats?.approved?.balance |
               appCurrency}}
             </strong>
           </div>
@@ -205,7 +203,7 @@
                   (onSort)="onSort($event)"
                 ></app-sort>
               </th>
-              <th>
+              <!-- <th>
                 <span (click)="sortBy('commission', 'desc')" translate
                   >Commission</span
                 >
@@ -214,10 +212,10 @@
                   [sortBy]="'commission'"
                   (onSort)="onSort($event)"
                 ></app-sort>
-              </th>
+              </th> -->
               <th>
                 <span (click)="sortBy('balance', 'desc')" translate
-                  >Tutor Balance</span
+                  >Expert Balance</span
                 >
                 <app-sort
                   [sortOption]="sortOption"

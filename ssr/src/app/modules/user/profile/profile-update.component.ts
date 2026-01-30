@@ -188,7 +188,7 @@ export class ProfileUpdateComponent implements OnInit {
       this.userId = this.info._id;
 
       this.avatarUrl = resp.data.avatarUrl;
-      if (this.avatarUrl !== 'http://localhost:9000/assets/default-avatar.jpg')
+      if (this.avatarUrl !== '/assets/images/default-avatar.jpg' && this.avatarUrl !== 'http://localhost:9000/assets/default-avatar.jpg')
         this.checkAvatar = true;
       this.updateStates();
     });
