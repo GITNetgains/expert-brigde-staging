@@ -353,21 +353,38 @@ exports.sendAiOtp = async (req, res, next) => {
     }
 
     // block personal emails
-    const blockedDomains = [
-      'gmail.com', 'yahoo.com', 'hotmail.com',
-      'outlook.com', 'icloud.com', 'aol.com',
-      'protonmail.com'
-    ];
-
     const domain = email.split('@')[1];
-    if (blockedDomains.includes(domain)) {
-      return next(
-        PopulateResponse.error(
-          { message: 'Please use your company email address' },
-          'INVALID_EMAIL_DOMAIN'
-        )
-      );
-    }
+
+// ❌ invalid domain format
+if (!domain || !domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+  return next(
+    PopulateResponse.error(
+      { message: 'Please use a valid company email address' },
+      'INVALID_EMAIL_DOMAIN'
+    )
+  );
+}
+
+// ❌ block personal domains
+const blockedDomains = [
+  'gmail.com',
+  'yahoo.com',
+  'hotmail.com',
+  'outlook.com',
+  'icloud.com',
+  'aol.com',
+  'protonmail.com'
+];
+
+if (blockedDomains.includes(domain)) {
+  return next(
+    PopulateResponse.error(
+      { message: 'Please use your company email address' },
+      'INVALID_EMAIL_DOMAIN'
+    )
+  );
+}
+
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 

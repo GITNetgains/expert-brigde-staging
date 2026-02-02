@@ -220,10 +220,19 @@ isPasswordValid(): boolean {
         return;
       }
 
-      if (!this.isValidEmail(this.account.email)) {
-        this.appService.toastError('Please enter a valid email address');
-        return;
-      }
+    if (!this.isValidEmail(this.account.email)) {
+  this.appService.toastError('Please enter a valid email address');
+  return;
+}
+
+if (
+  this.account.type === 'student' &&
+  !this.isCompanyEmail(this.account.email)
+) {
+  this.appService.toastError('Please use a company email address');
+  return;
+}
+
 
       this.loading = true;
 
@@ -557,10 +566,15 @@ if (address && address.length < 5) {
   /* =========================
    * VALIDATION HELPERS
    * ========================= */
-  isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
+isValidEmail(email: string): boolean {
+  if (!email) return false;
+
+  const emailRegex =
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
+
+  return emailRegex.test(email.trim());
+}
+
 
   isValidPhone(phone: string): boolean {
     // Allows +, digits, spaces, (), -
@@ -568,22 +582,30 @@ if (address && address.length < 5) {
     return phoneRegex.test(phone);
   }
 
-  isCompanyEmail(email: string): boolean {
-    const domain = email.split('@')[1]?.toLowerCase();
-    if (!domain) return false;
+ isCompanyEmail(email: string): boolean {
+  if (!this.isValidEmail(email)) return false;
 
-    const personalDomains = [
-      'gmail.com',
-      'yahoo.com',
-      'hotmail.com',
-      'outlook.com',
-      'icloud.com',
-      'aol.com',
-      'protonmail.com'
-    ];
+  const domain = email.split('@')[1].toLowerCase();
 
-    return !personalDomains.includes(domain);
-  }
+  // ❌ must contain dot
+  if (!domain.includes('.')) return false;
+
+  // ❌ no leading/trailing dot
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
+
+  const personalDomains = new Set([
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'outlook.com',
+    'icloud.com',
+    'aol.com',
+    'protonmail.com'
+  ]);
+
+  return !personalDomains.has(domain);
+}
+
 
   /* =========================
    * UI HELPERS

@@ -84,14 +84,16 @@
   [class.readonly]="step !== 'email'"
 />
 
-          <div *ngIf="account.type === 'student' && account.email">
-            <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
-              <span class="dot"></span> valid domain
-            </div>
-            <div class="error" *ngIf="!isCompanyEmail(account.email)">
-              Please use company email domain
-            </div>
-          </div>
+        <div *ngIf="account.type === 'student' && account.email">
+  <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
+    <span class="dot"></span> Valid company email
+  </div>
+
+  <div class="error" *ngIf="!isCompanyEmail(account.email)">
+    Please enter a valid company email (example: name@company.com)
+  </div>
+</div>
+
         </div>
 
         <!-- OTP FIELD -->

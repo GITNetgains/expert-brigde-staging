@@ -578,6 +578,16 @@ exports.verifyOtp = async (req, res, next) => {
     // 4️⃣ VALIDATE COMPANY EMAIL FOR STUDENT
     if (record.type === 'student') {
       const domain = email.split('@')[1];
+      
+if (!domain || !domain.includes('.')) {
+  await DB.EmailOtp.deleteMany({ email });
+  return next(
+    PopulateResponse.error(
+      { message: 'Invalid company email address' },
+      'ERR_INVALID_COMPANY_EMAIL'
+    )
+  );
+}
       const personalDomains = [
         'gmail.com',
         'yahoo.com',

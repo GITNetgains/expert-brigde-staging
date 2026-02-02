@@ -377,17 +377,27 @@ goToLogin() {
   this.router.navigate(['/auth/login'], { queryParams: { returnUrl } }); 
 }
 isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-isCompanyEmail(email: string): boolean {
   if (!email) return false;
 
-  const domain = email.split('@')[1]?.toLowerCase();
-  if (!domain) return false;
+  const emailRegex =
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
 
-  const personalDomains = [
+  return emailRegex.test(email.trim());
+}
+
+
+isCompanyEmail(email: string): boolean {
+  if (!this.isValidEmail(email)) return false;
+
+  const domain = email.split('@')[1].toLowerCase();
+
+  // ❌ must contain dot
+  if (!domain.includes('.')) return false;
+
+  // ❌ no leading / trailing dot
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
+
+  const personalDomains = new Set([
     'gmail.com',
     'yahoo.com',
     'hotmail.com',
@@ -395,9 +405,9 @@ isCompanyEmail(email: string): boolean {
     'icloud.com',
     'aol.com',
     'protonmail.com'
-  ];
+  ]);
 
-  return !personalDomains.includes(domain);
+  return !personalDomains.has(domain);
 }
 
 
