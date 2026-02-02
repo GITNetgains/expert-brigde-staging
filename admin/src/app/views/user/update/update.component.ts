@@ -262,6 +262,20 @@ deleteAiQuery(q: any) {
     });
 }
 
+notifyUser(q: any) {
+  if (!confirm('Send email notification to user about assigned experts?')) return;
+
+  this.userService.notifyUserAboutAiQuery(this.userId!, q._id)
+    .subscribe({
+      next: () => {
+        this.utilService.toastSuccess({ message: 'Email sent successfully' });
+      },
+      error: () => {
+        this.utilService.toastError({ message: 'Failed to send email' });
+      }
+    });
+}
+
 loadAiQueries() {
   if (!this.userId) return;
 

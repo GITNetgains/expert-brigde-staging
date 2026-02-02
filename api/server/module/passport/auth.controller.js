@@ -4,6 +4,87 @@ const url = require('url');
 const { PLATFORM_ONLINE } = require('../meeting');
 const signToken = require('./auth.service').signToken;
 
+const BRAND = {
+  logo: 'https://admin.expertbridge.co/assets/images/whitelogo.png',
+  primary: '#F05A3C',
+  dark: '#0F172A',
+  background: '#FAF7F3',
+  muted: '#6B7280'
+};
+
+const baseEmailTemplate = ({ title, subtitle, body }) => `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:${BRAND.background};font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" style="padding:40px 16px;">
+
+<table width="600" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.1);">
+
+<tr>
+<td style="background:${BRAND.dark};padding:24px;text-align:center;">
+<img src="${BRAND.logo}" height="40" alt="ExpertBridge" />
+</td>
+</tr>
+
+<tr>
+<td style="padding:32px;color:#111;">
+<h2>${title}</h2>
+<p style="color:${BRAND.muted};margin-top:-8px;">${subtitle || ''}</p>
+${body}
+</td>
+</tr>
+
+<tr>
+<td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
+© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.com
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+`;
+const otpEmailTemplate = ({ otp, purpose = 'verification' }) =>
+  baseEmailTemplate({
+    title: 'Your One-Time Password',
+    subtitle:
+      purpose === 'login'
+        ? 'Use this code to login'
+        : 'Use this code to verify your email',
+    body: `
+      <p>Hello,</p>
+
+      <p>Please use the OTP below:</p>
+
+      <div style="
+        margin:24px 0;
+        padding:20px;
+        background:#FFF1EE;
+        border-radius:10px;
+        text-align:center;
+      ">
+        <h1 style="
+          margin:0;
+          color:${BRAND.primary};
+          letter-spacing:6px;
+        ">
+          ${otp}
+        </h1>
+      </div>
+
+      <p style="color:${BRAND.muted};font-size:14px;">
+        This OTP is valid for <strong>10 minutes</strong>.
+      </p>
+    `
+  });
+
+
 const enrollQ = require('../webinar/queue');
 exports.register = async (req, res, next) => {
   const schema = Joi.object().keys({
@@ -240,8 +321,10 @@ exports.verifyEmail = async (req, res, next) => {
     user.emailVerifiedToken = null;
 
     // Only create ZoomUs account for tutor
-    await enrollQ.createAppointmentWithEmailRecipient(user.email);
-    await enrollQ.createMyCourseWithEmailRecipient(user.email);
+ if (user.type === 'tutor') {
+  await enrollQ.createAppointmentWithEmailRecipient(user.email);
+  await enrollQ.createMyCourseWithEmailRecipient(user.email);
+}
 
     await user.save();
     res.locals.verifyEmail = PopulateResponse.success(
@@ -416,17 +499,10 @@ exports.sendOtp = async (req, res, next) => {
     });
 
     await Service.Mailer.sendRawNow(
-      email,
-      'Your Verification Code',
-      `
-        <div style="font-family:Arial;padding:20px">
-          <h2>Email Verification</h2>
-          <p>Your OTP code:</p>
-          <h1 style="letter-spacing:4px">${otp}</h1>
-          <p>Expires in 10 minutes.</p>
-        </div>
-      `
-    );
+  email,
+  'Your ExpertBridge Verification Code',
+  otpEmailTemplate({ otp })
+);
 
     res.locals.sendOtp = PopulateResponse.success(
       { message: 'OTP sent successfully.' },
@@ -454,16 +530,22 @@ exports.verifyOtp = async (req, res, next) => {
     const { error, value } = schema.validate(req.body);
     if (error) return next(PopulateResponse.validationError(error));
 
-    const email = value.email.toLowerCase();
+    const email = value.email.toLowerCase().trim();
 
-    const record = await DB.EmailOtp.findOne({ email, otp: value.otp });
+    // 1️⃣ Find OTP record by email ONLY
+    const record = await DB.EmailOtp.findOne({
+  email,
+  otp: value.otp
+});
+
 
     if (!record) {
       return next(
-        PopulateResponse.error({ message: 'Invalid OTP' }, 'ERR_INVALID_OTP')
+        PopulateResponse.error({ message: 'Invalid or expired OTP' }, 'ERR_INVALID_OTP')
       );
     }
 
+    // 2️⃣ Expiry check
     if (record.expiresAt < new Date()) {
       await DB.EmailOtp.deleteMany({ email });
       return next(
@@ -471,19 +553,60 @@ exports.verifyOtp = async (req, res, next) => {
       );
     }
 
-    if (record.attempts >= 5) {
-      await DB.EmailOtp.deleteMany({ email });
+    // 3️⃣ OTP mismatch → increment attempts
+    if (record.otp !== value.otp) {
+      await DB.EmailOtp.updateOne(
+        { _id: record._id },
+        { $inc: { attempts: 1 } }
+      );
+
+      if (record.attempts + 1 >= 5) {
+        await DB.EmailOtp.deleteMany({ email });
+        return next(
+          PopulateResponse.error(
+            { message: 'OTP locked. Please resend OTP.' },
+            'ERR_OTP_LOCKED'
+          )
+        );
+      }
+
       return next(
-        PopulateResponse.error(
-          { message: 'OTP locked. Please resend OTP.' },
-          'ERR_OTP_LOCKED'
-        )
+        PopulateResponse.error({ message: 'Invalid OTP' }, 'ERR_INVALID_OTP')
       );
     }
 
+    // 4️⃣ VALIDATE COMPANY EMAIL FOR STUDENT
+    if (record.type === 'student') {
+      const domain = email.split('@')[1];
+      const personalDomains = [
+        'gmail.com',
+        'yahoo.com',
+        'hotmail.com',
+        'outlook.com',
+        'icloud.com',
+        'aol.com',
+        'protonmail.com'
+      ];
+
+      if (personalDomains.includes(domain)) {
+        await DB.EmailOtp.deleteMany({ email });
+        return next(
+          PopulateResponse.error(
+            { message: 'Please use a company email address' },
+            'ERR_PERSONAL_EMAIL_NOT_ALLOWED'
+          )
+        );
+      }
+    }
+
+    // 5️⃣ OTP success → delete OTP
     await DB.EmailOtp.deleteMany({ email });
 
-    const baseUsername = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
+    // 6️⃣ Create user
+    const baseUsername = Helper.String
+      .createAlias(email.split('@')[0])
+      .toLowerCase();
+
     let username = baseUsername;
 
     if (await DB.User.exists({ username })) {
@@ -507,6 +630,7 @@ exports.verifyOtp = async (req, res, next) => {
     next(e);
   }
 };
+
 
 exports.setPassword = async (req, res, next) => {
   try {
@@ -635,15 +759,12 @@ exports.loginSendOtp = async (req, res, next) => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     });
 
-    await Service.Mailer.sendRawNow(
-      email,
-      'Your Login Code',
-      `
-        <h2>Your OTP Code</h2>
-        <h1>${otp}</h1>
-        <p>This OTP expires in 10 minutes.</p>
-      `
-    );
+await Service.Mailer.sendRawNow(
+  email,
+  'Your ExpertBridge Login Code',
+  otpEmailTemplate({ otp, purpose: 'login' })
+);
+
 
     res.locals.loginSendOtp = PopulateResponse.success(
       { message: 'OTP sent successfully' },

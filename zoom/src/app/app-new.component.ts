@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
       meetingNumber: this.meetingNumber,
       password: this.passWord,
       userName: this.userName,
-      userEmail: this.userEmail,
+      userEmail: this.userEmail, 
       tk: this.registrantToken,
     });
   }

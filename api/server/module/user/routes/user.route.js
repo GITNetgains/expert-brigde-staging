@@ -147,12 +147,27 @@ const verifyCaptcha = require('../middlewares/verifyCaptcha.js');
       Middleware.Response.success('adminUploadAvatar')
     );
 
-  router.post(
-    '/v1/users/ai-query',
-    verifyCaptcha,
-    userController.addAiQuery,
-    Middleware.Response.success('aiQuery')
-  );
+ router.post(
+  '/v1/auth/ai/sendOtp',
+  userController.sendAiOtp,
+  Middleware.Response.success('sendAiOtp')
+);
+
+router.post(
+  '/v1/auth/ai/verifyOtp',
+  verifyCaptcha,
+  userController.verifyAiOtpAndSubmit,
+  Middleware.Response.success('verifyAiOtp')
+);
+
+router.post(
+  '/v1/users/ai-query',
+  Middleware.isAuthenticated,   // ✅ consistent with rest of file
+  verifyCaptcha,                // ✅ captcha added
+  userController.addAiQuery,
+  Middleware.Response.success('addAiQuery')
+);
+
 
   // GET AI queries
   router.get(
@@ -173,6 +188,13 @@ const verifyCaptcha = require('../middlewares/verifyCaptcha.js');
     '/v1/users/:userId/ai-queries/:queryId',
     Middleware.hasRole('admin'),
     userController.deleteAiQuery
+  );
+
+  router.post(
+    '/v1/users/:userId/ai-queries/:queryId/notify',
+    Middleware.hasRole('admin'),
+    userController.notifyUserAboutAiQuery,
+    Middleware.Response.success('notifyUser')
   );
 
 

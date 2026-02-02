@@ -96,10 +96,10 @@ export class TutorCardComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = false;
           this.appService.toastSuccess(
-            'Removed from your favorite tutor list successfully!'
+            'Removed from your favorite expert list successfully.'
           );
         })
-        .catch(() => this.appService.toastError());
+        .catch(() => this.appService.toastError('Unable to remove from favorites.'));
     }
   }
 
@@ -119,7 +119,7 @@ export class TutorCardComponent implements OnInit {
         this.conversationService.setActive(resp.data);
         this.router.navigate(['/users/conversations']);
       })
-      .catch(() => this.appService.toastError('You can not send messages to yourself'));
+      .catch(() => this.appService.toastError('You cannot send messages to yourself.'));
   }
 
   openIntro() {

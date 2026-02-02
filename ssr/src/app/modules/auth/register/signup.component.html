@@ -72,15 +72,18 @@
         <!-- EMAIL FIELD -->
         <div class="mb-3">
           <label>Email</label>
-          <input
-            id="email-input"
-            type="email"
-            class="form-control"
-            placeholder="Enter your email address"
-            [(ngModel)]="account.email"
-            name="email"
-            required
-          />
+        <input
+  id="email-input"
+  type="email"
+  class="form-control"
+  placeholder="Enter your email address"
+  [(ngModel)]="account.email"
+  name="email"
+  required
+  [readonly]="step !== 'email'"
+  [class.readonly]="step !== 'email'"
+/>
+
           <div *ngIf="account.type === 'student' && account.email">
             <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
               <span class="dot"></span> valid domain
@@ -95,12 +98,13 @@
         <div *ngIf="step === 'otp'" class="mb-3">
           <label>Enter OTP</label>
           <input
-            type="text"
-            class="form-control"
-            placeholder="Enter verification code"
-            [(ngModel)]="otpToken"
-            name="otpToken"
-          />
+  type="text"
+  class="form-control"
+  name="otpToken"
+  [ngModel]="otpToken"
+  (input)="onOtpInput($event)"
+/>
+
         </div>
 
         <!-- DETAILS -->
@@ -117,58 +121,68 @@
                 required
               />
             </div>
-            <div class="mb-3">
-              <label>Password</label>
-             <input
-  type="password"
-  class="form-control"
-  placeholder="Create a password"
-  [(ngModel)]="newPassword"
-  name="studentPassword"
-  (input)="checkPasswordRules(newPassword)"
-  required
-/>
- <ul
-    class="password-checklist"
-    *ngIf="newPassword?.length"
-  >
-    <li [class.valid]="passwordRules.length">
-      <span>{{ passwordRules.length ? '✔' : '✖' }}</span>
-      At least 8 characters
-    </li>
+           <div class="mb-3">
+  <label>Password</label>
 
-    <li [class.valid]="passwordRules.uppercase">
-      <span>{{ passwordRules.uppercase ? '✔' : '✖' }}</span>
-      One uppercase letter
-    </li>
+  <div class="password-wrapper">
+    <input
+      [type]="showPassword ? 'text' : 'password'"
+      class="form-control"
+      placeholder="Create a password"
+      [(ngModel)]="newPassword"
+      name="password"
+      (input)="checkPasswordRules(newPassword)"
+      required
+    />
 
-    <li [class.valid]="passwordRules.lowercase">
-      <span>{{ passwordRules.lowercase ? '✔' : '✖' }}</span>
-      One lowercase letter
-    </li>
+    <span class="eye-icon" (click)="togglePasswordVisibility()">
+            <i class="fa" [class.fa-eye-slash]="showPassword" [class.fa-eye]="!showPassword"></i>
 
-    <li [class.valid]="passwordRules.number">
-      <span>{{ passwordRules.number ? '✔' : '✖' }}</span>
-      One number
-    </li>
+    </span>
+  </div>
 
-    <li [class.valid]="passwordRules.special">
-      <span>{{ passwordRules.special ? '✔' : '✖' }}</span>
-      One special character (@$!%*?&)
-    </li>
+  <!-- PASSWORD CHECKLIST (UNCHANGED) -->
+  <ul class="password-checklist" *ngIf="newPassword?.length">
+    <li [class.valid]="passwordRules.length">✔ At least 8 characters</li>
+    <li [class.valid]="passwordRules.uppercase">✔ One uppercase letter</li>
+    <li [class.valid]="passwordRules.lowercase">✔ One lowercase letter</li>
+    <li [class.valid]="passwordRules.number">✔ One number</li>
+    <li [class.valid]="passwordRules.special">✔ One special character</li>
   </ul>
-            </div>
-            <div class="mb-3">
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Confirm your password"
-                [(ngModel)]="confirmPassword"
-                name="confirmPassword"
-                required
-              />
-            </div>
+</div>
+
+ <div class="mb-3">
+  <label>Confirm Password</label>
+
+  <div class="password-wrapper">
+    <input
+      [type]="showConfirmPassword ? 'text' : 'password'"
+      class="form-control"
+      placeholder="Confirm your password"
+      [(ngModel)]="confirmPassword"
+      name="confirmPassword"
+      required
+    />
+
+    <span class="eye-icon" (click)="toggleConfirmPasswordVisibility()">
+      <i class="fa" [class.fa-eye-slash]="showConfirmPassword" [class.fa-eye]="!showConfirmPassword"></i>
+    </span>
+  </div>
+
+  <!-- 🔥 REAL-TIME ERROR -->
+  <div
+    class="error mt-1"
+    *ngIf="
+      confirmPassword &&
+      newPassword &&
+      confirmPassword !== newPassword
+    "
+  >
+    Passwords do not match
+  </div>
+</div>
+
+
             <div class="mb-3">
               <label>Phone Number</label>
               <input

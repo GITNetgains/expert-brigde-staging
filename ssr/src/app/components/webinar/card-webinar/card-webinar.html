@@ -20,12 +20,13 @@
           class="hyperlink"
         >
           <img
+            *ngIf="webinar?.tutor?.showPublicIdOnly !== true"
             src="{{webinar?.tutor?.avatarUrl}}"
             class=""
             alt="tutor avatar"
             onerror="this.src='/assets/images/default-avatar.jpg'"
           />
-          <h5>{{webinar?.tutor?.name}}</h5>
+          <h5>{{ webinar?.tutor?.showPublicIdOnly === true ? webinar?.tutor?.userId : webinar?.tutor?.name }}</h5>
         </a>
       </div>
     </div>

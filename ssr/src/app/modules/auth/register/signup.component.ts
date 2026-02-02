@@ -278,11 +278,9 @@ isPasswordValid(): boolean {
         this.appService.toastError(passwordValidation.message);
         return;
       }
-
-      if (this.newPassword !== this.confirmPassword) {
-        this.appService.toastError('Passwords do not match');
-        return;
-      }
+if (this.newPassword !== this.confirmPassword) {
+  return; // inline error already visible
+}
 
       this.loading = true;
 
@@ -386,7 +384,7 @@ if (address && address.length < 5) {
             : ''
       });
 
-      this.appService.toastSuccess('Tutor profile submitted. Pending admin approval.');
+      this.appService.toastSuccess('Expert profile submitted. Pending admin approval.');
       this.auth.removeToken();
       this.router.navigate(['/auth/login']);
     } finally {

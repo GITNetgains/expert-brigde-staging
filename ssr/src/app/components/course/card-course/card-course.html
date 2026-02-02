@@ -37,11 +37,12 @@
           [routerLink]="['/experts', course?.tutor?.username]"
         >
           <img
+            *ngIf="course?.tutor?.showPublicIdOnly !== true"
             src="{{course?.tutor?.avatarUrl}}"
             [alt]="course?.tutor?.name"
             onerror="this.src='/assets/images/default-avatar.jpg'"
           />
-          <h5 class="cate-profile-name pt-sm">{{course?.tutor?.name}}</h5>
+          <h5 class="cate-profile-name pt-sm">{{ course?.tutor?.showPublicIdOnly === true ? course?.tutor?.userId : course?.tutor?.name }}</h5>
         </a>
       </div>
     </div>

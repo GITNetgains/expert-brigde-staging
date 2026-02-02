@@ -48,10 +48,15 @@ closeDescription() {
   this.selectedQuery = null;
 }
 
-openAttachments(files: any[]) {
-  if (!files?.length) return;
+openAttachments(file: any) {
+  if (!file) return;
 
-  window.open(files[0].fileUrl, '_blank');
+  const url = file.fileUrl || file.url;
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    this.appService.toastError('File URL not found');
+  }
 }
 
 getTutorDisplayName(tutor: any): string {
@@ -97,6 +102,8 @@ query() {
       this.appService.toastError('Failed to load AI queries');
     });
 }
+
+
 
 preloadTutorDetails() {
   const ids = new Set<string>();

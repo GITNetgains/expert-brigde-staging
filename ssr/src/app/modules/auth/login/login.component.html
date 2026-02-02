@@ -41,17 +41,25 @@
         </div>
 
         <!-- PASSWORD -->
-        <div class="mb-3" *ngIf="loginMode === 'password' && step === 'password'">
-          <label>Password</label>
-          <input
-            type="password"
-            class="form-control"
-            placeholder="Enter your password"
-            [(ngModel)]="credentials.password"
-            name="password"
-            required
-          />
-        </div>
+        <!-- PASSWORD -->
+<div class="mb-3" *ngIf="loginMode === 'password' && step === 'password'">
+  <label>Password</label>
+
+  <div class="password-wrapper">
+    <input
+      [type]="showPassword ? 'text' : 'password'"
+      class="form-control"
+      placeholder="Enter your password"
+      [(ngModel)]="credentials.password"
+      name="password"
+      required
+    />
+
+    <span class="eye-icon" (click)="togglePasswordVisibility()">
+      <i class="fa" [class.fa-eye-slash]="showPassword" [class.fa-eye]="!showPassword"></i>
+    </span>
+  </div>
+</div>
 
         <!-- OTP -->
         <div class="mb-3" *ngIf="loginMode === 'otp' && step === 'otp'">

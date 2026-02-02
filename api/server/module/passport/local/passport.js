@@ -69,18 +69,18 @@ exports.setup = () => {
                 )
               );}
               //navjot
-            // else if (!user.isZoomAccount && user.type === 'tutor' && isZoomPlatform) {
-            //   return done(
-            //     null,
-            //     false,
-            //     PopulateResponse.error(
-            //       {
-            //         message: 'Please check email and active account on zoom. Any questions please contact admin. '
-            //       },
-            //       'ERR_ACCOUNT_NOT_APPROVED'
-            //     )
-            //   );
-            // } 
+            else if (!user.isZoomAccount && user.type === 'tutor' && isZoomPlatform) {
+              return done(
+                null,
+                false,
+                PopulateResponse.error(
+                  {
+                    message: 'Please check email and active account on zoom. Any questions please contact admin. '
+                  },
+                  'ERR_ACCOUNT_NOT_APPROVED'
+                )
+              );
+            } 
             else if (user.type === 'student' && !user.isActive) {
               return done(
                 null,

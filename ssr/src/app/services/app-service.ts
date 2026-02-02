@@ -72,6 +72,17 @@ export class AppService {
       if (typeof err === 'string') {
         return err;
       }
+      if (err && err.error) {
+        if (typeof err.error === 'string') {
+          return err.error;
+        }
+        if (err.error.message) {
+          return err.error.message;
+        }
+        if (err.error.data && err.error.data.message) {
+          return err.error.data.message;
+        }
+      }
       if (err && err.data) {
         return (err.data.data && err.data.data.message) || err.data.message;
       }

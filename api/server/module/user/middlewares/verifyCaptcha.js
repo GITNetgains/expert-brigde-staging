@@ -6,7 +6,12 @@ module.exports = async (req, res, next) => {
     const token = req.body.captchaToken;
 
     if (!token) {
-      return res.status(400).json({ message: 'Captcha token missing' });
+      return next(
+        PopulateResponse.error(
+          { message: 'Captcha token missing' },
+          'ERR_CAPTCHA_MISSING'
+        )
+      );
     }
 
     const secret = process.env.RECAPTCHA_SECRET_KEY;
@@ -22,13 +27,54 @@ module.exports = async (req, res, next) => {
 
     const data = await response.json();
 
-    if (!data.success || (data.score !== undefined && data.score < 0.5)) {
-      return res.status(403).json({ message: 'Captcha verification failed' });
+    if (!data.success) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Captcha verification failed' },
+          'ERR_CAPTCHA_FAILED'
+        )
+      );
     }
 
-    next(); // ✅ Passed captcha
+    // ✅ score check
+    if (typeof data.score === 'number' && data.score < 0.5) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Captcha score too low' },
+          'ERR_CAPTCHA_SCORE'
+        )
+      );
+    }
+
+    // ✅ ALLOW MULTIPLE ACTIONS
+    const allowedActions = [
+      'ai_verify_otp',
+      'ai_query_submit'
+    ];
+
+    if (data.action && !allowedActions.includes(data.action)) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Invalid captcha action' },
+          'ERR_CAPTCHA_ACTION'
+        )
+      );
+    }
+
+    // optional logging
+    req.captcha = {
+      score: data.score,
+      action: data.action
+    };
+
+    next(); // ✅ CAPTCHA PASSED
   } catch (err) {
     console.error('Captcha error:', err);
-    return res.status(500).json({ message: 'Captcha verification error' });
+    return next(
+      PopulateResponse.error(
+        { message: 'Captcha verification error' },
+        'ERR_CAPTCHA_EXCEPTION'
+      )
+    );
   }
 };

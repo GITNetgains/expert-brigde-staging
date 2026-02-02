@@ -224,32 +224,50 @@ startCountdown() {
 // ai-result.component.ts logic tweaks
 submitting = false; // New flag for production safety
 
+aiStep: 'form' | 'otp' | 'success' = 'form';
+otpCode = '';
+otpTimer = 60;
+otpInterval: any = null;
+
+resendOtp() {
+  if (this.otpTimer > 0 || this.submitting) return;
+
+  this.submitting = true;
+
+  this.userService.sendAiOtp({ email: this.lead.email })
+    .then(() => {
+      this.appService.toastSuccess('OTP resent successfully');
+      this.startOtpTimer();
+    })
+    .catch(err => {
+      this.appService.toastError(err?.error?.message);
+    })
+    .finally(() => {
+      this.submitting = false;
+    });
+}
+
+startOtpTimer() {
+  this.otpTimer = 60;
+
+  if (this.otpInterval) clearInterval(this.otpInterval);
+
+  this.otpInterval = setInterval(() => {
+    this.otpTimer--;
+    if (this.otpTimer <= 0) {
+      clearInterval(this.otpInterval);
+    }
+  }, 1000);
+}
+
 async submit() {
   if (!this.editableText.trim() || this.submitting) return;
 
-  // 1. Validation
-  if (!this.auth.isLoggedin()) {
-  if (!this.lead.email) {
-    this.appService.toastError('Email is required');
-    return;
-  }
-
-  if (!this.isCompanyEmail(this.lead.email)) {
-    this.appService.toastError('Please use your company email address');
-    return;
-  }
-}
- else {
-    const u = await this.auth.getCurrentUser();
-    this.lead.email = u.email;
-    this.lead.name = u.name;
-    this.lead.phone = u.phoneNumber;
-  }
-
+  // 🔐 LOGGED-IN USER → DIRECT SUBMIT
+if (this.auth.isLoggedin()) {
   try {
     this.submitting = true;
 
-    // ✅ EXECUTE reCAPTCHA ONLY HERE
     let captchaToken = '';
     if (isPlatformBrowser(this.platformId)) {
       captchaToken = await grecaptcha.execute(
@@ -261,23 +279,95 @@ async submit() {
     await this.userService.addAiQuery({
       query: this.query,
       description: this.editableText,
-      lead: this.lead,
       aiAttachmentIds: this.aiAttachmentIds,
-      captchaToken          // ✅ SEND TOKEN
+      captchaToken // ✅ REQUIRED
     });
 
-    this.appService.toastSuccess('Request submitted successfully');
     this.submittedSuccess = true;
+    this.aiStep = 'success';
     this.startCountdown();
-
   } catch (err: any) {
-    const msg = err?.error?.message || 'An error occurred. Please try again.';
-    this.appService.toastError(msg);
+    this.appService.toastError(
+      err?.error?.message || 'Something went wrong'
+    );
   } finally {
+    this.submitting = false;
+  }
+  return;
+}
+
+
+
+
+  // 👤 GUEST USER → SEND OTP
+  if (!this.lead.email) {
+    this.appService.toastError('Email is required');
+    return;
+  }
+
+  if (!this.isCompanyEmail(this.lead.email)) {
+    this.appService.toastError('Please use your company email address');
+    return;
+  }
+
+  try {
+    this.submitting = true;
+    await this.userService.sendAiOtp({ email: this.lead.email });
+    this.aiStep = 'otp';
+    this.appService.toastSuccess('OTP sent to your email');
+  } catch (err: any) {
+  const msg =
+    err?.data?.message ||   // ✅ CORRECT MESSAGE
+    err?.error?.message ||        // fallback (code)
+    'Unable to send OTP';
+
+  this.appService.toastError(msg);
+} finally {
     this.submitting = false;
   }
 }
 
+async verifyOtp() {
+  if (!this.otpCode.trim()) {
+    this.appService.toastError('Please enter OTP');
+    return;
+  }
+
+  try {
+    this.submitting = true;
+
+    let captchaToken = '';
+    if (isPlatformBrowser(this.platformId)) {
+      captchaToken = await grecaptcha.execute(
+        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
+        { action: 'ai_verify_otp' }
+      );
+    }
+
+ await this.userService.verifyAiOtp({
+  email: this.lead.email,   // ✅ ROOT
+  otp: this.otpCode,
+  query: this.query,
+  description: this.editableText,
+  aiAttachmentIds: this.aiAttachmentIds,
+  lead: {
+    name: this.lead.name,
+    phone: this.lead.phone
+  },
+  captchaToken
+});
+    this.submittedSuccess = true;
+    this.aiStep = 'success';
+    this.startCountdown();
+
+  } catch (err: any) {
+    this.appService.toastError(
+      err?.error?.message || 'Invalid or expired OTP'
+    );
+  } finally {
+    this.submitting = false;
+  }
+}
 
 goToLogin() { 
   const returnUrl = this.router.createUrlTree(

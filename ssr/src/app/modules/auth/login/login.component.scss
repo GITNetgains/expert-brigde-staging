@@ -104,6 +104,24 @@ body {
     text-decoration: underline;
   }
 }
+.password-wrapper {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+  opacity: 0.7;
+}
+
+.eye-icon:hover {
+  opacity: 1;
+}
 
 /* ===============================
    BUTTON / LINKS
@@ -130,9 +148,11 @@ a.disabled {
   }
 
   .login-wrapper {
-    height: auto;
+   
     flex-direction: column;
     overflow: visible;
+    align-items: center;
+    justify-content: center;
   }
 
   .left-pane {
@@ -141,12 +161,12 @@ a.disabled {
 
   .right-pane {
     width: 100%;
-    height: auto;
+  
     padding: 20px;
-    overflow: visible;
-    align-items: flex-start;
+    overflow: scroll;
+    align-items: center !important;
+    justify-content: center !important;
   }
-
   .form-box {
     max-width: 100%;
     padding: 24px 0;

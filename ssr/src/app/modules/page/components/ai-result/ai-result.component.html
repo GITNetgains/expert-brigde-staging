@@ -1,19 +1,23 @@
 <div class="ai-result-wrapper">
 
-  <div *ngIf="!submittedSuccess" class="result-container">
+  <!-- ================= FORM STEP ================= -->
+  <div *ngIf="aiStep === 'form'" class="result-container">
 
     <h1 class="heading">
-    Your search query is shared below
+      Your search query is shared below
     </h1>
 
     <div class="content-container">
-        <p class="subtitle-left">
+      <p class="subtitle-left">
         Review the query below before submitting your request
-        </p>
+      </p>
     </div>
 
-    <div *ngIf="error" class="error-msg content-container">{{ error }}</div>
+    <div *ngIf="error" class="error-msg content-container">
+      {{ error }}
+    </div>
 
+    <!-- EDITOR -->
     <div class="editor-card">
       <textarea
         [(ngModel)]="editableText"
@@ -22,97 +26,152 @@
       ></textarea>
     </div>
 
-  <div class="editor-card attachment-card">
-    <label class="card-label">Attach File (pdf, docx, jpg, png)</label>
+    <!-- ATTACHMENTS -->
+    <div class="editor-card attachment-card">
+      <label class="card-label">Attach File (pdf, docx, jpg, png)</label>
 
-    <app-file-upload
+      <app-file-upload
         *ngIf="!auth.isLoggedin() || isClientUser"
         [options]="aiFileUploadOptions">
-    </app-file-upload>
+      </app-file-upload>
 
-    <div *ngIf="uploadedAttachments.length > 0" class="attached-files-container">
+      <div *ngIf="uploadedAttachments.length > 0" class="attached-files-container">
         <p class="attached-title">Attached Files:</p>
-        <div *ngFor="let file of uploadedAttachments; let i = index" class="file-badge">
-            <span class="file-icon">📄</span>
-            <span class="file-name">{{ file.name }}</span>
-            <button class="remove-btn" (click)="removeAttachment(i)">×</button>
-        </div>
-    </div>
-</div>
 
+        <div
+          *ngFor="let file of uploadedAttachments; let i = index"
+          class="file-badge">
+          <span class="file-icon">📄</span>
+          <span class="file-name">{{ file.name }}</span>
+          <button class="remove-btn" (click)="removeAttachment(i)">×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUEST DETAILS -->
     <div class="editor-card signup-card" *ngIf="!auth.isLoggedin()">
-      <!-- <div class="form-header">
-        <h3>Kindly Signup to submit your query</h3>
-        <p>Already Sign up? <a (click)="goToLogin()" class="link-text">Please login</a></p>
-      </div> -->
 
       <div class="form-row">
-          <div class="form-group">
-              <label for="fullName">Name</label>
-              <input type="text" id="fullName" [(ngModel)]="lead.name" placeholder="Enter your full name" class="form-control" />
-          </div>
-          <div class="form-group">
-  <label for="emailAddr">Work Email</label>
-  <input
-    type="email"
-    id="emailAddr"
-    [(ngModel)]="lead.email"
-    placeholder="Enter your company email address"
-    class="form-control"
-  />
+         <div class="form-group">
+          <label for="emailAddr">Work Email</label>
+          <input
+            type="email"
+            id="emailAddr"
+            [(ngModel)]="lead.email"
+            placeholder="Work Email"
+            class="form-control"
+          />
 
-  <!-- DOMAIN UX -->
-  <div *ngIf="lead.email">
-    <div class="domain-check" *ngIf="isCompanyEmail(lead.email)">
-      <span class="dot"></span> valid domain
+          <!-- DOMAIN CHECK -->
+          <div *ngIf="lead.email">
+            <div class="domain-check" *ngIf="isCompanyEmail(lead.email)">
+              <span class="dot"></span> valid domain
+            </div>
+
+            <div class="error" *ngIf="!isCompanyEmail(lead.email)">
+              Please use your company email address
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fullName">Name</label>
+          <input
+            type="text"
+            id="fullName"
+            [(ngModel)]="lead.name"
+            placeholder="Full Name (optional)"
+            class="form-control"
+          />
+        </div>
+
+       
+
+        <div class="form-group full-width">
+          <label for="phoneNo">Phone No.</label>
+          <input
+            type="tel"
+            id="phoneNo"
+            [(ngModel)]="lead.phone"
+            placeholder="phone no (optional)"
+            class="form-control"
+          />
+        </div>
+      </div>
     </div>
 
-    <div class="error" *ngIf="!isCompanyEmail(lead.email)">
-      Please use your company email address
+    <!-- ACTIONS -->
+    <div class="actions-right content-container">
+      <button
+        type="button"
+        class="btn reset-btn"
+        (click)="reset()">
+        Reset
+      </button>
+
+      <button
+        type="button"
+        class="btn submit-btn"
+        (click)="submit()"
+        [disabled]="
+          submitting ||
+          (!auth.isLoggedin() && !isCompanyEmail(lead.email))
+        ">
+        Submit
+      </button>
     </div>
   </div>
-</div>
 
-          <div class="form-group full-width">
-              <label for="phoneNo">Phone No.</label>
-              <input type="tel" id="phoneNo" [(ngModel)]="lead.phone" placeholder="Enter your phone no" class="form-control" />
-           </div>
-      </div>
-       <!-- <div class="form-row">
-           <div class="form-group full-width">
-              <label for="phoneNo">Phone No.</label>
-              <input type="tel" id="phoneNo" [(ngModel)]="lead.phone" placeholder="Enter your phone no" class="form-control" />
-           </div>
-       </div> -->
+  <!-- ================= OTP STEP ================= -->
+  <div *ngIf="aiStep === 'otp'" class="result-container otp-container">
+
+    <h2 class="heading">Verify Your Email</h2>
+
+    <p class="subtitle-left">
+      We’ve sent a 6-digit verification code to
+      <strong>{{ lead.email }}</strong>
+    </p>
+
+    <div class="editor-card">
+      <input
+        type="text"
+        class="form-control otp-input"
+        maxlength="6"
+        placeholder="Enter OTP"
+        [(ngModel)]="otpCode"
+      />
     </div>
 
     <div class="actions-right content-container">
-      <button type="button" class="btn reset-btn" (click)="reset()">Reset</button>
-      <button
-  type="button"
-  class="btn submit-btn"
-  (click)="submit()"
-  [disabled]="
-    loading ||
-    (!auth.isLoggedin() && !isCompanyEmail(lead.email))
-  "
->
+  <button
+    type="button"
+    class="btn submit-btn"
+    (click)="verifyOtp()"
+    [disabled]="submitting">
+    Verify & Submit
+  </button>
 
-        {{ loading ?'Submit' : 'Submit' }}
-      </button>
-    </div>
+  <button
+    type="button"
+    class="btn link-btn"
+    (click)="resendOtp()"
+    [disabled]="otpTimer > 0">
+    Resend OTP {{ otpTimer > 0 ? '(' + otpTimer + 's)' : '' }}
+  </button>
+</div>
 
   </div>
 
-  <div *ngIf="submittedSuccess" class="confirmation">
+  <!-- ================= SUCCESS STEP ================= -->
+  <div *ngIf="aiStep === 'success'" class="confirmation">
     {{ confirmationText }}
 
     <div class="redirect-note">
-  Redirecting to
-  {{ auth.isLoggedin() ? 'dashboard' : 'homepage' }}
-  in {{ countdown }} seconds...
-</div>
+      Redirecting to
+      {{ auth.isLoggedin() ? 'dashboard' : 'homepage' }}
+      in {{ countdown }} seconds...
+    </div>
   </div>
+
 </div>
 
 <app-blog-section></app-blog-section>

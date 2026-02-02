@@ -78,5 +78,12 @@ deleteAiQuery(userId: string, queryId: string) {
   );
 }
 
+notifyUserAboutAiQuery(userId: string, queryId: string) {
+  return this.http.post(
+    `${this.apiUrl}/users/${userId}/ai-queries/${queryId}/notify`,
+    {}
+  );
+}
+
 
 }

@@ -120,7 +120,12 @@
     login(credentials: any): Promise<any> {
       return this.post('/auth/login', credentials).then((resp: any) => {
         this.mycookie.set('isLoggedin', 'yes', { path: '/' });
-        this.mycookie.set('accessToken', resp.data.token, { path: '/' });
+        this.mycookie.set('accessToken', resp.data.token, {
+  path: '/',
+  secure: true,
+  sameSite: 'Strict'
+});
+
         return this.getCurrentUser();
       });
     }

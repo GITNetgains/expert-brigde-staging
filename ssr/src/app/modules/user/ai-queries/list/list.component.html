@@ -41,13 +41,17 @@
             <!-- Attachments -->
             <td>
               <ng-container *ngIf="q.aiAttachmentIds?.length; else noFiles">
-                <a
-                  href="javascript:void(0)"
-                  (click)="openAttachments(q.aiAttachmentIds)"
-                >
-                  {{ q.aiAttachmentIds.length }} file(s)
-                </a>
-              </ng-container>
+  <div class="d-flex flex-column gap-1">
+    <a
+      *ngFor="let file of q.aiAttachmentIds; let i = index"
+      href="javascript:void(0)"
+      (click)="openAttachments(file)"
+    >
+      File {{ i + 1 }}
+    </a>
+  </div>
+</ng-container>
+
               <ng-template #noFiles>
                 <span>-</span>
               </ng-template>

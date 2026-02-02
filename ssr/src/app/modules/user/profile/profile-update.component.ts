@@ -342,7 +342,7 @@ this.info.password = '';
           this.mapLanguageName(this.info.languages);
           this.gradeNames = [];
           this.mapGradeName(this.info.grades);
-          this.appService.toastSuccess('Updated successfully!');
+          this.appService.toastSuccess('Profile updated successfully!');
           this.utilService.notifyEvent('profileUpdate', this.info);
           this.authService.updateCurrentUser(this.info);
           localStorage.setItem('timeZone', this.info.timezone);

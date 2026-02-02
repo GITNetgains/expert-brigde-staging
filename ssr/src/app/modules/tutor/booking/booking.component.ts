@@ -233,7 +233,7 @@ export class BookingComponent implements OnInit {
       cartItems.length > 0
     ) {
       return this.appService.toastError(
-        'You cannot add classes from different tutors'
+        'You cannot add sessions from different experts'
       );
     }
 

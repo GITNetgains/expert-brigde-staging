@@ -7,6 +7,16 @@ const url = require('url');
 const nconf = require('nconf');
 const mongoose = require('mongoose');
 
+
+const BRAND = {
+  logo: 'https://admin.expertbridge.co/assets/images/whitelogo.png',
+  primary: '#F05A3C',
+  dark: '#0F172A',
+  background: '#FAF7F3',
+  muted: '#6B7280',
+  adminUrl: 'https://admin.expertbridge.co'
+};
+
 /**
  * Create a new user
  */
@@ -275,115 +285,407 @@ exports.deleteAiQuery = async (req, res) => {
   res.json({ code: 200 });
 };
 
+const baseEmailTemplate = ({ title, subtitle, body }) => `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:${BRAND.background};font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" style="padding:40px 16px;">
+
+<table width="600" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.1);">
+
+<!-- HEADER -->
+<tr>
+<td style="background:${BRAND.dark};padding:24px;text-align:center;">
+<img src="${BRAND.logo}" height="40" alt="ExpertBridge" style="display:block;margin:auto;">
+</td>
+</tr>
+
+<!-- CONTENT -->
+<tr>
+<td style="padding:32px;color:#111;">
+<h2 style="margin-top:0;">${title}</h2>
+<p style="color:${BRAND.muted};margin-top:-8px;">${subtitle || ''}</p>
+${body}
+</td>
+</tr>
+
+<!-- FOOTER -->
+<tr>
+<td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
+© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.com
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+`;
 
 
 // ================= AI QUERY CREATE =================
 
-exports.addAiQuery = async (req, res, next) => {
+exports.sendAiOtp = async (req, res, next) => {
   try {
-    const { query, description, aiAttachmentIds, lead = {} } = req.body;
+    const schema = Joi.object({
+      email: Joi.string().email().required()
+    });
 
-    // 1️⃣ Email is mandatory
-    if (!lead.email) {
-      return res.status(400).json({
-        message: 'Email is required'
-      });
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const email = value.email.toLowerCase().trim();
+
+    // 🚫 BLOCK TUTORS
+    const existingUser = await DB.User.findOne({ email });
+    if (existingUser && existingUser.type === 'tutor') {
+      return next(
+        PopulateResponse.error(
+          { message: 'Tutors cannot submit AI queries' },
+          'ERR_TUTOR_NOT_ALLOWED'
+        )
+      );
     }
 
-    const email = lead.email.toLowerCase().trim();
-
-    // 2️⃣ Basic email format check
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        message: 'Invalid email format'
-      });
-    }
-
-    // 3️⃣ Block personal email domains
-    const blockedDomains = new Set([
-      'gmail.com',
-      'yahoo.com',
-      'hotmail.com',
-      'outlook.com',
-      'icloud.com',
-      'aol.com',
-      'protonmail.com',
-      'zoho.com',
-      'yandex.com',
-      'gmx.com'
-    ]);
+    // block personal emails
+    const blockedDomains = [
+      'gmail.com', 'yahoo.com', 'hotmail.com',
+      'outlook.com', 'icloud.com', 'aol.com',
+      'protonmail.com'
+    ];
 
     const domain = email.split('@')[1];
-
-    if (blockedDomains.has(domain)) {
-      return res.status(400).json({
-        message: 'Please use your company email address'
-      });
+    if (blockedDomains.includes(domain)) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Please use your company email address' },
+          'INVALID_EMAIL_DOMAIN'
+        )
+      );
     }
 
-    // 4️⃣ Continue with existing logic
-    let user = await DB.User.findOne({ email });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    await DB.EmailOtp.deleteMany({ email });
+
+    await DB.EmailOtp.create({
+      email,
+      otp,
+      type: 'student',
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+    });
+
+   const otpEmailHtml = baseEmailTemplate({
+  title: 'Verify Your Email',
+  subtitle: 'Use the OTP below to continue',
+  body: `
+    <p>Hello,</p>
+
+    <p>Please use the verification code below:</p>
+
+    <div style="
+      margin:24px 0;
+      padding:20px;
+      background:#FFF1EE;
+      border-radius:10px;
+      text-align:center;
+    ">
+      <h1 style="
+        margin:0;
+        color:${BRAND.primary};
+        letter-spacing:6px;
+      ">
+        ${otp}
+      </h1>
+    </div>
+
+    <p style="color:${BRAND.muted};font-size:14px;">
+      This OTP is valid for <strong>10 minutes</strong>.
+    </p>
+  `
+});
+
+await Service.Mailer.sendRawNow(
+  email,
+  'Your ExpertBridge Verification Code',
+  otpEmailHtml
+);
+
+
+    res.locals.sendAiOtp = PopulateResponse.success(
+      { message: 'OTP sent successfully' },
+      'OTP_SENT'
+    );
+
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+
+/**
+ * VERIFY OTP + SUBMIT AI QUERY
+ */
+exports.verifyAiOtpAndSubmit = async (req, res, next) => {
+  try {
+    delete req.body.captchaToken;
+
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      otp: Joi.string().length(6).required(),
+      query: Joi.string().required(),
+      description: Joi.string().required(),
+      aiAttachmentIds: Joi.array().items(Joi.string()).optional(),
+      lead: Joi.object({
+        name: Joi.string().allow('', null),
+        phone: Joi.string().allow('', null)
+      }).optional()
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const email = value.email.toLowerCase().trim();
+
+    // 🚫 BLOCK TUTORS AGAIN (SAFETY)
+    const existingUser = await DB.User.findOne({ email });
+    if (existingUser && existingUser.type === 'tutor') {
+      return next(
+        PopulateResponse.error(
+          { message: 'Tutors cannot submit AI queries' },
+          'ERR_TUTOR_NOT_ALLOWED'
+        )
+      );
+    }
+
+    const record = await DB.EmailOtp.findOne({
+      email,
+      otp: value.otp,
+      type: 'student'
+    });
+
+    if (!record) {
+      return next(
+        PopulateResponse.error({ message: 'Invalid OTP' }, 'ERR_INVALID_OTP')
+      );
+    }
+
+    if (record.expiresAt < new Date()) {
+      await DB.EmailOtp.deleteMany({ email });
+      return next(
+        PopulateResponse.error({ message: 'OTP expired' }, 'ERR_OTP_EXPIRED')
+      );
+    }
+
+    await DB.EmailOtp.deleteMany({ email });
+
+    let user = existingUser;
     if (!user) {
       user = await DB.User.create({
-        name: lead.name || '',           // optional
         email,
-        phoneNumber: lead.phone || '',   // optional
+        name: value.lead?.name || '',
+        phoneNumber: value.lead?.phone || '',
         type: 'student',
         role: 'user',
-        aiQueries: [{
-          query,
-          description,
-          aiAttachmentIds,
-          assignedTutors: []
-        }]
+        emailVerified: true,
+        aiQueries: []
       });
     } else {
-      if (user.type === 'tutor') {
-        return res.status(403).json({
-          message: 'Only clients can create AI queries'
-        });
-      }
+      user.emailVerified = true;
+      await user.save();
+    }
 
-      await DB.User.findByIdAndUpdate(user._id, {
+    await DB.User.updateOne(
+      { _id: user._id },
+      {
         $push: {
           aiQueries: {
-            query,
-            description,
-            aiAttachmentIds,
+            query: value.query,
+            description: value.description,
+            aiAttachmentIds: value.aiAttachmentIds || [],
             assignedTutors: []
           }
         }
-      });
-    }
+      }
+    );
+const adminEmail = process.env.ADMIN_EMAIL ;
 
-    // email notification logic unchanged
-    const adminUrl = nconf.get('adminWebUrl') || nconf.get('adminURL');
+const adminHtml = baseEmailTemplate({
+  title: 'New AI Query Received',
+  subtitle: 'A new lead has been submitted',
+  body: `
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Name:</strong> ${value.lead?.name || 'N/A'}</p>
+    <p><strong>Phone:</strong> ${value.lead?.phone || 'N/A'}</p>
 
-    const emailBody = `
-      <p>Dear Admin,</p>
-      <p>A new AI query lead has been created by ${email}</p>
-      <p><strong>Query</strong>: ${query}</p>
-      <p><strong>Description</strong>: ${description}</p>
-      <p>
-        <a href="${adminUrl}/users/update/${user._id}">
-          Review in Admin Panel
-        </a>
-      </p>
-    `;
+    <p><strong>Query:</strong></p>
+    <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+      ${value.query}
+    </p>
 
-    await Service.Mailer.sendRawNow(
-      process.env.ADMIN_EMAIL,
-      'New AI Query Lead',
-      emailBody
+    <a href="${BRAND.adminUrl}/users/update/${user._id}"
+      style="
+        display:inline-block;
+        margin-top:20px;
+        background:${BRAND.primary};
+        color:#fff;
+        padding:12px 20px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:600;
+      ">
+      View in Admin Dashboard
+    </a>
+  `
+});
+
+await Service.Mailer.sendRawNow(
+  adminEmail,
+  '🚀 New  Lead – ExpertBridge',
+  adminHtml
+);
+const userConfirmHtml = baseEmailTemplate({
+  title: 'Query Submitted Successfully',
+  subtitle: 'We’ll get back to you shortly',
+  body: `
+    <p>Hello,</p>
+
+    <p>Your query has been successfully submitted to ExpertBridge.</p>
+
+    <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+      ${value.query}
+    </p>
+
+    <p>Our team will contact you shortly.</p>
+  `
+});
+
+await Service.Mailer.sendRawNow(
+  email,
+  'Your AI Query Has Been Submitted',
+  userConfirmHtml
+);
+
+    res.locals.verifyAiOtp = PopulateResponse.success(
+      { message: 'AI query submitted successfully' },
+      'AI_QUERY_SUBMITTED'
     );
 
-    res.locals.aiQuery = { success: true };
-    return next();
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
 
-  } catch (err) {
-    return next(err);
+exports.addAiQuery = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      query: Joi.string().required(),
+      description: Joi.string().required(),
+      aiAttachmentIds: Joi.array().items(Joi.string()).optional(),
+      captchaToken: Joi.string().required() // ✅ REQUIRED
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const user = req.user;
+
+    // 🚫 Tutors blocked
+    if (user.type === 'tutor') {
+      return next(
+        PopulateResponse.error(
+          { message: 'Tutors cannot submit AI queries' },
+          'ERR_TUTOR_NOT_ALLOWED'
+        )
+      );
+    }
+
+    delete value.captchaToken; // ❌ never store captcha
+
+    await DB.User.updateOne(
+      { _id: user._id },
+      {
+        $push: {
+          aiQueries: {
+            query: value.query,
+            description: value.description,
+            aiAttachmentIds: value.aiAttachmentIds || [],
+            assignedTutors: []
+          }
+        }
+      }
+    );
+    const adminEmail = process.env.ADMIN_EMAIL ;
+
+const adminHtml = baseEmailTemplate({
+  title: 'New AI Query Received',
+  subtitle: 'A new lead has been submitted',
+  body: `
+   <p><strong>Email:</strong> ${user.email}</p>
+<p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+<p><strong>Phone:</strong> ${user.phoneNumber || 'N/A'}</p>
+
+
+    <p><strong>Query:</strong></p>
+    <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+      ${value.query}
+    </p>
+
+    <a href="${BRAND.adminUrl}/users/update/${user._id}"
+      style="
+        display:inline-block;
+        margin-top:20px;
+        background:${BRAND.primary};
+        color:#fff;
+        padding:12px 20px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:600;
+      ">
+      View in Admin Dashboard
+    </a>
+  `
+});
+
+await Service.Mailer.sendRawNow(
+  adminEmail,
+  '🚀 New Lead – ExpertBridge',
+  adminHtml
+);
+
+const userConfirmHtml = baseEmailTemplate({
+  title: 'Query Submitted Successfully',
+  subtitle: 'We’ll get back to you shortly',
+  body: `
+    <p>Hello,</p>
+
+    <p>Your query has been successfully submitted to ExpertBridge.</p>
+
+    <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+      ${value.query}
+    </p>
+
+    <p>Our team will contact you shortly.</p>
+  `
+});
+
+await Service.Mailer.sendRawNow(
+  user.email,
+  'Your AI Query Has Been Submitted',
+  userConfirmHtml
+);
+
+    res.locals.addAiQuery = { message: 'AI query submitted successfully' };
+    next();
+  } catch (e) {
+    next(e);
   }
 };
 
@@ -431,6 +733,59 @@ exports.assignTutorToAiQuery = async (req, res) => {
     return res.json({ code: 200, message: 'Tutors updated successfully' });
   } catch (err) {
     return res.status(500).json({ message: err.message });
+  }
+};
+
+exports.notifyUserAboutAiQuery = async (req, res, next) => {
+  try {
+    const { userId, queryId } = req.params;
+
+    const user = await DB.User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const query = user.aiQueries.id(queryId);
+    if (!query) {
+      return res.status(404).json({ message: 'Query not found' });
+    }
+
+    const emailHtml = baseEmailTemplate({
+      title: 'Update on Your AI Query',
+      subtitle: 'Experts Assigned',
+      body: `
+        <p>Hello ${user.name || 'User'},</p>
+        <p>Based on your query:</p>
+        <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+          ${query.query}
+        </p>
+        <p>Our admin team has assigned experts to assist you. Please check your dashboard for more details.</p>
+        <a href="${nconf.get('userWebUrl')}users/ai-queries"
+          style="
+            display:inline-block;
+            margin-top:20px;
+            background:${BRAND.primary};
+            color:#fff;
+            padding:12px 20px;
+            border-radius:8px;
+            text-decoration:none;
+            font-weight:600;
+          ">
+          View Assigned Experts
+        </a>
+      `
+    });
+
+    await Service.Mailer.sendRawNow(
+      user.email,
+      'Update on Your AI Query - ExpertBridge',
+      emailHtml
+    );
+
+    res.locals.notifyUser = { message: 'Email sent successfully' };
+    return next();
+  } catch (e) {
+    return next(e);
   }
 };
 

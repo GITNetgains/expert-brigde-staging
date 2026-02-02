@@ -259,6 +259,16 @@
                 Assign
               </button>
 
+             <button
+  cButton
+  size="sm"
+  color="warning"
+  class="ms-2 text-white"
+  (click)="notifyUser(q)"
+  [disabled]="!q.assignedTutors?.length"
+  [title]="!q.assignedTutors?.length ? 'Assign a tutor first' : 'Notify user'">
+  Notify
+</button>
               <button
                 cButton
                 size="sm"

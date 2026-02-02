@@ -17,6 +17,14 @@ export class UserService extends APIRequest {
   addAiQuery(data: any): Promise<any> {
     return this.post('/users/ai-query', data);
   }
+  sendAiOtp(payload: { email: string }) {
+  return this.post('/auth/ai/sendOtp', payload);
+}
+
+verifyAiOtp(payload: any) {
+  return this.post('/auth/ai/verifyOtp', payload);
+}
+
   searchAiQueries(userId: string, params: any): Promise<any> {
     return this.get(this.buildUrl(`/users/${userId}/ai-queries`, params));
   }

@@ -82,11 +82,11 @@ export class TeachWithUsComponent implements OnInit {
       {
         property: 'og:description',
         content:
-          'Register as a tutor with us and earn money creating online courses, taking live classes, and hosting webinars for learners around the world.'
+          'Register as an expert with us and earn money creating online courses, taking live sessions, and hosting group sessions for clients around the world.'
       },
       {
         name: 'keywords',
-        content: 'Become a Tutor'
+        content: 'Become an Expert'
       }
     ]);
   }
