@@ -166,6 +166,7 @@ export class ScheduleDetailComponent implements OnInit {
         .startMeeting(this.appointment._id)
         .then((resp) => {
           this.starting = false;
+          this.appointment.status = 'progressing';
           if (
             resp.data &&
             resp.data.platform === 'zoomus' &&
