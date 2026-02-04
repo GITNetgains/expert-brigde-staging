@@ -596,7 +596,7 @@ exports.startMeeting = async zoomMeeting => {
   try {
     const query = {
       // meetingId: zoomMeeting.id,
-      status: 'pending'
+      status: { $in: ['pending', 'booked'] }
     };
 
     const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);

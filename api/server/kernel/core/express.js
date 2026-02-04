@@ -121,7 +121,15 @@ exports.core = kernel => {
   }
 
   app.use(bodyParser.urlencoded({ extended: false }));
-  const jsonParser = bodyParser.json(); // ✅ Create once, reuse forever
+  const jsonParser = bodyParser.json({
+    verify: (req, res, buf) => {
+      try {
+        req.rawBody = buf ? buf.toString('utf8') : '';
+      } catch (e) {
+        req.rawBody = '';
+      }
+    }
+  }); // ✅ Create once, reuse forever
 
 app.use((req, res, next) => {
   if (req.path === '/v1/payment/razorpay/hook') {

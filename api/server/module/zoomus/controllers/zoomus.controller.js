@@ -5,7 +5,8 @@ exports.hook = async (req, res, next) => {
     const config = await Service.ZoomUs.getCredentials();
     const { secretToken } = config.oauthServerToServer;
 
-    const message = `v0:${req.headers['x-zm-request-timestamp']}:${JSON.stringify(req.body)}`;
+    const messageBody = typeof req.rawBody === 'string' && req.rawBody.length ? req.rawBody : JSON.stringify(req.body);
+    const message = `v0:${req.headers['x-zm-request-timestamp']}:${messageBody}`;
 
     const hashForVerify = crypto.createHmac('sha256', secretToken).update(message).digest('hex');
 

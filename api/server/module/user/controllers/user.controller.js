@@ -433,10 +433,11 @@ await Service.Mailer.sendRawNow(
   otpEmailHtml
 );
 
-
+4
     res.locals.sendAiOtp = PopulateResponse.success(
       { message: 'OTP sent successfully' },
       'OTP_SENT'
+      
     );
 
     next();
