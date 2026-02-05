@@ -21,6 +21,7 @@ const validateSchema = Joi.object().keys({
   emailVerified: Joi.boolean().allow(null).optional(),
   phoneNumber: Joi.string().allow([null, '']).optional(),
   phoneVerified: Joi.boolean().allow(null).optional(),
+  showPublicIdOnly: Joi.boolean().allow(null).optional(),
   address: Joi.string().allow([null, '']).optional(),
   bio: Joi.string().allow([null, '']).optional(),
   subjectIds: Joi.array().items(Joi.string()).allow([null, '']).optional().default([]),

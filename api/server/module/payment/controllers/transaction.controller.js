@@ -151,7 +151,7 @@ exports.enroll = async (req, res, next) => {
 
 exports.list = async (req, res, next) => {
   try {
-    const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+    const page = Math.max(0, req.query.page - 1) || 0;
     const take = parseInt(req.query.take, 10) || 10;
     const query = Helper.App.populateDbQuery(req.query, {
       equal: ['targetType', 'userId', 'tutorId', 'targetId', 'status'],
@@ -168,8 +168,14 @@ exports.list = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Transaction.count(query);
     let items = await DB.Transaction.find(query, excludeFields)
-      .populate({ path: 'user', select: '_id name username' })
-      .populate({ path: 'tutor', select: '_id name username' })
+      .populate({ 
+        path: 'user', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
+      .populate({ 
+        path: 'tutor', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
       .populate({ path: 'recipient', select: '_id name' })
       .sort(sort)
       .skip(page * take)
@@ -196,8 +202,20 @@ exports.list = async (req, res, next) => {
       const data = item.toObject();
       data[item.targetType] = target;
       data.tutorSubject = subject;
+      
+      // Apply showPublicIdOnly logic - use userId field instead of _id
+      if (data.user && data.user.showPublicIdOnly) {
+        data.user.name = data.user.userId || data.user._id.toString();
+        data.user.username = data.user.userId || data.user._id.toString();
+      }
+      if (data.tutor && data.tutor.showPublicIdOnly) {
+        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+      }
+      
       return data;
     }));
+    
     res.locals.list = {
       count,
       items
@@ -207,7 +225,6 @@ exports.list = async (req, res, next) => {
     next(e);
   }
 };
-
 exports.findOne = async (req, res, next) => {
   try {
     let excludeFields = {};
@@ -217,9 +234,16 @@ exports.findOne = async (req, res, next) => {
       };
     }
     const transaction = await DB.Transaction.findOne({ _id: req.params.transactionId }, excludeFields)
-      .populate({ path: 'user', select: '_id name username' })
-      .populate({ path: 'tutor', select: '_id name username' })
+      .populate({ 
+        path: 'user', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
+      .populate({ 
+        path: 'tutor', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
       .populate({ path: 'recipient', select: '_id name' });
+      
     let target = null;
     let subject = null;
     const targetType = transaction.targetType;
@@ -240,6 +264,17 @@ exports.findOne = async (req, res, next) => {
     const data = transaction.toObject();
     data[transaction.targetType] = target;
     data.tutorSubject = subject;
+    
+    // Apply showPublicIdOnly logic - use userId field instead of _id
+    if (data.user && data.user.showPublicIdOnly) {
+      data.user.name = data.user.userId || data.user._id.toString();
+      data.user.username = data.user.userId || data.user._id.toString();
+    }
+    if (data.tutor && data.tutor.showPublicIdOnly) {
+      data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+      data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+    }
+    
     req.transaction = transaction;
     res.locals.transaction = data;
     next();
@@ -335,7 +370,7 @@ exports.checkOverlapWebinar = async (req, res, next) => {
 
 exports.transactionOfTutor = async (req, res, next) => {
   try {
-    const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+    const page = Math.max(0, req.query.page - 1) || 0;
     const take = parseInt(req.query.take, 10) || 10;
     const query = Helper.App.populateDbQuery(req.query, {
       equal: ['targetType', 'userId', 'tutorId', 'targetId', 'status'],
@@ -351,7 +386,10 @@ exports.transactionOfTutor = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Transaction.count(query);
     let items = await DB.Transaction.find(query, excludeFields)
-      .populate({ path: 'user', select: '_id name username' })
+      .populate({ 
+        path: 'user', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
       .sort(sort)
       .skip(page * take)
       .limit(take)
@@ -377,8 +415,16 @@ exports.transactionOfTutor = async (req, res, next) => {
       const data = item.toObject();
       data[item.targetType] = target;
       data.tutorSubject = subject;
+      
+      // Apply showPublicIdOnly logic - use userId field instead of _id
+      if (data.user && data.user.showPublicIdOnly) {
+        data.user.name = data.user.userId || data.user._id.toString();
+        data.user.username = data.user.userId || data.user._id.toString();
+      }
+      
       return data;
     }));
+    
     res.locals.listOfTutor = {
       count,
       items

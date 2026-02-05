@@ -751,6 +751,16 @@
                           class="form-check-input ms-2"
                         />
                       </c-col>
+                      <c-col md="4" class="d-flex justify-content-start">
+                        Show only public ID?
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="info.showPublicIdOnly"
+                          name="showPublicIdOnly"
+                          id="showPublicIdOnly"
+                          class="form-check-input ms-2"
+                        />
+                      </c-col>
                       <c-col md="4">
                         <label>
                           Status: @if (!info.pendingApprove && !info.rejected) {

@@ -7,7 +7,7 @@ const enrollQ = require('../../webinar/queue');
 
 exports.list = async (req, res, next) => {
   try {
-    const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+    const page = Math.max(0, req.query.page - 1) || 0;
     const take = parseInt(req.query.take, 10) || 10;
     const query = Helper.App.populateDbQuery(req.query, {
       text: ['description'],
@@ -35,12 +35,17 @@ exports.list = async (req, res, next) => {
     }
 
     query.visible = true;
-    // query.paid = true;
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Appointment.count(query);
-    const items = await DB.Appointment.find(query)
-      .populate({ path: 'user', select: '_id name username' })
-      .populate({ path: 'tutor', select: '_id name username' })
+    let items = await DB.Appointment.find(query)
+      .populate({ 
+        path: 'user', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
+      .populate({ 
+        path: 'tutor', 
+        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
       .populate({ path: 'subject', select: '_id name alias' })
       .populate({ path: 'topic', select: '_id name alias' })
       .populate({ path: 'category', select: '_id name  alias' })
@@ -50,6 +55,23 @@ exports.list = async (req, res, next) => {
       .skip(page * take)
       .limit(take)
       .exec();
+
+    // Apply showPublicIdOnly logic
+    items = items.map(item => {
+      const data = item.toObject();
+      
+      if (data.user && data.user.showPublicIdOnly) {
+        data.user.name = data.user.userId || data.user._id.toString();
+        data.user.username = data.user.userId || data.user._id.toString();
+      }
+      
+      if (data.tutor && data.tutor.showPublicIdOnly) {
+        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+      }
+      
+      return data;
+    });
 
     res.locals.list = {
       count,
@@ -183,8 +205,14 @@ exports.studentCancel = async (req, res, next) => {
 exports.findOne = async (req, res, next) => {
   try {
     const item = await DB.Appointment.findOne({ _id: req.params.appointmentId })
-      .populate({ path: 'user', select: '_id name username totalRating ratingAvg' })
-      .populate({ path: 'tutor', select: '_id name username totalRating ratingAvg' })
+      .populate({ 
+        path: 'user', 
+        select: '_id name username totalRating ratingAvg userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
+      .populate({ 
+        path: 'tutor', 
+        select: '_id name username totalRating ratingAvg userId showPublicIdOnly' // Add userId and showPublicIdOnly
+      })
       .populate({ path: 'subject', select: '_id name price alias' })
       .populate({ path: 'topic', select: '_id name alias' })
       .populate({ path: 'category', select: '_id name  alias' })
@@ -195,10 +223,24 @@ exports.findOne = async (req, res, next) => {
         populate: { path: 'media' }
       })
       .populate({ path: 'transaction', select: req.user.role !== 'admin' ? '-commission -balance' : '' });
+      
     if (!item) {
       return next(PopulateResponse.notFound());
     }
+    
     const data = item.toObject();
+    
+    // Apply showPublicIdOnly logic
+    if (data.user && data.user.showPublicIdOnly) {
+      data.user.name = data.user.userId || data.user._id.toString();
+      data.user.username = data.user.userId || data.user._id.toString();
+    }
+    
+    if (data.tutor && data.tutor.showPublicIdOnly) {
+      data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+      data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+    }
+    
     if (!data.paid && data.webinar && data.webinar.mediaIds && data.webinar.mediaIds.length) {
       data.webinar.media = [];
     }
@@ -211,7 +253,7 @@ exports.findOne = async (req, res, next) => {
     if (report) {
       data.report = report;
     }
-    // TODO - validate permission?
+    
     req.appointment = item;
     res.locals.appointment = data;
     return next();
@@ -219,7 +261,6 @@ exports.findOne = async (req, res, next) => {
     return next(e);
   }
 };
-
 exports.updateDocument = async (req, res, next) => {
   try {
     const validateSchema = Joi.object().keys({
@@ -444,7 +485,7 @@ exports.canReschedule = async (req, res, next) => {
 
 exports.listByGroupClass = async (req, res, next) => {
   try {
-    const page = Math.max(0, req.query.page - 1) || 0; // using a zero-based page index for use with skip()
+    const page = Math.max(0, req.query.page - 1) || 0;
     const take = parseInt(req.query.take, 10) || 10;
     const query = {
       targetType: 'webinar'
@@ -452,11 +493,6 @@ exports.listByGroupClass = async (req, res, next) => {
     query.visible = true;
 
     if (req.query.startTime && req.query.toTime) {
-      // query.startTime = {
-      //   $gte: new Date(moment(req.query.startTime).format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]')),
-      //   $lte: new Date(moment(req.query.toTime).format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]'))
-      // };
-
       query.startTime = {
         $gte: moment(req.query.startTime).toDate(),
         $lte: moment(req.query.toTime).toDate()
@@ -495,7 +531,7 @@ exports.listByGroupClass = async (req, res, next) => {
       {
         $facet: {
           metadata: [
-            { $count: 'total' } // Calculate the total count of documents
+            { $count: 'total' }
           ],
           data: [
             {
@@ -533,13 +569,29 @@ exports.listByGroupClass = async (req, res, next) => {
         if (item.userId) {
           const user = await DB.User.findOne({ _id: item.userId });
           if (user) {
-            data.user = user.getPublicProfile();
+            const userProfile = user.getPublicProfile();
+            
+            // Apply showPublicIdOnly logic for user
+            if (user.showPublicIdOnly) {
+              userProfile.name = user.userId || user._id.toString();
+              userProfile.username = user.userId || user._id.toString();
+            }
+            
+            data.user = userProfile;
           }
         }
         if (item.tutorId) {
           const tutor = await DB.User.findOne({ _id: item.tutorId });
           if (tutor) {
-            data.tutor = tutor.getPublicProfile();
+            const tutorProfile = tutor.getPublicProfile();
+            
+            // Apply showPublicIdOnly logic for tutor
+            if (tutor.showPublicIdOnly) {
+              tutorProfile.name = tutor.userId || tutor._id.toString();
+              tutorProfile.username = tutor.userId || tutor._id.toString();
+            }
+            
+            data.tutor = tutorProfile;
           }
         }
         return data;

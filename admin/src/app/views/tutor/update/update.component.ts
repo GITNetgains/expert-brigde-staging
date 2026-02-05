@@ -188,6 +188,7 @@ export class UpdateComponent implements OnInit {
       isActive: this.info.isActive,
       emailVerified: this.info.emailVerified,
       phoneVerified: this.info.phoneVerified,
+      showPublicIdOnly: this.info.showPublicIdOnly,
       address: this.info.address,
       phoneNumber: this.info.phoneNumber,
       zipCode: this.info.zipCode,

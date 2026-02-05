@@ -17,6 +17,9 @@ export class UserService extends APIRequest {
   addAiQuery(data: any): Promise<any> {
     return this.post('/users/ai-query', data);
   }
+  checkEmailAndSubmit(payload: any): Promise<any> {
+    return this.post('/auth/ai/checkAndSubmit', payload);
+  }
   sendAiOtp(payload: { email: string }) {
   return this.post('/auth/ai/sendOtp', payload);
 }

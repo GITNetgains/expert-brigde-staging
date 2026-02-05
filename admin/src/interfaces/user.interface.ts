@@ -44,6 +44,7 @@ export interface IUser {
   emailVerified?: boolean;
   phoneVerified?: boolean;
   isHomePage?: boolean;
+  showPublicIdOnly?: boolean;
   rejected?: boolean;
   pendingApprove?: boolean;
   isZoomAccount?: boolean;

@@ -91,7 +91,8 @@ export class CartService {
 
   removeCart() {
     const model = this.model.get();
-    const newModel = { ...model, items: [] };
+    const newModel = { ...model, tutorId: '', items: [] };
+    this.cookieService.delete('cartInfo');
     this.model.set(newModel);
   }
 }

@@ -707,6 +707,171 @@ await Service.Mailer.sendRawNow(
   }
 };
 
+/**
+ * CHECK IF EMAIL EXISTS AND SUBMIT IF REGISTERED
+ * Add this method to your user.controller.js file
+ */
+exports.checkEmailAndSubmit = async (req, res, next) => {
+  try {
+    // Remove captcha token from validation
+    delete req.body.captchaToken;
+
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      query: Joi.string().required(),
+      description: Joi.string().required(),
+      aiAttachmentIds: Joi.array().items(Joi.string()).optional(),
+      lead: Joi.object({
+        name: Joi.string().allow('', null),
+        phone: Joi.string().allow('', null)
+      }).optional()
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const email = value.email.toLowerCase().trim();
+
+    // Validate domain
+    const domain = email.split('@')[1];
+    if (!domain || !domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Please use a valid company email address' },
+          'INVALID_EMAIL_DOMAIN'
+        )
+      );
+    }
+
+    const blockedDomains = [
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+      'icloud.com',
+      'aol.com',
+      'protonmail.com'
+    ];
+
+    if (blockedDomains.includes(domain)) {
+      return next(
+        PopulateResponse.error(
+          { message: 'Please use your company email address' },
+          'INVALID_EMAIL_DOMAIN'
+        )
+      );
+    }
+
+    // Check if user exists
+    const existingUser = await DB.User.findOne({ email });
+
+    // Block tutors
+    if (existingUser && existingUser.type === 'tutor') {
+      return next(
+        PopulateResponse.error(
+          { message: 'Tutors cannot submit AI queries' },
+          'ERR_TUTOR_NOT_ALLOWED'
+        )
+      );
+    }
+
+    // If user exists, submit directly
+    if (existingUser) {
+      await DB.User.updateOne(
+        { _id: existingUser._id },
+        {
+          $push: {
+            aiQueries: {
+              query: value.query,
+              description: value.description,
+              aiAttachmentIds: value.aiAttachmentIds || [],
+              assignedTutors: []
+            }
+          }
+        }
+      );
+
+      // Send admin notification
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      const adminHtml = baseEmailTemplate({
+        title: 'New AI Query Received',
+        subtitle: 'A registered user has submitted a query',
+        body: `
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Name:</strong> ${existingUser.name || 'N/A'}</p>
+          <p><strong>Phone:</strong> ${existingUser.phoneNumber || 'N/A'}</p>
+
+          <p><strong>Query:</strong></p>
+          <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+            ${value.query}
+          </p>
+
+          <a href="${BRAND.adminUrl}/users/update/${existingUser._id}"
+            style="
+              display:inline-block;
+              margin-top:20px;
+              background:${BRAND.primary};
+              color:#fff;
+              padding:12px 20px;
+              border-radius:8px;
+              text-decoration:none;
+              font-weight:600;
+            ">
+            View in Admin Dashboard
+          </a>
+        `
+      });
+
+      await Service.Mailer.sendRawNow(
+        adminEmail,
+        '🚀 New Lead – ExpertBridge',
+        adminHtml
+      );
+
+      // Send user confirmation
+      const userConfirmHtml = baseEmailTemplate({
+        title: 'Query Submitted Successfully',
+        subtitle: 'Well get back to you shortly',
+        body: `
+          <p>Hello ${existingUser.name || 'User'},</p>
+
+          <p>Your query has been successfully submitted to ExpertBridge.</p>
+
+          <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
+            ${value.query}
+          </p>
+
+          <p>Our team will contact you shortly.</p>
+        `
+      });
+
+      await Service.Mailer.sendRawNow(
+        email,
+        'Your AI Query Has Been Submitted',
+        userConfirmHtml
+      );
+
+      res.locals.checkEmailAndSubmit = {
+        message: 'AI query submitted successfully',
+        userExists: true
+      };
+
+      return next();
+    }
+
+    // User doesn't exist - need OTP verification
+    res.locals.checkEmailAndSubmit = {
+      message: 'OTP required',
+      userExists: false
+    };
+
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
 
 // controllers/user.controller.js
 

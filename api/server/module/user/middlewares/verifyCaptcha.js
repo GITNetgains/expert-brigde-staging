@@ -49,7 +49,8 @@ module.exports = async (req, res, next) => {
     // ✅ ALLOW MULTIPLE ACTIONS
     const allowedActions = [
       'ai_verify_otp',
-      'ai_query_submit'
+      'ai_query_submit',
+      'ai_check_email'
     ];
 
     if (data.action && !allowedActions.includes(data.action)) {

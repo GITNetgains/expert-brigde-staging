@@ -264,42 +264,39 @@ async submit() {
   if (!this.editableText.trim() || this.submitting) return;
 
   // 🔐 LOGGED-IN USER → DIRECT SUBMIT
-if (this.auth.isLoggedin()) {
-  try {
-    this.submitting = true;
+  if (this.auth.isLoggedin()) {
+    try {
+      this.submitting = true;
 
-    let captchaToken = '';
-    if (isPlatformBrowser(this.platformId)) {
-      captchaToken = await grecaptcha.execute(
-        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
-        { action: 'ai_query_submit' }
+      let captchaToken = '';
+      if (isPlatformBrowser(this.platformId)) {
+        captchaToken = await grecaptcha.execute(
+          '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
+          { action: 'ai_query_submit' }
+        );
+      }
+
+      await this.userService.addAiQuery({
+        query: this.query,
+        description: this.editableText,
+        aiAttachmentIds: this.aiAttachmentIds,
+        captchaToken
+      });
+
+      this.submittedSuccess = true;
+      this.aiStep = 'success';
+      this.startCountdown();
+    } catch (err: any) {
+      this.appService.toastError(
+        err?.error?.message || 'Something went wrong'
       );
+    } finally {
+      this.submitting = false;
     }
-
-    await this.userService.addAiQuery({
-      query: this.query,
-      description: this.editableText,
-      aiAttachmentIds: this.aiAttachmentIds,
-      captchaToken // ✅ REQUIRED
-    });
-
-    this.submittedSuccess = true;
-    this.aiStep = 'success';
-    this.startCountdown();
-  } catch (err: any) {
-    this.appService.toastError(
-      err?.error?.message || 'Something went wrong'
-    );
-  } finally {
-    this.submitting = false;
+    return;
   }
-  return;
-}
 
-
-
-
-  // 👤 GUEST USER → SEND OTP
+  // 👤 GUEST USER → CHECK EMAIL FIRST
   if (!this.lead.email) {
     this.appService.toastError('Email is required');
     return;
@@ -312,21 +309,59 @@ if (this.auth.isLoggedin()) {
 
   try {
     this.submitting = true;
-    await this.userService.sendAiOtp({ email: this.lead.email });
-    this.aiStep = 'otp';
-    this.appService.toastSuccess('OTP sent to your email');
-  } catch (err: any) {
-  const msg =
-    err?.data?.message ||   // ✅ CORRECT MESSAGE
-    err?.error?.message ||        // fallback (code)
-    'Unable to send OTP';
 
-  this.appService.toastError(msg);
-} finally {
+    // Generate captcha token for checkEmailAndSubmit
+    let captchaToken = '';
+    if (isPlatformBrowser(this.platformId)) {
+      captchaToken = await grecaptcha.execute(
+        '6Lce7CQsAAAAAAI1CTK6C6AfG7GQjd3IsC_qS08n',
+        { action: 'ai_check_email' }
+      );
+    }
+
+    // Check if email exists and submit if registered
+    const response = await this.userService.checkEmailAndSubmit({
+      email: this.lead.email,
+      query: this.query,
+      description: this.editableText,
+      aiAttachmentIds: this.aiAttachmentIds,
+      lead: {
+        name: this.lead.name,
+        phone: this.lead.phone
+      },
+      captchaToken
+    });
+
+    // Check the response structure
+    const data = response?.data || response;
+
+    // If user exists, submission successful
+    if (data?.userExists === true) {
+      this.submittedSuccess = true;
+      this.aiStep = 'success';
+      this.appService.toastSuccess('Query submitted successfully!');
+      this.startCountdown();
+    } else {
+      // User doesn't exist, send OTP (no captcha needed - already validated)
+      await this.userService.sendAiOtp({ 
+        email: this.lead.email
+      });
+      
+      this.aiStep = 'otp';
+      this.startOtpTimer();
+      this.appService.toastSuccess('OTP sent to your email');
+    }
+  } catch (err: any) {
+    const msg =
+      err?.data?.message ||
+      err?.error?.message ||
+      'Unable to process request';
+
+    this.appService.toastError(msg);
+  } finally {
     this.submitting = false;
   }
 }
-
 async verifyOtp() {
   if (!this.otpCode.trim()) {
     this.appService.toastError('Please enter OTP');

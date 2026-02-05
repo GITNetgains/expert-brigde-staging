@@ -275,7 +275,12 @@ router.post(
      * @apiPermission admin
      */
     router.get('/v1/users/search', Middleware.hasRole('admin'), userController.search, Middleware.Response.success('search'));
-
+router.post(
+  '/v1/auth/ai/checkAndSubmit',
+  verifyCaptcha,
+  userController.checkEmailAndSubmit,
+  Middleware.Response.success('checkEmailAndSubmit')
+);
     /**
      * @apiGroup User
      * @apiVersion 4.0.0
