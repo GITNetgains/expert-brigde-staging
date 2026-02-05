@@ -321,9 +321,6 @@ exports.checkNotStart = async appointmentId => {
     if (!appointment) {
       throw new Error('Appointment not found');
     }
-    if (!appointment || appointment.meetingStart || appointment.status === 'progressing') {
-      return; // Stop here! The meeting has already started.
-    }
 
     const tutor = await DB.User.findOne({ _id: appointment.tutorId });
     const user = await DB.User.findOne({ _id: appointment.userId });
@@ -598,8 +595,8 @@ exports.complete = async appointmentId => {
 exports.startMeeting = async zoomMeeting => {
   try {
     const query = {
-      // meetingId: zoomMeeting.id,
-      status: { $in: ['pending', 'not-start'] }
+      meetingId: zoomMeeting.id,
+      status: 'pending'
     };
 
     const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
@@ -660,7 +657,7 @@ exports.startMeeting = async zoomMeeting => {
 exports.endMeeting = async zoomMeeting => {
   try {
     const query = {
-      // meetingId: zoomMeeting.id,
+      meetingId: zoomMeeting.id,
       status: 'progressing'
     };
     const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
@@ -670,7 +667,7 @@ exports.endMeeting = async zoomMeeting => {
     if (appointments.length) {
       await Promise.all(
         appointments.map(async appointment => {
-          // appointment.status = 'meeting-completed';
+          appointment.status = 'meeting-completed';
           if (isZoomPlatform) {
             const dataMeeting = await Service.ZoomUs.getDetailMeeting(zoomMeeting.id);
             appointment.dataMeeting = dataMeeting;
@@ -686,7 +683,7 @@ exports.endMeeting = async zoomMeeting => {
               $inc: { completedByLearner: 1 }
             }
           );
-          // await this.complete(appointment);
+          await this.complete(appointment);
         })
       );
     }

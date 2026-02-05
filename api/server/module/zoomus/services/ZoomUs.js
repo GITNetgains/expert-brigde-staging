@@ -111,31 +111,55 @@ exports.getUser = async email => {
 exports.createMeeting = async options => {
   try {
     const headers = await getZoomRequestHeader();
+    
+    // Build meeting payload
+    const meetingPayload = {
+      topic: options.topic || 'Tutoring Session',
+      type: 2, // Scheduled meeting (CHANGED FROM 1)
+      start_time: options.startTime, // ADDED
+      duration: options.duration || 60, // ADDED
+      timezone: options.timezone || 'Asia/Calcutta', // ADDED
+      settings: {
+        host_video: true,
+        participant_video: true,
+        join_before_host: false,
+        mute_upon_entry: false,
+        waiting_room: false,
+        auto_recording: 'cloud',
+        approval_type: 0,
+        audio: 'both',
+        meeting_authentication: false
+      }
+    };
+
+    console.log('Creating Zoom meeting with payload:', JSON.stringify(meetingPayload, null, 2));
+
     return new Promise((resolve, reject) =>
       request(
         {
           uri: `https://api.zoom.us/v2/users/${options.email}/meetings`,
           method: 'POST',
-          json: {
-            type: 1,
-            settings: {
-              auto_recording: 'cloud', // non, local, cloud
-              approve_type: 0,
-              host_video: true,
-              participant_video: true
-            }
-          },
+          json: meetingPayload,
           headers
         },
         (error, response, body) => {
           if (error) {
+            console.error('Zoom createMeeting error:', error);
             return reject(error);
           }
+          
+          if (response.statusCode !== 201 && body.code) {
+            console.error('Zoom API error:', body);
+            return reject(new Error(body.message || 'Failed to create meeting'));
+          }
+          
+          console.log('Zoom meeting created successfully:', body.id);
           return resolve(body);
         }
       )
     );
   } catch (e) {
+    console.error('createMeeting exception:', e);
     throw e;
   }
 };

@@ -15,6 +15,7 @@ exports.startMeeting = async (req, res, next) => {
         select: req.user.role !== 'admin' ? '-commission -balance' : ''
       }
     );
+    console.log('appointment',appointment);
     if (!appointment) {
       return next(
         PopulateResponse.error(
@@ -26,7 +27,8 @@ exports.startMeeting = async (req, res, next) => {
       );
     }
     const isBeforeStartTime = await Service.Appointment.isBeforeStartTime(appointment);
-    if (isBeforeStartTime) {
+    console.log('isBeforeStartTime',isBeforeStartTime);
+        if (isBeforeStartTime) {
       return next(
         PopulateResponse.error({
           message: 'You can join the meeting 15 minutes before the specified time'
@@ -49,8 +51,13 @@ exports.startMeeting = async (req, res, next) => {
     };
     if (isZoomPlatform) {
       if (!appointment.zoomData || (appointment.zoomData && !appointment.zoomData.start_url)) {
+        // ✅ UPDATED: Added startTime, duration, topic, timezone
         const zoomData = await Service.ZoomUs.createMeeting({
-          email: req.user.email
+          email: req.user.email,
+          topic: appointment.description || `${req.user.name}'s Tutoring Session`,
+          startTime: appointment.startTime.toISOString(),
+          duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
+          timezone: 'Asia/Calcutta'
         });
         if (zoomData || zoomData.start_url) {
           appointment.zoomData = zoomData;
@@ -88,8 +95,13 @@ exports.startMeeting = async (req, res, next) => {
       } else if (appointment.zoomData && appointment.zoomData.start_url) {
         let zoomData = await Service.ZoomUs.getDetailMeeting(appointment.zoomData.id);
         if (!zoomData || !zoomData.start_url) {
+          // ✅ UPDATED: Added startTime, duration, topic, timezone
           zoomData = await Service.ZoomUs.createMeeting({
-            email: req.user.email
+            email: req.user.email,
+            topic: appointment.description || `${req.user.name}'s Tutoring Session`,
+            startTime: appointment.startTime.toISOString(),
+            duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
+            timezone: 'Asia/Calcutta'
           });
           if (zoomData || zoomData.start_url) {
             appointment.zoomData = zoomData;
