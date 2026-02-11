@@ -1,9 +1,30 @@
+git const fs = require('fs');
+const util = require('util');
 const Joi = require('joi');
 const nconf = require('nconf');
 const url = require('url');
 const { PLATFORM_ONLINE } = require('../meeting');
 const signToken = require('./auth.service').signToken;
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+/** Write a line to stdout so it shows immediately in PM2 logs (avoids block buffering). */
+function pm2Log(...args) {
+  const msg = util.format(...args) + '\n';
+  try {
+    fs.writeSync(1, msg);
+  } catch (e) {
+    console.log(...args);
+  }
+}
+/** Same for stderr (errors). */
+function pm2Error(...args) {
+  const msg = util.format(...args) + '\n';
+  try {
+    fs.writeSync(2, msg);
+  } catch (e) {
+    console.error(...args);
+  }
+}
 
 const BRAND = {
   logo: 'https://admin.expertbridge.co/assets/images/whitelogo.png',
@@ -380,11 +401,11 @@ exports.completeTutorProfile = async (req, res, next) => {
 
     // 🔄 Send CV ingestion webhook (non-blocking for user)
     try {
-      console.log('[CV-WEBHOOK] Preparing payload for expert registration', {
+      pm2Log('[CV-WEBHOOK] Preparing payload for expert registration', JSON.stringify({
         userId: String(user._id),
         email: user.email,
-        resumeDocument
-      });
+        resumeDocument: resumeDocument != null ? String(resumeDocument) : resumeDocument
+      }));
 
       let cvFileUrl = null;
       if (resumeDocument) {
@@ -397,16 +418,16 @@ exports.completeTutorProfile = async (req, res, next) => {
 
       const webhookBody = {
         source: 'website_registration',
-        mongo_user_id: user._id,
+        mongo_user_id: String(user._id),
         email: user.email,
         name: user.name,
         cv_file_url: cvFileUrl
       };
 
-      console.log('[CV-WEBHOOK] Calling expert-registration webhook', {
+      pm2Log('[CV-WEBHOOK] Calling expert-registration webhook', JSON.stringify({
         url: 'http://13.205.83.59:5678/webhook/expert-registration',
         body: webhookBody
-      });
+      }));
 
       const resp = await fetch('http://13.205.83.59:5678/webhook/expert-registration', {
         method: 'POST',
@@ -417,13 +438,13 @@ exports.completeTutorProfile = async (req, res, next) => {
         body: JSON.stringify(webhookBody)
       });
 
-      console.log('[CV-WEBHOOK] Webhook response status', {
+      pm2Log('[CV-WEBHOOK] Webhook response status', JSON.stringify({
         status: resp.status,
         ok: resp.ok
-      });
+      }));
     } catch (err) {
       // Do not block tutor completion if webhook fails
-      console.error('[CV-WEBHOOK] Error while sending webhook', err && err.message ? err.message : err);
+      pm2Error('[CV-WEBHOOK] Error while sending webhook', err && err.message ? err.message : err);
     }
 
     if (Array.isArray(value.education) && value.education.length > 0) {
