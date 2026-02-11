@@ -1,4 +1,4 @@
-git const fs = require('fs');
+const fs = require('fs');
 const util = require('util');
 const Joi = require('joi');
 const nconf = require('nconf');
