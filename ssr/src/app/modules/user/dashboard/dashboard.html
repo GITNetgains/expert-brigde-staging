@@ -1,88 +1,62 @@
-<div *ngIf="type === 'tutor'" class="sm-padding data-table">
-  <div class="container">
-    <div class="info-dashboard">
-      <div class="user-info">
-        <img
-          src="{{currentUser?.avatarUrl}}"
-          onerror="this.src='/assets/images/default-avatar.jpg'"
-          alt=""
-        />
-        <div class="txt-user-info">
-          <h3>
-            <span>Welcome, {{currentUser?.name}}</span>
-            <span class="color-primary" *ngIf="type === 'student'">Client</span>
-            <span class="color-primary" *ngIf="type === 'tutor'">Expert</span>
-          </h3>
-          <p>{{currentUser?.email}}</p>
+<div class="dashboard-container" *ngIf="!isLoading; else skeleton">
+  <!-- Header with user info -->
+  <header class="dashboard-header">
+    <div class="user-welcome">
+      <div class="avatar-wrapper">
+        <img src="{{currentUser?.avatarUrl}}" onerror="this.src='/assets/images/default-avatar.jpg'"
+          alt="{{currentUser?.name}}" />
+      </div>
+      <div class="user-details">
+        <h2>
+          <span>Hello, {{currentUser?.name}}</span>
+          <span class="role-badge" *ngIf="type === 'student'">Client</span>
+          <span class="role-badge" *ngIf="type === 'tutor'">Expert</span>
+        </h2>
+        <p>{{currentUser?.email}}</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="/users/profile" class="btn-view-profile">View Profile</a>
+    </div>
+  </header>
+
+  <!-- Menu Grid for Tutor -->
+  <div class="dashboard-grid" *ngIf="type === 'tutor'">
+    <a [routerLink]="[menu.path]" class="menu-card" *ngFor="let menu of tutorMenus; let i = index">
+      <div class="card-content">
+        <div class="icon-container" [style.background]="getIconBackground(i)">
+          <i class="{{menu.icon}}"></i>
         </div>
+        <h3 translate>{{menu.title}}</h3>
+        <p translate>{{menu.description}}</p>
       </div>
-      <div class="right-info">
-        <a href="/users/profile" class="btn btn-default">View profile</a>
+    </a>
+  </div>
+
+  <!-- Menu Grid for Student/Other -->
+  <div class="dashboard-grid" *ngIf="type === 'student' || type === 'user'">
+    <a [routerLink]="[menu.path]" class="menu-card" *ngFor="let menu of studentMenus; let i = index">
+      <div class="card-content">
+        <div class="icon-container" [style.background]="getIconBackground(i)">
+          <i class="{{menu.icon}}"></i>
+        </div>
+        <h3 translate>{{menu.title}}</h3>
+        <p translate>{{menu.description}}</p>
       </div>
-    </div>
-    <div class="row" *ngFor="let menus of tutorMenus, let i = index">
-      <div class="col-md-3" *ngFor="let menu of menus, let menuIndex = index">
-        <a class="card menu-item" [routerLink]="[menu.path]" translate>
-          <div class="card-body text-center">
-            <div class="d-flex justify-content-center align-items-center">
-              <div class="img-card" id="{{menu.key}}">
-                <!-- <img src="{{menu.svg}}" /> -->
-                <i class="{{menu.icon}}"> </i>
-              </div>
-            </div>
-            <h3 class="card-title color-light-blue" translate>
-              {{ menu.title}}
-            </h3>
-          </div>
-        </a>
-      </div>
-    </div>
+    </a>
   </div>
 </div>
 
-<!-- client's dashboard -->
-<div
-  *ngIf="type === 'student' || type === 'user'"
-  class="sm-padding data-table"
->
-  <div class="container">
-    <div class="info-dashboard">
-      <div class="user-info">
-        <img
-          src="{{currentUser?.avatarUrl}}"
-          onerror="this.src='/assets/images/default-avatar.jpg'"
-          alt=""
-        />
-        <div class="txt-user-info">
-          <h3>
-            <span>Welcome, {{currentUser?.name}}</span>
-            <span class="color-primary">Client</span>
-          </h3>
-          <p>{{currentUser?.email}}</p>
-        </div>
-      </div>
-      <div class="right-info">
-        <a href="/users/profile" class="btn btn-default">View profile</a>
-      </div>
+<!-- Skeleton Loading State -->
+<ng-template #skeleton>
+  <div class="dashboard-container skeleton-loader">
+    <div class="skeleton-header">
+      <div class="shimmer"></div>
     </div>
-    <div class="row" *ngFor="let sMenus of studentMenus, let i = index">
-      <div
-        class="col-md-3"
-        *ngFor="let sMenu of sMenus, let sMenuIndex = index"
-      >
-        <a class="card menu-item" [routerLink]="[sMenu.path]" translate>
-          <div class="card-body text-center">
-            <div class="d-flex justify-content-center align-items-center">
-              <div class="img-card" id="{{sMenu.key}}">
-                <i class="{{sMenu.icon}}"> </i>
-              </div>
-            </div>
-            <h3 class="card-title color-light-blue" translate>
-              {{ sMenu.title}}
-            </h3>
-          </div>
-        </a>
+    <div class="skeleton-grid">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]">
+        <div class="shimmer"></div>
       </div>
     </div>
   </div>
-</div>
+</ng-template>

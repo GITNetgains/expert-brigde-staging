@@ -89,13 +89,16 @@ exports.update = async (req, res, next) => {
     const user = await DB.User.findOne({ _id: req.review.rateBy });
     _.merge(req.review, validate.value);
     await req.review.save();
+
+    // Recompute rating stats (only non-hidden reviews count); use rateBy if user document missing
+    const reviewByForScore = user || { _id: req.review.rateBy };
     if (req.review.type === 'course') {
-      await Service.Review.updateReviewScoreCourse(req.review.courseId, user);
+      await Service.Review.updateReviewScoreCourse(req.review.courseId);
     } else {
-      await Service.Review.updateReviewScoreAppointment(req.review.appointmentId, user);
+      await Service.Review.updateReviewScoreAppointment(req.review.appointmentId, reviewByForScore);
     }
 
-    req.review.rater = user.getPublicProfile();
+    req.review.rater = user ? user.getPublicProfile() : (req.review.rater || null);
     res.locals.update = req.review;
     return next();
   } catch (e) {
@@ -109,17 +112,17 @@ exports.remove = async (req, res, next) => {
       return next(PopulateResponse.forbidden());
     }
 
-    if (req.user.role === 'admin' && req.user._id != req.review.rateBy) {
+    if (req.user.role === 'admin' && req.review.rater && req.user._id.toString() !== req.review.rateBy.toString()) {
       await Service.Mailer.send('review-removed-by-admin', req.review.rater.email, {
         subject: `Your review has been removed`,
         review: req.review
       });
     }
-    const user = req.review.rater;
+    const reviewByForScore = req.review.rater || { _id: req.review.rateBy };
     if (req.review.type === 'course') {
-      await Service.Review.updateReviewScoreCourse(req.review.courseId, user);
+      await Service.Review.updateReviewScoreCourse(req.review.courseId);
     } else {
-      await Service.Review.updateReviewScoreAppointment(req.review.appointmentId, user);
+      await Service.Review.updateReviewScoreAppointment(req.review.appointmentId, reviewByForScore);
     }
 
     await req.review.remove();
@@ -144,6 +147,11 @@ exports.list = async (req, res, next) => {
     const query = Helper.App.populateDbQuery(req.query, {
       equal: ['webinarId', 'rateBy', 'type', 'rateTo', 'appointmentId', 'courseId']
     });
+
+    // Non-admin (and unauthenticated) only see non-hidden reviews; admin sees all
+    if (!req.user || req.user.role !== 'admin') {
+      query.hidden = { $ne: true };
+    }
 
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Review.count(query);
@@ -191,6 +199,29 @@ exports.isReview = async (req, res, next) => {
     query.rateBy = req.user._id;
     const count = await DB.Review.count(query);
     res.locals.isReview = count > 0;
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+/**
+ * Toggle hidden status of a review (admin only).
+ * Recomputes tutor/course/webinar rating so hidden reviews are excluded from displayed rating.
+ */
+exports.toggleHidden = async (req, res, next) => {
+  try {
+    req.review.hidden = !req.review.hidden;
+    await req.review.save();
+
+    // Recompute displayed rating (only non-hidden reviews count)
+    if (req.review.type === 'course' && req.review.courseId) {
+      await Service.Review.updateReviewScoreCourse(req.review.courseId);
+    } else if (req.review.appointmentId) {
+      await Service.Review.updateReviewScoreAppointment(req.review.appointmentId, { _id: req.review.rateBy });
+    }
+
+    res.locals.update = req.review;
     next();
   } catch (e) {
     next(e);

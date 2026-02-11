@@ -47,8 +47,7 @@ require('../app');
           countryCode: c.code,
           state,
           bio: 'Seeded tutor for filter testing',
-          highlights: ['experienced', 'patient'],
-          workHistory: ['Company A', 'Company B']
+          highlights: ['experienced', 'patient']
         };
 
         const tutor = await Service.User.create(payload);

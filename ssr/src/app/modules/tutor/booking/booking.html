@@ -4,11 +4,7 @@
       <div class="profile-detail-left">
         <div class="card card-border card-body profile-card mb-3">
           <div class="profile-img">
-            <img
-              src="{{tutor.avatarUrl}}"
-              onerror="this.src='/assets/images/default-avatar.jpg'"
-              alt=""
-            />
+            <img src="{{tutor.avatarUrl}}" onerror="this.src='/assets/images/default-avatar.jpg'" alt="" />
             <div class="favoired-icon">
               <a *ngIf="!tutor.isFavorite" (click)="favorite()">
                 <i class="fi fi-rs-heart color-light-red"></i>
@@ -21,101 +17,52 @@
 
           <div class="profile-info">
             <h5 class="font-weight-bold">
-              {{tutor.name}}<i
-                class="fi fi-ss-badge-check color-blue ms-1 font-sm"
-              ></i>
+              {{tutor.name}}<i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
             </h5>
             <div class="rating-stars">
               <ul id="stars">
                 <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
-                <span style="padding-left: 5px"
-                  >{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span
-                >
+                <span style="padding-left: 5px">{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
               </ul>
             </div>
             <div class="mb-3">
               <div class="img-flag-tutor">
-                <img
-                  src="{{tutor?.country?.flag}}"
-                  alt=""
-                  class="image-sm"
-                  onerror="this.src='/assets/images/no-image.jpg'"
-                />
+                <img src="{{tutor?.country?.flag}}" alt="" class="image-sm"
+                  onerror="this.src='/assets/images/no-image.jpg'" />
               </div>
-              <span class="ms-2 text-secondary" translate
-                >{{tutor?.country?.name || 'Updating'}}</span
-              >
+              <span class="ms-2 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
             </div>
-            <app-send-message-btn
-              [recipientId]="tutor._id"
-            ></app-send-message-btn>
+            <app-send-message-btn [recipientId]="tutor._id"></app-send-message-btn>
           </div>
         </div>
       </div>
       <div class="profile-detail-right">
         <div class="card card-border mb-3">
           <div class="video-play">
-            <iframe
-              width="100%"
-              height="100%"
-              [src]="urlYoutube"
-              frameborder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
+            <iframe width="100%" height="100%" [src]="urlYoutube" frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>
           <div class="card-body">
             <div class="tutor-info-m">
               <div class="item-tutor-info" style="margin: 0">
                 <h5 translate>About Me</h5>
-                <p
-                  class="card-text"
-                  [innerHTML]="tutor.bio | ellipsis: showChar"
-                  [hidden]="!showChar"
-                ></p>
-                <p
-                  class="card-text"
-                  [innerHTML]="tutor.bio"
-                  [hidden]="showChar"
-                ></p>
-                <a
-                  href="javascript:void(0)"
-                  class="morelink"
-                  *ngIf="showMore && showChar > 0"
-                  (click)="showChar = 0"
-                  ><span translate>Read More</span>...</a
-                >
-                <a
-                  href="javascript:void(0)"
-                  class="morelink"
-                  *ngIf="showMore && !showChar"
-                  (click)="showChar = 500"
-                  >...<span translate>Read Less</span></a
-                >
+                <p class="card-text" [innerHTML]="tutor.bio | ellipsis: showChar" [hidden]="!showChar"></p>
+                <p class="card-text" [innerHTML]="tutor.bio" [hidden]="showChar"></p>
+                <a href="javascript:void(0)" class="morelink" *ngIf="showMore && showChar > 0"
+                  (click)="showChar = 0"><span translate>Read More</span>...</a>
+                <a href="javascript:void(0)" class="morelink" *ngIf="showMore && !showChar"
+                  (click)="showChar = 500">...<span translate>Read Less</span></a>
               </div>
             </div>
           </div>
         </div>
         <div class="card card-border mb-3">
           <div class="card-body">
-            <div
-              class="row mb-3"
-              style="justify-content: space-around"
-              *ngIf="stateService.showBooking()"
-            >
-              <div
-                class="col-md-12 d-flex align-items-center justify-content-center classes"
-              >
+            <div class="row mb-3" style="justify-content: space-around" *ngIf="stateService.showBooking()">
+              <div class="col-md-12 d-flex align-items-center justify-content-center classes">
                 <div class="d-flex justify-content-end align-items-center">
-                  <label class="custom-checkbox me-4 font-md" translate
-                    ><span translate>Paid session</span>
-                    <input
-                      type="radio"
-                      selected
-                      name="type"
-                      [(ngModel)]="booking.isFree"
-                      [value]="false"
-                    />
+                  <label class="custom-checkbox me-4 font-md" translate><span translate>Paid session</span>
+                    <input type="radio" selected name="type" [(ngModel)]="booking.isFree" [value]="false" />
                     <span class="checkmark"></span>
                   </label>
                   <!-- <label class="custom-checkbox font-md"
@@ -131,74 +78,42 @@
                   </label> -->
                 </div>
               </div>
-              <p
-                class="mt-2 text-center"
-                [hidden]="!booking.isFree"
-                style="color: grey"
-              >
-                <span translate
-                  >The maximum number of free trial classes you can take
-                  is</span
-                >
+              <p class="mt-2 text-center" [hidden]="!booking.isFree" style="color: grey">
+                <span translate>The maximum number of free trial classes you can take
+                  is</span>
                 {{maxFreeSlotToBook}}
               </p>
             </div>
             <div class="row row-sm step-to-booking mb-2">
-              <div
-                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
-              >
+              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
                 <h5 translate>Step 1</h5>
-                <select
-                  class="custom-select form-select"
-                  [(ngModel)]="selectedCategoryId"
-                  (change)="selectMyCategory()"
-                >
+                <select class="custom-select form-select" [(ngModel)]="selectedCategoryId"
+                  (change)="selectMyCategory()">
                   <option selected value="" translate>Select Category</option>
                   <option *ngFor="let cat of myCategories" [value]="cat._id">
                     {{cat.name}}
                   </option>
                 </select>
               </div>
-              <div
-                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
-              >
+              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
                 <h5 translate>Step 2</h5>
-                <select
-                  class="custom-select form-select"
-                  [(ngModel)]="selectedSubjectId"
-                  (change)="selectMySubject()"
-                >
+                <select class="custom-select form-select" [(ngModel)]="selectedSubjectId" (change)="selectMySubject()">
                   <option selected value="" translate>Select Expertise</option>
-                  <option
-                    *ngFor="let subject of mySubjects"
-                    [value]="subject._id"
-                  >
+                  <option *ngFor="let subject of mySubjects" [value]="subject._id">
                     {{subject.name}}
                   </option>
                 </select>
               </div>
-              <div
-                class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column"
-              >
+              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
                 <h5 translate>Step 3</h5>
                 <div class="step-3">
-                  <p
-                    class="slot-btn mb-0 d-inline-block"
-                    *ngIf="!appliedCoupon&&!booking.isFree"
-                  >
+                  <p class="slot-btn mb-0 d-inline-block" *ngIf="!appliedCoupon&&!booking.isFree">
                     {{price | appCurrency }}/<span translate>Slot</span>
                   </p>
-                  <p
-                    class="slot-btn mb-0 d-inline-block"
-                    *ngIf="appliedCoupon&&!booking.isFree"
-                  >
+                  <p class="slot-btn mb-0 d-inline-block" *ngIf="appliedCoupon&&!booking.isFree">
                     <small class="text-line-through me-1">
-                      {{price| appCurrency}}</small
-                    >
-                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span
-                      translate
-                      >Slot</span
-                    >
+                      {{price| appCurrency}}</small>
+                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span translate>Slot</span>
                   </p>
                 </div>
               </div>
@@ -227,13 +142,8 @@
                 All times listed are in your local timezone
               </p>
             </div>
-            <app-tutor-available-time
-              *ngIf="tutor"
-              [tutorId]="tutor._id"
-              [isFree]="booking.isFree || false"
-              (doAddToCart)="chooseSlot($event)"
-              (doSelect)="buyNow($event)"
-            ></app-tutor-available-time>
+            <app-tutor-available-time *ngIf="tutor" [tutorId]="tutor._id" [isFree]="booking.isFree || false"
+              (doAddToCart)="chooseSlot($event)" (doSelect)="buyNow($event)"></app-tutor-available-time>
           </div>
         </div>
 
@@ -322,9 +232,9 @@
                 </div>
               </div>
             </div> -->
-            <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
+        <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
             [hidden]="!webinarOptions.webinars.length" class="col-md-4 mb-4"></app-card-webinar> -->
-            <!-- <div class="row mt-3">
+        <!-- <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="webinarOptions.count>webinarOptions.pageSize"
@@ -414,9 +324,9 @@
                 </div>
               </div>
             </div> -->
-            <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
+        <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
             [hidden]="!courseOptions.courses.length" class="col-md-4 mb-4"></app-card-course> -->
-            <!-- <div class="row mt-3">
+        <!-- <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="courseOptions.count>courseOptions.pageSize"
@@ -432,7 +342,7 @@
                 </ngb-pagination>
               </div>
             </div> -->
-          <!-- </div> -->
+        <!-- </div> -->
         <!-- </div> -->
       </div>
     </div>

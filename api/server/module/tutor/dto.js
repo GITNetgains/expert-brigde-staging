@@ -35,8 +35,7 @@ exports.toResponse = function (tutor, showPrivate = false, isAdmin = false) {
     introYoutubeId: tutor.introYoutubeId,
     pendingApprove: tutor.pendingApprove,
     yearsExperience: tutor.yearsExperience,
-    highlights: tutor.highlights || [],
-    workHistory: tutor.workHistory || []
+    highlights: tutor.highlights || []
   };
 
   const privateData = {

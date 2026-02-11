@@ -2,9 +2,7 @@
 
   <!-- LEFT PROFILE CARD -->
   <c-col md="3" *ngIf="!loading">
-    <app-profile-card
-      [user]="info"
-      (afterUpload)="afterUpload($event)">
+    <app-profile-card [user]="info" (afterUpload)="afterUpload($event)">
     </app-profile-card>
   </c-col>
 
@@ -34,12 +32,7 @@
 
         <!-- FORM -->
         <ng-template #formTemplate>
-          <form
-            cForm
-            #frm="ngForm"
-            (ngSubmit)="submit(frm)"
-            novalidate
-            class="needs-validation"
+          <form cForm #frm="ngForm" (ngSubmit)="submit(frm)" novalidate class="needs-validation"
             [validated]="customStylesValidated">
 
             <c-row>
@@ -48,12 +41,7 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Full Name</label>
-                  <input
-                    cFormControl
-                    [(ngModel)]="info.name"
-                    name="name"
-                    required
-                    placeholder="Enter name"
+                  <input cFormControl [(ngModel)]="info.name" name="name" required placeholder="Enter name"
                     #name="ngModel" />
                   <c-form-feedback *ngIf="name.invalid && (name.touched || isSubmitted)" invalid>
                     Name is required
@@ -65,14 +53,8 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Email</label>
-                  <input
-                    cFormControl
-                    type="email"
-                    [(ngModel)]="info.email"
-                    name="email"
-                    required
-                    placeholder="user@example.com"
-                    #email="ngModel" />
+                  <input cFormControl type="email" [(ngModel)]="info.email" name="email" required
+                    placeholder="user@example.com" #email="ngModel" />
                   <c-form-feedback *ngIf="email.invalid && (email.touched || isSubmitted)" invalid>
                     Valid email required
                   </c-form-feedback>
@@ -83,15 +65,8 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Phone Number</label>
-                  <input
-                    cFormControl
-                    [(ngModel)]="info.phoneNumber"
-                    name="phone"
-                    required
-                    minlength="9"
-                    maxlength="15"
-                    placeholder="Enter phone"
-                    #phone="ngModel" />
+                  <input cFormControl [(ngModel)]="info.phoneNumber" name="phone" required minlength="9" maxlength="15"
+                    placeholder="Enter phone" #phone="ngModel" />
                   <c-form-feedback *ngIf="phone.invalid && (phone.touched || isSubmitted)" invalid>
                     Phone number is invalid
                   </c-form-feedback>
@@ -102,12 +77,7 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Address</label>
-                  <input
-                    cFormControl
-                    [(ngModel)]="info.address"
-                    name="address"
-                    required
-                    placeholder="Enter address"
+                  <input cFormControl [(ngModel)]="info.address" name="address" required placeholder="Enter address"
                     #address="ngModel" />
                   <c-form-feedback *ngIf="address.invalid && (address.touched || isSubmitted)" invalid>
                     Address is required
@@ -118,12 +88,7 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Description</label>
-                  <textarea
-                    cFormControl
-                    rows="5"
-                    [(ngModel)]="info.bio"
-                    name="bio"
-                    placeholder="Enter description">
+                  <textarea cFormControl rows="5" [(ngModel)]="info.bio" name="bio" placeholder="Enter description">
                   </textarea>
                 </div>
               </c-col>
@@ -132,14 +97,8 @@
               <c-col md="6">
                 <div class="mb-3">
                   <label cLabel>Password</label>
-                  <input
-                    cFormControl
-                    type="password"
-                    [(ngModel)]="info.password"
-                    name="password"
-                    [required]="!userId"
-                    minlength="6"
-                    #password="ngModel" />
+                  <input cFormControl type="password" [(ngModel)]="info.password" name="password" [required]="!userId"
+                    minlength="6" #password="ngModel" />
                   <c-form-feedback *ngIf="password.invalid && (password.touched || isSubmitted)" invalid>
                     Password must be at least 6 characters
                   </c-form-feedback>
@@ -210,11 +169,7 @@
 
             <!-- DESCRIPTION (BUTTON) -->
             <td>
-              <button
-                cButton
-                size="sm"
-                color="info"
-                (click)="openDescriptionModal(q)">
+              <button cButton size="sm" color="info" (click)="openDescriptionModal(q)">
                 View
               </button>
             </td>
@@ -222,11 +177,7 @@
             <!-- ATTACHMENTS -->
             <td>
               <ng-container *ngIf="q.aiAttachmentIds?.length; else noAttach">
-                <a
-                  *ngFor="let a of q.aiAttachmentIds"
-                  [href]="a.fileUrl"
-                  target="_blank"
-                  class="d-block text-truncate"
+                <a *ngFor="let a of q.aiAttachmentIds" [href]="a.fileUrl" target="_blank" class="d-block text-truncate"
                   style="max-width: 180px;">
                   {{ a.name }}
                 </a>
@@ -240,10 +191,10 @@
             <!-- ASSIGNED TUTORS -->
             <td style="max-width: 220px;">
               <span *ngFor="let t of q.assignedTutors; let last = last">
-  {{ t.name }}
-  <small class="text-muted">({{ t.userId }})</small>
-  <span *ngIf="!last">, </span>
-</span>
+                {{ t.name }}
+                <small class="text-muted">({{ t.userId }})</small>
+                <span *ngIf="!last">, </span>
+              </span>
               <span *ngIf="!q.assignedTutors?.length" class="text-muted">
                 Not assigned
               </span>
@@ -251,30 +202,16 @@
 
             <!-- ACTIONS -->
             <td class="text-nowrap">
-              <button
-                cButton
-                size="sm"
-                color="primary"
-                (click)="openAssignTutorModal(q)">
+              <button cButton size="sm" color="primary" (click)="openAssignTutorModal(q)">
                 Assign
               </button>
 
-             <button
-  cButton
-  size="sm"
-  color="warning"
-  class="ms-2 text-white"
-  (click)="notifyUser(q)"
-  [disabled]="!q.assignedTutors?.length"
-  [title]="!q.assignedTutors?.length ? 'Assign a tutor first' : 'Notify user'">
-  Notify
-</button>
-              <button
-                cButton
-                size="sm"
-                color="danger"
-                class="ms-2"
-                (click)="deleteAiQuery(q)">
+              <button cButton size="sm" color="warning" class="ms-2 text-white" (click)="notifyUser(q)"
+                [disabled]="!q.assignedTutors?.length"
+                [title]="!q.assignedTutors?.length ? 'Assign a tutor first' : 'Notify user'">
+                Notify
+              </button>
+              <button cButton size="sm" color="danger" class="ms-2" (click)="deleteAiQuery(q)">
                 Delete
               </button>
             </td>
@@ -294,66 +231,44 @@
 
   <c-modal-body>
 
-    <ng-select
-      [items]="categories"
-      bindLabel="name"
-      bindValue="_id"
-      placeholder="Category"
-      [(ngModel)]="assign.categoryId"
-      (change)="loadSubjects()">
+    <ng-select [items]="categories" bindLabel="name" bindValue="_id" placeholder="Category"
+      [(ngModel)]="assign.categoryId" (change)="loadSubjects()">
     </ng-select>
 
-    <ng-select
-      class="mt-2"
-      [items]="assign.subjects"
-      bindLabel="name"
-      bindValue="_id"
-      placeholder="Subject"
-      [(ngModel)]="assign.subjectId"
-      (change)="loadTutors()">
+    <ng-select class="mt-2" [items]="assign.subjects" bindLabel="name" bindValue="_id" placeholder="Subject"
+      [(ngModel)]="assign.subjectId" (change)="loadTutors()">
     </ng-select>
 
-<ng-select
-  class="mt-2"
-  [items]="assign.tutors"
-  bindLabel="name"
-  bindValue="_id"
-  [multiple]="true"
-  [closeOnSelect]="false"
-  [clearable]="true"
-  placeholder="Select Tutors"
-  [(ngModel)]="assign.tutorIds">
+    <ng-select class="mt-2" [items]="assign.tutors" bindLabel="name" bindValue="_id" [multiple]="true"
+      [closeOnSelect]="false" [clearable]="true" placeholder="Select Tutors" [(ngModel)]="assign.tutorIds">
 
-  <!-- Selected value (chip with cross ❌) -->
-  <ng-template ng-label-tmp let-item="item" let-clear="clear">
-    <span>
-      {{ item.name }}
-      <small class="text-muted">({{ item.userId }})</small>
-    </span>
-    <span
-      class="ng-value-icon right"
-      (click)="clear(item)"
-      aria-hidden="true">
-      ×
-    </span>
-  </ng-template>
+      <!-- Selected value (chip with cross ❌) -->
+      <ng-template ng-label-tmp let-item="item" let-clear="clear">
+        <span>
+          {{ item.name }}
+          <small class="text-muted">({{ item.userId }})</small>
+        </span>
+        <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">
+          ×
+        </span>
+      </ng-template>
 
-  <!-- Dropdown option -->
-  <ng-template ng-option-tmp let-item="item">
-    <div class="d-flex justify-content-between">
-      <span>
-        {{ item.name }}
-        <small class="text-muted">({{ item.userId }})</small>
-      </span>
-    </div>
-  </ng-template>
+      <!-- Dropdown option -->
+      <ng-template ng-option-tmp let-item="item">
+        <div class="d-flex justify-content-between">
+          <span>
+            {{ item.name }}
+            <small class="text-muted">({{ item.userId }})</small>
+          </span>
+        </div>
+      </ng-template>
 
-</ng-select>
+    </ng-select>
 
 
   </c-modal-body>
 
- <div class="modal-footer">
+  <div class="modal-footer">
 
     <button cButton color="secondary" (click)="showAssignModal=false">
       Cancel
@@ -365,22 +280,12 @@
   </div>
 </c-modal>
 
-
-<c-modal [(visible)]="showDescriptionModal" size="lg">
-  <c-modal-header>
-    <h5>Description</h5>
-  </c-modal-header>
-
-  <c-modal-body>
-    <p class="mb-0 white-space-pre-line">
-      {{ activeDescription }}
-    </p>
-  </c-modal-body>
-
-  <div class="modal-footer">
-    <button cButton color="secondary" (click)="showDescriptionModal=false">
-      Close
-    </button>
-  </div>
-</c-modal>
-
+<!-- ================= CLIENT'S REVIEWS SECTION ================= -->
+<c-card class="mt-4" *ngIf="isUpdateMode">
+  <c-card-header>
+    <h5>Client's Reviews</h5>
+  </c-card-header>
+  <c-card-body>
+    <app-review-tutor [tutorId]="userId"></app-review-tutor>
+  </c-card-body>
+</c-card>

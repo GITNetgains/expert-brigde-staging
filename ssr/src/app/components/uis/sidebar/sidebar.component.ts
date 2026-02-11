@@ -7,7 +7,8 @@ import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html'
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
   public tree: any = [];

@@ -143,5 +143,10 @@ exports.middleware = {
 
         return next(PopulateResponse.forbidden());
       });
+  },
+
+  /** Admin-only middleware (convenience for hasRole('admin')) */
+  get isAdmin() {
+    return this.hasRole('admin');
   }
 };

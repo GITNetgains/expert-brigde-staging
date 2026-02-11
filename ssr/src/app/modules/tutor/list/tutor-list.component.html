@@ -29,20 +29,22 @@
 
           <h3 class="filter-title">Filter</h3>
 
-          <!-- SKILL -->
+          <!-- SKILL (search instead of full list) -->
           <div class="filter-item">
             <button class="filter-header" (click)="toggleFilter('skill')">
               Skill <i class="fi fi-rr-angle-small-down"></i>
             </button>
             <div class="filter-body" *ngIf="openFilter.skill">
-              <select class="form-control"
-                      [(ngModel)]="searchFields.skillIds"
-                      (ngModelChange)="selectSkill()">
-                <option value="">None</option>
-                <option *ngFor="let sk of skills" [value]="sk._id">
-                  {{ sk.name }}
-                </option>
-              </select>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search skills"
+                [(ngModel)]="skillSearchTerm"
+                (ngModelChange)="onSkillSearchChange($event)"
+                list="skillsList" />
+              <datalist id="skillsList">
+                <option *ngFor="let sk of skills" [value]="sk.name"></option>
+              </datalist>
             </div>
           </div>
 

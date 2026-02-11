@@ -1,3 +1,4 @@
+// Webinar module
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -30,4 +31,4 @@ import { ApplyCouponComponent } from 'src/app/components/coupon/apply-coupon/app
   declarations: [WebinarListingComponent, DetailWebinarComponent],
   exports: [CardWebinarComponent]
 })
-export class WebinarModule {}
+export class WebinarModule { }

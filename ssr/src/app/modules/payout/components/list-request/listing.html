@@ -1,16 +1,8 @@
 <ul class="nav nav-tabs nav-custom mb-4" role="tablist">
-  <li
-    role="presentation"
-    [ngClass]="{'active': tab === 'earning'}"
-    (click)="onTabSelect('earning')"
-  >
+  <li role="presentation" [ngClass]="{'active': tab === 'earning'}" (click)="onTabSelect('earning')">
     <a href="javascript:void(0)" translate>Earnings Status</a>
   </li>
-  <li
-    role="presentation"
-    [ngClass]="{'active': tab === 'payout'}"
-    (click)="onTabSelect('payout')"
-  >
+  <li role="presentation" [ngClass]="{'active': tab === 'payout'}" (click)="onTabSelect('payout')">
     <a href="javascript:void(0)" translate>Request Manager Account</a>
   </li>
 </ul>
@@ -19,26 +11,11 @@
     <div class="card card-body mb-3">
       <div class="row">
         <div class="col-md-7 chart-container">
-          <div
-            id="chart-container"
-            #containerRef
-            *ngIf="!loadingBalance && balance?.total && balance.total > 0"
-          >
-            <ngx-charts-pie-chart
-              (window:resize)="onResize($event)"
-              [view]="view"
-              [scheme]="colorScheme"
-              *ngIf="!loadingBalance && balance?.total!==0"
-              [results]="single"
-              [gradient]="gradient"
-              [legend]="showLegend"
-              [legendPosition]="legendPosition"
-              [labels]="showLabels"
-              [doughnut]="isDoughnut"
-              [legendTitle]="''"
-              [trimLabels]="false"
-              [tooltipText]="formatTooltipText"
-            >
+          <div id="chart-container" #containerRef *ngIf="!loadingBalance && balance?.total && balance.total > 0">
+            <ngx-charts-pie-chart (window:resize)="onResize($event)" [view]="view" [scheme]="colorScheme"
+              *ngIf="!loadingBalance && balance?.total!==0" [results]="single" [gradient]="gradient"
+              [legend]="showLegend" [legendPosition]="legendPosition" [labels]="showLabels" [doughnut]="isDoughnut"
+              [legendTitle]="''" [trimLabels]="false" [tooltipText]="formatTooltipText">
             </ngx-charts-pie-chart>
           </div>
         </div>
@@ -74,8 +51,8 @@
                 </tr>
                 <tr>
                   <td colspan="2">
-                    <small translate
-                      >Earnings will be processed after a 5 day holding period to account for any disputes/refunds
+                    <small translate>Earnings will be processed after a 5 day holding period to account for any
+                      disputes/refunds
                     </small>
                   </td>
                 </tr>
@@ -91,35 +68,19 @@
           <div class="col-md-7 input-border mb-3">
             <div class="row">
               <div class="col-md-7">
-                <app-date-range
-                  (dateChange)="dateChangeEvent($event)"
-                ></app-date-range>
+                <app-date-range (dateChange)="dateChangeEvent($event)"></app-date-range>
               </div>
               <div class="col-md-4">
-                <button
-                  class="btn btn-dark btn-block"
-                  (click)="queryStats()"
-                  translate
-                >
+                <button class="btn btn-dark btn-block" (click)="queryStats()" translate>
                   Stats By Date Range
                 </button>
               </div>
             </div>
           </div>
           <div class="col-md-5 mb-3">
-            <a
-              class="btn btn-dark me-3 scrollTo"
-              id="btn-send-request"
-              translate
-              (click)="submitRequest()"
-              >Send Request</a
-            >
-            <a
-              class="btn btn-default"
-              [routerLink]="['/users/payout/account']"
-              translate
-              >Add a Bank Account</a
-            >
+            <a class="btn btn-dark me-3 scrollTo" id="btn-send-request" translate (click)="submitRequest()">Send
+              Request</a>
+            <a class="btn btn-default" [routerLink]="['/users/payout/account']" translate>Add a Bank Account</a>
           </div>
         </div>
       </div>
@@ -177,31 +138,16 @@
   <div class="container">
     <div class="card">
       <div class="table-responsive">
-        <table
-          id="table_id"
-          class="table dataTable no-footer"
-          role="grid"
-          aria-describedby="table_id_info"
-        >
+        <table id="table_id" class="table dataTable no-footer" role="grid" aria-describedby="table_id_info">
           <thead>
             <tr>
               <th>
-                <span (click)="sortBy('createdAt', 'desc')" translate
-                  >Date</span
-                >
-                <app-sort
-                  [sortOption]="sortOption"
-                  [sortBy]="'createdAt'"
-                  (onSort)="onSort($event)"
-                ></app-sort>
+                <span (click)="sortBy('createdAt', 'desc')" translate>Date</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
               </th>
               <th>
                 <span (click)="sortBy('total', 'desc')" translate>Amount</span>
-                <app-sort
-                  [sortOption]="sortOption"
-                  [sortBy]="'total'"
-                  (onSort)="onSort($event)"
-                ></app-sort>
+                <app-sort [sortOption]="sortOption" [sortBy]="'total'" (onSort)="onSort($event)"></app-sort>
               </th>
               <!-- <th>
                 <span (click)="sortBy('commission', 'desc')" translate
@@ -214,33 +160,18 @@
                 ></app-sort>
               </th> -->
               <th>
-                <span (click)="sortBy('balance', 'desc')" translate
-                  >Expert Balance</span
-                >
-                <app-sort
-                  [sortOption]="sortOption"
-                  [sortBy]="'balance'"
-                  (onSort)="onSort($event)"
-                ></app-sort>
+                <span (click)="sortBy('balance', 'desc')" translate>Expert Balance</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'balance'" (onSort)="onSort($event)"></app-sort>
               </th>
               <th>
                 <span (click)="sortBy('status', 'desc')" translate>Status</span>
-                <app-sort
-                  [sortOption]="sortOption"
-                  [sortBy]="'status'"
-                  (onSort)="onSort($event)"
-                ></app-sort>
+                <app-sort [sortOption]="sortOption" [sortBy]="'status'" (onSort)="onSort($event)"></app-sort>
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td
-                translate
-                colspan="9"
-                *ngIf="!items?.length && !loading"
-                translate
-              >
+              <td translate colspan="9" *ngIf="!items?.length && !loading" translate>
                 There is no payment requests.
               </td>
             </tr>
@@ -260,19 +191,12 @@
       <div class="bottom-table">
         <div></div>
         <div class="pagination-table" id="table_id_paginate">
-          <ngb-pagination
-            [collectionSize]="total"
-            [(page)]="page"
-            [pageSize]="take"
-            [maxSize]="2"
-            (pageChange)="pageChange()"
-          >
-            <ng-template ngbPaginationPrevious translate
-              ><span translate><i class="fi fi-rr-angle-small-left"></i></span
-            ></ng-template>
-            <ng-template ngbPaginationNext translate
-              ><span translate><i class="fi fi-rr-angle-small-right"></i></span
-            ></ng-template>
+          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="take" [maxSize]="2"
+            (pageChange)="pageChange()">
+            <ng-template ngbPaginationPrevious translate><span translate><i
+                  class="fi fi-rr-angle-small-left"></i></span></ng-template>
+            <ng-template ngbPaginationNext translate><span translate><i
+                  class="fi fi-rr-angle-small-right"></i></span></ng-template>
             <ng-template ngbPaginationNumber let-page>{{ page }}</ng-template>
           </ngb-pagination>
         </div>

@@ -63,7 +63,11 @@ exports.list = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Favorite.count(query);
     let items = await DB.Favorite.find(query)
-      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar' })
+      .populate({
+        path: 'tutor',
+        // include public-id controls so UI can decide what to show
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
+      })
       .sort(sort)
       .skip(page * take)
       .limit(take)

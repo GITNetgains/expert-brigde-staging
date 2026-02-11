@@ -95,9 +95,6 @@ export class ProfileUpdateComponent implements OnInit {
   banner = 'url(assets/images/dashboard/bg-profile.svg)';
   active = 1;
   public states: string[] = [];
-  public newWorkPosition = '';
-  public newWorkCompany = '';
-  public newWorkYears = '';
   public get yearsExperienceProxy(): number {
     return (this.info as any)?.yearsExperience ?? 0;
   }
@@ -321,7 +318,6 @@ export class ProfileUpdateComponent implements OnInit {
         'introVideoId',
         'defaultSlotDuration',
         'paypalEmailId',
-        'workHistory',
         'highlights'
       ]);
 
@@ -456,42 +452,6 @@ this.info.password = '';
     (this.industries || [])
       .filter((i: any) => idSet.has(i._id))
       .forEach((i: any) => this.industryNames.push(i.name));
-    this.submit('', false);
-  }
-
-  addWorkHistory() {
-    const position = (this.newWorkPosition || '').trim();
-    const company = (this.newWorkCompany || '').trim();
-    const years = (this.newWorkYears || '').trim();
-
-    if (!position && !company && !years) {
-      return;
-    }
-
-    let entry = position;
-    if (company) {
-      entry = entry ? `${entry}, ${company}` : company;
-    }
-    if (years) {
-      entry = entry ? `${entry} (${years})` : `(${years})`;
-    }
-
-    if (!Array.isArray((this.info as any).workHistory)) {
-      (this.info as any).workHistory = [];
-    }
-
-    (this.info as any).workHistory.push(entry);
-    this.newWorkPosition = '';
-    this.newWorkCompany = '';
-    this.newWorkYears = '';
-    this.submit('', false);
-  }
-
-  removeWorkHistory(index: number) {
-    if (!Array.isArray((this.info as any).workHistory)) {
-      return;
-    }
-    (this.info as any).workHistory.splice(index, 1);
     this.submit('', false);
   }
 

@@ -39,7 +39,7 @@ export const tutorMenus = [
   {
     icon: 'fi fi-rs-coins',
     title: 'Payout request',
-    description: 'Shows the earning and payout status of the tutor.',
+    description: 'Shows the earning and payout status of the expert.',
     path: '/users/payout/request',
     key: 'menu-my-payout-1'
   },

@@ -52,13 +52,13 @@ export interface IUser {
   defaultSlotDuration: number;
   password: string;
   highlights?: string[];
-  workHistory?: string[];
   industryIds?: string[];
 }
 
 export interface ITutorCertificate {
   _id?: string;
   title: string;
+  organization?: string;
   description: string;
   fromYear: number;
   toYear: number;

@@ -38,6 +38,11 @@ const schema = new Schema(
       default: '',
       index: true
     },
+    hidden: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
     createdAt: {
       type: Date
     },

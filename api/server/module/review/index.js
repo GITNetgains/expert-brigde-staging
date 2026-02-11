@@ -22,7 +22,7 @@ exports.router = router => {
    * @apiParam {String}   [type] `appointment` for now
    * @apiPermission all
    */
-  router.get('/v1/reviews', reviewController.list, Middleware.Response.success('list'));
+  router.get('/v1/reviews', Middleware.loadUser, reviewController.list, Middleware.Response.success('list'));
 
   /**
    * @apiGroup Review
@@ -75,6 +75,23 @@ exports.router = router => {
     reviewController.findOne,
     reviewController.remove,
     Middleware.Response.success('remove')
+  );
+
+  /**
+   * @apiGroup Review
+   * @apiVersion 4.0.0
+   * @api {put} /v1/reviews/:reviewId/toggle-hidden Toggles the hidden status of a review
+   * @apiDescription Toggles the hidden status of a review
+   * @apiUse authRequest
+   * @apiParam {String}   reviewId        Review id
+   * @apiPermission Admin
+   */
+  router.put(
+    '/v1/reviews/:reviewId/toggle-hidden',
+    Middleware.isAdmin,
+    reviewController.findOne,
+    reviewController.toggleHidden,
+    Middleware.Response.success('update')
   );
 
   /**

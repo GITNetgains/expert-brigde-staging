@@ -2,22 +2,10 @@
 
   <!-- LEFT IMAGE -->
   <div class="left-pane">
-     <img
-    *ngIf="!account.type"
-    src="assets/images/signup-expert.png"
-    alt="Signup"
-  />
-    <img
-      *ngIf="account.type === 'tutor'"
-      src="assets/images/signup-expert.png"
-      alt="Expert Signup"
-    />
+    <img *ngIf="!account.type" src="assets/images/signup-expert.png" alt="Signup" />
+    <img *ngIf="account.type === 'tutor'" src="assets/images/signup-expert.png" alt="Expert Signup" />
 
-    <img
-      *ngIf="account.type === 'student'"
-      src="assets/images/signup-client.jpg"
-      alt="Client Signup"
-    />
+    <img *ngIf="account.type === 'student'" src="assets/images/signup-client.jpg" alt="Client Signup" />
   </div>
 
   <!-- RIGHT SIDE -->
@@ -72,40 +60,26 @@
         <!-- EMAIL FIELD -->
         <div class="mb-3">
           <label>Email</label>
-        <input
-  id="email-input"
-  type="email"
-  class="form-control"
-  placeholder="Enter your email address"
-  [(ngModel)]="account.email"
-  name="email"
-  required
-  [readonly]="step !== 'email'"
-  [class.readonly]="step !== 'email'"
-/>
+          <input id="email-input" type="email" class="form-control" placeholder="Enter your email address"
+            [(ngModel)]="account.email" name="email" required [readonly]="step !== 'email'"
+            [class.readonly]="step !== 'email'" />
 
-        <div *ngIf="account.type === 'student' && account.email">
-  <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
-    <span class="dot"></span> Valid company email
-  </div>
+          <div *ngIf="account.type === 'student' && account.email">
+            <div class="domain-check" *ngIf="isCompanyEmail(account.email)">
+              <span class="dot"></span> Valid company email
+            </div>
 
-  <div class="error" *ngIf="!isCompanyEmail(account.email)">
-    Please enter a valid company email (example: name@company.com)
-  </div>
-</div>
+            <div class="error" *ngIf="!isCompanyEmail(account.email)">
+              Please enter a valid company email (example: name@company.com)
+            </div>
+          </div>
 
         </div>
 
         <!-- OTP FIELD -->
         <div *ngIf="step === 'otp'" class="mb-3">
           <label>Enter OTP</label>
-          <input
-  type="text"
-  class="form-control"
-  name="otpToken"
-  [ngModel]="otpToken"
-  (input)="onOtpInput($event)"
-/>
+          <input type="text" class="form-control" name="otpToken" [ngModel]="otpToken" (input)="onOtpInput($event)" />
 
         </div>
 
@@ -114,238 +88,224 @@
           <div *ngIf="account.type === 'student'">
             <div class="mb-3">
               <label>Name</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your full name"
-                [(ngModel)]="studentProfile.name"
-                name="studentName"
-                required
-              />
+              <input type="text" class="form-control" placeholder="Enter your full name"
+                [(ngModel)]="studentProfile.name" name="studentName" required />
             </div>
-           <div class="mb-3">
-  <label>Password</label>
+            <div class="mb-3">
+              <label>Password</label>
 
-  <div class="password-wrapper">
-    <input
-      [type]="showPassword ? 'text' : 'password'"
-      class="form-control"
-      placeholder="Create a password"
-      [(ngModel)]="newPassword"
-      name="password"
-      (input)="checkPasswordRules(newPassword)"
-      required
-    />
+              <div class="password-wrapper">
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control" placeholder="Create a password"
+                  [(ngModel)]="newPassword" name="password" (input)="checkPasswordRules(newPassword)" required />
 
-    <span class="eye-icon" (click)="togglePasswordVisibility()">
-            <i class="fa" [class.fa-eye-slash]="showPassword" [class.fa-eye]="!showPassword"></i>
+                <span class="eye-icon" (click)="togglePasswordVisibility()">
+                  <i class="fa" [class.fa-eye-slash]="showPassword" [class.fa-eye]="!showPassword"></i>
 
-    </span>
-  </div>
+                </span>
+              </div>
 
-  <!-- PASSWORD CHECKLIST (UNCHANGED) -->
-  <ul class="password-checklist" *ngIf="newPassword?.length">
-    <li [class.valid]="passwordRules.length">✔ At least 8 characters</li>
-    <li [class.valid]="passwordRules.uppercase">✔ One uppercase letter</li>
-    <li [class.valid]="passwordRules.lowercase">✔ One lowercase letter</li>
-    <li [class.valid]="passwordRules.number">✔ One number</li>
-    <li [class.valid]="passwordRules.special">✔ One special character</li>
-  </ul>
-</div>
+              <!-- PASSWORD CHECKLIST (UNCHANGED) -->
+              <ul class="password-checklist" *ngIf="newPassword?.length">
+                <li [class.valid]="passwordRules.length">✔ At least 8 characters</li>
+                <li [class.valid]="passwordRules.uppercase">✔ One uppercase letter</li>
+                <li [class.valid]="passwordRules.lowercase">✔ One lowercase letter</li>
+                <li [class.valid]="passwordRules.number">✔ One number</li>
+                <li [class.valid]="passwordRules.special">✔ One special character</li>
+              </ul>
+            </div>
 
- <div class="mb-3">
-  <label>Confirm Password</label>
+            <div class="mb-3">
+              <label>Confirm Password</label>
 
-  <div class="password-wrapper">
-    <input
-      [type]="showConfirmPassword ? 'text' : 'password'"
-      class="form-control"
-      placeholder="Confirm your password"
-      [(ngModel)]="confirmPassword"
-      name="confirmPassword"
-      required
-    />
+              <div class="password-wrapper">
+                <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control"
+                  placeholder="Confirm your password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
 
-    <span class="eye-icon" (click)="toggleConfirmPasswordVisibility()">
-      <i class="fa" [class.fa-eye-slash]="showConfirmPassword" [class.fa-eye]="!showConfirmPassword"></i>
-    </span>
-  </div>
+                <span class="eye-icon" (click)="toggleConfirmPasswordVisibility()">
+                  <i class="fa" [class.fa-eye-slash]="showConfirmPassword" [class.fa-eye]="!showConfirmPassword"></i>
+                </span>
+              </div>
 
-  <!-- 🔥 REAL-TIME ERROR -->
-  <div
-    class="error mt-1"
-    *ngIf="
+              <!-- 🔥 REAL-TIME ERROR -->
+              <div class="error mt-1" *ngIf="
       confirmPassword &&
       newPassword &&
       confirmPassword !== newPassword
-    "
-  >
-    Passwords do not match
-  </div>
-</div>
+    ">
+                Passwords do not match
+              </div>
+            </div>
 
 
             <div class="mb-3">
               <label>Phone Number</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your phone number (optional)"
-                [(ngModel)]="studentProfile.phoneNumber"
-                name="studentPhone"
-                
-              />
+              <input type="text" class="form-control" placeholder="Enter your phone number (optional)"
+                [(ngModel)]="studentProfile.phoneNumber" name="studentPhone" />
             </div>
             <div class="mb-3">
               <label>Address</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your address (optional)"
-                [(ngModel)]="studentProfile.address"
-                name="studentAddress"
-                
-              />
+              <input type="text" class="form-control" placeholder="Enter your address (optional)"
+                [(ngModel)]="studentProfile.address" name="studentAddress" />
             </div>
           </div>
 
           <div *ngIf="account.type === 'tutor'">
-            <div class="mb-3">
-              <label>Name</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your full name"
-                [(ngModel)]="tutorProfile.name"
-                name="tutorName"
-                required
-              />
+            <!-- CV UPLOAD BLOCK (NO PARSER) -->
+            <div class="card mb-3 cv-parser-card">
+              <div class="card-body">
+                <h5 class="card-title mb-2">Tell us about you</h5>
+                <p class="text-muted small mb-3">
+                  Enter your name and upload your resume/CV (PDF). Our team will review it to complete your expert
+                  profile.
+                </p>
+
+                <div class="mb-3">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter your full name"
+                    [(ngModel)]="tutorProfile.name"
+                    name="tutorName"
+                    required
+                  />
+                </div>
+
+                <div class="mb-1">
+                  <label>Upload CV</label>
+                  <app-file-upload
+                    [options]="{ url: docUploadUrl, accept: 'application/pdf', uploadOnSelect: true }"
+                    (finishUpload)="onResumeUploadFinish($event)"
+                  ></app-file-upload>
+                  <div class="text-success small mt-1" *ngIf="tutorProfile.resumeDocumentId">CV uploaded ✓</div>
+                </div>
+              </div>
             </div>
+
             <div class="mb-3">
               <label>Password</label>
-             <input
-  type="password"
-  class="form-control"
-  placeholder="Create a password"
-  [(ngModel)]="newPassword"
-  name="tutorPassword"
-  (input)="checkPasswordRules(newPassword)"
-  required
-/>
- <ul
-    class="password-checklist"
-    *ngIf="newPassword?.length"
-  >
-    <li [class.valid]="passwordRules.length">
-      <span>{{ passwordRules.length ? '✔' : '✖' }}</span>
-      At least 8 characters
-    </li>
+              <div class="password-wrapper">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  placeholder="Create a password"
+                  [(ngModel)]="newPassword"
+                  name="tutorPassword"
+                  (input)="checkPasswordRules(newPassword)"
+                  required
+                />
+                <span class="eye-icon" (click)="togglePasswordVisibility()">
+                  <i class="fa" [class.fa-eye-slash]="showPassword" [class.fa-eye]="!showPassword"></i>
+                </span>
+              </div>
+              <ul class="password-checklist" *ngIf="newPassword?.length">
+                <li [class.valid]="passwordRules.length">
+                  <span>{{ passwordRules.length ? '✔' : '✖' }}</span>
+                  At least 8 characters
+                </li>
 
-    <li [class.valid]="passwordRules.uppercase">
-      <span>{{ passwordRules.uppercase ? '✔' : '✖' }}</span>
-      One uppercase letter
-    </li>
+                <li [class.valid]="passwordRules.uppercase">
+                  <span>{{ passwordRules.uppercase ? '✔' : '✖' }}</span>
+                  One uppercase letter
+                </li>
 
-    <li [class.valid]="passwordRules.lowercase">
-      <span>{{ passwordRules.lowercase ? '✔' : '✖' }}</span>
-      One lowercase letter
-    </li>
+                <li [class.valid]="passwordRules.lowercase">
+                  <span>{{ passwordRules.lowercase ? '✔' : '✖' }}</span>
+                  One lowercase letter
+                </li>
 
-    <li [class.valid]="passwordRules.number">
-      <span>{{ passwordRules.number ? '✔' : '✖' }}</span>
-      One number
-    </li>
+                <li [class.valid]="passwordRules.number">
+                  <span>{{ passwordRules.number ? '✔' : '✖' }}</span>
+                  One number
+                </li>
 
-    <li [class.valid]="passwordRules.special">
-      <span>{{ passwordRules.special ? '✔' : '✖' }}</span>
-      One special character (@$!%*?&)
-    </li>
-  </ul>
+                <li [class.valid]="passwordRules.special">
+                  <span>{{ passwordRules.special ? '✔' : '✖' }}</span>
+                  One special character (@$!%*?&)
+                </li>
+              </ul>
             </div>
             <div class="mb-3">
               <label>Confirm Password</label>
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Confirm your password"
-                [(ngModel)]="confirmPassword"
-                name="tutorConfirmPassword"
-                required
-              />
+              <div class="password-wrapper">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  class="form-control"
+                  placeholder="Confirm your password"
+                  [(ngModel)]="confirmPassword"
+                  name="tutorConfirmPassword"
+                  required
+                />
+                <span class="eye-icon" (click)="toggleConfirmPasswordVisibility()">
+                  <i class="fa" [class.fa-eye-slash]="showConfirmPassword" [class.fa-eye]="!showConfirmPassword"></i>
+                </span>
+              </div>
+              <!-- Inline mismatch error for tutor as well -->
+              <div
+                class="error mt-1"
+                *ngIf="
+                  confirmPassword &&
+                  newPassword &&
+                  confirmPassword !== newPassword
+                "
+              >
+                Passwords do not match
+              </div>
             </div>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label>Timezone</label>
-              <app-timezone
-                [userTz]="tutorProfile.timezone"
-                (timezoneChange)="onTimezoneChange($event)"
-              ></app-timezone>
+              <app-timezone [userTz]="tutorProfile.timezone" (timezoneChange)="onTimezoneChange($event)"></app-timezone>
             </div>
             <div class="mb-3">
               <label>Country</label>
-              <select class="form-control" name="country" [(ngModel)]="tutorProfile.country" (ngModelChange)="onCountrySelect($event?.code)">
+              <select class="form-control" name="country" [(ngModel)]="tutorProfile.country"
+                (ngModelChange)="onCountrySelect($event?.code)">
                 <option [ngValue]="null">Select country</option>
                 <option *ngFor="let c of countries" [ngValue]="c">{{ c.name }}</option>
               </select>
             </div>
             <div class="mb-3">
               <label>Address</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your address (optional)"
-                [(ngModel)]="tutorProfile.address"
-                name="tutorAddress"
-                
-              />
+              <input type="text" class="form-control" placeholder="Enter your address (optional)"
+                [(ngModel)]="tutorProfile.address" name="tutorAddress" />
             </div>
             <div class="mb-3">
-              <label>Phone</label> 
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your phone"
-                [(ngModel)]="tutorProfile.phoneNumber"
-                name="tutorPhone"
-                required
-              />
+              <label>Phone</label>
+              <input type="text" class="form-control" placeholder="Enter your phone"
+                [(ngModel)]="tutorProfile.phoneNumber" name="tutorPhone" required />
             </div>
             <div class="mb-3">
               <label>Zipcode</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter your zipcode (optional)"
-                [(ngModel)]="tutorProfile.zipCode"
-                name="tutorZip"
-                
-              />
+              <input type="text" class="form-control" placeholder="Enter your zipcode (optional)"
+                [(ngModel)]="tutorProfile.zipCode" name="tutorZip" />
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label>State / Region</label>
+                <input type="text" class="form-control" placeholder="State or region (optional)"
+                  [(ngModel)]="tutorProfile.state" name="tutorState" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label>City</label>
+                <input type="text" class="form-control" placeholder="City (optional)"
+                  [(ngModel)]="tutorProfile.city" name="tutorCity" />
+              </div>
             </div>
 
             <div class="mb-3">
               <label>Verification Document <span class="optional-text">(Optional)</span></label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
-                (finishUpload)="onIssueUploadFinish($event)"
-              ></app-file-upload>
-                  <div class="text-success small mt-1" *ngIf="tutorProfile.issueDocumentId">Uploaded ✓</div>
-            </div>
-            <div class="mb-3">
-              <label>Resume Document <span class="optional-text">(Optional)</span></label>
-              <app-file-upload
-                [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
-                (finishUpload)="onResumeUploadFinish($event)"
-              ></app-file-upload>
-                            <div class="text-success small mt-1" *ngIf="tutorProfile.resumeDocumentId">Uploaded ✓</div>
-
+                (finishUpload)="onIssueUploadFinish($event)"></app-file-upload>
+              <div class="text-success small mt-1" *ngIf="tutorProfile.issueDocumentId">Uploaded ✓</div>
             </div>
             <div class="mb-3">
               <label>Certification Document <span class="optional-text">(Optional)</span></label>
               <app-file-upload
                 [options]="{ url: docUploadUrl, accept: 'application/pdf,image/*', uploadOnSelect: true }"
-                (finishUpload)="onCertUploadFinish($event)"
-              ></app-file-upload>
-                 <div class="text-success small mt-1" *ngIf="tutorProfile.certificationDocumentId">Uploaded ✓</div>
-            </div>
+                (finishUpload)="onCertUploadFinish($event)"></app-file-upload>
+              <div class="text-success small mt-1" *ngIf="tutorProfile.certificationDocumentId">Uploaded ✓</div>
+            </div> -->
 
             <!-- <div class="mb-3">
               <label>Intro Video</label>
@@ -378,68 +338,53 @@
 
         <!-- TERMS -->
         <div class="mt-3">
-          
 
-        <!-- BUTTONS -->
-        <button
-          class="btn btn-primary w-100 mt-4 mb-3"
-          [disabled]="loading || !isAgreeWithTerms || (account.type === 'student'  && !isCompanyEmail(account.email))"
-          *ngIf="step === 'email'"
-        >
-          Email OTP
-        </button>
-        <div *ngIf="step === 'otp'" class="text-center mt-2">
-  <a
-    href="javascript:void(0)"
-    (click)="resendOtp()"
-    [class.disabled]="otpResendTimer > 0"
-    style="cursor:pointer;"
-  >
-    Resend OTP
-  </a>
 
-  <div class="text-muted mt-1" *ngIf="otpResendTimer > 0">
-    You can resend OTP in {{ otpResendTimer }} seconds
-  </div>
-</div>
+          <!-- BUTTONS -->
+          <button class="btn btn-primary w-100 mt-4 mb-3"
+            [disabled]="loading || !isAgreeWithTerms || (account.type === 'student'  && !isCompanyEmail(account.email))"
+            *ngIf="step === 'email'">
+            Email OTP
+          </button>
+          <div *ngIf="step === 'otp'" class="text-center mt-2">
+            <a href="javascript:void(0)" (click)="resendOtp()" [class.disabled]="otpResendTimer > 0"
+              style="cursor:pointer;">
+              Resend OTP
+            </a>
 
-       
-        <button
-          class="btn btn-primary w-100 mt-2 mb-3"
-          type="button"
-          *ngIf="step === 'otp'"
-          (click)="submit(frm)"
-        >
-          Verify & Continue
-        </button>
+            <div class="text-muted mt-1" *ngIf="otpResendTimer > 0">
+              You can resend OTP in {{ otpResendTimer }} seconds
+            </div>
+          </div>
 
-        <button
-          class="btn btn-primary w-100 mt-2 mb-3"
-          type="button"
-          *ngIf="step === 'details'"
-          (click)="submit(frm)"
-        >
-          Create Account
-        </button>
 
-        
-       
+          <button class="btn btn-primary w-100 mt-2 mb-3" type="button" *ngIf="step === 'otp'" (click)="submit(frm)">
+            Verify & Continue
+          </button>
 
-        <div class="text-center mt-2" *ngIf="account.type === 'student'">
-          Don’t have a company email? Sign Up
-        </div>
-      
+          <button class="btn btn-primary w-100 mt-2 mb-3" type="button" *ngIf="step === 'details'"
+            (click)="submit(frm)">
+            Create Account
+          </button>
+
+
+
+
+          <div class="text-center mt-2" *ngIf="account.type === 'student'">
+            Don’t have a company email? Sign Up
+          </div>
+
           <label class="ms-2">
-By signing in, you agree to our Terms and Conditions          </label>
+            By signing in, you agree to our Terms and Conditions </label>
         </div>
-        <div class="text-center mt-2" >
+        <div class="text-center mt-2">
           Already have an account? <a routerLink="/auth/login">Sign In</a>
         </div>
         <div class="text-center mt-3">
-  <a routerLink="/" class="back-home-link">
-    ← Back to Home
-  </a>
-</div>
+          <a routerLink="/" class="back-home-link">
+            ← Back to Home
+          </a>
+        </div>
 
       </form>
     </div>

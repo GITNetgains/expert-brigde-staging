@@ -9,11 +9,14 @@ import {
   LanguageService,
   IndustryService,
 } from 'src/services';
+import { environment } from 'src/environments/environment';
+import { videoMimeTypes } from 'src/constants';
 import { ProfileCardComponent } from '../../user/profile-card/profile-card.component';
 import { tz } from 'moment-timezone';
 import { IUser } from 'src/interfaces';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TimezoneComponent } from '../timezone.component';
+import { FileUploadComponent } from 'src/components/common/uploader/uploader.component';
 import {
   ButtonDirective,
   CardComponent,
@@ -67,6 +70,7 @@ import { EditorComponent } from 'src/components/common/editor/editor.component';
     EditorComponent,
     GutterDirective,
     TimezoneComponent,
+  FileUploadComponent,
   ],
 })
 export class CreateComponent implements OnInit {
@@ -100,7 +104,6 @@ export class CreateComponent implements OnInit {
     skillIds: [],
     industryIds: [],
     highlights: [],
-    workHistory: [],
   };
   public isSubmitted = false;
   public loading = false;
@@ -110,9 +113,10 @@ export class CreateComponent implements OnInit {
   public countries: any[] = [];
   public timezones: any[] = [];
   public languages: any[] = [];
-  public newWorkPosition = '';
-  public newWorkCompany = '';
-  public newWorkYears = '';
+  public introVideoOptions: any;
+  public introVideoUrl: string = '';
+  public uploadingIntroVideo = false;
+  public maxFileSize: number = 1024;
 
   private router = inject(Router);
   private tutorService = inject(TutorService);
@@ -142,6 +146,43 @@ export class CreateComponent implements OnInit {
       },
       error: () => {}
     });
+
+    this.setupIntroVideoUploadOptions();
+  }
+
+  setupIntroVideoUploadOptions() {
+    this.introVideoOptions = {
+      url: `${environment.apiUrl}/media/videos`,
+      fileFieldName: 'file',
+      id: 'tutor-intro-video-upload',
+      autoUpload: false,
+      multiple: false,
+      maxFileSize: this.maxFileSize * 1024 * 1024,
+      allowedMimeType: videoMimeTypes,
+      uploadZone: true,
+      hintText: 'Upload introduction video',
+      onProgressItem: (_fileItem: any, _progress: number) => {
+        this.uploadingIntroVideo = true;
+      },
+      onCompleteItem: (_item: any, response: any) => {
+        try {
+          const parsedResponse =
+            typeof response === 'string' ? JSON.parse(response) : response;
+          if (parsedResponse && parsedResponse.data) {
+            this.info.introVideoId = parsedResponse.data._id;
+            this.introVideoUrl = parsedResponse.data.fileUrl;
+            (this.info as any).introVideo = parsedResponse.data;
+          }
+        } catch (e) {
+          this.utilService.toastError({
+            title: 'Error',
+            message: 'Failed to process intro video upload response',
+          });
+        } finally {
+          this.uploadingIntroVideo = false;
+        }
+      },
+    };
   }
 
   submit(form: any) {
@@ -187,8 +228,8 @@ export class CreateComponent implements OnInit {
       skillIds: this.info.skillIds,
       industryIds: this.info.industryIds,
       highlights: this.info.highlights,
-      workHistory: this.info.workHistory,
       idYoutube: this.info.idYoutube,
+      introVideoId: this.info.introVideoId,
       featured: this.info.featured,
       isHomePage: this.info.isHomePage,
       city: this.info.city,
@@ -227,40 +268,6 @@ export class CreateComponent implements OnInit {
         }
       },
     });
-  }
-
-  addWorkHistory() {
-    const position = this.newWorkPosition.trim();
-    const company = this.newWorkCompany.trim();
-    const years = this.newWorkYears.trim();
-
-    if (!position && !company && !years) {
-      return;
-    }
-
-    let entry = position;
-    if (company) {
-      entry = entry ? `${entry}, ${company}` : company;
-    }
-    if (years) {
-      entry = entry ? `${entry} (${years})` : `(${years})`;
-    }
-
-    if (!this.info.workHistory) {
-      this.info.workHistory = [];
-    }
-
-    this.info.workHistory.push(entry);
-    this.newWorkPosition = '';
-    this.newWorkCompany = '';
-    this.newWorkYears = '';
-  }
-
-  removeWorkHistory(index: number) {
-    if (!this.info.workHistory) {
-      return;
-    }
-    this.info.workHistory.splice(index, 1);
   }
 
   afterUpload(evt: string) {

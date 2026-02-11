@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as moment from 'moment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DomSanitizer } from '@angular/platform-browser';
 import {
@@ -237,6 +238,13 @@ export class BookingComponent implements OnInit {
       );
     }
 
+    const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
+    if (minute < 60) {
+      return this.appService.toastError(
+        'Minimum booking duration is 60 minutes'
+      );
+    }
+
     if (this.booking.targetId === '' || this.booking.subjectId === null) {
       this.appService.toastError('Please choose category and subject');
       this.submitted = false;
@@ -259,9 +267,9 @@ export class BookingComponent implements OnInit {
       type: 'subject',
       couponCode:
         !this.usedCoupon &&
-        this.appliedCoupon &&
-        this.coupon &&
-        this.coupon.code
+          this.appliedCoupon &&
+          this.coupon &&
+          this.coupon.code
           ? this.coupon.code
           : ''
     });
@@ -274,6 +282,13 @@ export class BookingComponent implements OnInit {
     if (!this.isLoggedin) {
       return this.appService.toastError(
         'Please Log in to book the 1-1 class appointment'
+      );
+    }
+
+    const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
+    if (minute < 60) {
+      return this.appService.toastError(
+        'Minimum booking duration is 60 minutes'
       );
     }
 
@@ -345,8 +360,8 @@ export class BookingComponent implements OnInit {
       this.booking.isFree
         ? 0
         : this.appliedCoupon
-        ? this.salePrice
-        : this.price;
+          ? this.salePrice
+          : this.price;
     modalStripe.componentInstance.config = this.config;
     modalStripe.componentInstance.appliedCoupon = this.appliedCoupon;
     if (

@@ -34,37 +34,37 @@ exports.User = schema => {
     zipCode: { type: String, default: '' },
     lessonSpaceUserId: { type: Number, default: '' },
     lessonSpaceUserInfo: { type: mongoose.Schema.Types.Mixed },
-userId: {
-  type: String,
-  unique: true,
-  sparse: true,
-  index: true
-},
+    userId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true
+    },
 
-showPublicIdOnly: {
-  type: Boolean,
-  default: false
-},
+    showPublicIdOnly: {
+      type: Boolean,
+      default: false
+    },
 
-   aiQueries: [
-  {
-    query: { type: String },
-    description: { type: String },
+    aiQueries: [
+      {
+        query: { type: String },
+        description: { type: String },
 
-    aiAttachmentIds: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'Media' }
+        aiAttachmentIds: [
+          { type: mongoose.Schema.Types.ObjectId, ref: 'Media' }
+        ],
+
+        assignedTutors: [
+          { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+        ],
+
+        createdAt: { type: Date, default: Date.now }
+      }
     ],
 
-    assignedTutors: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-    ],
-
-    createdAt: { type: Date, default: Date.now }
-  }
-],
 
 
-  
     // ----------------------------
     skillIds: [
       {
@@ -128,25 +128,25 @@ showPublicIdOnly: {
     return Helper.App.getPublicFileUrl(newFilePath);
   });
 
-const Counter = mongoose.model('Counter');
-schema.pre('save', async function (next) {
-  try {
-    if (this.type !== 'tutor') return next();
-    if (this.userId) return next();
+  const Counter = mongoose.model('Counter');
+  schema.pre('save', async function (next) {
+    try {
+      if (this.type !== 'tutor') return next();
+      if (this.userId) return next();
 
-    if (!this.isNew && !this.isModified('type')) return next();
+      if (!this.isNew && !this.isModified('type')) return next();
 
-    const counter = await Counter.findOneAndUpdate(
-      { _id: 'tutor' },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
+      const counter = await Counter.findOneAndUpdate(
+        { _id: 'tutor' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
 
-    this.userId = `EB-${String(counter.seq).padStart(4, '0')}`;
-    next();
-  } catch (e) {
-    next(e);
-  }
-});
+      this.userId = `EB-${String(counter.seq).padStart(4, '0')}`;
+      next();
+    } catch (e) {
+      next(e);
+    }
+  });
 
 };

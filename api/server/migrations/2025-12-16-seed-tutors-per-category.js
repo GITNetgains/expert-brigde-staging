@@ -34,8 +34,7 @@ module.exports.up = async function(next) {
           state,
           isZoomAccount: true,
           bio: 'Seeded tutor for filter testing',
-          highlights: ['experienced', 'patient'],
-          workHistory: ['Company A', 'Company B']
+          highlights: ['experienced', 'patient']
         };
 
         const tutor = await Service.User.create(payload);

@@ -8,7 +8,8 @@ exports.updateReviewScoreAppointment = async (appointmentId, reviewBy) => {
     const dataTutor = await DB.Review.aggregate([
       {
         $match: {
-          rateTo: Helper.App.toObjectId(userId)
+          rateTo: Helper.App.toObjectId(userId),
+          hidden: { $ne: true }
         }
       },
       {
@@ -21,7 +22,17 @@ exports.updateReviewScoreAppointment = async (appointmentId, reviewBy) => {
     ]).exec();
 
     if (!dataTutor || !dataTutor.length) {
-      return false;
+      await DB.User.update({ _id: userId }, { $set: { ratingAvg: 0, totalRating: 0, ratingScore: 0 } });
+      if (appointment.targetType === 'webinar' && appointment.webinarId) {
+        const dataWebinar = await DB.Review.aggregate([
+          { $match: { webinarId: Helper.App.toObjectId(appointment.webinarId), hidden: { $ne: true } } },
+          { $group: { _id: null, sum: { $sum: '$rating' }, count: { $sum: 1 } } }
+        ]).exec();
+        if (!dataWebinar || !dataWebinar.length) {
+          await DB.Webinar.update({ _id: Helper.App.toObjectId(appointment.webinarId) }, { $set: { ratingAvg: 0, totalRating: 0, ratingScore: 0 } });
+        }
+      }
+      return true;
     }
 
     const sum = dataTutor[0].sum;
@@ -41,7 +52,8 @@ exports.updateReviewScoreAppointment = async (appointmentId, reviewBy) => {
       const dataWebinar = await DB.Review.aggregate([
         {
           $match: {
-            webinarId: Helper.App.toObjectId(appointment.webinarId)
+            webinarId: Helper.App.toObjectId(appointment.webinarId),
+            hidden: { $ne: true }
           }
         },
         {
@@ -54,7 +66,11 @@ exports.updateReviewScoreAppointment = async (appointmentId, reviewBy) => {
       ]).exec();
 
       if (!dataWebinar || !dataWebinar.length) {
-        return false;
+        await DB.Webinar.update(
+          { _id: Helper.App.toObjectId(appointment.webinarId) },
+          { $set: { ratingAvg: 0, totalRating: 0, ratingScore: 0 } }
+        );
+        return true;
       }
 
       const sumWebinar = dataWebinar[0].sum;
@@ -88,7 +104,8 @@ exports.updateReviewScoreCourse = async courseId => {
     const dataTutor = await DB.Review.aggregate([
       {
         $match: {
-          rateTo: Helper.App.toObjectId(userId)
+          rateTo: Helper.App.toObjectId(userId),
+          hidden: { $ne: true }
         }
       },
       {
@@ -101,27 +118,28 @@ exports.updateReviewScoreCourse = async courseId => {
     ]).exec();
 
     if (!dataTutor || !dataTutor.length) {
-      return false;
-    }
-
-    const sum = dataTutor[0].sum;
-    const count = dataTutor[0].count || 1;
-    const avg = Math.round(sum / count, 2);
-    await DB.User.update(
-      { _id: userId },
-      {
-        $set: {
-          ratingAvg: avg,
-          totalRating: count,
-          ratingScore: sum
+      await DB.User.update({ _id: userId }, { $set: { ratingAvg: 0, totalRating: 0, ratingScore: 0 } });
+    } else {
+      const sum = dataTutor[0].sum;
+      const count = dataTutor[0].count || 1;
+      const avg = Math.round(sum / count, 2);
+      await DB.User.update(
+        { _id: userId },
+        {
+          $set: {
+            ratingAvg: avg,
+            totalRating: count,
+            ratingScore: sum
+          }
         }
-      }
-    );
+      );
+    }
 
     const dataCourse = await DB.Review.aggregate([
       {
         $match: {
-          courseId: Helper.App.toObjectId(course._id)
+          courseId: Helper.App.toObjectId(course._id),
+          hidden: { $ne: true }
         }
       },
       {
@@ -134,7 +152,8 @@ exports.updateReviewScoreCourse = async courseId => {
     ]).exec();
 
     if (!dataCourse || !dataCourse.length) {
-      return false;
+      await DB.Course.update({ _id: Helper.App.toObjectId(course._id) }, { $set: { ratingAvg: 0, totalRating: 0, ratingScore: 0 } });
+      return true;
     }
 
     const sumCourse = dataCourse[0].sum;

@@ -1,3 +1,4 @@
+// Shared module
 import { NgModule } from '@angular/core';
 import { DefaultImagePipe, EllipsisPipe, AppCurrencyPipe } from './pipes';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
@@ -54,4 +55,4 @@ import { ViewYoutubeModalComponent } from './components/home/view-video/popup.co
   providers: [CurrencyPipe],
   entryComponents: [SendMessageButtonComponent]
 })
-export class SharedModule {}
+export class SharedModule { }

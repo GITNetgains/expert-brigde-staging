@@ -1,175 +1,139 @@
 <div class="left-sidebar">
-  <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
-    <a class="brand-link" ng-reflect-router-link="/" href="/"><img alt="User menu" class="brand-image elevation-3"
-        style="opacity: 0.8" src="../../../../assets/images/logo.svg"/>
+  <aside class="main-sidebar">
+    <!-- Brand Logo -->
+    <a class="brand-link" routerLink="/">
+      <img src="/assets/images/logo.svg" alt="Logo" class="brand-image" onerror="this.src='/assets/images/logo.png'" />
     </a>
-    <div class="sidebar" *ngIf="currentUser">
-      <ul class="nav flex-column">
-        <li>
-          <a [routerLink]="['/users/dashboard']" [routerLinkActive]="'active'" aria-selected="true">
-            <i class="fi fi-rs-house-chimney"></i>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+      <ul class="nav">
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/users/dashboard']" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fi fi-rs-apps"></i>
             <span translate>Dashboard</span>
           </a>
         </li>
-        <li *ngIf="currentUser.type === 'student'">
-          <a [routerLink]="['/users/lessons']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-calendar"></i>
-            <span translate>Upcoming Appointments</span>
-          </a>
-        </li>
-        <li *ngIf="currentUser.type === 'student'">
-          <a [routerLink]="['/users/ai-queries']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-comment-alt"></i>
-            <span translate>AI Query History</span>
-          </a>
-        </li>
-        <li>
-          <a [routerLink]="['/users/profile']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-user"></i>
-            <span translate>Profile</span>
-          </a>
-        </li>
-        <li *ngIf="showBooking">
-          <a [routerLink]="['/users/favorites', 'tutor']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-following"></i>
-            <span translate>Shortlisted expert</span>
-          </a>
-        </li>
-        <!-- <li *ngIf="showBooking">
-          <a [routerLink]="['/users/favorites', 'groupclass']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-chalkboard-user"></i>
-            <span translate>Favorite Group Class</span>
-          </a>
-        </li> -->
-        <!-- <li *ngIf="showBooking">
-          <a [routerLink]="['/users/favorites', 'course']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-book-open-reader"></i>
-            <span translate>Favorite course</span>
-          </a>
-        </li> -->
-        <!-- <li *ngIf="currentUser.type === 'student'">
-          <a [routerLink]="['/users/my-courses']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-e-learning"></i>
-            <span translate>My Courses</span>
-          </a>
-        </li> -->
-        <li *ngIf="showBooking">
-          <a [routerLink]="['/users/transaction']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-credit-card"></i>
-            <span translate>My Transactions</span>
-          </a>
-        </li>
-        <li *ngIf="currentUser.type === 'student'">
-          <a [routerLink]="['/users/refund/request']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-comment-dollar"></i>
-            <span translate>Refund Request</span>
-          </a>
-        </li>
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/my-categories']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-money-check-edit"></i>
-            <span translate>Set Category & price</span>
-          </a>
-        </li>
-        <!-- <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/groupclass']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-chalkboard-user"></i>
-            <span translate>My Group Classes</span>
-          </a>
-        </li> -->
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/1on1classes']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-calendar-clock"></i>
-            <span translate>Set Availability</span>
+
+        <!-- Student Menu -->
+        <ng-container *ngIf="currentUser?.type === 'student'">
+          <div class="nav-header">Client Menu</div>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/lessons']" routerLinkActive="active">
+              <i class="fi fi-rr-calendar-check"></i>
+              <span translate>My Appointments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/ai-queries']" routerLinkActive="active">
+              <i class="fi fi-rr-comment-alt"></i>
+              <span translate>AI History</span>
+            </a>
+          </li>
+        </ng-container>
+
+        <!-- Tutor Menu -->
+        <ng-container *ngIf="currentUser?.type === 'tutor'">
+          <div class="nav-header">Expert Menu</div>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/appointments']" routerLinkActive="active">
+              <i class="fi fi-rr-calendar"></i>
+              <span translate>Appointments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/1on1classes']" routerLinkActive="active">
+              <i class="fi fi-rr-time-check"></i>
+              <span translate>Availability</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/my-categories']" routerLinkActive="active">
+              <i class="fi fi-rr-money-check-edit"></i>
+              <span translate>Services & Pricing</span>
+            </a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/coupons']" routerLinkActive="active">
+              <i class="fi fi-rr-ticket"></i>
+              <span translate>Coupons</span>
+            </a>
+          </li> -->
+        </ng-container>
+
+        <!-- Financials (Shared) -->
+        <div class="nav-header" *ngIf="showBooking || currentUser?.type === 'tutor'">Financials</div>
+
+        <li class="nav-item" *ngIf="showBooking">
+          <a class="nav-link" [routerLink]="['/users/transaction']" routerLinkActive="active">
+            <i class="fi fi-rr-receipt"></i>
+            <span translate>Transactions</span>
           </a>
         </li>
 
-    
-        <!-- <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/courses']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-e-learning"></i>
-            <span translate>Courses Manager</span>
-          </a>
-        </li> -->
-        <!-- <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/transaction/course-transaction']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-hand-holding-usd"></i>
-            <span translate>Course Transactions</span>
-          </a>
-        </li> -->
+        <ng-container *ngIf="currentUser?.type === 'tutor'">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/payout/request']" routerLinkActive="active">
+              <i class="fi fi-rs-hand-holding-usd"></i>
+              <span translate>Payouts</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/payout/account']" routerLinkActive="active">
+              <i class="fi fi-rr-bank"></i>
+              <span translate>Bank Account</span>
+            </a>
+          </li>
+        </ng-container>
 
-
-
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/appointments']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-calendar"></i>
-            <span translate>Upcoming Appointments</span>
+        <li class="nav-item" *ngIf="currentUser?.type === 'student'">
+          <a class="nav-link" [routerLink]="['/users/refund/request']" routerLinkActive="active">
+            <i class="fi fi-rr-undo-alt"></i>
+            <span translate>Refunds</span>
           </a>
         </li>
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/coupons']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-box-dollar"></i>
-            <span translate>Coupons manager</span>
+
+        <!-- Favorites -->
+        <ng-container *ngIf="showBooking">
+          <div class="nav-header">Favorites</div>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/favorites', 'tutor']" routerLinkActive="active">
+              <i class="fi fi-rr-heart"></i>
+              <span translate>My Wishlist</span>
+            </a>
+          </li>
+        </ng-container>
+
+        <!-- Account -->
+        <div class="nav-header">Account</div>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/users/profile']" routerLinkActive="active">
+            <i class="fi fi-rr-user-gear"></i>
+            <span translate>Profile Settings</span>
           </a>
         </li>
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/payout/account']" [routerLinkActive]="'active'">
-            <i class="fi fi-rr-credit-card"></i>
-            <span translate>Payment</span>
-          </a>
-        </li>
-        <li *ngIf="currentUser.type === 'tutor'">
-          <a [routerLink]="['/users/payout/request']" [routerLinkActive]="'active'">
-            <i class="fi fi-rs-coins"></i>
-            <span translate>Payout</span>
+        <li class="nav-item">
+          <a class="nav-link logout-link" (click)="logout()" href="javascript:void(0)">
+            <i class="fi fi-rr-sign-out-alt"></i>
+            <span translate>Logout</span>
           </a>
         </li>
 
       </ul>
     </div>
+
+    <!-- Sidebar Footer Profile -->
+    <div class="sidebar-footer" *ngIf="currentUser">
+      <div class="user-mini-profile">
+        <img [src]="currentUser.avatarUrl || '/assets/images/default-avatar.jpg'" alt="User">
+        <div class="user-info">
+          <h6>{{currentUser.name}}</h6>
+          <small>{{currentUser.type === 'tutor' ? 'Expert' : 'Client'}}</small>
+        </div>
+      </div>
+    </div>
+
   </aside>
 </div>
-
-<!-- <nav class="sidebar-nav-fixed-mobile">
-  <ul class="nav">
-    <li class="nav-item nav-toggle">
-      <a class="nav-link" href="javascript:void(0)" (click)="toggleMemu()"><i class="fi fi-rr-menu-burger"></i></a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/"><i class="fas fa-home"></i></a>
-    </li>
-    <li class="nav-item" [routerLinkActive]="'active'">
-      <a class="nav-link" [routerLink]="['/users/messages/conversations']"><i class="fas fa-envelope"></i></a>
-    </li>
-    <li class="nav-item" *ngIf="currentUser" [routerLinkActive]="'active'">
-      <a [routerLink]="['/users/notifications']" class="nav-link cart-button">
-        <span class="cart-count">{{unreadNotificationCount}}</span>
-        <i class="fi fi-rs-bell"></i>
-      </a>
-    </li>
-    <li class="nav-item" *ngIf="currentUser && currentUser.type === 'student'">
-      <a href="javascript:void(0)" class="nav-link cart-button" (click)="checkout()">
-        <span class="cart-count">{{cartCount}}</span>
-        <i class="fi fi-rr-shopping-cart"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <ng-template #popContentMobile>
-        <div class="languages">
-          <button class="btn btn-outline-success btn-sm font-xs me-1 mb-1" *ngFor="let lang of languages"
-            [ngClass]="{ active: lang.key === userLang }" (click)="changeLang(lang)">
-            <img class="image-sm" [src]="lang.flag" /> {{ lang.name }}
-          </button>
-        </div>
-      </ng-template>
-      <ng-template #popTitleMobile> Choose your languages! </ng-template>
-
-      <a class="nav-link" href="javascript:void(0)" [ngbPopover]="popContentMobile" [popoverTitle]="popTitleMobile">
-        <i class="fas fa-language"></i>
-      </a>
-    </li>
-    <li class="nav-item nav-logout">
-      <a class="nav-link" href="javascript:void(0)" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
-    </li>
-  </ul>
-</nav> -->

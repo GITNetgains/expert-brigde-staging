@@ -40,4 +40,4 @@ import { ApplyCouponComponent } from 'src/app/components/coupon/apply-coupon/app
   declarations: [CourseListComponent, CourseDetailComponent],
   exports: [CardCourseComponent]
 })
-export class CourseModule {}
+export class CourseModule { }

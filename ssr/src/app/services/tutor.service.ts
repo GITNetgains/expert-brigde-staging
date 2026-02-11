@@ -29,4 +29,13 @@ export class TutorService extends APIRequest {
   deleteCertificate(id: string): Promise<any> {
     return this.del(`/certificates/${id}`);
   }
+
+  /**
+   * Parse CV/Resume (PDF) and extract structured profile data.
+   * @param mediaId ID of uploaded PDF (e.g. resume document)
+   * @returns Promise with extracted data: name, email, phoneNumber, address, city, state, zipCode, countryCode, countryName, languages, bio, highlights, yearsExperience, skillNames, industryNames, education[], experience[]
+   */
+  parseCv(mediaId: string): Promise<any> {
+    return this.post('/tutors/parse-cv', { mediaId }).then((res: any) => res?.data ?? res);
+  }
 }

@@ -29,4 +29,9 @@ export class ReviewService {
   remove(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/reviews/${id}`);
   }
+
+  /** Toggle hidden status (admin only). When hidden, review is hidden from users. */
+  toggleHidden(id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/reviews/${id}/toggle-hidden`, {});
+  }
 }

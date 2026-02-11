@@ -3,6 +3,7 @@ const nconf = require('nconf');
 const url = require('url');
 const { PLATFORM_ONLINE } = require('../meeting');
 const signToken = require('./auth.service').signToken;
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const BRAND = {
   logo: 'https://admin.expertbridge.co/assets/images/whitelogo.png',
@@ -207,17 +208,39 @@ exports.completeTutorProfile = async (req, res, next) => {
     const schema = Joi.object({
       email: Joi.string().email().required(),
       name: Joi.string().required(),
-      timezone: Joi.string().required(),
-      country: Joi.object().required(),
-     address: Joi.string().allow('', null).optional(),
-      phoneNumber: Joi.string().required(),
+      // All fields except email, name, resumeDocumentId are optional now
+      timezone: Joi.string().allow('', null).optional(),
+      country: Joi.object().allow(null).optional(),
+      address: Joi.string().allow('', null).optional(),
+      phoneNumber: Joi.string().allow('', null).optional(),
       zipCode: Joi.string().allow('', null).optional(),
+      state: Joi.string().allow('', null).optional(),
+      city: Joi.string().allow('', null).optional(),
       issueDocumentId: Joi.string().allow('', null).optional(),
-      resumeDocumentId: Joi.string().allow('', null).optional(),
+      // Resume / CV is mandatory
+      resumeDocumentId: Joi.string().required(),
       certificationDocumentId: Joi.string().allow('', null).optional(),
       introVideoId: Joi.string().allow('', null).optional(),
       introYoutubeId: Joi.string().allow('', null).optional(),
-      idYoutube: Joi.string().allow('', null).optional()
+      idYoutube: Joi.string().allow('', null).optional(),
+      bio: Joi.string().allow('', null).optional(),
+      highlights: Joi.array().items(Joi.string()).optional(),
+      yearsExperience: Joi.number().allow(null).optional(),
+      skillNames: Joi.array().items(Joi.string()).optional(),
+      industryNames: Joi.array().items(Joi.string()).optional(),
+      languages: Joi.array().items(Joi.string()).optional(),
+      education: Joi.array().items(Joi.object({
+        title: Joi.string().required(),
+        organization: Joi.string().allow('', null).optional(),
+        fromYear: Joi.number().required(),
+        toYear: Joi.number().allow(null).optional()
+      })).optional(),
+      experience: Joi.array().items(Joi.object({
+        title: Joi.string().required(),
+        organization: Joi.string().allow('', null).optional(),
+        fromYear: Joi.number().required(),
+        toYear: Joi.number().allow(null).optional()
+      })).optional()
     });
     const { error, value } = schema.validate(req.body);
     if (error) {
@@ -244,9 +267,16 @@ exports.completeTutorProfile = async (req, res, next) => {
     user.name = value.name;
     user.timezone = value.timezone;
     user.country = value.country;
-    user.address = value.address;
+    user.address = value.address || '';
     user.phoneNumber = value.phoneNumber;
-    user.zipCode = value.zipCode;
+    user.zipCode = value.zipCode || '';
+    if (value.state != null) user.state = value.state;
+    if (value.city != null) user.city = value.city;
+    if (value.bio != null) user.bio = value.bio;
+    if (Array.isArray(value.highlights)) user.highlights = value.highlights;
+    if (typeof value.yearsExperience === 'number') user.yearsExperience = value.yearsExperience;
+    if (Array.isArray(value.languages)) user.languages = value.languages;
+
     if (issueDocument) user.issueDocument = issueDocument;
     if (resumeDocument) user.resumeDocument = resumeDocument;
     if (certificationDocument) user.certificationDocument = certificationDocument;
@@ -260,6 +290,73 @@ exports.completeTutorProfile = async (req, res, next) => {
       user.introYoutubeId = yid;
       user.idYoutube = yid;
       user.introVideo = null;
+    }
+
+    if (Array.isArray(value.skillNames) && value.skillNames.length > 0) {
+      const rawNames = value.skillNames
+        .map(n => (n || '').trim())
+        .filter(Boolean);
+
+      const aliases = rawNames
+        .map(n => n.toLowerCase().replace(/\s+/g, '-'))
+        .filter(Boolean);
+
+      // 1) Find existing skills by name or alias
+      const existingSkills = await DB.Skill.find({
+        $or: [
+          {
+            name: {
+              $in: rawNames.map(n =>
+                new RegExp(`^${(n || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')
+              )
+            }
+          },
+          { alias: { $in: aliases } }
+        ]
+      }).limit(200);
+
+      const existingByName = new Set(
+        existingSkills
+          .map(s => (s.name || '').toLowerCase().trim())
+          .filter(Boolean)
+      );
+      const existingByAlias = new Set(
+        existingSkills
+          .map(s => (s.alias || '').toLowerCase().trim())
+          .filter(Boolean)
+      );
+
+      // 2) Create any missing skills so new keywords are persisted
+      const skillsToCreate = rawNames.filter(n => {
+        const lower = n.toLowerCase();
+        const alias = lower.replace(/\s+/g, '-');
+        return !existingByName.has(lower) && !existingByAlias.has(alias);
+      });
+
+      const createdSkills = [];
+      for (const name of skillsToCreate) {
+        const alias = Helper.String.createAlias(name);
+        try {
+          const skill = await DB.Skill.create({ name, alias });
+          createdSkills.push(skill);
+        } catch (e) {
+          // ignore duplicates created concurrently
+        }
+      }
+
+      const allSkills = existingSkills.concat(createdSkills);
+      user.skillIds = allSkills.map(s => s._id);
+    }
+
+    if (Array.isArray(value.industryNames) && value.industryNames.length > 0) {
+      const aliases = value.industryNames.map(n => (n || '').toLowerCase().trim().replace(/\s+/g, '-')).filter(Boolean);
+      const industries = await DB.Industry.find({
+        $or: [
+          { name: { $in: value.industryNames.map(n => new RegExp(`^${(n || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) } },
+          { alias: { $in: aliases } }
+        ]
+      }).limit(50);
+      user.industryIds = industries.map(i => i._id);
     }
 
     user.pendingApprove = true;
@@ -281,8 +378,96 @@ exports.completeTutorProfile = async (req, res, next) => {
 
     await user.save();
 
+    // 🔄 Send CV ingestion webhook (non-blocking for user)
+    try {
+      console.log('[CV-WEBHOOK] Preparing payload for expert registration', {
+        userId: String(user._id),
+        email: user.email,
+        resumeDocument
+      });
+
+      let cvFileUrl = null;
+      if (resumeDocument) {
+        const media = await DB.Media.findOne({ _id: resumeDocument });
+        if (media) {
+          const mediaObj = media.toObject();
+          cvFileUrl = mediaObj.fileUrl || null;
+        }
+      }
+
+      const webhookBody = {
+        source: 'website_registration',
+        mongo_user_id: user._id,
+        email: user.email,
+        name: user.name,
+        cv_file_url: cvFileUrl
+      };
+
+      console.log('[CV-WEBHOOK] Calling expert-registration webhook', {
+        url: 'http://13.205.83.59:5678/webhook/expert-registration',
+        body: webhookBody
+      });
+
+      const resp = await fetch('http://13.205.83.59:5678/webhook/expert-registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'expertbridge-cv-ingestion-a7f3e9b2d4c1'
+        },
+        body: JSON.stringify(webhookBody)
+      });
+
+      console.log('[CV-WEBHOOK] Webhook response status', {
+        status: resp.status,
+        ok: resp.ok
+      });
+    } catch (err) {
+      // Do not block tutor completion if webhook fails
+      console.error('[CV-WEBHOOK] Error while sending webhook', err && err.message ? err.message : err);
+    }
+
+    if (Array.isArray(value.education) && value.education.length > 0) {
+      for (let i = 0; i < value.education.length; i++) {
+        const e = value.education[i];
+        const cert = new DB.Certification({
+          title: e.title,
+          organization: e.organization || '',
+          fromYear: e.fromYear,
+          toYear: e.toYear != null ? e.toYear : e.fromYear,
+          type: 'education',
+          tutorId: user._id,
+          ordering: i
+        });
+        await cert.save();
+        await DB.User.updateOne(
+          { _id: user._id },
+          { $addToSet: { educationIds: cert._id } }
+        );
+      }
+    }
+
+    if (Array.isArray(value.experience) && value.experience.length > 0) {
+      for (let i = 0; i < value.experience.length; i++) {
+        const e = value.experience[i];
+        const cert = new DB.Certification({
+          title: e.title,
+          organization: e.organization || '',
+          fromYear: e.fromYear,
+          toYear: e.toYear != null ? e.toYear : e.fromYear,
+          type: 'experience',
+          tutorId: user._id,
+          ordering: i
+        });
+        await cert.save();
+        await DB.User.updateOne(
+          { _id: user._id },
+          { $addToSet: { experienceIds: cert._id } }
+        );
+      }
+    }
+
     res.locals.completeTutorProfile = PopulateResponse.success(
-      { message:'Thanks for submitting your profile details. You will be notified once approved via email.' },
+      { message: 'Thanks for submitting your profile details. You will be notified once approved via email.' },
       'TUTOR_PROFILE_COMPLETED'
     );
     next();

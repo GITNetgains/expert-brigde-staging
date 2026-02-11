@@ -166,10 +166,14 @@ export class ScheduleEditComponent implements OnInit {
     const toTime = new Date(dropInfo.end);
     // const duration = moment.duration((moment(toTime).unix() - moment(startTime).unix()) * 1000);
     const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
-    if (minute > this.slotDuration) {
+    if (minute > 600) {
       this.appService.toastError(
-        `Maximum time allowed is ${this.slotDuration} minutes!`
+        `Maximum time allowed is 10 hours!`
       );
+      return false;
+    }
+    if (minute < 60) {
+      // this.appService.toastError('Minimum time allowed is 60 minutes!');
       return false;
     }
     if (moment().isAfter(startTime)) {
@@ -278,13 +282,13 @@ export class ScheduleEditComponent implements OnInit {
                   !otherClass && !soloClass
                     ? this.webinarColors.active
                     : otherClass
-                    ? this.webinarColors.otherClass
-                    : this.webinarColors.soloClass,
+                      ? this.webinarColors.otherClass
+                      : this.webinarColors.soloClass,
                 title: otherClass
                   ? 'Other group class'
                   : soloClass
-                  ? '1 on 1 class'
-                  : '',
+                    ? '1 on 1 class'
+                    : '',
                 isDisabled: otherClass || soloClass ? true : false
               };
               this.calendarEvents.push(calendarevent);
@@ -411,9 +415,9 @@ export class ScheduleEditComponent implements OnInit {
     }
     let toTime = moment($event.end).toDate();
     const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
-    if (minute > this.slotDuration) {
+    if (minute > 600) {
       return this.appService.toastError(
-        `Maximum time allowed is ${this.slotDuration} minutes!`
+        `Maximum time allowed is 10 hours!`
       );
     }
     if (minute < this.slotDuration) {

@@ -1,33 +1,18 @@
-<section
-  class="bg-dashboard"
-  [ngStyle]="{'background-image': banner}"
-  *ngIf="info"
->
+<section class="bg-dashboard" [ngStyle]="{'background-image': banner}" *ngIf="info">
   <div class="container">
     <div class="row align-items-start">
       <div class="col-md-6">
         <div class="dashboard-profile">
           <div style="position: relative" class="box-image">
             <!-- <img src="{{info.avatarUrl|defaultImage}}" alt="" />  -->
-            <img
-              [src]="info.avatarUrl"
-              onerror="this.src='/assets/images/default-avatar.jpg'"
-              alt=""
-            />
-            <a (click)="openChangeAvatarModal()" class="btn-upload-avatar"
-              ><i class="fi fi-rr-pencil"></i
-            ></a>
-            <a (click)="deleteAvatar()" class="btn-delete-avatar"
-              ><i class="fi fi-rr-trash"></i
-            ></a>
+            <img [src]="info.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="" />
+            <a (click)="openChangeAvatarModal()" class="btn-upload-avatar"><i class="fi fi-rr-pencil"></i></a>
+            <a (click)="deleteAvatar()" class="btn-delete-avatar"><i class="fi fi-rr-trash"></i></a>
           </div>
           <div class="dashboard-profile-content pt-1">
             <h4 class="color-white">{{info.name}}</h4>
             <p class="color-white font-weight-bold" translate>{{ info.type === 'tutor' ? 'Expert' : 'Client' }}</p>
-            <button
-              class="btn btn-outline border-radius-md font-weight-bold"
-              (click)="isEditProfile=!isEditProfile"
-            >
+            <button class="btn btn-outline border-radius-md font-weight-bold" (click)="isEditProfile=!isEditProfile">
               <i class="fi fi-rr-settings me-2"></i>
               <span translate *ngIf="isEditProfile">Cancel</span>
               <span translate *ngIf="!isEditProfile">Edit Profile</span>
@@ -42,29 +27,14 @@
   <div class="container">
     <div class="row align-items-start">
       <div class="col-lg-5 col-md-12">
-        <form
-          #frm="ngForm"
-          (submit)="submit(frm)"
-          class="card-horizontal edit-profile-form"
-          ngNativeValidate
-          [attr.disabled]="uploading"
-          *ngIf="!loading"
-        >
+        <form #frm="ngForm" (submit)="submit(frm)" class="card-horizontal edit-profile-form" ngNativeValidate
+          [attr.disabled]="uploading" *ngIf="!loading">
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}">
             <h6><span translate>Profile name</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">{{info.name}}</p>
-            <input
-              [hidden]="!isEditProfile"
-              type="text"
-              class="form-control"
-              [(ngModel)]="info.name"
-              name="name"
-              #name="ngModel"
-              required
-            />
-            <div
-              *ngIf="name.errors && (name?.dirty || name?.touched|| isSubmitted)"
-            >
+            <input [hidden]="!isEditProfile" type="text" class="form-control" [(ngModel)]="info.name" name="name"
+              #name="ngModel" required />
+            <div *ngIf="name.errors && (name?.dirty || name?.touched|| isSubmitted)">
               <p *ngIf="name.errors['required']" class="error" translate>
                 Profile name is required.
               </p>
@@ -78,12 +48,7 @@
               <span translate *ngIf="info.gender === 'male'">Male</span>
               <span translate *ngIf="info.gender === 'female'">Female</span>
             </p>
-            <select
-              class="form-control"
-              [hidden]="!isEditProfile"
-              [(ngModel)]="info.gender"
-              name="gender"
-            >
+            <select class="form-control" [hidden]="!isEditProfile" [(ngModel)]="info.gender" name="gender">
               <option value="male" translate>Male</option>
               <option value="female" translate>Female</option>
             </select>
@@ -97,26 +62,10 @@
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.phoneNumber}}
             </p>
-            <input
-              [hidden]="!isEditProfile"
-              type="text"
-              class="form-control"
-              [(ngModel)]="info.phoneNumber"
-              name="phone-number"
-              #phone="ngModel"
-              pattern="[0-9\+]{9,15}$"
-              minlength="9"
-              maxlength="15"
-              required
-            />
-            <div
-              *ngIf="phone.errors && (phone?.dirty || phone?.touched|| isSubmitted)"
-            >
-              <p
-                *ngIf="phone.errors['minlength'] || phone.errors['maxlength']"
-                class="error"
-                translate
-              >
+            <input [hidden]="!isEditProfile" type="text" class="form-control" [(ngModel)]="info.phoneNumber"
+              name="phone-number" #phone="ngModel" pattern="[0-9\+]{9,15}$" minlength="9" maxlength="15" required />
+            <div *ngIf="phone.errors && (phone?.dirty || phone?.touched|| isSubmitted)">
+              <p *ngIf="phone.errors['minlength'] || phone.errors['maxlength']" class="error" translate>
                 Phone numbers must be between 9 to 15 digits
               </p>
               <p [hidden]="!phone.errors['pattern']" class="error" translate>
@@ -124,79 +73,40 @@
               </p>
             </div>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Country</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.country?.name}}
             </p>
-            <ng-select
-              [hidden]="!isEditProfile"
-              [items]="countries"
-              appendTo="body"
-              name="country"
-              bindLabel="name"
-              [multiple]="false"
-              [closeOnSelect]="true"
-              [(ngModel)]="info.country"
-              (change)="onCountryChange($event)"
-              required
-              #country="ngModel"
-            >
+            <ng-select [hidden]="!isEditProfile" [items]="countries" appendTo="body" name="country" bindLabel="name"
+              [multiple]="false" [closeOnSelect]="true" [(ngModel)]="info.country" (change)="onCountryChange($event)"
+              required #country="ngModel">
             </ng-select>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>State</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
               {{(info?.state || 'Waiting for update') | ellipsis: 20}}
             </p>
-            <ng-select
-              [hidden]="!isEditProfile"
-              [items]="states"
-              appendTo="body"
-              name="state"
-              [multiple]="false"
-              [closeOnSelect]="true"
-              [(ngModel)]="info.state"
-            >
+            <ng-select [hidden]="!isEditProfile" [items]="states" appendTo="body" name="state" [multiple]="false"
+              [closeOnSelect]="true" [(ngModel)]="info.state">
             </ng-select>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>City</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
               {{(info?.city || 'Waiting for update') | ellipsis: 20}}
             </p>
-            <input
-              *ngIf="isEditProfile"
-              type="text"
-              class="form-control mar-bot-15"
-              [(ngModel)]="info.city"
-              name="city"
-            />
+            <input *ngIf="isEditProfile" type="text" class="form-control mar-bot-15" [(ngModel)]="info.city"
+              name="city" />
           </div>
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}">
             <h6><span translate>Address</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
               {{(info?.address || 'Waiting for update') | ellipsis: 20}}
             </p>
-            <input
-              *ngIf="isEditProfile"
-              type="text"
-              class="form-control mar-bot-15"
-              [(ngModel)]="info.address"
-              name="address"
-            />
+            <input *ngIf="isEditProfile" type="text" class="form-control mar-bot-15" [(ngModel)]="info.address"
+              name="address" />
           </div>
           <div class="item-profile-form" *ngIf="info && info.type === 'tutor'">
             <div class="d-flex justify-content-between align-items-center">
@@ -206,32 +116,18 @@
             <div class="d-flex align-items-center mt-2">
               <h6 class="me-3 mb-0"><span translate>Show only my ID (hide personal info)</span></h6>
               <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="!!info.showPublicIdOnly"
-                  (change)="changeShowPublicIdOnly()"
-                />
+                <input type="checkbox" [checked]="!!info.showPublicIdOnly" (change)="changeShowPublicIdOnly()" />
                 <span class="slider round"></span>
               </label>
             </div>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Years of Experience</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{yearsExperienceProxy || 0}}
             </p>
-            <input
-              [hidden]="!isEditProfile"
-              type="number"
-              min="0"
-              class="form-control mar-bot-15"
-              [(ngModel)]="yearsExperienceProxy"
-              name="years-experience"
-            />
+            <input [hidden]="!isEditProfile" type="number" min="0" class="form-control mar-bot-15"
+              [(ngModel)]="yearsExperienceProxy" name="years-experience" />
           </div>
           <!-- <div
             class="item-profile-form"
@@ -251,124 +147,67 @@
               name="consultation-fee"
             />
           </div> -->
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Language</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{languageNames.join(', ') | ellipsis: 20 }}
             </p>
-            <ng-select
-              [hidden]="!isEditProfile"
-              [items]="languages"
-              appendTo="body"
-              name="languages"
-              bindLabel="name"
-              [multiple]="true"
-              [closeOnSelect]="true"
-              [(ngModel)]="info.languages"
-              bindValue="id"
-              (change)="onChangeLanguage($event)"
-            >
+            <ng-select [hidden]="!isEditProfile" [items]="languages" appendTo="body" name="languages" bindLabel="name"
+              [multiple]="true" [closeOnSelect]="true" [(ngModel)]="info.languages" bindValue="id"
+              (change)="onChangeLanguage($event)">
             </ng-select>
           </div>
 
           <div class="item-profile-form" *ngIf="info && info.type === 'tutor'">
             <div [ngClass]="{'d-flex justify-content-between':!isEditProfile}">
               <h6>
-                <span translate>Intro video</span
-                ><strong translate> (youtube ID)</strong>
+                <span translate>Intro video</span><strong translate> (youtube ID)</strong>
               </h6>
               <p class="text-secondary2" *ngIf="!isEditProfile">
                 {{info.idYoutube}}
               </p>
             </div>
-            <small translate
-              >This video will be displayed on your tutor profile page</small
-            >
+            <small translate>This video will be displayed on your tutor profile page</small>
 
-            <input
-              [hidden]="!isEditProfile"
-              type="text"
-              class="form-control"
-              placeholder="{{'Enter id youtube from url'| translate}}"
-              [(ngModel)]="info.idYoutube"
-              name="id-youtube"
-            />
-            <small [hidden]="!isEditProfile"
-              >Please enter only <strong>ID</strong></small
-            >
+            <input [hidden]="!isEditProfile" type="text" class="form-control"
+              placeholder="{{'Enter id youtube from url'| translate}}" [(ngModel)]="info.idYoutube" name="id-youtube" />
+            <small [hidden]="!isEditProfile">Please enter only <strong>ID</strong></small>
             <br />
-            <small [hidden]="!isEditProfile"
-              >EG: https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>
+            <small [hidden]="!isEditProfile">EG: https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>
               <br />
-              ID = <strong>xRjlRfpsHGw</strong></small
-            >
+              ID = <strong>xRjlRfpsHGw</strong></small>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Slot duration default</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.defaultSlotDuration}} minutes
             </p>
-            <select
-              class="form-control"
-              [hidden]="!isEditProfile"
-              [(ngModel)]="info.defaultSlotDuration"
-              name="slot-duration"
-            >
-              <option value="{{30}}" translate>30</option>
-              <option value="{{40}}" translate>40</option>
+            <select class="form-control" [hidden]="!isEditProfile" [(ngModel)]="info.defaultSlotDuration"
+              name="slot-duration">
               <option value="{{60}}" translate>60</option>
-              <option value="{{90}}" translate>90</option>
+              <option value="{{120}}" translate>120</option>
+              <option value="{{150}}" translate>150</option>
+              <option value="{{200}}" translate>200</option>
             </select>
           </div>
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Zip code</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.zipCode}}
             </p>
-            <input
-              [hidden]="!isEditProfile"
-              type="text"
-              class="form-control"
-              placeholder="{{'Enter zip code' | translate }}"
-              [(ngModel)]="info.zipCode"
-              name="zip code"
-            />
+            <input [hidden]="!isEditProfile" type="text" class="form-control"
+              placeholder="{{'Enter zip code' | translate }}" [(ngModel)]="info.zipCode" name="zip code" />
           </div>
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}">
             <h6><span translate>Paypal Email ID</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.paypalEmailId}}
             </p>
-            <input
-              [hidden]="!isEditProfile"
-              type="email"
-              class="form-control"
-              placeholder="{{'user@example.com' | translate}}"
-              [(ngModel)]="info.paypalEmailId"
-              name="email-paypal"
-              #paypalEmailId="ngModel"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-            />
-            <div
-              *ngIf="paypalEmailId.errors && (paypalEmailId.dirty || paypalEmailId.touched|| isSubmitted)"
-            >
-              <p
-                [hidden]="!paypalEmailId.errors['pattern']"
-                class="error"
-                translate
-              >
+            <input [hidden]="!isEditProfile" type="email" class="form-control"
+              placeholder="{{'user@example.com' | translate}}" [(ngModel)]="info.paypalEmailId" name="email-paypal"
+              #paypalEmailId="ngModel" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
+            <div *ngIf="paypalEmailId.errors && (paypalEmailId.dirty || paypalEmailId.touched|| isSubmitted)">
+              <p [hidden]="!paypalEmailId.errors['pattern']" class="error" translate>
                 Email is invalid format
               </p>
             </div>
@@ -378,200 +217,75 @@
             <p class="text-secondary2" *ngIf="!isEditProfile">
               {{info.timezone}}
             </p>
-            <app-timezone
-              [hidden]="!isEditProfile"
-              [userTz]="info.timezone"
-              (timezoneChange)="changeTimezone($event)"
-            ></app-timezone>
+            <app-timezone [hidden]="!isEditProfile" [userTz]="info.timezone"
+              (timezoneChange)="changeTimezone($event)"></app-timezone>
             <div *ngIf="!info.timezone && isSubmitted">
               <p class="error" translate>Please select your timezone</p>
             </div>
           </div>
 
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
+          <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Highlights</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
               {{ (info?.highlights?.join(', ') || 'Waiting for update') | ellipsis: 20 }}
             </p>
-            <ng-select
-              [hidden]="!isEditProfile"
-              [items]="info?.highlights || []"
-              appendTo="body"
-              name="highlights"
-              [multiple]="true"
-              [closeOnSelect]="true"
-              [hideSelected]="true"
-              [addTag]="true"
-              [(ngModel)]="info.highlights"
-            >
+            <ng-select [hidden]="!isEditProfile" [items]="info?.highlights || []" appendTo="body" name="highlights"
+              [multiple]="true" [closeOnSelect]="true" [hideSelected]="true" [addTag]="true"
+              [(ngModel)]="info.highlights">
             </ng-select>
           </div>
 
-          <div
-            class="item-profile-form"
-            [ngClass]="{'d-flex':!isEditProfile}"
-            *ngIf="info && info.type === 'tutor'"
-          >
-            <h6><span translate>Work History</span></h6>
-            <p class="text-secondary2" *ngIf="!isEditProfile" translate>
-              {{ (info?.workHistory?.join(', ') || 'Waiting for update') | ellipsis: 20 }}
-            </p>
-            <div *ngIf="isEditProfile" class="w-100">
-              <div class="row g-2 mb-2">
-                <div class="col-12 col-md-4">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Position"
-                    [(ngModel)]="newWorkPosition"
-                    name="work-position"
-                  />
-                </div>
-                <div class="col-12 col-md-4">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Company"
-                    [(ngModel)]="newWorkCompany"
-                    name="work-company"
-                  />
-                </div>
-                <div class="col-12 col-md-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Years, e.g. 2013-2023"
-                    [(ngModel)]="newWorkYears"
-                    name="work-years"
-                  />
-                </div>
-                <div class="col-12 col-md-1 d-flex align-items-end">
-                  <button
-                    class="btn btn-primary w-100"
-                    type="button"
-                    (click)="addWorkHistory()"
-                  >
-                    <span translate>Add</span>
-                  </button>
-                </div>
-              </div>
-              <ul class="list-unstyled mb-0" *ngIf="info?.workHistory?.length">
-                <li
-                  class="d-flex align-items-center mb-1"
-                  *ngFor="let item of info.workHistory; let i = index"
-                >
-                  <span class="me-2">&bull; {{ item }}</span>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="removeWorkHistory(i)"
-                  >
-                    <span translate>Remove</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div
-            class="mt-3"
-            *ngIf="info.type === 'tutor'"
-            class="item-profile-form"
-          >
+          <div class="mt-3" *ngIf="info.type === 'tutor'" class="item-profile-form">
             <div [ngClass]="{'d-flex justify-content-between':!isEditProfile}">
               <h6><span translate>Introduction video</span></h6>
-              <p
-                class="text-secondary2"
-                *ngIf="!isEditProfile && introVideoType==='youtube' && info.introYoutubeId "
-              >
+              <p class="text-secondary2" *ngIf="!isEditProfile && introVideoType==='youtube' && info.introYoutubeId ">
                 {{info.introYoutubeId}}
               </p>
-              <p
-                class="text-secondary2"
-                *ngIf="!isEditProfile && introVideoType==='upload' && introVideoName "
-              >
+              <p class="text-secondary2" *ngIf="!isEditProfile && introVideoType==='upload' && introVideoName ">
                 {{introVideoName}}
               </p>
             </div>
             <small translate>This video will be displayed on admin page</small>
             <div *ngIf="isEditProfile">
-              <label class="custom-radio"
-                ><span translate>Upload</span>
-                <input
-                  type="radio"
-                  name="videotype"
-                  value="upload"
-                  [disabled]="!isEditProfile"
-                  [(ngModel)]="introVideoType"
-                />
+              <label class="custom-radio"><span translate>Upload</span>
+                <input type="radio" name="videotype" value="upload" [disabled]="!isEditProfile"
+                  [(ngModel)]="introVideoType" />
                 <span class="checkmark"></span>
               </label>
-              <label class="custom-radio" translate
-                ><span translate>From youtube</span>
-                <input
-                  type="radio"
-                  name="videotype"
-                  value="youtube"
-                  [disabled]="!isEditProfile"
-                  [(ngModel)]="introVideoType"
-                />
+              <label class="custom-radio" translate><span translate>From youtube</span>
+                <input type="radio" name="videotype" value="youtube" [disabled]="!isEditProfile"
+                  [(ngModel)]="introVideoType" />
                 <span class="checkmark"></span>
               </label>
             </div>
           </div>
           <div *ngIf="isEditProfile" class="mb-3">
-            <div
-              class="form-group"
-              *ngIf="info.type === 'tutor' && introVideoType === 'youtube'"
-            >
-              <input
-                type="text"
-                class="form-control"
-                placeholder="{{ 'Youtube Id' | translate }}"
-                #video="ngModel"
-                required
-                name="video"
-                [(ngModel)]="info.introYoutubeId"
-              />
-              <div
-                *ngIf="video.errors && (video.dirty || video.touched || isSubmitted)"
-              >
+            <div class="form-group" *ngIf="info.type === 'tutor' && introVideoType === 'youtube'">
+              <input type="text" class="form-control" placeholder="{{ 'Youtube Id' | translate }}" #video="ngModel"
+                required name="video" [(ngModel)]="info.introYoutubeId" />
+              <div *ngIf="video.errors && (video.dirty || video.touched || isSubmitted)">
                 <p [hidden]="!video.errors['required']" class="error" translate>
                   Youtube video Id is required
                 </p>
               </div>
               <small translate>Please enter only ID</small>
               <br />
-              <small
-                >EG: https://www.youtube.com/watch?v=<strong
-                  >xRjlRfpsHGw</strong
-                >
+              <small>EG: https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>
                 <br />
-                ID = <strong>xRjlRfpsHGw</strong></small
-              >
+                ID = <strong>xRjlRfpsHGw</strong></small>
               >
             </div>
             <div *ngIf="info.type === 'tutor' && introVideoType === 'upload'">
               <p *ngIf="introVideo && introVideo.name">{{ introVideo.name }}</p>
               <!-- <app-file-upload [options]="introVideoOptions"></app-file-upload> -->
-              <small translate
-                >Upload mp4 file, webm file, 3gp file, ogg file, wmv file or
-                webm file for your video</small
-              >
+              <small translate>Upload mp4 file, webm file, 3gp file, ogg file, wmv file or
+                webm file for your video</small>
             </div>
           </div>
           <div class="item-profile-form d-flex">
             <h6><span translate>Notification</span></h6>
             <label class="switch">
-              <input
-                type="checkbox"
-                [checked]="info.notificationSettings"
-                (change)="changeNotification()"
-              />
+              <input type="checkbox" [checked]="info.notificationSettings" (change)="changeNotification()" />
               <span class="slider round"></span>
             </label>
           </div>
@@ -579,12 +293,7 @@
             <button class="btn btn-default me-2" type="submit" translate>
               Submit
             </button>
-            <button
-              class="btn btn-outline-dark"
-              (click)="isEditProfile=false"
-              type="button"
-              translate
-            >
+            <button class="btn btn-outline-dark" (click)="isEditProfile=false" type="button" translate>
               Cancel
             </button>
           </div>
@@ -594,30 +303,13 @@
             <h4 translate>Update password</h4>
           </div>
           <div class="card-body">
-            <form
-              class="row"
-              #frmPass="ngForm"
-              (submit)="submit(frmPass)"
-              ngNativeValidate
-            >
+            <form class="row" #frmPass="ngForm" (submit)="submit(frmPass)" ngNativeValidate>
               <div class="col-md-8 rmb-2">
                 <div class="form-group input-border mb-0">
-                  <input
-                    type="password"
-                    class="form-control"
-                    [(ngModel)]="info.password"
-                    name="password"
-                    #password="ngModel"
-                    minlength="6"
-                    placeholder="{{'Enter password' | translate}}"
-                  />
-                  <div
-                    *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)"
-                  >
-                    <p
-                      [hidden]="!password.errors['minlength']"
-                      style="color: red"
-                    >
+                  <input type="password" class="form-control" [(ngModel)]="info.password" name="password"
+                    #password="ngModel" minlength="6" placeholder="{{'Enter password' | translate}}" />
+                  <div *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)">
+                    <p [hidden]="!password.errors['minlength']" style="color: red">
                       Password must be at least 6 characters!
                     </p>
                   </div>
@@ -627,11 +319,7 @@
                 </div>
               </div>
               <div class="col-md-4 text-end rtxt-left">
-                <button
-                  class="btn btn-default btn-block"
-                  type="submit"
-                  translate
-                >
+                <button class="btn btn-default btn-block" type="submit" translate>
                   Update
                 </button>
               </div>
@@ -643,53 +331,26 @@
             <h4 translate>Update email</h4>
           </div>
           <div class="card-body">
-            <form
-              class="row"
-              #frmEmail="ngForm"
-              (submit)="submitChangeEmail()"
-              ngNativeValidate
-            >
+            <form class="row" #frmEmail="ngForm" (submit)="submitChangeEmail()" ngNativeValidate>
               <div class="col-md-8 rmb-2">
                 <div class="form-group input-border mb-0">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="{{ 'Enter your email' | translate }}"
-                    #email="ngModel"
-                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
-                    name="email"
-                    required
-                    [(ngModel)]="info.email"
-                  />
-                  <small class="form-text text-muted" translate
-                    >After changing your email, you need to verify it.</small
-                  >
-                  <div
-                    *ngIf="email.errors && (email.dirty || email.touched || isSubmitted)"
-                  >
-                    <p
-                      [hidden]="!email.errors['required']"
-                      class="error"
-                      translate
-                    >
+                  <input type="text" class="form-control" placeholder="{{ 'Enter your email' | translate }}"
+                    #email="ngModel" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$" name="email" required
+                    [(ngModel)]="info.email" />
+                  <small class="form-text text-muted" translate>After changing your email, you need to verify
+                    it.</small>
+                  <div *ngIf="email.errors && (email.dirty || email.touched || isSubmitted)">
+                    <p [hidden]="!email.errors['required']" class="error" translate>
                       Email is required
                     </p>
-                    <p
-                      [hidden]="!email.errors['pattern']"
-                      class="error"
-                      translate
-                    >
+                    <p [hidden]="!email.errors['pattern']" class="error" translate>
                       Email is invalid format
                     </p>
                   </div>
                 </div>
               </div>
               <div class="col-md-4 text-end rtxt-left">
-                <button
-                  class="btn btn-default btn-block"
-                  type="submit"
-                  translate
-                >
+                <button class="btn btn-default btn-block" type="submit" translate>
                   Update
                 </button>
               </div>
@@ -701,67 +362,32 @@
             <h4 translate>Invite Friend</h4>
           </div>
           <div class="card-body">
-            <form
-              class="row"
-              #frmInvite="ngForm"
-              (submit)="inviteFriend()"
-              ngNativeValidate
-            >
+            <form class="row" #frmInvite="ngForm" (submit)="inviteFriend()" ngNativeValidate>
               <div class="col-md-8 rmb-2">
                 <div class="form-group input-border mb-0">
-                  <input
-                    type="email"
-                    class="form-control"
-                    placeholder="{{'user@example.com' | translate}}"
-                    [(ngModel)]="emailInvite"
-                    name="email-invite"
-                    #emailInViteFriend="ngModel"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                    required
-                  />
-                  <div
-                    *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)"
-                  >
-                    <p
-                      [hidden]="!emailInViteFriend.errors['required']"
-                      class="error"
-                      translate
-                    >
+                  <input type="email" class="form-control" placeholder="{{'user@example.com' | translate}}"
+                    [(ngModel)]="emailInvite" name="email-invite" #emailInViteFriend="ngModel"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
+                  <div *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)">
+                    <p [hidden]="!emailInViteFriend.errors['required']" class="error" translate>
                       Email is required
                     </p>
-                    <p
-                      [hidden]="!emailInViteFriend.errors['pattern']"
-                      class="error"
-                      translate
-                    >
+                    <p [hidden]="!emailInViteFriend.errors['pattern']" class="error" translate>
                       Email is invalid format
                     </p>
                   </div>
                 </div>
               </div>
               <div class="col-md-4 text-end rtxt-left">
-                <button
-                  class="btn btn-default btn-block"
-                  type="submit"
-                  translate
-                >
+                <button class="btn btn-default btn-block" type="submit" translate>
                   Invite
                 </button>
               </div>
             </form>
-            <div
-              class="mt-3 share-me"
-              *ngIf="info.type==='tutor' && info.username"
-            >
+            <div class="mt-3 share-me" *ngIf="info.type==='tutor' && info.username">
               <h5 translate class="me-3">Share my profile</h5>
-              <share-button
-                button="facebook"
-                theme="circles-light"
-              ></share-button>
-              <share-button
-                button="twitter"
-                theme="circles-light"
-              ></share-button>
+              <share-button button="facebook" theme="circles-light"></share-button>
+              <share-button button="twitter" theme="circles-light"></share-button>
               <!-- <share-button
                 button="instagram"
                 theme="circles-light"
@@ -777,42 +403,21 @@
           <div class="card-header">
             <h4><span translate>Description</span></h4>
             <div class="card-header-right">
-              <a
-                href="javascript:void(0)"
-                (click)="isEditDescription=!isEditDescription"
-                ><i class="fi fi-rr-pencil text-secondary"></i
-              ></a>
+              <a href="javascript:void(0)" (click)="isEditDescription=!isEditDescription"><i
+                  class="fi fi-rr-pencil text-secondary"></i></a>
             </div>
           </div>
           <div class="card-body">
-            <app-card-text
-              *ngIf="!isEditDescription && !loading"
-              [content]="info?.bio || ''"
-              [showChar]="showChar"
-            ></app-card-text>
+            <app-card-text *ngIf="!isEditDescription && !loading" [content]="info?.bio || ''"
+              [showChar]="showChar"></app-card-text>
 
-            <form
-              class="form-group"
-              #frm5="ngForm"
-              (submit)="submit(frm5)"
-              *ngIf="isEditDescription"
-              ngNativeValidate
-            >
+            <form class="form-group" #frm5="ngForm" (submit)="submit(frm5)" *ngIf="isEditDescription" ngNativeValidate>
               <div *ngIf="isEditDescription">
-                <quill-editor
-                  [(ngModel)]="info.bio"
-                  placeholder="Enter Text"
-                  [modules]="quillConfig"
-                  name="bio"
-                >
+                <quill-editor [(ngModel)]="info.bio" placeholder="Enter Text" [modules]="quillConfig" name="bio">
                 </quill-editor>
                 <div class="text-end rmt-4 rtxt-left mt-2">
                   <!-- <button class="btn btn-default" (click)="submit(frm, 5)" translate>Submit</button> -->
-                  <button
-                    class="btn btn-default btn-block"
-                    type="submit"
-                    translate
-                  >
+                  <button class="btn btn-default btn-block" type="submit" translate>
                     Submit
                   </button>
                 </div>
@@ -864,40 +469,21 @@
           <div class="card-header">
             <h4 translate>Choose Skills</h4>
             <div class="card-header-right">
-              <a href="javascript:void(0)" (click)="isEditSkill=!isEditSkill"
-                ><i class="fi fi-rr-pencil text-secondary"></i
-              ></a>
+              <a href="javascript:void(0)" (click)="isEditSkill=!isEditSkill"><i
+                  class="fi fi-rr-pencil text-secondary"></i></a>
             </div>
           </div>
           <div class="card-body">
-            <form
-              class="form-group"
-              #frmSkill="ngForm"
-              (submit)="submit(frmSkill)"
-              *ngIf="isEditSkill"
-              ngNativeValidate
-            >
-              <ng-select
-                [items]="skills"
-                [hideSelected]="true"
-                appendTo="body"
-                [multiple]="true"
-                bindLabel="name"
-                [closeOnSelect]="false"
-                name="skills"
-                placeholder="{{'Choose skills' |  translate}}"
-                [(ngModel)]="info.skillIds"
-                bindValue="_id"
-                #tutorSkills="ngModel"
-                (change)="onChangeSkill($event)"
-                [addTag]="addSkillTag"
-              >
+            <form class="form-group" #frmSkill="ngForm" (submit)="submit(frmSkill)" *ngIf="isEditSkill"
+              ngNativeValidate>
+              <ng-select [items]="skills" [hideSelected]="true" appendTo="body" [multiple]="true" bindLabel="name"
+                [closeOnSelect]="false" name="skills" placeholder="{{'Choose skills' |  translate}}"
+                [(ngModel)]="info.skillIds" bindValue="_id" #tutorSkills="ngModel" (change)="onChangeSkill($event)"
+                [addTag]="addSkillTag">
               </ng-select>
             </form>
             <div class="list-grades">
-              <a class="badge badge-white" *ngFor="let sk of skillNames"
-                >{{sk}}</a
-              >
+              <a class="badge badge-white" *ngFor="let sk of skillNames">{{sk}}</a>
             </div>
           </div>
         </div>
@@ -905,39 +491,21 @@
           <div class="card-header">
             <h4 translate>Choose Industries</h4>
             <div class="card-header-right">
-              <a href="javascript:void(0)" (click)="isEditSkill=!isEditSkill"
-                ><i class="fi fi-rr-pencil text-secondary"></i
-              ></a>
+              <a href="javascript:void(0)" (click)="isEditSkill=!isEditSkill"><i
+                  class="fi fi-rr-pencil text-secondary"></i></a>
             </div>
           </div>
           <div class="card-body">
-            <form
-              class="form-group"
-              #frmIndustry="ngForm"
-              (submit)="submit(frmIndustry)"
-              *ngIf="isEditSkill"
-              ngNativeValidate
-            >
-              <ng-select
-                [items]="industries"
-                [hideSelected]="true"
-                appendTo="body"
-                [multiple]="true"
-                bindLabel="name"
-                [closeOnSelect]="false"
-                name="industries"
-                placeholder="{{'Choose industries' |  translate}}"
-                [(ngModel)]="info.industryIds"
-                bindValue="_id"
-                #tutorIndustries="ngModel"
-                (change)="onChangeIndustry($event)"
-              >
+            <form class="form-group" #frmIndustry="ngForm" (submit)="submit(frmIndustry)" *ngIf="isEditSkill"
+              ngNativeValidate>
+              <ng-select [items]="industries" [hideSelected]="true" appendTo="body" [multiple]="true" bindLabel="name"
+                [closeOnSelect]="false" name="industries" placeholder="{{'Choose industries' |  translate}}"
+                [(ngModel)]="info.industryIds" bindValue="_id" #tutorIndustries="ngModel"
+                (change)="onChangeIndustry($event)">
               </ng-select>
             </form>
             <div class="list-grades">
-              <a class="badge badge-white" *ngFor="let ind of industryNames"
-                >{{ind}}</a
-              >
+              <a class="badge badge-white" *ngFor="let ind of industryNames">{{ind}}</a>
             </div>
           </div>
         </div>
@@ -946,43 +514,25 @@
             <h4 translate>Resume</h4>
           </div>
           <div class="card-body">
-            <ul
-              ngbNav
-              #nav="ngbNav"
-              [(activeId)]="active"
-              [destroyOnHide]="false"
-              class="nav-tabs"
-            >
+            <ul ngbNav #nav="ngbNav" [(activeId)]="active" [destroyOnHide]="false" class="nav-tabs">
               <li [ngbNavItem]="1" [destroyOnHide]="true">
                 <button ngbNavLink>Education</button>
                 <ng-template ngbNavContent>
                   <div class="row mt-3">
                     <div class="col-md-12 mb-4">
-                      <button
-                        type="button"
-                        class="btn btn-md btn-default"
-                        (click)="openCertification('education')"
-                      >
+                      <button type="button" class="btn btn-md btn-default" (click)="openCertification('education')">
                         <i class="fi fi-rr-plus"></i> Add
                       </button>
                     </div>
-                    <div
-                      class="col-md-12 mb-4"
-                      *ngIf="!info.education || (info.education && info.education.length === 0)"
-                    >
+                    <div class="col-md-12 mb-4"
+                      *ngIf="!info.education || (info.education && info.education.length === 0)">
                       <p translate>There is no education</p>
                     </div>
-                    <div
-                      class="col-sm-6 mb-3"
-                      *ngFor="let cer of info.education, let i = index"
-                    >
-                      <div
-                        class="card"
-                        style="
+                    <div class="col-sm-6 mb-3" *ngFor="let cer of info.education, let i = index">
+                      <div class="card" style="
                           border: 1px solid rgba(0, 0, 0, 0.125);
                           border-radius: 0.25rem;
-                        "
-                      >
+                        ">
                         <div class="card-body">
                           <div class="col-md-12 mb-4">
                             <p class="card-text font-md">
@@ -992,33 +542,19 @@
                           <div class="col-md-12 mb-4 mt-1">
                             <h5>{{cer.title | ellipsis: 18}}</h5>
                             <h5 *ngIf="cer.verified">
-                              <img
-                                src="../assets/images/tutor/verified.svg"
-                                class="me-2"
-                              /><span translate>Verified</span>
+                              <img src="../assets/images/tutor/verified.svg" class="me-2" /><span
+                                translate>Verified</span>
                             </h5>
                             <p class="card-text">
                               {{cer.description | ellipsis: 20}}
                             </p>
                           </div>
-                          <a
-                            href="javascript:void(0)"
-                            (click)="openCertification('education',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rs-pencil font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            href="javascript:void(0)"
-                            (click)="deleteCer('education',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-trash font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            [href]="cer.document?.fileUrl"
-                            download
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-download font-sm"></i
-                          ></a>
+                          <a href="javascript:void(0)" (click)="openCertification('education',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rs-pencil font-sm"></i></a>&nbsp;
+                          <a href="javascript:void(0)" (click)="deleteCer('education',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rr-trash font-sm"></i></a>&nbsp;
+                          <a [href]="cer.document?.fileUrl" download class="btn btn-outline-dark btn-action"><i
+                              class="fi fi-rr-download font-sm"></i></a>
                         </div>
                       </div>
                     </div>
@@ -1030,31 +566,19 @@
                 <ng-template ngbNavContent>
                   <div class="row mt-3">
                     <div class="col-md-12 mb-4">
-                      <button
-                        type="button"
-                        class="btn btn-md btn-default"
-                        (click)="openCertification('experience')"
-                      >
+                      <button type="button" class="btn btn-md btn-default" (click)="openCertification('experience')">
                         <i class="fi fi-rr-plus"></i> Add
                       </button>
                     </div>
-                    <div
-                      class="col-md-12 mb-4"
-                      *ngIf="!info.experience || (info.experience && info.experience.length === 0)"
-                    >
+                    <div class="col-md-12 mb-4"
+                      *ngIf="!info.experience || (info.experience && info.experience.length === 0)">
                       <p translate>There is no experience</p>
                     </div>
-                    <div
-                      class="col-sm-6 mb-3"
-                      *ngFor="let cer of info.experience, let i = index"
-                    >
-                      <div
-                        class="card"
-                        style="
+                    <div class="col-sm-6 mb-3" *ngFor="let cer of info.experience, let i = index">
+                      <div class="card" style="
                           border: 1px solid rgba(0, 0, 0, 0.125);
                           border-radius: 0.25rem;
-                        "
-                      >
+                        ">
                         <div class="card-body">
                           <div class="col-md-12 mb-4">
                             <p class="card-text font-md">
@@ -1062,35 +586,21 @@
                             </p>
                           </div>
                           <div class="col-md-12 mb-4 mt-1">
-                            <h5>{{cer.title | ellipsis: 18}}</h5>
+                            <h5>{{cer.title | ellipsis: 18}}{{cer.organization ? ' at ' + (cer.organization | ellipsis: 15) : ''}}</h5>
                             <h5 *ngIf="cer.verified">
-                              <img
-                                src="../assets/images/tutor/verified.svg"
-                                class="me-2"
-                              /><span translate>Verified</span>
+                              <img src="../assets/images/tutor/verified.svg" class="me-2" /><span
+                                translate>Verified</span>
                             </h5>
                             <p class="card-text">
                               {{cer.description | ellipsis: 20}}
                             </p>
                           </div>
-                          <a
-                            href="javascript:void(0)"
-                            (click)="openCertification('experience',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rs-pencil font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            href="javascript:void(0)"
-                            (click)="deleteCer('experience',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-trash font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            [href]="cer.document?.fileUrl"
-                            download
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-download font-sm"></i
-                          ></a>
+                          <a href="javascript:void(0)" (click)="openCertification('experience',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rs-pencil font-sm"></i></a>&nbsp;
+                          <a href="javascript:void(0)" (click)="deleteCer('experience',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rr-trash font-sm"></i></a>&nbsp;
+                          <a [href]="cer.document?.fileUrl" download class="btn btn-outline-dark btn-action"><i
+                              class="fi fi-rr-download font-sm"></i></a>
                         </div>
                       </div>
                     </div>
@@ -1102,31 +612,19 @@
                 <ng-template ngbNavContent let-active>
                   <div class="row mt-3">
                     <div class="col-md-12 mb-4">
-                      <button
-                        type="button"
-                        class="btn btn-md btn-default"
-                        (click)="openCertification('certification')"
-                      >
+                      <button type="button" class="btn btn-md btn-default" (click)="openCertification('certification')">
                         <i class="fi fi-rr-plus"></i> Add
                       </button>
                     </div>
-                    <div
-                      class="col-md-12 mb-4"
-                      *ngIf="!info.certification || (info.certification && info.certification.length === 0)"
-                    >
+                    <div class="col-md-12 mb-4"
+                      *ngIf="!info.certification || (info.certification && info.certification.length === 0)">
                       <p translate>There is no certification</p>
                     </div>
-                    <div
-                      class="col-sm-6 mb-3"
-                      *ngFor="let cer of info.certification, let i = index"
-                    >
-                      <div
-                        class="card"
-                        style="
+                    <div class="col-sm-6 mb-3" *ngFor="let cer of info.certification, let i = index">
+                      <div class="card" style="
                           border: 1px solid rgba(0, 0, 0, 0.125);
                           border-radius: 0.25rem;
-                        "
-                      >
+                        ">
                         <div class="card-body">
                           <div class="col-md-12 mb-4">
                             <p class="card-text font-md">
@@ -1136,34 +634,19 @@
                           <div class="col-md-12 mb-4 mt-1">
                             <h5>{{cer.title | ellipsis: 18}}</h5>
                             <h5 *ngIf="cer.verified">
-                              <img
-                                src="../assets/images/tutor/verified.svg"
-                                class="me-2"
-                                translate
-                              /><span translate>Verified</span>
+                              <img src="../assets/images/tutor/verified.svg" class="me-2" translate /><span
+                                translate>Verified</span>
                             </h5>
                             <p class="card-text">
                               {{cer.description | ellipsis: 20}}
                             </p>
                           </div>
-                          <a
-                            href="javascript:void(0)"
-                            (click)="openCertification('certification',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rs-pencil font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            href="javascript:void(0)"
-                            (click)="deleteCer('certification',i, cer)"
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-trash font-sm"></i></a
-                          >&nbsp;
-                          <a
-                            [href]="cer.document?.fileUrl"
-                            download
-                            class="btn btn-outline-dark btn-action"
-                            ><i class="fi fi-rr-download font-sm"></i
-                          ></a>
+                          <a href="javascript:void(0)" (click)="openCertification('certification',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rs-pencil font-sm"></i></a>&nbsp;
+                          <a href="javascript:void(0)" (click)="deleteCer('certification',i, cer)"
+                            class="btn btn-outline-dark btn-action"><i class="fi fi-rr-trash font-sm"></i></a>&nbsp;
+                          <a [href]="cer.document?.fileUrl" download class="btn btn-outline-dark btn-action"><i
+                              class="fi fi-rr-download font-sm"></i></a>
                         </div>
                       </div>
                     </div>
@@ -1231,7 +714,7 @@
                             <p class="card-text font-md">{{cer.fromYear}} - {{cer.toYear}}</p>
                           </div>
                           <div class="col-md-12 mb-4 mt-1">
-                            <h5>{{cer.title | ellipsis: 18}}</h5>
+                            <h5>{{cer.title | ellipsis: 18}}{{cer.organization ? ' at ' + (cer.organization | ellipsis: 15) : ''}}</h5>
                             <h5 *ngIf="cer.verified">
                               <img src="../assets/images/tutor/verified.svg" class="me-2" /><span
                                 translate>Verified</span>
@@ -1334,50 +817,24 @@
             <h4 translate>Invite Friend</h4>
           </div>
           <div class="card-body">
-            <form
-              class="row"
-              #frmInvite="ngForm"
-              (submit)="inviteFriend()"
-              ngNativeValidate
-            >
+            <form class="row" #frmInvite="ngForm" (submit)="inviteFriend()" ngNativeValidate>
               <div class="col-md-8">
                 <div class="form-group input-border mb-0">
-                  <input
-                    type="email"
-                    class="form-control"
-                    placeholder="{{'user@example.com' | translate}}"
-                    [(ngModel)]="emailInvite"
-                    name="email-invite"
-                    #emailInViteFriend="ngModel"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                    required
-                  />
-                  <div
-                    *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)"
-                  >
-                    <p
-                      [hidden]="!emailInViteFriend.errors['required']"
-                      class="error"
-                      translate
-                    >
+                  <input type="email" class="form-control" placeholder="{{'user@example.com' | translate}}"
+                    [(ngModel)]="emailInvite" name="email-invite" #emailInViteFriend="ngModel"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
+                  <div *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)">
+                    <p [hidden]="!emailInViteFriend.errors['required']" class="error" translate>
                       Email is required
                     </p>
-                    <p
-                      [hidden]="!emailInViteFriend.errors['pattern']"
-                      class="error"
-                      translate
-                    >
+                    <p [hidden]="!emailInViteFriend.errors['pattern']" class="error" translate>
                       Email is invalid format
                     </p>
                   </div>
                 </div>
               </div>
               <div class="col-md-4">
-                <button
-                  class="btn btn-default btn-block"
-                  type="submit"
-                  translate
-                >
+                <button class="btn btn-default btn-block" type="submit" translate>
                   Invite
                 </button>
               </div>

@@ -6,13 +6,14 @@ import {
   AuthService,
   FavoriteService,
   LanguageService,
+  ConversationService,
   STATE,
   StateService
 } from 'src/app/services';
 @Component({
   selector: 'app-tutor-card-favorite',
-  templateUrl: './tutor-card-favotite.html'
-  //   styleUrls: ['style.scss']
+  templateUrl: './tutor-card-favotite.html',
+  styleUrls: ['./style.scss']
 })
 export class TutorCardFavoriteComponent implements OnInit {
   @Input() tutor: IUser;
@@ -27,7 +28,8 @@ export class TutorCardFavoriteComponent implements OnInit {
     public languageService: LanguageService,
     public router: Router,
     private stateService: StateService,
-    private appService: AppService
+    private appService: AppService,
+    private conversationService: ConversationService
   ) {}
 
   ngOnInit() {
@@ -78,11 +80,21 @@ export class TutorCardFavoriteComponent implements OnInit {
   }
 
   bookFree() {
-    const queryParams = {
-      isFree: true
-    };
-    this.router.navigate(['/appointments', this.tutor.username], {
-      queryParams: queryParams
+    this.router.navigate(['/experts', this.tutor.username, 'booking'], {
+      queryParams: { isFree: 'true' }
     });
+  }
+
+  chat() {
+    if (!this.authService.isLoggedin()) {
+      return this.appService.toastError('Please login to send message');
+    }
+    this.conversationService
+      .create(this.tutor._id)
+      .then((resp) => {
+        this.conversationService.setActive(resp.data);
+        this.router.navigate(['/users/conversations']);
+      })
+      .catch(() => this.appService.toastError('You cannot send messages to yourself.'));
   }
 }

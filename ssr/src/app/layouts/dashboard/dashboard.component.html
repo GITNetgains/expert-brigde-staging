@@ -3,59 +3,76 @@
 <div class="wrapper-dashboard" [ngClass]="{ 'menu-hidden': !showSidebar, 'menu-show': showSidebar }">
   <div class="overlay" (click)="toggleMemu()"></div>
   <div class="header-dashboard">
-    <a class="nav-link" href="javascript:void(0)" (click)="toggleMemu()"><i class="fi fi-rr-menu-burger"></i></a>
-    <ul class="nav">
-      <li class="nav-item">
-        <a class="nav-link" href="/"><i class="fi fi-rs-house-chimney"></i></a>
-      </li>
-      <li class="nav-item" [routerLinkActive]="'active'">
-        <a class="nav-link" [routerLink]="['/users/conversations']"><i class="fi fi-rr-envelope"></i></a>
-      </li>
-      <li class="nav-item" *ngIf="currentUser" [routerLinkActive]="'active'">
-        <a [routerLink]="['/users/notifications']" class="nav-link cart-button">
-          <span class="cart-count">{{unreadNotificationCount}}</span>
-          <i class="fi fi-rs-bell"></i>
+    <!-- Hamburger for Mobile -->
+    <i class="fi fi-rr-menu-burger nav-trigger" (click)="toggleMemu()"></i>
+
+    <div class="header-content">
+      <!-- Home -->
+      <a [routerLink]="['/']" class="nav-icon-btn" title="Home">
+        <i class="fi fi-rs-house-chimney"></i>
+      </a>
+
+      <!-- Messages -->
+      <a [routerLink]="['/users/conversations']" routerLinkActive="active" class="nav-icon-btn" title="Messages">
+        <i class="fi fi-rr-envelope"></i>
+      </a>
+
+      <!-- Notifications -->
+      <a *ngIf="currentUser" [routerLink]="['/users/notifications']" routerLinkActive="active" class="nav-icon-btn"
+        title="Notifications">
+        <i class="fi fi-rr-bell"></i>
+        <span class="badge-count" *ngIf="unreadNotificationCount">{{unreadNotificationCount}}</span>
+      </a>
+
+      <!-- Cart (Student) -->
+      <a *ngIf="currentUser && currentUser.type === 'student'" (click)="checkout()" href="javascript:void(0)"
+        class="nav-icon-btn" title="Cart">
+        <i class="fi fi-rr-shopping-cart"></i>
+        <span class="badge-count" *ngIf="cartCount">{{cartCount}}</span>
+      </a>
+
+      <!-- Language Switcher (Optional, restored from original intent) -->
+      <div class="d-inline-block" ngbDropdown placement="bottom-end" *ngIf="languages?.length > 1">
+        <button class="nav-icon-btn" id="langDropdown" ngbDropdownToggle>
+          <img [src]="flag || '/assets/images/flags/en.svg'" alt="Lang"
+            style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+        </button>
+        <div ngbDropdownMenu aria-labelledby="langDropdown">
+          <button ngbDropdownItem *ngFor="let lang of languages" (click)="changeLang(lang)"
+            [class.active]="lang.key === userLang">
+            <img [src]="lang.flag" width="20" class="me-2"> {{ lang.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- User Dropdown -->
+      <div class="user-dropdown" ngbDropdown placement="bottom-end" *ngIf="currentUser">
+        <a class="dropdown-toggle" ngbDropdownToggle id="userDropdown" href="javascript:void(0)">
+          <img [src]="currentUser?.avatarUrl || './assets/images/default-avatar.jpg'" alt="{{currentUser?.name}}"
+            class="avatar-img" onerror="this.src='./assets/images/default-avatar.jpg'">
+          <span class="user-name">{{currentUser?.name}}</span>
+          <i class="fi fi-rr-angle-small-down"></i>
         </a>
-      </li>
-      <li class="nav-item" *ngIf="currentUser && currentUser.type === 'student'">
-        <a href="javascript:void(0)" class="nav-link cart-button" (click)="checkout()">
-          <span class="cart-count">{{cartCount}}</span>
-          <i class="fi fi-rr-shopping-cart"></i>
-        </a>
-      </li>
-      <!-- <li class="nav-item">
-        <ng-template #popContent>
-          <div class="languages">
-            <button class="btn btn-outline-dark btn-sm font-xs me-1 mb-1" *ngFor="let lang of languages"
-              [ngClass]="{ active: lang.key === userLang }" (click)="changeLang(lang)">
-              <img class="image-sm" [src]="lang.flag" /> {{ lang.name }}
-            </button>
-          </div>
-        </ng-template>
-        <ng-template #popTitle> Choose your languages! </ng-template>
-        <a class="nav-link" href="javascript:void(0)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
-          <i class="fi fi-rr-language"></i>
-        </a>
-      </li> -->
-      <!-- <li class="nav-item" ngbDropdown>
-          <div class="user-top">
-            <a class="dropdown-toggle nav-link" ngbDropdownToggle role="button">
-              {{info.name}}
-            </a>
-            <div ngbDropdownMenu aria-labelledby="dropdownLanguage" class="drop-menu">
-              <a class="dropdown-item"  href="javascript:void(0)" (click)="logout()">
-                <i class="fi fi-rr-user"></i> Profile settings
-              </a>
-              <a class="dropdown-item"  href="/users/profile" (click)="logout()">
-                <i class="fi fi-rs-sign-out-alt"></i> Logout
-              </a>
-            </div>
-          </div>
-        </li> -->
-      <li>
-        <a class="nav-link" href="javascript:void(0)" (click)="logout()"><i class="fi fi-rs-sign-out-alt"></i></a>
-      </li>
-    </ul>
+        <div ngbDropdownMenu aria-labelledby="userDropdown" class="dropdown-menu">
+          <a [routerLink]="['/users/profile']" class="dropdown-item">
+            <i class="fi fi-rr-user"></i> My Profile
+          </a>
+          <a [routerLink]="['/users/dashboard']" class="dropdown-item">
+            <i class="fi fi-rr-apps"></i> Dashboard
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="javascript:void(0)" (click)="logout()" class="dropdown-item text-danger">
+            <i class="fi fi-rs-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+
+      <!-- Fallback Logout -->
+      <a *ngIf="!currentUser" href="javascript:void(0)" (click)="logout()" class="nav-icon-btn" title="Logout">
+        <i class="fi fi-rs-sign-out-alt"></i>
+      </a>
+
+    </div>
   </div>
   <app-sidebar [showMenu]="showSidebar" (showMenuChange)="showMenuChange($event)"></app-sidebar>
   <div class="content-wrapper">

@@ -29,7 +29,6 @@ const validateSchema = Joi.object().keys({
   languages: Joi.array().items(Joi.string()).optional(),
   grades: Joi.array().items(Joi.string()).optional().default([]),
   highlights: Joi.array().items(Joi.string()).optional().default([]),
-  workHistory: Joi.array().items(Joi.string()).optional().default([]),
   timezone: Joi.string().allow([null, '']).optional(),
   isHomePage: Joi.boolean().allow(null).optional(),
   zipCode: Joi.string().allow([null, '']).optional(),
@@ -187,8 +186,7 @@ exports.create = async (req, res, next) => {
         rejected: false,
         pendingApprove: false,
         skillIds: _.uniq(validate.value.skillIds || []),
-        highlights: _.uniq(validate.value.highlights || []),
-        workHistory: _.uniq(validate.value.workHistory || [])
+        highlights: _.uniq(validate.value.highlights || [])
       })
     );
 
@@ -225,11 +223,6 @@ exports.update = async (req, res, next) => {
     if (validate.value.highlights) {
   tutor.highlights = _.uniq(validate.value.highlights);
   tutor.markModified('highlights');
-}
-
-if (validate.value.workHistory) {
-  tutor.workHistory = _.uniq(validate.value.workHistory);
-  tutor.markModified('workHistory');
 }
 
     if (validate.value.subjectIds) {
@@ -367,6 +360,7 @@ if (hasMin || hasMax) {
       .populate({ path: 'skills', select: '_id name alias' })
       .populate({ path: 'industries', select: '_id name alias' })
       .populate({ path: 'gradeItems', select: '_id name alias' })
+      .populate({ path: 'experience', select: 'title organization fromYear toYear' })
       .sort(sort)
       .skip(page * take)
       .limit(take)

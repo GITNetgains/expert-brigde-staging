@@ -52,6 +52,7 @@ export class ReviewTutorComponent implements OnInit, OnChanges {
   public showUpdateModal: boolean = false;
   public isLoading: boolean = false;
   public error: string = '';
+  public togglingHiddenId: string | null = null;
   icons = { cilPencil, cilTrash };
 
   private reviewService = inject(ReviewService);
@@ -155,7 +156,7 @@ export class ReviewTutorComponent implements OnInit, OnChanges {
             message: 'Review has been deleted!',
           });
           this.reviews.splice(i, 1);
-          this.total;
+          this.total--;
         },
         error: () => {
           this.utilService.toastError({
@@ -165,5 +166,30 @@ export class ReviewTutorComponent implements OnInit, OnChanges {
         },
       });
     }
+  }
+
+  toggleHidden(item: any, i: number) {
+    this.togglingHiddenId = item._id;
+    this.reviewService.toggleHidden(item._id).subscribe({
+      next: (res: any) => {
+        const updated = res?.data ?? res;
+        if (updated && typeof updated.hidden === 'boolean') {
+          this.reviews[i] = { ...this.reviews[i], hidden: updated.hidden };
+        } else {
+          this.reviews[i] = { ...this.reviews[i], hidden: !item.hidden };
+        }
+        this.utilService.toastSuccess({
+          message: this.reviews[i].hidden ? 'Review is now hidden from users.' : 'Review is now visible to users.',
+        });
+        this.togglingHiddenId = null;
+      },
+      error: () => {
+        this.utilService.toastError({
+          title: 'Error',
+          message: 'Failed to update visibility. Please try again.',
+        });
+        this.togglingHiddenId = null;
+      },
+    });
   }
 }

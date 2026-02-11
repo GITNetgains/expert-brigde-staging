@@ -42,6 +42,7 @@ export class AddCetificationComponent implements OnInit {
     if (!this.certificate) {
       this.certificate = {
         title: '',
+        organization: '',
         description: '',
         fromYear: 1900,
         toYear: 1900,
@@ -82,6 +83,7 @@ export class AddCetificationComponent implements OnInit {
     this.certificate.type = this.type;
     const data = _.pick(this.certificate, [
       'title',
+      'organization',
       'description',
       'fromYear',
       'toYear',

@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const validateSchema = Joi.object().keys({
   title: Joi.string().required(),
-  organization: Joi.string().required(), 
+  organization: Joi.string().allow([null, '']).optional(), 
   description: Joi.string().allow([null, '']).optional(),
   fromYear: Joi.number().required(),
   toYear: Joi.number().optional(),

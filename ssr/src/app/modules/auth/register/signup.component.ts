@@ -9,7 +9,6 @@ import {
   AppService,
   StateService,
   STATE,
-  TutorService,
   CountryService
 } from 'src/app/services';
 
@@ -58,12 +57,22 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     address: '',
     phoneNumber: '',
     zipCode: '',
+    state: '',
+    city: '',
     issueDocumentId: '',
     resumeDocumentId: '',
     certificationDocumentId: '',
     introVideoType: 'upload',
     introVideoId: '',
-    introYoutubeId: ''
+    introYoutubeId: '',
+    bio: '',
+    highlights: [] as string[],
+    yearsExperience: null as number | null,
+    skillNames: [] as string[],
+    industryNames: [] as string[],
+    languages: [] as string[],
+    education: [] as { title: string; organization?: string; fromYear: number; toYear?: number }[],
+    experience: [] as { title: string; organization?: string; fromYear: number; toYear?: number }[]
   };
 
   public countries: any[] = [];
@@ -80,7 +89,6 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private stateService: StateService,
     private googleAuth: GoogleAuthService,
     private linkedinAuth: LinkedinAuthService,
-    private tutorService: TutorService,
     private countryService: CountryService
     
   ) {
@@ -367,31 +375,14 @@ if (address && address.length < 5) {
         password: this.newPassword
       });
 
-      // Complete tutor profile
-      await this.auth.completeTutorProfile({
+      // Complete tutor profile with minimal required info
+      const payload: any = {
         email: this.account.email.toLowerCase().trim(),
         name: this.tutorProfile.name.trim(),
-        timezone: this.tutorProfile.timezone,
-        country: this.tutorProfile.country,
-        address: this.tutorProfile.address.trim(),
-        phoneNumber: this.tutorProfile.phoneNumber.trim(),
-        zipCode: this.tutorProfile.zipCode.trim(),
-        issueDocumentId: this.tutorProfile.issueDocumentId,
-        resumeDocumentId: this.tutorProfile.resumeDocumentId,
-        certificationDocumentId: this.tutorProfile.certificationDocumentId,
-        introVideoId:
-          this.tutorProfile.introVideoType === 'upload'
-            ? this.tutorProfile.introVideoId
-            : null,
-        introYoutubeId:
-          this.tutorProfile.introVideoType === 'youtube'
-            ? this.extractYoutubeId(this.tutorProfile.introYoutubeId.trim())
-            : '',
-        idYoutube:
-          this.tutorProfile.introVideoType === 'youtube'
-            ? this.extractYoutubeId(this.tutorProfile.introYoutubeId.trim())
-            : ''
-      });
+        resumeDocumentId: this.tutorProfile.resumeDocumentId
+      };
+
+      await this.auth.completeTutorProfile(payload);
 
       this.appService.toastSuccess('Expert profile submitted. Pending admin approval.');
       this.auth.removeToken();
@@ -411,45 +402,9 @@ if (address && address.length < 5) {
       errors.push('Please enter your name');
     }
 
-    if (!this.tutorProfile.timezone) {
-      errors.push('Please select timezone');
+    if (!this.tutorProfile.resumeDocumentId) {
+      errors.push('Please upload your resume/CV');
     }
-
-    if (!this.tutorProfile.country) {
-      errors.push('Please select country');
-    }
-
-    // if (!this.tutorProfile.address.trim() || this.tutorProfile.address.length < 5) {
-    //   errors.push('Please enter valid address');
-    // }
-
-    if (!this.tutorProfile.phoneNumber.trim() || !this.isValidPhone(this.tutorProfile.phoneNumber)) {
-      errors.push('Please enter valid phone number');
-    }
-
-    // if (!this.tutorProfile.zipCode.trim() || this.tutorProfile.zipCode.length < 3) {
-    //   errors.push('Please enter valid zip code');
-    // }
-
-    // if (!this.tutorProfile.issueDocumentId) {
-    //   errors.push('Please upload ID document');
-    // }
-
-    // if (!this.tutorProfile.resumeDocumentId) {
-    //   errors.push('Please upload resume');
-    // }
-
-    // if (!this.tutorProfile.certificationDocumentId) {
-    //   errors.push('Please upload certification');
-    // }
-
-    // if (this.tutorProfile.introVideoType === 'upload' && !this.tutorProfile.introVideoId) {
-    //   errors.push('Please upload intro video');
-    // }
-
-    // if (this.tutorProfile.introVideoType === 'youtube' && !this.tutorProfile.introYoutubeId.trim()) {
-    //   errors.push('Please enter YouTube video URL');
-    // }
 
     return errors;
   }

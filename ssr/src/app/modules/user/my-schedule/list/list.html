@@ -3,11 +3,11 @@
 
     <ul class="nav nav-tabs nav-custom mb-4" role="tablist">
       <li role="presentation" [ngClass]="{'active': tab === 'subject'}" (click)="onTabSelect('subject')">
-        <a href="javascript:void(0)" translate>One on One Classes</a>
+        <a href="javascript:void(0)" translate>One on One Sessions</a>
       </li>
-      <li role="presentation" [ngClass]="{'active': tab === 'webinar'}" (click)="onTabSelect('webinar')">
-        <a href="javascript:void(0)" translate>Group Classes</a>
-      </li>
+      <!-- <li role="presentation" [ngClass]="{'active': tab === 'webinar'}" (click)="onTabSelect('webinar')">
+        <a href="javascript:void(0)" translate>Group Sessions</a>
+      </li> -->
     </ul>
     <div *ngIf="tab === 'subject'">
       <div class="card mb-3 card-filter input-border">
@@ -24,7 +24,8 @@
             </div>
             <div class="col-md-4">
               <input type="search" class="form-control" aria-controls="table_id"
-                placeholder="{{'Search tutor, user, subject, group class'|translate}}" (keyup)="doSearch($event)" />
+                placeholder="{{'Search expert, client, subject, group session'|translate}}"
+                (keyup)="doSearch($event)" />
             </div>
           </div>
         </div>
@@ -36,7 +37,7 @@
             <thead>
               <tr>
                 <th>
-                  <span (click)="sortBy('userInfo.name', 'desc')" translate>User name</span>
+                  <span (click)="sortBy('userInfo.name', 'desc')" translate>Name</span>
                   <app-sort [sortOption]="sortOption" [sortBy]="'userInfo.name'" (doSort)="onSort($event)"></app-sort>
                 </th>
                 <th>
@@ -141,7 +142,6 @@
             </ngb-pagination>
           </div>
         </div>
-
       </div>
     </div>
     <div *ngIf="tab === 'webinar'">
@@ -159,7 +159,8 @@
             </div>
             <div class="col-md-4">
               <input type="search" class="form-control form-control-sm" aria-controls="table_id"
-                placeholder="{{'Search tutor, user, subject, group class'|translate}}" (keyup)="doSearch($event)" />
+                placeholder="{{'Search expert, session'}}"
+                (keyup)="doSearch($event)" />
             </div>
           </div>
         </div>
@@ -171,12 +172,12 @@
             <thead>
               <tr role="row">
                 <th>
-                  <span (click)="sortBy('userId', 'asc')" translate>User name</span>
+                  <span (click)="sortBy('userId', 'asc')" translate>Name</span>
                   <!-- <app-sort [sortOption]="sortOption" [sortBy]="'userId'" (doSort)="onSort($event)"></app-sort> -->
                 </th>
 
                 <th>
-                  <span (click)="sortBy('webinar', 'asc')" translate>Group Class</span>
+                  <span (click)="sortBy('webinar', 'asc')" translate>Group Session</span>
                   <!-- <app-sort [sortOption]="sortOption" [sortBy]="'webinar'" (doSort)="onSort($event)"></app-sort> -->
                 </th>
 
@@ -192,7 +193,7 @@
 
             <tbody>
               <tr *ngIf="(!transactions || (transactions && transactions.length === 0)) && !loading">
-                <td colspan="10" translate>There are no webinar booking</td>
+                <td colspan="10" translate>There are no group session booking</td>
               </tr>
               <tr *ngIf="loading">
                 <td colspan="10" translate><span translate>Loading</span>...</td>

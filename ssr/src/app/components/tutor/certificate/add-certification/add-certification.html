@@ -18,6 +18,13 @@
           </div>
         </div>
       </div>
+      <div class="col-md-12" *ngIf="type === 'experience'">
+        <div class="form-group">
+          <label><span translate>Organization</span></label>
+          <input type="text" name="organization" class="form-control" placeholder="{{'Enter organization or company'|translate}}"
+            [(ngModel)]="certificate.organization" #organization="ngModel" />
+        </div>
+      </div>
       <div class="col-md-12">
         <div class="form-group">
           <label translate>Description</label>

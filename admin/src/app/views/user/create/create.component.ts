@@ -18,10 +18,11 @@ import {
   ColComponent,
   GutterDirective,
   ModalComponent,
-ModalHeaderComponent,
-ModalBodyComponent
+  ModalHeaderComponent,
+  ModalBodyComponent
 } from '@coreui/angular';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
+import { AppPaginationComponent } from '@components/index';
 import { IUser } from 'src/interfaces';
 @Component({
   selector: 'app-user-create',
@@ -44,8 +45,9 @@ import { IUser } from 'src/interfaces';
     GutterDirective,
     NgSelectModule,
     ModalComponent,
-ModalHeaderComponent,
-ModalBodyComponent
+    ModalHeaderComponent,
+    ModalBodyComponent,
+    AppPaginationComponent
   ],
 })
 export class CreateComponent implements OnInit {
@@ -106,24 +108,36 @@ export class CreateComponent implements OnInit {
     }
   }
   // ===== UPDATE-ONLY SAFE DEFAULTS =====
-isUpdateMode = false;
+  isUpdateMode = false;
 
-showAssignModal = false;
-showDescriptionModal = false;
-activeDescription = '';
-assign = {
-  categoryId: '',
-  subjectId: '',
-  subjects: [],
-  tutors: [],
-  tutorIds: []
-};
-public aiQueries: any[] = [];
-loadSubjects() {}
-loadTutors() {}
-saveTutorAssignment() {}
-openAssignTutorModal(_: any) {}
-deleteAiQuery(_: any) {}
+  showAssignModal = false;
+  showDescriptionModal = false;
+  activeDescription = '';
+  assign = {
+    categoryId: '',
+    subjectId: '',
+    subjects: [],
+    tutors: [],
+    tutorIds: []
+  };
+  public aiQueries: any[] = [];
+  
+  // CLIENT REVIEWS - Safe defaults for create mode
+  public reviews: any[] = [];
+  public totalReviews: number = 0;
+  public reviewPage: number = 1;
+  public reviewPageSize: number = 10;
+  loadSubjects() { }
+  loadTutors() { }
+  saveTutorAssignment() { }
+  openAssignTutorModal(_: any) { }
+  deleteAiQuery(_: any) { }
+  
+  // CLIENT REVIEWS - Safe defaults for create mode
+  loadReviews() { }
+  onReviewPageChange(_: number) { }
+  deleteReview(_: any) { }
+  editReview(_: any) { }
 
 
   onSubjectChange(subject: any) {

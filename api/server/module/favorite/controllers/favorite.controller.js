@@ -113,7 +113,11 @@ exports.list = async (req, res, next) => {
 
     const selectData =
       type === 'tutor'
-        ? { path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar' }
+        ? {
+            path: 'tutor',
+            // include public-id controls so UI can decide what to show
+            select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
+          }
         : type === 'webinar'
         ? {
             path: 'webinar',

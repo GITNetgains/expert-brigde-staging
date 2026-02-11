@@ -93,6 +93,7 @@ export class TutorListComponent implements OnInit {
   };
   public currentUser: IUser;
   public config: any;
+  public skillSearchTerm = '';
 
   openFilter = {
   skill: true,
@@ -366,6 +367,14 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
   }
 
   selectSkill() {
+    this.page = 1;
+    this.query();
+  }
+
+  onSkillSearchChange(term: string) {
+    this.skillSearchTerm = term;
+    const match = this.skills.find((sk) => sk.name === term);
+    this.searchFields.skillIds = match ? match._id : '';
     this.page = 1;
     this.query();
   }

@@ -36,7 +36,6 @@ export interface IUser {
   industryIds?: string[];
   industries?: any[];
   highlights?: string[];
-  workHistory?: string[];
   city?: string;
   state?: string;
   countryCode?: string;

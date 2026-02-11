@@ -97,7 +97,7 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
   };
   public type: any;
 
-  public urlYoutube: any;
+  public introVideoUrl: string | null = null;
   // tslint:disable-next-line:max-line-length
   public moreTag = '';
   public webinarOptions = {
@@ -179,7 +179,15 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
       this.showMore = true;
     }
 
-    this.urlYoutube = this.setUrl(this.tutor.idYoutube);
+    const introVideo: any = (this.tutor as any).introVideo;
+    if (introVideo && (introVideo.fileUrl || introVideo.originalPath || introVideo.filePath)) {
+      this.introVideoUrl =
+        introVideo.fileUrl ||
+        introVideo.mediumUrl ||
+        introVideo.thumbUrl ||
+        introVideo.originalPath ||
+        introVideo.filePath;
+    }
   }
 
   queryWebinar() {

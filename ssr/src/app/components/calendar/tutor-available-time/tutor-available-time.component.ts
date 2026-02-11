@@ -243,10 +243,11 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
       addedToCart: false,
       booked: false
     } as any;
-    if (moment().add(15, 'minute').isAfter(moment(slot.start)) || item.booked) {
+    const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
+    if (moment().add(15, 'minute').isAfter(moment(slot.start)) || item.booked || minute < 60) {
       slot.backgroundColor = '#ddd';
       slot.isDisabled = true;
-      slot.title = 'Not available';
+      slot.title = minute < 60 ? 'Minimum 60 mins' : 'Not available';
       slot.available = false;
       slot.booked = item.booked || false;
     }

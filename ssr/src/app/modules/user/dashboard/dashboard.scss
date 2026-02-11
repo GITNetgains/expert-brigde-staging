@@ -1,0 +1,272 @@
+
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f4f6f8;
+    background-image: linear-gradient(135deg, #f9f9f9 0%, #f0f2f5 100%);
+    padding-bottom: 50px;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 15px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* --- Header Section --- */
+.dashboard-header {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary-color, #007bff), var(--secondary-color, #00d2ff));
+    }
+}
+
+.user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    .avatar-wrapper {
+        position: relative;
+
+        img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .user-details {
+        h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .role-badge {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+                border-radius: 20px;
+                background: rgba(0, 123, 255, 0.1);
+                color: var(--primary-color, #007bff);
+                vertical-align: middle;
+                font-weight: 600;
+                text-transform: capitalize;
+            }
+        }
+
+        p {
+            margin: 5px 0 0;
+            color: #777;
+            font-size: 1rem;
+        }
+    }
+}
+
+.header-actions {
+    .btn-view-profile {
+        display: inline-block;
+        padding: 12px 25px;
+        border-radius: 12px;
+        background: var(--primary-color, #007bff);
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+
+        &:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+        }
+    }
+}
+
+/* --- Stats/Menu Grid --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.menu-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 0);
+
+        .icon-container {
+            transform: scale(1.1) rotate(5deg);
+        }
+    }
+
+    .card-content {
+        padding: 30px 25px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .icon-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e6efff 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 28px;
+        transition: transform 0.4s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+        i {
+            line-height: 1;
+        }
+    }
+
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0 0 10px;
+    }
+
+    p {
+        font-size: 0.9rem;
+        color: #8898aa;
+        line-height: 1.5;
+        margin: 0;
+    }
+}
+
+/* --- Skeleton Loading --- */
+.skeleton-loader {
+    .skeleton-header {
+        height: 140px;
+        background: #fff;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .skeleton-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .skeleton-card {
+        height: 220px;
+        background: #fff;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+}
+
+.shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 25px;
+
+        .user-welcome {
+            flex-direction: column;
+        }
+
+        &::before {
+            width: 100%;
+            height: 6px;
+            top: 0;
+            left: 0;
+        }
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}

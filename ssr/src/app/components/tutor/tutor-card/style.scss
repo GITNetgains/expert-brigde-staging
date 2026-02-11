@@ -24,12 +24,35 @@
   width: 100%;
 }
 
+.avatar-wrap {
+  flex-shrink: 0;
+  line-height: 0;
+}
+
 .avatar {
   width: 100px;
   height: 100px;
   min-width: 100px;
   border-radius: 8px;
   object-fit: cover;
+  display: block;
+}
+
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  border-radius: 8px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 36px;
+}
+
+.avatar-placeholder i {
+  font-size: 40px;
 }
 
 .expert-meta {
@@ -62,13 +85,13 @@
 }
 
 /* =========================
-   WORK HISTORY
+   EXPERIENCE
 ========================= */
-.work-history {
+.experience {
   margin-top: 14px;
 }
 
-.work-item {
+.experience-item {
   display: flex;
   gap: 8px;
   font-size: 15px;
@@ -129,10 +152,81 @@
 }
 
 /* =========================
+   FAVORITE CARD (same as expert-card + rating & badge)
+========================= */
+.expert-card-favorite {
+  position: relative;
+}
+
+/* Featured badge: in header flow so it never overlaps name/avatar */
+.expert-header .badge-tag {
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: #0a2f5a;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.avatar-link {
+  display: block;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.avatar-link.avatar-wrap .avatar-placeholder,
+.avatar-wrap .avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+}
+
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rating-block .rating-text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.rating-block app-star-rating {
+  display: inline-flex;
+}
+
+.name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.name a:hover {
+  color: #ff3b30;
+}
+
+.open-icon {
+  cursor: pointer;
+}
+
+.open-icon-link {
+  margin-left: auto;
+  color: #ff3b30;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+/* =========================
    TABLET (≤ 992px)
 ========================= */
 @media (max-width: 992px) {
-  .avatar {
+  .avatar,
+  .avatar-placeholder {
     width: 80px;
     height: 80px;
     min-width: 80px;
@@ -159,10 +253,15 @@
     align-items: center;
   }
 
-  .avatar {
+  .avatar,
+  .avatar-placeholder {
     width: 60px;
     height: 60px;
     min-width: 60px;
+  }
+
+  .avatar-placeholder i {
+    font-size: 28px;
   }
 
   .name {
@@ -173,7 +272,7 @@
     font-size: 14px;
   }
 
-  .work-item,
+  .experience-item,
   .desc-item {
     font-size: 14px;
   }
@@ -196,9 +295,11 @@
     align-items: flex-start;
   }
 
-  .avatar {
+  .avatar,
+  .avatar-placeholder {
     width: 72px;
     height: 72px;
+    min-width: 72px;
   }
 
   .card-actions {

@@ -22,8 +22,7 @@ module.exports = async () => {
         phoneNumber: '5012335962',
         consultationFee: 20,
         skills: ['Core PHP', 'MySQL', 'HTML', 'JavaScript'],
-        yearsExperience: 10,
-        workHistory: ['PHP Developer at Gulf IT Solutions (2014–2024)']
+        yearsExperience: 10
       },
       {
         name: 'Priya Nair',
@@ -44,8 +43,7 @@ module.exports = async () => {
         phoneNumber: '8899776564',
         consultationFee: 35,
         skills: ['UI Design', 'UX Research', 'Wireframing'],
-        yearsExperience: 6,
-        workHistory: ['UI Designer at Infosys (2018–2024)']
+        yearsExperience: 6
       },
       {
         name: 'Emily Carter',
@@ -66,8 +64,7 @@ module.exports = async () => {
         phoneNumber: '1000060',
         consultationFee: 60,
         skills: ['Google Ads', 'Facebook Ads', 'Analytics'],
-        yearsExperience: 5,
-        workHistory: ['Digital Marketer at GrowthLabs (2019–2024)']
+        yearsExperience: 5
       },
       {
         name: 'Neha Gupta',
@@ -88,8 +85,7 @@ module.exports = async () => {
         phoneNumber: '9988776564',
         consultationFee: 40,
         skills: ['SEO', 'Content Strategy', 'Google Search Console'],
-        yearsExperience: 7,
-        workHistory: ['SEO Lead at DigitalOcean Agency (2017–2024)']
+        yearsExperience: 7
       },
       {
         name: 'Karan Mehta',
@@ -111,7 +107,6 @@ module.exports = async () => {
         consultationFee: 20,
         skills: ['WordPress', 'PHP', 'Elementor', 'WooCommerce'],
         yearsExperience: 9,
-        workHistory: ['WordPress Lead at WebCraft India (2015–2024)']
       },
       {
         name: 'Vikram Singh',
@@ -132,8 +127,7 @@ module.exports = async () => {
         phoneNumber: '9345678032',
         consultationFee: 35,
         skills: ['Java', 'Spring Boot', 'Hibernate', 'REST APIs'],
-        yearsExperience: 8,
-        workHistory: ['Java Developer at Infosys (2016–2024)']
+        yearsExperience: 8
       },
       {
         name: 'Laura Martinez',
@@ -154,8 +148,7 @@ module.exports = async () => {
         phoneNumber: '868040',
         consultationFee: 40,
         skills: ['Social Media Strategy', 'Instagram Ads'],
-        yearsExperience: 6,
-        workHistory: ['Social Media Manager at BrandBoost (2018–2024)']
+        yearsExperience: 6
       },
       {
         name: 'Chen Wei',
@@ -176,8 +169,7 @@ module.exports = async () => {
         phoneNumber: '13800137914',
         consultationFee: 50,
         skills: ['Android', 'Kotlin', 'Firebase'],
-        yearsExperience: 8,
-        workHistory: ['Android Lead at Tencent (2016–2024)']
+        yearsExperience: 8
       },
       {
         name: 'Fatima Khan',
@@ -198,8 +190,7 @@ module.exports = async () => {
         phoneNumber: '123477525',
         consultationFee: 25,
         skills: ['Logo Design', 'Branding', 'Photoshop'],
-        yearsExperience: 6,
-        workHistory: ['Graphic Designer at CreativeHive (2018–2024)']
+        yearsExperience: 6
       },
       {
         name: 'Daniel Novak',
@@ -220,8 +211,7 @@ module.exports = async () => {
         phoneNumber: '93660',
         consultationFee: 45,
         skills: ['Python', 'Django', 'APIs', 'PostgreSQL'],
-        yearsExperience: 10,
-        workHistory: ['Python Engineer at Avast (2014–2024)']
+        yearsExperience: 10
       }
     ];
 
@@ -242,7 +232,6 @@ module.exports = async () => {
       }
 
       const baseHighlights = Array.isArray(data.highlights) ? data.highlights.filter(Boolean) : [data.highlights].filter(Boolean);
-      const baseHistory = Array.isArray(data.workHistory) ? data.workHistory.filter(Boolean) : [data.workHistory].filter(Boolean);
 
       const extraHighlightsByCategory = {
         'Technology & IT': [
@@ -272,16 +261,6 @@ module.exports = async () => {
         if (!baseHighlights.includes(next)) baseHighlights.push(next);
       }
 
-      const genericHistory = [
-        'Delivered 30+ client projects end-to-end',
-        'Mentored juniors and improved team productivity',
-        'Streamlined processes and reduced delivery time'
-      ];
-      while (baseHistory.length < 3) {
-        const next = genericHistory[baseHistory.length % genericHistory.length];
-        if (!baseHistory.includes(next)) baseHistory.push(next);
-      }
-
       const payload = {
         name: data.name,
         username: data.username,
@@ -307,7 +286,6 @@ module.exports = async () => {
         phoneNumber: data.phoneNumber,
         consultationFee: data.consultationFee,
         yearsExperience: data.yearsExperience,
-        workHistory: baseHistory,
         highlights: baseHighlights,
         categoryIds: category ? [category._id] : [],
         subjectIds: subjects.map(s => s._id),

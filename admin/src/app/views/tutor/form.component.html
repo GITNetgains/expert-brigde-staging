@@ -43,12 +43,26 @@
                     >
                       <video
                         width="100%"
-                        [src]="info?.introVideo?.fileUrl"
+                        [src]="info?.introVideo?.fileUrl || introVideoUrl"
                         controls
                       ></video>
                     </div>
-                    } @if(info.introYoutubeId) {
+                    }
                     <div
+                      class="mb-3"
+                      style="padding-left: 4em; padding-right: 4em"
+                    >
+                      <label cLabel>Upload Introduction Video</label>
+                      <app-file-uploader
+                        [options]="introVideoOptions"
+                      ></app-file-uploader>
+                      <small class="form-text text-muted d-block">
+                        Accepted formats: MP4 and common video types. Maximum size:
+                        {{ maxFileSize }} MB.
+                      </small>
+                    </div>
+                    @if(info.introYoutubeId) {
+                    <!-- <div
                       class="mb-3"
                       style="padding-left: 4em; padding-right: 4em"
                     >
@@ -61,7 +75,7 @@
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
                       ></iframe>
-                    </div>
+                    </div> -->
                     }
                     <c-row>
                       <c-col md="6">
@@ -182,7 +196,8 @@
                               required
                             />
                             @if(phone.errors && (phone.dirty || phone.touched ||
-                            isSubmitted)){ @if(phone.errors['required']){
+                            isSubmitted))
+                            { @if(phone.errors['required']){
                             <c-form-feedback invalid>
                               Please enter phone number
                             </c-form-feedback>
@@ -475,74 +490,6 @@
                             >
                             </ng-select>
                           </div>
-                        </div>
-                      </c-col>
-                      <c-col md="12">
-                        <div class="mb-3">
-                          <label cLabel for="workHistory">Work History</label>
-                          <div class="row g-2">
-                            <div class="col-md-4">
-                              <c-input-group class="mb-1">
-                                <input
-                                  cFormControl
-                                  id="workPosition"
-                                  name="workPosition"
-                                  [(ngModel)]="newWorkPosition"
-                                  placeholder="Position"
-                                />
-                              </c-input-group>
-                            </div>
-                            <div class="col-md-4">
-                              <c-input-group class="mb-1">
-                                <input
-                                  cFormControl
-                                  id="workCompany"
-                                  name="workCompany"
-                                  [(ngModel)]="newWorkCompany"
-                                  placeholder="Company"
-                                />
-                              </c-input-group>
-                            </div>
-                            <div class="col-md-3">
-                              <c-input-group class="mb-1">
-                                <input
-                                  cFormControl
-                                  id="workYears"
-                                  name="workYears"
-                                  [(ngModel)]="newWorkYears"
-                                  placeholder="Years, e.g. 2013-2023"
-                                />
-                              </c-input-group>
-                            </div>
-                            <div class="col-md-1 d-flex align-items-end">
-                              <button
-                                cButton
-                                color="primary"
-                                type="button"
-                                (click)="addWorkHistory()"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                          @if(info.workHistory && info.workHistory.length) {
-                          <ul class="mt-2 list-unstyled">
-                            @for (item of info.workHistory; track $index; let i = $index) {
-                            <li class="d-flex align-items-center mb-1">
-                              <span class="me-2">&bull; {{ item }}</span>
-                              <button
-                                cButton
-                                color="danger"
-                                size="sm"
-                                type="button"
-                                (click)="removeWorkHistory(i)"
-                              >
-                                Remove
-                              </button>
-                            </li>
-                            }
-                          </ul>
-                          }
                         </div>
                       </c-col>
                       <c-col md="6">

@@ -6,9 +6,9 @@
           <li role="presentation" [ngClass]="{'active': tab === 'subject'}">
             <a href="javascript:void(0)" (click)="onTabSelect('subject')" translate>One on One Classes</a>
           </li>
-          <li role="presentation" [ngClass]="{'active': tab === 'webinar'}">
+          <!-- <li role="presentation" [ngClass]="{'active': tab === 'webinar'}">
             <a href="javascript:void(0)" (click)="onTabSelect('webinar')" translate>Group Classes</a>
-          </li>
+          </li> -->
         </ul>
       </div>
       <div class="col-md-12" *ngIf="tab === 'subject'">
@@ -26,7 +26,7 @@
               </div>
               <div class="col-md-4">
                 <input type="search" class="form-control" aria-controls="table_id"
-                  placeholder="{{'Search tutor, user, subject, group class'|translate}}" (keyup)="doSearch($event)" />
+                  placeholder="{{'Search Expert, user, session'}}" (keyup)="doSearch($event)" />
               </div>
             </div>
           </div>
@@ -39,7 +39,7 @@
                 <tr>
                   <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1" aria-sort="ascending"
                     aria-label="Tutor Name: activate to sort column descending">
-                    <span (click)="sortBy('tutorInfo.name', 'desc')" translate>Tutor name</span>
+                    <span (click)="sortBy('tutorInfo.name', 'desc')" translate>Expert name</span>
                     <app-sort [sortOption]="sortOption" [sortBy]="'tutorInfo.name'"
                       (doSort)="onSort($event)"></app-sort>
                   </th>
@@ -103,7 +103,7 @@
                         class="fi fi-rr-user"></i></a>{{item?.tutor?.name}}
                   </td>
                   <td class="td-targettype">{{(item?.webinar?.name || item?.subject?.name || '') | ellipsis:50}}</td>
-                  <td>{{item?.targetType}}</td>
+                  <!-- <td>{{item?.targetType}}</td> -->
                   <!-- <td>
                     <span class="label label-light-primary" *ngIf="item?.isFree" translate>{{item?.targetType ===
                       'webinar' ? 'Free Group Class' :'Free Trial'}}</span>
@@ -171,7 +171,7 @@
               <div class="col-md-4">
                 <form id="table_id_filter">
                   <input type="search" class="form-control" aria-controls="table_id"
-                    placeholder="{{'Search tutor, user, webinar'|translate}}" (keyup)="doSearch($event)" />
+                    placeholder="{{'Search tutor, user, webinar'|translate'}}" (keyup)="doSearch($event)" />
                 </form>
               </div>
             </div>
@@ -210,7 +210,7 @@
 
               <tbody>
                 <tr *ngIf="(!transactions || (transactions && transactions.length === 0)) && !loading">
-                  <td colspan="10" translate>There are no webinar booking</td>
+                  <td colspan="10" translate>There are no session booking</td>
                 </tr>
                 <tr *ngIf="loading">
                   <td colspan="10" translate><span translate>Loading</span>...</td>

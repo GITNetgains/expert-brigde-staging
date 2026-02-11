@@ -22,7 +22,8 @@ import {
 
 @Component({
   selector: 'app-my-category',
-  templateUrl: './my-category.html'
+  templateUrl: './my-category.html',
+  styleUrls: ['./my-category.component.scss']
 })
 export class MyCategoriesComponent implements OnInit {
   public categories: ICategory[] = [];

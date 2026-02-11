@@ -2,37 +2,41 @@
 
   <!-- HEADER -->
   <div class="expert-header">
-    <img
-      *ngIf="tutor.showPublicIdOnly !== true"
-      class="avatar"
-      [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'"
-      alt="avatar"
-    />
+    <a [routerLink]="['/experts', tutor.username]" class="avatar-wrap avatar-link">
+      <img
+        *ngIf="tutor.showPublicIdOnly !== true"
+        class="avatar"
+        [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'"
+        onerror="this.src='assets/images/default-avatar.jpg'"
+        alt="avatar"
+      />
+      <span *ngIf="tutor.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
+    </a>
 
     <div class="expert-meta">
       <div class="name-location">
       <h3 class="name">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h3>
 
       <p class="location">
-        {{ tutor.state }}{{ tutor.country?.name ? ', ' + tutor.country.name : '' }}
+        {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}
       </p>
       </div>
 
       <p class="fee">
-        <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" /> Consultation Fee:
-        <a>{{ $any(tutor).price1On1Class | appCurrency }}/hr</a>
+        <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" /> Consultation Fee:
+        <a>{{ ($any(tutor).price1On1Class != null && $any(tutor).price1On1Class !== '') ? ($any(tutor).price1On1Class | appCurrency) : '—' }}/hr</a>
       </p>
     </div>
   </div>
 
-  <!-- WORK HISTORY -->
-  <div class="work-history" *ngIf="$any(tutor).workHistory?.length">
+  <!-- EXPERIENCE -->
+  <div class="experience" *ngIf="$any(tutor).experience?.length">
     <div
-      class="work-item"
-      *ngFor="let w of $any(tutor).workHistory | slice:0:4"
+      class="experience-item"
+      *ngFor="let exp of $any(tutor).experience | slice:0:4"
     >
       <span class="red-arrow">▶</span>
-      <span>{{ w }}</span>
+      <span>{{ ($any(exp).title || '') + ($any(exp).organization ? ' at ' + $any(exp).organization : '') + (($any(exp).fromYear || $any(exp).toYear) ? ' (' + ($any(exp).fromYear || '') + ($any(exp).fromYear && $any(exp).toYear ? '–' : '') + ($any(exp).toYear || '') + ')' : '') || 'Experience' }}</span>
     </div>
   </div>
 
@@ -58,7 +62,7 @@
     <a>Response</a>
     <a (click)="chat()">Chat</a>
 
-    <i class="fi fi-rr-arrow-up-right open-icon"></i>
+    <a [routerLink]="['/experts', tutor.username]" class="open-icon-link"><i class="fi fi-rr-arrow-up-right open-icon"></i></a>
   </div>
 
 </div>

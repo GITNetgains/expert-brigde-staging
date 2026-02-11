@@ -127,11 +127,6 @@ exports.User = schema => {
         type: String
       }
     ],
-    workHistory: [
-      {
-        type: String
-      }
-    ],
     subjectIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -148,14 +143,14 @@ exports.User = schema => {
       type: Boolean,
       default: true
     },
-       consultationFee: {
+    consultationFee: {
       type: Number,
       default: 0,
       index: true
     },
     defaultSlotDuration: {
       type: Number,
-      default: 40
+      default: 60
     }
   });
   schema.virtual('subjects', {

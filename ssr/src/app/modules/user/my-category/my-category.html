@@ -1,291 +1,92 @@
 <section class="sm-padding">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 col-lg-4 mt-4">
-        <div class="card">
-          <div class="card-header">
-            <h4 translate>Categories</h4>
-            <div class="card-header-right">
-              <button
-                type="button"
-                class="btn btn-sm btn-default"
-                (click)="submitCategory()"
-              >
-                <i class="fi fi-rr-plus"></i> <span translate>Add</span>
-              </button>
-            </div>
+  <div class="container-fluid px-4">
+    <div class="row my-category-layout g-4">
+      
+      <div class="col-12 col-xl-6">
+        <div class="card custom-card animate-card delay-1">
+          <div class="custom-card-header">
+            <h4>Categories</h4>
+            <button type="button" class="btn btn-add" (click)="submitCategory()">
+              <i class="fi fi-rr-plus"></i> <span>Add New</span>
+            </button>
           </div>
-          <div class="data-table">
-            <div class="table-responsive">
-              <table
-                id="table_id"
-                class="table dataTable no-footer"
-                role="grid"
-                aria-describedby="table_id_info"
-              >
-                <thead>
-                  <tr>
-                    <th
-                      tabindex="0"
-                      aria-controls="table_id"
-                      rowspan="1"
-                      colspan="1"
-                      aria-label="User name: activate to sort column ascending"
-                    >
-                      <span
-                        (click)="sortBy('category', 'name', 'asc')"
-                        translate
-                        >Name</span
-                      >
-                      <app-sort
-                        [sortOption]="filterMyCategory.sortOption"
-                        [sortBy]="'name'"
-                        (doSort)="onSort('category',$event)"
-                      ></app-sort>
-                    </th>
-
-                    <th
-                      tabindex="0"
-                      aria-controls="table_id"
-                      rowspan="1"
-                      colspan="1"
-                      aria-label="Action: activate to sort column ascending"
-                      class="text-center"
-                    >
-                      <a translate class="me-2 cate-action">Action</a>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngIf="!myCategories.length && !filterMyCategory.loading">
-                    <td translate colspan="4">There are no categories</td>
-                  </tr>
-
-                  <tr *ngIf="filterMyCategory.loading">
-                    <td translate colspan="4">Loading...</td>
-                  </tr>
-                  <tr
-                    *ngFor="let item of myCategories, let i = index"
-                    [ngClass]="{'highlight':selectedCategory &&selectedCategory._id === item._id}"
-                  >
-                    <td>{{item?.name}}</td>
-
-                    <td class="text-center">
-                      <button
-                        (click)="selectMyCategory(item)"
-                        class="btn btn-outline-dark"
-                      >
-                        <strong translate>List your subcategory</strong>
+          
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th (click)="sortBy('category', 'name', 'asc')" class="cursor-pointer">Name</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of myCategories; let i = index" 
+                    [class.highlight]="selectedCategory?._id === item._id">
+                  <td class="fw-medium">{{item?.name}}</td>
+                  <td>
+                    <div class="action-cell">
+                      <button (click)="selectMyCategory(item)" class="btn btn-list-action">
+                        Manage Subcategories
                       </button>
-                      <a
-                        href="javascript:void(0)"
-                        [ngClass]="[item.isActive? ' btn-outline-success': ' btn-outline-danger']"
-                        class="btn btn-action"
-                        (click)="changeStatus('category',item)"
-                        [title]="item.isActive? 'Deactivate': 'Activate now'"
-                      >
-                        <i
-                          class="fi fi-rr-check"
-                          aria-hidden="true"
-                          *ngIf="item.isActive"
-                        ></i>
-                        <i
-                          class="fi fi-rr-cross"
-                          aria-hidden="true"
-                          *ngIf="!item.isActive"
-                        ></i>
-                      </a>
-                      <a
-                        href="javascript:void(0)"
-                        class="btn btn-outline-danger btn-action"
-                        (click)="remove('category',item, i)"
-                      >
+                      
+                      <button (click)="changeStatus('category',item)" 
+                              [class]="item.isActive ? 'btn-status btn-status-active' : 'btn-status btn-status-inactive'">
+                        <i [class]="item.isActive ? 'fi fi-rr-check' : 'fi fi-rr-cross'"></i>
+                      </button>
+                      
+                      <button (click)="remove('category',item, i)" class="btn-status btn-delete">
                         <i class="fi fi-rr-trash"></i>
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div
-              class="dataTables_paginate paging_simple_numbers d-flex justify-content-center"
-              id="table_id_paginate"
-              *ngIf="filterMyCategory.total > filterMyCategory.pageSize"
-            >
-              <ngb-pagination
-                [collectionSize]="filterMyCategory.total"
-                [(page)]="filterMyCategory.currentPage"
-                [pageSize]="filterMyCategory.pageSize"
-                [maxSize]="2"
-                (pageChange)="pageChange('category')"
-              >
-                <ng-template ngbPaginationPrevious translate
-                  ><span translate
-                    ><i class="fi fi-rr-angle-small-left"></i></span
-                ></ng-template>
-                <ng-template ngbPaginationNext translate
-                  ><span translate
-                    ><i class="fi fi-rr-angle-small-right"></i></span
-                ></ng-template>
-              </ngb-pagination>
-            </div>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      <div class="col-md-12 col-lg-4 mt-4">
-        <div class="card">
-          <div class="card-header">
-            <h4 translate>Subcategories</h4>
-            <div class="card-header-right">
-              <button
-                type="button"
-                class="btn btn-sm btn-default"
-                (click)="submitSubject()"
-                *ngIf="selectedCategory"
-              >
-                <i class="fi fi-rr-plus"></i> <span translate>Add</span>
-              </button>
-            </div>
+
+      <div class="col-12 col-xl-6">
+        <div class="card custom-card animate-card delay-2">
+          <div class="custom-card-header">
+            <h4>Subcategories</h4>
+            <button *ngIf="selectedCategory" type="button" class="btn btn-add" (click)="submitSubject()">
+              <i class="fi fi-rr-plus"></i> <span>Add</span>
+            </button>
           </div>
-          <div class="data-table">
-            <div class="table-responsive">
-              <table
-                id="table_id"
-                class="table dataTable no-footer"
-                role="grid"
-                aria-describedby="table_id_info"
-              >
-                <thead>
-                  <tr>
-                    <th
-                      tabindex="0"
-                      aria-controls="table_id"
-                      rowspan="1"
-                      colspan="1"
-                    >
-                      <span (click)="sortBy('subject', 'name', 'asc')" translate
-                        >Name</span
-                      >
-                      <app-sort
-                        [sortOption]="filterMySubject.sortOption"
-                        [sortBy]="'name'"
-                        (doSort)="onSort('subject',$event)"
-                      ></app-sort>
-                    </th>
-                    <th
-                      tabindex="0"
-                      aria-controls="table_id"
-                      rowspan="1"
-                      colspan="1"
-                    >
-                      <span (click)="sortBy('subject', 'price', 'asc')" translate
-                        >Price</span
-                      >
-                      <app-sort
-                        [sortOption]="filterMySubject.sortOption"
-                        [sortBy]="'price'"
-                        (doSort)="onSort('subject',$event)"
-                      ></app-sort>
-                    </th>
+          
+          <div class="table-responsive">
+            <div *ngIf="!selectedCategory" class="py-5 text-center">
+              <p class="text-muted mb-0">Select a category from the left to view subjects.</p>
+            </div>
 
-                    <th
-                      tabindex="0"
-                      aria-controls="table_id"
-                      rowspan="1"
-                      colspan="1"
-                      class="text-center"
-                    >
-                      <a translate class="me-2 cate-action">Action</a>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    *ngIf="!mySubjects.length && !filterMySubject.loading && selectedCategory"
-                  >
-                    <td translate colspan="4">There are no subjects</td>
-                  </tr>
-
-                  <tr *ngIf="!selectedCategory">
-                    <td translate colspan="4">
-                      Please select the category first!
-                    </td>
-                  </tr>
-
-                  <tr *ngIf="filterMySubject.loading">
-                    <td translate colspan="4">Loading...</td>
-                  </tr>
-                  <tr
-                    *ngFor="let item of mySubjects, let i = index"
-                    [ngClass]="{'highlight':selectedSubject &&selectedSubject._id === item._id}"
-                  >
-                    <td>{{item?.name}}</td>
-                    <td>{{item?.price | appCurrency }}</td>
-
-                    <td class="text-center">
-                      <button
-                        (click)="submitSubject(item)"
-                        class="btn btn-outline-dark"
-                      >
-                        <strong translate>Edit Subject</strong>
-                      </button>
-                      <a
-                        href="javascript:void(0)"
-                        [ngClass]="[item.isActive? ' btn-outline-success': ' btn-outline-danger']"
-                        class="btn btn-action"
-                        (click)="changeStatus('subject',item)"
-                        [title]="item.isActive? 'Deactivate': 'Activate now'"
-                      >
-                        <i
-                          class="fi fi-rr-check"
-                          aria-hidden="true"
-                          *ngIf="item.isActive"
-                        ></i>
-                        <i
-                          class="fi fi-rr-cross"
-                          aria-hidden="true"
-                          *ngIf="!item.isActive"
-                        ></i>
-                      </a>
-                      <a
-                        href="javascript:void(0)"
-                        class="btn btn-outline-danger btn-action"
-                        (click)="remove('subject',item, i)"
-                      >
+            <table class="table align-middle" *ngIf="selectedCategory">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of mySubjects; let i = index">
+                  <td class="fw-medium">{{item?.name}}</td>
+                  <td><span class="badge bg-light text-dark">{{item?.price | appCurrency}}</span></td>
+                  <td>
+                    <div class="action-cell">
+                      <button (click)="submitSubject(item)" class="btn btn-list-action">Edit</button>
+                      <button (click)="remove('subject',item, i)" class="btn-status btn-delete">
                         <i class="fi fi-rr-trash"></i>
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div
-              class="dataTables_paginate paging_simple_numbers d-flex justify-content-center"
-              id="table_id_paginate"
-              *ngIf="filterMySubject.total > filterMySubject.pageSize"
-            >
-              <ngb-pagination
-                [collectionSize]="filterMySubject.total"
-                [(page)]="filterMySubject.currentPage"
-                [pageSize]="filterMySubject.pageSize"
-                [maxSize]="2"
-                (pageChange)="pageChange('subject')"
-                class="float-right"
-              >
-                <ng-template ngbPaginationPrevious translate
-                  ><span translate
-                    ><i class="fi fi-rr-angle-small-left"></i></span
-                ></ng-template>
-                <ng-template ngbPaginationNext translate
-                  ><span translate
-                    ><i class="fi fi-rr-angle-small-right"></i></span
-                ></ng-template>
-              </ngb-pagination>
-            </div>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      <!-- Topics section removed to enforce subject-only pricing -->
+
     </div>
   </div>
 </section>

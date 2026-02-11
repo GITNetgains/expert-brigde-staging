@@ -1,0 +1,140 @@
+/* ==============================
+   Modern Dashboard UI - Optimized
+   ============================== */
+
+   section.sm-padding {
+    background: #f8fafc; /* Lighter, cleaner background */
+    min-height: 100vh;
+  }
+  
+  /* Fix for the side-by-side layout spacing */
+  .my-category-layout {
+    padding-top: 2rem;
+  }
+  
+  /* High-End Card Design */
+  .custom-card {
+    border-radius: 20px !important;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    background: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .custom-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .custom-card-header h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Modernized Table */
+  .table-responsive {
+    padding: 0 1rem 1rem;
+  }
+  
+  .table {
+    border-collapse: separate;
+    border-spacing: 0 8px; /* Creates the "floating row" look */
+  }
+  
+  .table thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+    padding: 12px 15px;
+  }
+  
+  .table tbody tr {
+    background: #ffffff;
+    transition: all 0.2s;
+  }
+  
+  .table tbody tr:hover {
+    background: #f1f5f9 !important;
+    transform: scale(1.01);
+  }
+  
+  .table tbody td {
+    padding: 1rem 15px;
+    vertical-align: middle;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+  
+  /* Fix for the Round Action Buttons */
+  .action-cell {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  
+  .btn-status {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.2s;
+  }
+  
+  .btn-status-active { background: #dcfce7; color: #166534; }
+  .btn-status-inactive { background: #fee2e2; color: #991b1b; }
+  .btn-delete { background: #f1f5f9; color: #64748b; }
+  .btn-delete:hover { background: #fee2e2; color: #ef4444; }
+  
+  /* The "Main" Action Button (List Subcategory) */
+  .btn-list-action {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  
+  .btn-list-action:hover {
+    background: #1e293b;
+    color: #ffffff;
+  }
+  
+  /* Gradient Primary Button */
+  .btn-add {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  }
+  
+  .btn-add:hover {
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    transform: translateY(-1px);
+  }
+  
+  /* Selection Highlight */
+  tr.highlight td {
+    background-color: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #1e40af;
+    font-weight: 600;
+  }
