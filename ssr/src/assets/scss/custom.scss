@@ -2697,11 +2697,12 @@ input:checked + .slider {
 }
 
 .profile-page {
-  padding: 50px 0;
+  padding: 2.5rem 0 3rem;
   position: relative;
+  min-height: 0;
 
   @media (max-width: 768px) {
-    padding: 20px 0;
+    padding: 1.25rem 0 2rem;
   }
 
   &::before {
@@ -2710,8 +2711,9 @@ input:checked + .slider {
     top: 0;
     left: 0;
     width: 100%;
-    height: 300px;
-    background-color: #fff3f7;
+    height: 280px;
+    background: linear-gradient(180deg, #fff5f8 0%, #fff 100%);
+    z-index: 0;
   }
 
   .container {
@@ -2722,43 +2724,73 @@ input:checked + .slider {
 
 .profile-detail {
   display: flex;
+  align-items: flex-start; /* prevent right column stretching to match left height */
   margin: 0 -10px;
+  gap: 0;
 
   @media (max-width: 768px) {
     display: block;
+    margin: 0;
   }
 
   .video-play {
-    padding-top: 60%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
     position: relative;
-    min-height: auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
 
-    iframe {
+    iframe,
+    video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 5px 5px 0 0;
+      border-radius: 12px 12px 0 0;
+      object-fit: contain;
     }
   }
 
   &-left {
-    width: 350px;
+    width: 340px;
+    min-width: 340px;
     padding: 0 10px;
+    flex-shrink: 0;
 
     @media (max-width: 768px) {
-      width: auto;
+      width: 100%;
+      min-width: auto;
+      padding: 0;
+      margin-bottom: 1.25rem;
     }
   }
 
   &-right {
-    width: calc(100% - 350px);
+    flex: 1;
+    min-width: 0;
     padding: 0 10px;
+    /* height follows content only – no stretch */
 
     @media (max-width: 768px) {
-      width: auto;
+      padding: 0;
     }
+  }
+
+  /* Modern card styling for profile page */
+  .card-border {
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .profile-card .card-body {
+    padding: 1.5rem;
   }
 
   .profile-img {
@@ -2766,27 +2798,86 @@ input:checked + .slider {
 
     img {
       width: 100%;
-      border-radius: 5px;
-      margin-bottom: 20px;
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+      aspect-ratio: 1;
+      object-fit: cover;
     }
   }
 
+  .profile-info h5 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .rating-stars {
+    margin: 0.5rem 0 0.75rem;
+  }
+
   .tutor-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
     .btn {
-      margin-right: 5px;
-      margin-bottom: 3px;
+      margin: 0;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(228, 84, 60, 0.35);
+      }
     }
   }
 
   .tutor-info-m {
     .item-tutor-info {
-      margin-top: 15px;
+      margin-top: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+      &:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
 
       h5 {
-        font-size: 18px;
-        margin: 0;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 0 0 0.35rem 0;
+      }
+
+      .text-line-break,
+      .text-secondary {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: rgba(0, 0, 0, 0.85);
       }
     }
+  }
+
+  .card-body .tutor-features + .tutor-info-m .item-tutor-info:first-child {
+    margin-top: 0.5rem;
+  }
+
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 1rem 1.25rem;
+  }
+
+  .card-header .card-tite,
+  .card-header .card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+    color: rgba(0, 0, 0, 0.9);
   }
 }
 
