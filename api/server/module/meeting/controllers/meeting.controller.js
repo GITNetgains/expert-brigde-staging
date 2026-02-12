@@ -51,10 +51,13 @@ exports.startMeeting = async (req, res, next) => {
     };
     if (isZoomPlatform) {
       if (!appointment.zoomData || (appointment.zoomData && !appointment.zoomData.start_url)) {
+        const tutorDisplayName = req.user.showPublicIdOnly === true
+          ? (req.user.userId || req.user._id.toString())
+          : req.user.name;
         // ✅ UPDATED: Added startTime, duration, topic, timezone
         const zoomData = await Service.ZoomUs.createMeeting({
           email: req.user.email,
-          topic: appointment.description || `${req.user.name}'s Tutoring Session`,
+          topic: appointment.description || `${tutorDisplayName}'s Tutoring Session`,
           startTime: appointment.startTime.toISOString(),
           duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
           timezone: 'Asia/Calcutta'
@@ -95,10 +98,13 @@ exports.startMeeting = async (req, res, next) => {
       } else if (appointment.zoomData && appointment.zoomData.start_url) {
         let zoomData = await Service.ZoomUs.getDetailMeeting(appointment.zoomData.id);
         if (!zoomData || !zoomData.start_url) {
+          const tutorDisplayName = req.user.showPublicIdOnly === true
+            ? (req.user.userId || req.user._id.toString())
+            : req.user.name;
           // ✅ UPDATED: Added startTime, duration, topic, timezone
           zoomData = await Service.ZoomUs.createMeeting({
             email: req.user.email,
-            topic: appointment.description || `${req.user.name}'s Tutoring Session`,
+            topic: appointment.description || `${tutorDisplayName}'s Tutoring Session`,
             startTime: appointment.startTime.toISOString(),
             duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
             timezone: 'Asia/Calcutta'
@@ -174,9 +180,12 @@ exports.startMeeting = async (req, res, next) => {
         }
         id = `${req.user._id}-${student._id}`;
       }
+      const tutorDisplayName = req.user.showPublicIdOnly === true
+        ? (req.user.userId || req.user._id.toString())
+        : req.user.name;
       const spaceData = await Service.LessonSpace.launchSpace(req.user, {
         id,
-        name: `${req.user.name}'s Space`,
+        name: `${tutorDisplayName}'s Space`,
         leader: true
       });
 
@@ -284,8 +293,11 @@ exports.joinMeeting = async (req, res, next) => {
           })
         );
       }
-      const tutor = await DB.User.findOne({ _id: appointment.tutorId });
+      const tutor = await DB.User.findOne({ _id: appointment.tutorId }).select('_id userId showPublicIdOnly name');
       if (!tutor) return next(PopulateResponse.notFound());
+      const tutorDisplayName = tutor.showPublicIdOnly === true
+        ? (tutor.userId || tutor._id.toString())
+        : tutor.name;
       let id = tutor._id;
       if (appointment.targetType === 'webinar') {
         const webinar = await DB.Webinar.findOne({ _id: appointment.webinarId });
@@ -306,7 +318,7 @@ exports.joinMeeting = async (req, res, next) => {
 
       const spaceData = await Service.LessonSpace.launchSpace(req.user, {
         id,
-        name: `${tutor.name}'s Space`,
+        name: `${tutorDisplayName}'s Space`,
         leader: false
       });
 

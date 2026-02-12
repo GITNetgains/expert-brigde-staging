@@ -43,7 +43,7 @@ exports.User = schema => {
 
     showPublicIdOnly: {
       type: Boolean,
-      default: false
+      default: true
     },
 
     aiQueries: [

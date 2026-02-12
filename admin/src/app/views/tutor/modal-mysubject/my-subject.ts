@@ -9,6 +9,7 @@ import {
   ButtonDirective,
   ModalModule,
   FormLabelDirective,
+  FormControlDirective,
   FormCheckComponent,
   FormCheckLabelDirective,
   FormCheckInputDirective,
@@ -25,6 +26,7 @@ import {
     NgSelectModule,
     ButtonDirective,
     FormLabelDirective,
+    FormControlDirective,
     FormCheckComponent,
     FormCheckLabelDirective,
     FormCheckInputDirective,
@@ -36,6 +38,7 @@ export class MySubjectFormComponent implements OnInit {
   @Input() subjects: any[] = [];
   @Input() mySubject: any = {
     isActive: true,
+    price: 0,
   };
   @Input() selectedCategory: any;
   @Input() visible = false;
@@ -48,7 +51,7 @@ export class MySubjectFormComponent implements OnInit {
 
   ngOnInit() {
     if (!this.mySubject) {
-      this.mySubject = { isActive: true, originalSubjectId: null };
+      this.mySubject = { isActive: true, price: 0, originalSubjectId: null };
     }
 
     if (this.selectedCategory) {
@@ -65,7 +68,7 @@ export class MySubjectFormComponent implements OnInit {
       });
       return;
     }
-    this.closeModal(pick(this.mySubject, ['isActive', 'originalSubjectId']));
+    this.closeModal(pick(this.mySubject, ['isActive', 'originalSubjectId', 'price']));
   }
 
   closeModal(result?: any) {
@@ -114,5 +117,12 @@ export class MySubjectFormComponent implements OnInit {
       this.mySubject = {};
     }
     this.mySubject.isActive = value;
+  }
+
+  updatePrice(value: number) {
+    if (!this.mySubject) {
+      this.mySubject = { price: 0 };
+    }
+    this.mySubject.price = value != null ? Number(value) : 0;
   }
 }

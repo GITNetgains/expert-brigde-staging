@@ -148,11 +148,14 @@ export class ListLessonComponent implements OnInit {
             resp.data.platform === 'zoomus' &&
             resp.data['zoomus'].signature
           ) {
+            const zoomDisplayName = (this.currentUser.type === 'tutor' && this.currentUser.showPublicIdOnly)
+              ? String(this.currentUser.userId || this.currentUser._id)
+              : this.currentUser.name;
             const token = encrypt(
               {
                 meetingInfo: resp.data['zoomus'],
                 appointmentId,
-                currentUser: pick(this.currentUser, ['name', 'email', 'type'])
+                currentUser: { ...pick(this.currentUser, ['email', 'type']), name: zoomDisplayName }
               },
               ''
             );

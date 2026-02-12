@@ -22,13 +22,10 @@ import {
 import { UtilService } from 'src/services';
 import { CategoryService } from 'src/services/category.service';
 import { SubjectService } from 'src/services/subject.service';
-import { TopicService } from 'src/services/topic.service';
 import { MyCategoryService } from 'src/services/my-category.service';
 import { MySubjectService } from 'src/services/my-subject.service';
-import { MyTopicService } from 'src/services/my-topic.service';
 import { MyCategoryFormComponent } from '../modal-create-category/modal';
 import { MySubjectFormComponent } from '../modal-mysubject/my-subject';
-import { MyTopicFormComponent } from '../modal-create-topic/modal';
 
 @Component({
   selector: 'app-tutor-categories',
@@ -43,14 +40,12 @@ import { MyTopicFormComponent } from '../modal-create-topic/modal';
     GridModule,
     MyCategoryFormComponent,
     MySubjectFormComponent,
-    MyTopicFormComponent,
   ],
 })
 export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() tutorId: string = '';
   @Output() categorySelected = new EventEmitter<any>();
   @Output() subjectSelected = new EventEmitter<any>();
-  @Output() topicSelected = new EventEmitter<any>();
   icons = { cilPencil, cilPlus };
 
   myCategories: any[] = [];
@@ -78,42 +73,24 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
     },
   };
 
-  myTopics: any[] = [];
-  filterMyTopic: any = {
-    loading: false,
-    currentPage: 1,
-    pageSize: 10,
-    total: 0,
-    mySubjectId: '',
-    sortOption: {
-      sortBy: 'createdAt',
-      sortType: 'desc',
-    },
-  };
-
   selectedCategory: any = null;
   selectedSubject: any = null;
 
   categoryModalVisible: boolean = false;
   subjectModalVisible: boolean = false;
-  topicModalVisible: boolean = false;
   currentCategory: any = null;
   currentSubject: any = null;
-  currentTopic: any = null;
 
   categories: any[] = [];
   subjects: any[] = [];
-  topics: any[] = [];
 
   private destroy$ = new Subject<void>();
 
   private utilService = inject(UtilService);
   private categoryService = inject(CategoryService);
   private subjectService = inject(SubjectService);
-  private topicService = inject(TopicService);
   private myCategoryService = inject(MyCategoryService);
   private mySubjectService = inject(MySubjectService);
-  private myTopicService = inject(MyTopicService);
 
   constructor() {}
 
@@ -160,21 +137,6 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
         },
       });
   }
-  loadTopics(subjectId: string) {
-    this.topicService
-      .search({
-        subjectIds: subjectId,
-        take: 1000,
-        isActive: true,
-      })
-      .subscribe({
-        next: (resp: any) => {
-          if (resp.data?.items) {
-            this.topics = resp.data.items;
-          }
-        },
-      });
-  }
 
   queryMyCategories() {
     this.filterMyCategory.loading = true;
@@ -210,7 +172,6 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedSubject = null;
     this.filterMySubject.myCategoryId = category._id;
     this.mySubjects = [];
-    this.myTopics = [];
     this.categorySelected.emit(category);
     this.queryMySubjects();
 
@@ -251,45 +212,7 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
 
   selectMySubject(subject: any) {
     this.selectedSubject = subject;
-    this.filterMyTopic.mySubjectId = subject._id;
-    this.myTopics = [];
     this.subjectSelected.emit(subject);
-    this.queryMyTopics();
-
-    if (subject.originalSubjectId) {
-      this.loadTopics(subject.originalSubjectId);
-    }
-  }
-
-  queryMyTopics() {
-    this.filterMyTopic.loading = true;
-    const params = {
-      page: this.filterMyTopic.currentPage,
-      take: this.filterMyTopic.pageSize,
-      sort: this.filterMyTopic.sortOption.sortBy,
-      sortType: this.filterMyTopic.sortOption.sortType,
-      mySubjectId: this.filterMyTopic.mySubjectId,
-      myCategoryId: this.selectedCategory?._id,
-      tutorId: this.tutorId,
-    };
-
-    this.myTopicService.search(params).subscribe({
-      next: (resp: any) => {
-        if (resp.data?.items) {
-          this.filterMyTopic.total = resp.data.count;
-          this.myTopics = resp.data.items;
-        }
-        this.filterMyTopic.loading = false;
-      },
-      error: (err: any) => {
-        this.filterMyTopic.loading = false;
-        this.utilService.toastError({
-          title: 'Error',
-          message:
-            err.error?.message || 'Something went wrong, please try again!',
-        });
-      },
-    });
   }
 
   pageChange(type: string, page?: number) {
@@ -302,9 +225,6 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
       } else if (type === 'subject') {
         this.filterMySubject.currentPage = page;
         this.queryMySubjects();
-      } else if (type === 'topic') {
-        this.filterMyTopic.currentPage = page;
-        this.queryMyTopics();
       }
     }
   }
@@ -370,7 +290,7 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
     this.categoryModalVisible = false;
   }
 
-  submitSubject(mySubject: any = { isActive: true }) {
+  submitSubject(mySubject: any = { isActive: true, price: 0 }) {
     if (!this.selectedCategory) {
       this.utilService.toastError({
         title: 'Error',
@@ -381,7 +301,7 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
 
     this.currentSubject = mySubject._id
       ? { ...mySubject }
-      : { isActive: true, originalSubjectId: null };
+      : { isActive: true, price: 0, originalSubjectId: null };
     this.subjectModalVisible = true;
   }
 
@@ -447,94 +367,11 @@ export class TutorCategoriesComponent implements OnInit, OnChanges, OnDestroy {
     this.subjectModalVisible = false;
   }
 
-  submitTopic(myTopic: any = { isActive: true, price: 0 }) {
-    if (!this.selectedSubject) {
-      this.utilService.toastError({
-        title: 'Error',
-        message: 'Please select a subject first!',
-      });
-      return;
-    }
-
-    this.currentTopic = myTopic._id
-      ? { ...myTopic }
-      : { isActive: true, price: 0, originalTopicId: null };
-    this.topicModalVisible = true;
-  }
-
-  onTopicModalClosed(result: any) {
-    if (!result) {
-      this.topicModalVisible = false;
-      return;
-    }
-
-    if (this.currentTopic?._id) {
-      this.myTopicService
-        .update(this.currentTopic._id, {
-          ...result,
-          myCategoryId: this.selectedCategory?._id,
-          mySubjectId: this.selectedSubject?._id,
-          tutorId: this.tutorId,
-        })
-        .subscribe({
-          next: (resp: any) => {
-            if (resp.data) {
-              this.utilService.toastSuccess({
-                title: 'Success',
-                message: 'Updated successfully!',
-              });
-              this.queryMyTopics();
-            }
-          },
-          error: (err: any) => {
-            this.utilService.toastError({
-              title: 'Error',
-              message:
-                err.error?.data?.message || 'Something went wrong, please try again!',
-            });
-          },
-        });
-    } else {
-      this.myTopicService
-        .create({
-          ...result,
-          myCategoryId: this.selectedCategory?._id,
-          mySubjectId: this.selectedSubject?._id,
-          tutorId: this.tutorId,
-        })
-        .subscribe({
-          next: (resp: any) => {
-            if (resp.data) {
-              this.myTopics.push(resp.data);
-              this.utilService.toastSuccess({
-                title: 'Success',
-                message: 'Created successfully!',
-              });
-              this.queryMyTopics();
-            }
-          },
-          error: (err: any) => {
-            this.utilService.toastError({
-              title: 'Error',
-              message:
-                err.error?.data?.message || 'Something went wrong, please try again!',
-            });
-          },
-        });
-    }
-
-    this.topicModalVisible = false;
-  }
-
   bindCategoryCallback() {
     return (result: any) => this.onCategoryModalClosed(result);
   }
 
   bindSubjectCallback() {
     return (result: any) => this.onSubjectModalClosed(result);
-  }
-
-  bindTopicCallback() {
-    return (result: any) => this.onTopicModalClosed(result);
   }
 }

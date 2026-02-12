@@ -9,7 +9,6 @@ import {
   LanguageService,
   IndustryService,
 } from 'src/services';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ProfileCardComponent } from '../../user/profile-card/profile-card.component';
 import { TutorCategoriesComponent } from '../tutor-categories/tutor-categories.component';
 import { TutorEducationComponent } from '../tutor-education/tutor-education.component';
@@ -80,7 +79,6 @@ export class UpdateComponent implements OnInit {
   public loading = false;
   public userId: string | null = null;
   public isTimezoneValid = true;
-  public urlYoutube: SafeResourceUrl | null = null;
   public customStylesValidated = false;
   public countries: any[] = [];
   public timezones: any[] = [];
@@ -97,7 +95,6 @@ export class UpdateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private tutorService = inject(TutorService);
   private utilService = inject(UtilService);
-  private sanitizer = inject(DomSanitizer);
   private countryService = inject(CountryService);
   private languageService = inject(LanguageService);
   private industryService = inject(IndustryService);
@@ -145,10 +142,6 @@ export class UpdateComponent implements OnInit {
         if (this.info.country && typeof this.info.country === 'object') {
           this.info.country = this.info.country.code;
         }
-        if (this.info.introYoutubeId) {
-          this.urlYoutube = this.setUrl(this.info.introYoutubeId);
-        }
-
         if (this.info.introVideo && (this.info.introVideo as any).fileUrl) {
           this.introVideoUrl = (this.info.introVideo as any).fileUrl;
         }
@@ -238,7 +231,7 @@ export class UpdateComponent implements OnInit {
       phoneNumber: this.info.phoneNumber,
       zipCode: this.info.zipCode,
       commissionRate: this.info.commissionRate,
-      idYoutube: this.info.idYoutube,
+      idYoutube: '',
       introVideoId: this.info.introVideoId,
       featured: this.info.featured,
       isHomePage: this.info.isHomePage,
@@ -281,12 +274,6 @@ export class UpdateComponent implements OnInit {
 
   afterUpload(evt: string) {
     this.info.avatar = evt;
-  }
-
-  setUrl(idYoutube: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${idYoutube}`
-    );
   }
 
   approve() {

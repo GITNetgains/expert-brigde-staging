@@ -13,6 +13,10 @@ exports.register = async data => {
     const user = new DB.User(data);
     user.type = 'tutor';
     user.emailVerifiedToken = Helper.String.randomString(48);
+    // Auto-approve tutors on signup so they can log in immediately
+    user.verified = true;
+    user.pendingApprove = false;
+    user.rejected = false;
 
     if (data.issueDocument && data.resumeDocument && data.certificationDocument) {
       await DB.Media.updateMany(

@@ -158,25 +158,6 @@
             </ng-select>
           </div>
 
-          <div class="item-profile-form" *ngIf="info && info.type === 'tutor'">
-            <div [ngClass]="{'d-flex justify-content-between':!isEditProfile}">
-              <h6>
-                <span translate>Intro video</span><strong translate> (youtube ID)</strong>
-              </h6>
-              <p class="text-secondary2" *ngIf="!isEditProfile">
-                {{info.idYoutube}}
-              </p>
-            </div>
-            <small translate>This video will be displayed on your tutor profile page</small>
-
-            <input [hidden]="!isEditProfile" type="text" class="form-control"
-              placeholder="{{'Enter id youtube from url'| translate}}" [(ngModel)]="info.idYoutube" name="id-youtube" />
-            <small [hidden]="!isEditProfile">Please enter only <strong>ID</strong></small>
-            <br />
-            <small [hidden]="!isEditProfile">EG: https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>
-              <br />
-              ID = <strong>xRjlRfpsHGw</strong></small>
-          </div>
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Slot duration default</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
@@ -238,48 +219,20 @@
           <div class="mt-3" *ngIf="info.type === 'tutor'" class="item-profile-form">
             <div [ngClass]="{'d-flex justify-content-between':!isEditProfile}">
               <h6><span translate>Introduction video</span></h6>
-              <p class="text-secondary2" *ngIf="!isEditProfile && introVideoType==='youtube' && info.introYoutubeId ">
-                {{info.introYoutubeId}}
-              </p>
-              <p class="text-secondary2" *ngIf="!isEditProfile && introVideoType==='upload' && introVideoName ">
+              <p class="text-secondary2" *ngIf="!isEditProfile && introVideoName">
                 {{introVideoName}}
               </p>
             </div>
             <small translate>This video will be displayed on admin page</small>
-            <div *ngIf="isEditProfile">
-              <label class="custom-radio"><span translate>Upload</span>
-                <input type="radio" name="videotype" value="upload" [disabled]="!isEditProfile"
-                  [(ngModel)]="introVideoType" />
-                <span class="checkmark"></span>
-              </label>
-              <label class="custom-radio" translate><span translate>From youtube</span>
-                <input type="radio" name="videotype" value="youtube" [disabled]="!isEditProfile"
-                  [(ngModel)]="introVideoType" />
-                <span class="checkmark"></span>
-              </label>
-            </div>
-          </div>
-          <div *ngIf="isEditProfile" class="mb-3">
-            <div class="form-group" *ngIf="info.type === 'tutor' && introVideoType === 'youtube'">
-              <input type="text" class="form-control" placeholder="{{ 'Youtube Id' | translate }}" #video="ngModel"
-                required name="video" [(ngModel)]="info.introYoutubeId" />
-              <div *ngIf="video.errors && (video.dirty || video.touched || isSubmitted)">
-                <p [hidden]="!video.errors['required']" class="error" translate>
-                  Youtube video Id is required
-                </p>
-              </div>
-              <small translate>Please enter only ID</small>
-              <br />
-              <small>EG: https://www.youtube.com/watch?v=<strong>xRjlRfpsHGw</strong>
-                <br />
-                ID = <strong>xRjlRfpsHGw</strong></small>
-              >
-            </div>
-            <div *ngIf="info.type === 'tutor' && introVideoType === 'upload'">
-              <p *ngIf="introVideo && introVideo.name">{{ introVideo.name }}</p>
-              <!-- <app-file-upload [options]="introVideoOptions"></app-file-upload> -->
-              <small translate>Upload mp4 file, webm file, 3gp file, ogg file, wmv file or
-                webm file for your video</small>
+            <div *ngIf="isEditProfile" class="mt-2">
+              <p class="text-success mb-2" *ngIf="(info.introVideoId || introVideoName) && !uploading">
+                <span translate>Uploaded</span>: {{ introVideoName }} ✓
+              </p>
+              <app-file-upload
+                [options]="introVideoOptions"
+                (finishUpload)="onIntroVideoUploadFinish($event)"
+              ></app-file-upload>
+              <small class="d-block mt-1" translate>Upload mp4 file, webm file, 3gp file, ogg file, wmv file or webm file for your video</small>
             </div>
           </div>
           <div class="item-profile-form d-flex">

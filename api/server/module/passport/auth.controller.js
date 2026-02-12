@@ -380,7 +380,9 @@ exports.completeTutorProfile = async (req, res, next) => {
       user.industryIds = industries.map(i => i._id);
     }
 
-    user.pendingApprove = true;
+    // Auto-approve tutors so they can log in without admin approval
+    user.pendingApprove = false;
+    user.verified = true;
     user.rejected = false;
 
     const mediaIds = [issueDocument, resumeDocument, certificationDocument].filter(Boolean);
@@ -488,7 +490,7 @@ exports.completeTutorProfile = async (req, res, next) => {
     }
 
     res.locals.completeTutorProfile = PopulateResponse.success(
-      { message: 'Thanks for submitting your profile details. You will be notified once approved via email.' },
+      { message: 'Profile completed. You can now log in.' },
       'TUTOR_PROFILE_COMPLETED'
     );
     next();

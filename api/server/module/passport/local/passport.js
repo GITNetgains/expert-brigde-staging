@@ -1,5 +1,4 @@
 const passport = require('passport');
-const { PLATFORM_ONLINE } = require('../../meeting');
 const LocalStrategy = require('passport-local').Strategy;
 
 exports.setup = () => {
@@ -26,8 +25,6 @@ exports.setup = () => {
               )
             );
           }
-
-          const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
 
           return user.authenticate(password, (authError, authenticated) => {
             if (authError) {
@@ -67,21 +64,8 @@ exports.setup = () => {
                   },
                   'ERR_ACCOUNT_NOT_APPROVED'
                 )
-              );}
-              //navjot
-            else if (!user.isZoomAccount && user.type === 'tutor' && isZoomPlatform) {
-              return done(
-                null,
-                false,
-                PopulateResponse.error(
-                  {
-                    message: 'Please check email and active account on zoom. Any questions please contact admin. '
-                  },
-                  'ERR_ACCOUNT_NOT_APPROVED'
-                )
               );
-            } 
-            else if (user.type === 'student' && !user.isActive) {
+            } else if (user.type === 'student' && !user.isActive) {
               return done(
                 null,
                 false,

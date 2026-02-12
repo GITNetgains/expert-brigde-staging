@@ -83,7 +83,9 @@
     }
 
     async getCurrentUser() {
-      if (this.isFetched(this.currentUser)) {
+      // Only use cache when we have an actual user (not null). After removeToken()
+      // or first login after signup, currentUser is null but was "fetched" - we must refetch.
+      if (this.currentUser != null && this.isFetched(this.currentUser)) {
         this.currentUserSubject.next(this.currentUser);
         this.stateService.saveState('currentUser', this.currentUser);
         return new Promise((resolve) => resolve(this.currentUser));
@@ -181,6 +183,7 @@ loginVerifyOtp(payload: any): Promise<any> {
       this.mycookie.delete('timeZone', '/');
 
       this.currentUser = null as any;
+      this._getUser = null;
       this.stateService.removeState(STATE.CURRENT_USER);
       this.currentUserSubject.next(null);
       try { this.socket.disconnect(); } catch {}

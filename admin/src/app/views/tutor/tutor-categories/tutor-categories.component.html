@@ -95,6 +95,7 @@
             <thead>
               <tr>
                 <th scope="col">Name</th>
+                <th scope="col">Price</th>
                 <th scope="col">Is Activated</th>
                 <th scope="col">Action</th>
               </tr>
@@ -103,15 +104,15 @@
               @if (!mySubjects.length && !filterMySubject.loading &&
               selectedCategory) {
               <tr>
-                <td colspan="3">There are no subjects</td>
+                <td colspan="4">There are no subjects</td>
               </tr>
               } @if (!selectedCategory) {
               <tr>
-                <td colspan="3">Please select the category first!</td>
+                <td colspan="4">Please select the category first!</td>
               </tr>
               } @if (filterMySubject.loading) {
               <tr>
-                <td colspan="3">Loading...</td>
+                <td colspan="4">Loading...</td>
               </tr>
               } @for (item of mySubjects; track item._id) {
               <tr
@@ -120,6 +121,7 @@
                 }"
               >
                 <td>{{ item?.name }}</td>
+                <td>{{ item?.price ?? 0 }}</td>
                 <td>
                   @if (item?.isActive) {
                   <c-badge color="success">Yes</c-badge>
@@ -132,88 +134,7 @@
                     cButton
                     color="secondary"
                     size="sm"
-                    class="me-1"
                     (click)="submitSubject(item)"
-                  >
-                    <svg
-                      [cIcon]="icons.cilPencil"
-                      class="text-white"
-                      size="sm"
-                    ></svg>
-                  </button>
-                  <button
-                    cButton
-                    color="secondary"
-                    size="sm"
-                    (click)="selectMySubject(item)"
-                  >
-                    <strong>List Topics</strong>
-                  </button>
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </c-card-body>
-    </c-card>
-  </c-col>
-  <c-col xs="12" sm="12" md="12">
-    <c-card>
-      <c-card-header>
-        <div class="d-flex justify-content-between align-items-center">
-          <h4>Topic</h4>
-          @if (selectedSubject) {
-          <button cButton color="primary" size="sm" (click)="submitTopic()">
-            <svg [cIcon]="icons.cilPlus" class="text-white" size="sm"></svg>
-          </button>
-          }
-        </div>
-      </c-card-header>
-      <c-card-body>
-        <div class="table-responsive">
-          <table class="table table-horizontal">
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Price</th>
-                <th scope="col">Is Activated</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (!myTopics.length && !filterMyTopic.loading &&
-              selectedSubject) {
-              <tr>
-                <td colspan="4">There are no topics</td>
-              </tr>
-              } @if (!selectedSubject || !selectedCategory) {
-              <tr>
-                <td colspan="4">
-                  Please select the category and subject first!
-                </td>
-              </tr>
-              } @if (filterMyTopic.loading) {
-              <tr>
-                <td colspan="4">Loading...</td>
-              </tr>
-              } @for (item of myTopics; track item._id) {
-              <tr>
-                <td>{{ item?.name }}</td>
-                <td>{{ item?.price }}</td>
-                <td>
-                  @if (item?.isActive) {
-                  <c-badge color="success">Yes</c-badge>
-                  } @else {
-                  <c-badge color="danger">No</c-badge>
-                  }
-                </td>
-                <td>
-                  <button
-                    cButton
-                    color="secondary"
-                    size="sm"
-                    (click)="submitTopic(item)"
                   >
                     <svg
                       [cIcon]="icons.cilPencil"
@@ -245,10 +166,3 @@
   [subjects]="subjects"
   [closeCallback]="bindSubjectCallback()"
 ></app-my-subject-form>
-<app-modal-create-topic
-  [visible]="topicModalVisible"
-  [selectedSubject]="selectedSubject"
-  [myTopic]="currentTopic"
-  [topics]="topics"
-  [closeCallback]="bindTopicCallback()"
-></app-modal-create-topic>

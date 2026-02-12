@@ -150,13 +150,16 @@ export class ProfileUpdateComponent implements OnInit {
     this.introVideoOptions = {
       url: environment.apiBaseUrl + '/tutors/upload-introVideo',
       fileFieldName: 'file',
-      onFinish: (resp: IResponse<any>) => {
-        this.info.introVideoId = resp.data._id;
-        this.introVideoName = resp.data.name;
+      uploadOnSelect: true,
+      onFinish: (resp: any) => {
+        const d = resp && (resp.data || resp);
+        if (d) {
+          this.info.introVideoId = d._id || d.id;
+          this.introVideoName = d.name || (d.originalName || '');
+        }
         this.uploading = false;
       },
-
-      onFileSelect: (resp: any) => (this.introVideo = resp[0].file),
+      onFileSelect: (resp: any) => (this.introVideo = resp && resp[0] && resp[0].file),
       id: 'id-introVideo',
       accept: 'video/*',
       onUploading: () => (this.uploading = true)
@@ -169,7 +172,7 @@ export class ProfileUpdateComponent implements OnInit {
       }
 
       if (this.info.type === 'tutor') {
-        this.introVideoType = this.info.introVideoId ? 'upload' : 'youtube';
+        this.introVideoType = 'upload';
       }
 
       if (this.info.introVideo) {
@@ -245,6 +248,17 @@ export class ProfileUpdateComponent implements OnInit {
     });
   }
 
+  onIntroVideoUploadFinish(items: any[]) {
+    if (items && items.length) {
+      const body = items[0];
+      const d = body && (body.data || body);
+      if (d) {
+        this.info.introVideoId = d._id || d.id;
+        this.introVideoName = d.name || (d.originalName || '');
+      }
+    }
+  }
+
   changeTimezone(event: any) {
     if (event === 'Asia/Saigon') {
       this.info.timezone = 'Asia/Ho_Chi_Minh';
@@ -273,13 +287,14 @@ export class ProfileUpdateComponent implements OnInit {
     if (isSubmitForm) {
       this.isSubmitted = true;
       if (this.info.type === 'tutor') {
-        if (!this.info.introVideoId && !this.info.introYoutubeId)
+        if (!this.info.introVideoId)
           return this.appService.toastError('Please upload introduction video');
       }
 
-      if (this.introVideoType === 'youtube') {
-        this.info.introVideoId = null;
-      } else this.info.introYoutubeId = '';
+      if (this.info.type === 'tutor') {
+        this.info.introYoutubeId = '';
+        (this.info as any).idYoutube = '';
+      }
 
       if (!frm.valid || !this.info.timezone) {
         return this.appService.toastError(
@@ -310,11 +325,9 @@ export class ProfileUpdateComponent implements OnInit {
         'gender',
         'zipCode',
         'price1On1Class',
-        'idYoutube',
         'country',
         'city',
         'state',
-        'introYoutubeId',
         'introVideoId',
         'defaultSlotDuration',
         'paypalEmailId',

@@ -31,6 +31,22 @@
         } }
       </div>
       <div class="mb-3">
+        <label cLabel>Price</label>
+        <input
+          cFormControl
+          type="number"
+          name="price"
+          placeholder="Enter price"
+          [ngModel]="mySubject?.price ?? 0"
+          (ngModelChange)="updatePrice($event)"
+          min="0"
+          #price_="ngModel"
+        />
+        @if(price_.value !== undefined && price_.value !== null && mySubject?.price < 0) {
+        <div class="invalid-feedback d-block">Price must be 0 or greater</div>
+        }
+      </div>
+      <div class="mb-3">
         <c-form-check>
           <input
             cFormCheckInput

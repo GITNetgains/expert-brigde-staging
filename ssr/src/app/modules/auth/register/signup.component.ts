@@ -384,7 +384,7 @@ if (address && address.length < 5) {
 
       await this.auth.completeTutorProfile(payload);
 
-      this.appService.toastSuccess('Expert profile submitted. Pending admin approval.');
+      this.appService.toastSuccess('Expert profile submitted. You can now log in.');
       this.auth.removeToken();
       this.router.navigate(['/auth/login']);
     } finally {
