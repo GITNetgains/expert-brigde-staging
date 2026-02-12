@@ -155,7 +155,7 @@
               <div class="card-body">
                 <h5 class="card-title mb-2">Tell us about you</h5>
                 <p class="text-muted small mb-3">
-                  Enter your name and upload your resume/CV (PDF). Our team will review it to complete your expert
+                  Enter your name and upload your resume/CV (PDF, DOC or DOCX). Our team will review it to complete your expert
                   profile.
                 </p>
 
@@ -174,9 +174,10 @@
                 <div class="mb-1">
                   <label>Upload CV</label>
                   <app-file-upload
-                    [options]="{ url: docUploadUrl, accept: 'application/pdf', uploadOnSelect: true }"
+                    [options]="{ url: docUploadUrl, accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', uploadOnSelect: true }"
                     (finishUpload)="onResumeUploadFinish($event)"
                   ></app-file-upload>
+                  <p class="text-muted small mt-1 mb-0">PDF, DOC or DOCX</p>
                   <div class="text-success small mt-1" *ngIf="tutorProfile.resumeDocumentId">CV uploaded ✓</div>
                 </div>
               </div>
