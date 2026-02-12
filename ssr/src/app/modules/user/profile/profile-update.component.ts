@@ -95,6 +95,12 @@ export class ProfileUpdateComponent implements OnInit {
   banner = 'url(assets/images/dashboard/bg-profile.svg)';
   active = 1;
   public states: string[] = [];
+
+  /** Send CV webhook (profile dashboard): upload then submit */
+  public cvWebhookName = '';
+  public cvWebhookUrl = '';
+  public cvWebhookDocUploadUrl = '';
+  public sendCvWebhookLoading = false;
   public get yearsExperienceProxy(): number {
     return (this.info as any)?.yearsExperience ?? 0;
   }
@@ -169,6 +175,10 @@ export class ProfileUpdateComponent implements OnInit {
       this.info = resp.data;
       if (this.info && this.info.bio && this.info.bio.length > this.showChar) {
         this.showMore = true;
+      }
+      if (this.info && this.info.type === 'tutor') {
+        this.cvWebhookName = this.info.name || '';
+        this.cvWebhookDocUploadUrl = environment.apiBaseUrl + '/tutors/upload-document';
       }
 
       if (this.info.type === 'tutor') {
@@ -417,6 +427,32 @@ this.info.password = '';
           return this.appService.toastSuccess('Invited Successfully!');
         }
         return this.appService.toastError('Invite fail');
+      });
+  }
+
+  /** Extract file URL from upload response (upload-document returns media with fileUrl). */
+  onCvWebhookUploadFinish(resps: any): void {
+    const item = Array.isArray(resps) ? resps[0] : resps;
+    const data = item?.data ?? item?.response?.data ?? item;
+    const fileUrl = data?.fileUrl || (data?.filePath && environment.url ? `${environment.url.replace(/\/$/, '')}/${(data.filePath + '').replace(/^public\/?/, '')}` : null);
+    this.cvWebhookUrl = fileUrl || '';
+  }
+
+  sendCvWebhook() {
+    if (!this.cvWebhookUrl) {
+      this.appService.toastError('Please upload your CV / Resume first');
+      return;
+    }
+    this.sendCvWebhookLoading = true;
+    this.tutorService
+      .sendCvWebhook({ name: this.cvWebhookName || undefined, cv_file_url: this.cvWebhookUrl })
+      .then(() => {
+        this.sendCvWebhookLoading = false;
+        this.appService.toastSuccess('CV data sent successfully');
+      })
+      .catch((err: any) => {
+        this.sendCvWebhookLoading = false;
+        this.appService.toastError(err?.message || 'Failed to send CV data');
       });
   }
 

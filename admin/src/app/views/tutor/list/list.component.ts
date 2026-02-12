@@ -228,7 +228,7 @@ export class ListComponent implements OnInit {
         next: () => {
           this.utilService.toastSuccess({
             title: 'Success',
-            message: 'Tutor has been deleted!',
+            message: 'Expert has been deleted!',
           });
           this.items.splice(index, 1);
           this.count = this.count - 1;
@@ -236,7 +236,7 @@ export class ListComponent implements OnInit {
         error: (err) => {
           this.utilService.toastError({
             title: 'Error',
-            message: 'Failed to delete tutor',
+            message: 'Failed to delete expert',
           });
         },
       });

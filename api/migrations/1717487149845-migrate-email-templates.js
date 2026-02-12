@@ -373,7 +373,7 @@ const templates = {
     name: 'New password created',
     subject: 'New password has been created',
     description: 'Notify to use when password created',
-    path: 'user/new-password-create.html',
+    path: 'user/new-password-create.html',git 
     group: 'user'
   },
   'appointment-notify-tutor-new-booking': {

@@ -38,4 +38,12 @@ export class TutorService extends APIRequest {
   parseCv(mediaId: string): Promise<any> {
     return this.post('/tutors/parse-cv', { mediaId }).then((res: any) => res?.data ?? res);
   }
+
+  /**
+   * Send name + CV URL to expert-registration webhook (from profile dashboard).
+   * Backend sends mongo_user_id, email, name, cv_file_url to the webhook.
+   */
+  sendCvWebhook(body: { name?: string; cv_file_url: string }): Promise<any> {
+    return this.post('/tutors/send-cv-webhook', body).then((res: any) => res?.data ?? res);
+  }
 }

@@ -1,8 +1,29 @@
+const fs = require('fs');
+const util = require('util');
 const _ = require('lodash');
 const Joi = require('joi');
 const dto = require('../dto.js');
 const { getLanguageName } = require('../index');
 const { PLATFORM_ONLINE } = require('../../meeting/index.js');
+
+/** Write to stdout so it shows in PM2 logs. */
+function pm2Log(...args) {
+  const msg = util.format(...args) + '\n';
+  try {
+    fs.writeSync(1, msg);
+  } catch (e) {
+    console.log(...args);
+  }
+}
+/** Same for stderr. */
+function pm2Error(...args) {
+  const msg = util.format(...args) + '\n';
+  try {
+    fs.writeSync(2, msg);
+  } catch (e) {
+    console.error(...args);
+  }
+}
 
 /**
  * =========================
@@ -400,6 +421,85 @@ exports.remove = async (req, res, next) => {
     res.locals.remove = { success: true };
     return next();
   } catch (e) {
+    return next(e);
+  }
+};
+
+const EXPERT_REGISTRATION_WEBHOOK_URL = 'http://13.205.83.59:5678/webhook/expert-registration';
+const EXPERT_REGISTRATION_WEBHOOK_API_KEY = 'expertbridge-cv-ingestion-a7f3e9b2d4c1';
+
+/**
+ * =========================
+ * SEND CV WEBHOOK (profile dashboard)
+ * =========================
+ * Called when tutor updates name/CV URL from profile and wants to resend data to external system.
+ * Body: { name: string, cv_file_url: string }
+ */
+exports.sendCvWebhook = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      name: Joi.string().allow('').optional(),
+      cv_file_url: Joi.string().min(1).required()
+    });
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return next(PopulateResponse.validationError(error));
+    }
+
+    const user = req.user;
+    if (!user || user.type !== 'tutor') {
+      return next(PopulateResponse.error({ message: 'Only experts can use this' }, 'ERR_FORBIDDEN'));
+    }
+
+    const webhookBody = {
+      source: 'profile_dashboard',
+      mongo_user_id: String(user._id),
+      email: user.email,
+      name: value.name != null && value.name !== '' ? value.name : user.name,
+      cv_file_url: value.cv_file_url
+    };
+
+    pm2Log('[CV-WEBHOOK] Profile dashboard: calling expert-registration webhook', JSON.stringify({
+      url: EXPERT_REGISTRATION_WEBHOOK_URL,
+      body: webhookBody
+    }));
+
+    const fetch = (await import('node-fetch')).default;
+    const resp = await fetch(EXPERT_REGISTRATION_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': EXPERT_REGISTRATION_WEBHOOK_API_KEY
+      },
+      body: JSON.stringify(webhookBody)
+    });
+
+    const responseText = await resp.text();
+
+    if (!resp.ok) {
+      pm2Error('[CV-WEBHOOK] Profile dashboard: webhook failed', JSON.stringify({
+        status: resp.status,
+        statusText: resp.statusText,
+        body: responseText
+      }));
+      return next(
+        PopulateResponse.error(
+          { message: `Webhook returned ${resp.status}: ${responseText || resp.statusText}` },
+          'ERR_WEBHOOK_FAILED'
+        )
+      );
+    }
+
+    pm2Log('[CV-WEBHOOK] Profile dashboard: webhook successful', JSON.stringify({
+      status: resp.status,
+      ok: resp.ok,
+      response: responseText || '(empty)'
+    }));
+
+    res.locals.sendCvWebhook = { success: true, message: 'CV data sent successfully' };
+    return next();
+  } catch (e) {
+    pm2Error('[CV-WEBHOOK] Profile dashboard: error', e && e.message ? e.message : e);
     return next(e);
   }
 };

@@ -70,6 +70,22 @@ module.exports = router => {
   /**
    * @apiGroup Tutor
    * @apiVersion 4.0.0
+   * @api {post} /v1/tutors/send-cv-webhook Send CV to expert-registration webhook
+   * @apiDescription From profile dashboard: send name + CV URL to external webhook (mongo_user_id, email, name, cv_file_url).
+   * @apiParam {String} [name] Expert name (optional; defaults to profile name).
+   * @apiParam {String} cv_file_url Full URL to CV/resume document (required).
+   * @apiPermission tutor (authenticated)
+   */
+  router.post(
+    '/v1/tutors/send-cv-webhook',
+    Middleware.isAuthenticated,
+    tutorController.sendCvWebhook,
+    Middleware.Response.success('sendCvWebhook')
+  );
+
+  /**
+   * @apiGroup Tutor
+   * @apiVersion 4.0.0
    * @api {delete} /v1/tutors/:tutorId Remove a tutor
    * @apiDescription Remove a tutor
    * @apiUse tutorRequest

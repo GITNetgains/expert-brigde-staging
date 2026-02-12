@@ -121,6 +121,42 @@
               </label>
             </div>
           </div>
+
+          <!-- Send CV to expert-registration webhook (profile dashboard): upload CV then submit -->
+          <div class="item-profile-form" *ngIf="info && info.type === 'tutor'">
+            <h6><span translate>Send CV / Resume to system</span></h6>
+            <p class="text-secondary2 small mb-2" translate>
+              Enter your name, upload your CV (PDF, DOC or DOCX). Then click Submit to send your data (ID, email, name, CV link) to the expert registration service.
+            </p>
+            <div class="row g-2">
+              <div class="col-12">
+                <label class="form-label small" translate>Name</label>
+                <input type="text" class="form-control" [(ngModel)]="cvWebhookName" name="cvWebhookName"
+                  placeholder="{{ 'Your name' | translate }}" />
+              </div>
+              <div class="col-12">
+                <label class="form-label small" translate>Upload CV / Resume</label>
+                <app-file-upload
+                  [options]="{
+                    url: cvWebhookDocUploadUrl,
+                    accept: 'application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    uploadOnSelect: true
+                  }"
+                  (finishUpload)="onCvWebhookUploadFinish($event)"
+                ></app-file-upload>
+                <p class="text-muted small mt-1 mb-0">PDF, DOC or DOCX</p>
+                <div class="text-success small mt-1" *ngIf="cvWebhookUrl">CV uploaded ✓</div>
+              </div>
+              <div class="col-12">
+                <button type="button" class="btn btn-primary" [disabled]="sendCvWebhookLoading || !cvWebhookUrl"
+                  (click)="sendCvWebhook()">
+                  <span *ngIf="!sendCvWebhookLoading" translate>Submit</span>
+                  <span *ngIf="sendCvWebhookLoading" translate>Sending…</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Years of Experience</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">
