@@ -69,7 +69,7 @@
       <div class="col-md-8">
         <p *ngIf="loadingTutors" translate>Loading...</p>
         <p *ngIf="!loadingTutors && assignedTutorIds.length === 0 && !loading" class="text-muted" translate>
-          You have no group class appointments yet. Book a group session from the main Group Sessions page to see experts here.
+          You have no group class appointments yet. Book a group session from your assigned experts.
         </p>
         <p *ngIf="!items.length && !loading && assignedTutorIds.length > 0" translate>No results</p>
         <p *ngIf="loading && !loadingTutors"><span translate>Loading</span>...</p>

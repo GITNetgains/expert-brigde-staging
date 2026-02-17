@@ -98,14 +98,14 @@ export const studentMenus = [
   },
   {
     icon: 'fi fi-rr-comment-alt',
-    title: 'AI Query History',
+    title: 'Assigned Experts',
     description: 'View your AI query submissions and assigned experts.',
     path: '/users/ai-queries',
     key: 'menu-ai-queries'
   },
   {
     icon: 'fi fi-rs-chalkboard-user',
-    title: 'Browse group sessions of the experts',
+    title: 'Browse group sessions',
     description: 'Browse group sessions from experts assigned to your group classes. Filter by category and subcategory.',
     path: '/users/browse-group-sessions',
     key: 'menu-categories'

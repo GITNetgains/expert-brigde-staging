@@ -150,6 +150,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
           (item: any) => item.alias === params.category
         );
         filter = {
+          ...filter,
           categoryIds: category ? category._id : ''
         };
       }
@@ -237,6 +238,10 @@ toggleFilter(key: keyof typeof this.openFilter) {
         ...this.searchFields,
         ...this.dateChange
       };
+      const idsFromUrl = this.route.snapshot.queryParamMap.get('ids');
+      if (idsFromUrl) {
+        params.ids = idsFromUrl;
+      }
       params.rejected = false;
       params.pendingApprove = false;
       if (!params.minPrice1On1Class) delete params.minPrice1On1Class;

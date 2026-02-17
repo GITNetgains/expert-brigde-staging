@@ -365,6 +365,20 @@ exports.list = async (req, res, next) => {
       }
     }
 
+    // ✅ Filter by specific tutor IDs (e.g. from AI query "view assigned experts")
+    if (req.query.ids) {
+      const requestedIds = req.query.ids.split(',').map((s) => s.trim()).filter(Boolean);
+      if (requestedIds.length) {
+        if (req.user && req.user.role === 'user' && req.user.assignedTutors && req.user.assignedTutors.length) {
+          const allowedSet = new Set(req.user.assignedTutors.map(String));
+          const filtered = requestedIds.filter((id) => allowedSet.has(String(id)));
+          query._id = { $in: filtered };
+        } else {
+          query._id = { $in: requestedIds };
+        }
+      }
+    }
+
     // ✅ SKILL FILTER
     if (req.query.skillIds) {
       query.skillIds = { $in: req.query.skillIds.split(',') };

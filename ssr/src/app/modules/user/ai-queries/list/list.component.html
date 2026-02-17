@@ -1,106 +1,134 @@
-<div class="sm-padding data-table">
-  <div class="container">
-    <div class="info-dashboard">
-      <h3>AI Query History</h3>
+<div class="dashboard-container p-4">
+  <div class="container-fluid">
+    <div class="dashboard-header d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h3 class="fw-bold mb-1">Assigned Experts</h3>
+        <p class="text-muted small">Manage and track your AI query expert assignments</p>
+      </div>
+     
     </div>
 
-    <div *ngIf="loading" class="text-center">
-      <span>Loading...</span>
+    <div *ngIf="loading" class="loader-wrapper text-center p-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Fetching queries...</p>
     </div>
 
-    <div *ngIf="!loading && items.length === 0" class="text-center">
-      <p>No AI queries found.</p>
+    <div *ngIf="!loading && items.length === 0" class="empty-state text-center p-5">
+      <div class="empty-icon mb-3">🔍</div>
+      <h4>No AI queries found</h4>
+      <p class="text-muted">New queries will appear here once they are submitted.</p>
     </div>
 
-    <div *ngIf="!loading && items.length > 0" class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Description</th>
-            <th>Attachments</th>
-            <th>Assigned Tutors</th>
-          </tr>
-        </thead>
+    <div *ngIf="!loading && items.length > 0" class="table-card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Query</th>
+              <th>Timestamp</th>
+              <th>Description</th>
+              <th>Attachments</th>
+              <th>Assigned Experts</th>
+              <th class="text-end pe-4">Actions</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr *ngFor="let q of items">
-            <!-- Timestamp -->
-            <td>{{ q.createdAt | date:'medium' }}</td>
-
-            <!-- Description (View button) -->
-            <td>
-              <button
-                class="btn btn-sm btn-outline-primary color-white"
-                (click)="openDescription(q)"
-              >
-                View
-              </button>
-            </td>
-
-            <!-- Attachments -->
-            <td>
-              <ng-container *ngIf="q.aiAttachmentIds?.length; else noFiles">
-  <div class="d-flex flex-column gap-1">
-    <a
-      *ngFor="let file of q.aiAttachmentIds; let i = index"
-      href="javascript:void(0)"
-      (click)="openAttachments(file)"
-    >
-      File {{ i + 1 }}
-    </a>
-  </div>
-</ng-container>
-
-              <ng-template #noFiles>
-                <span>-</span>
-              </ng-template>
-            </td>
-
-            <!-- Assigned Tutors -->
-            <td>
-              <ng-container *ngIf="q.assignedTutors?.length; else noTutors">
-                <span *ngFor="let t of q.assignedTutors; let i = index">
-                  <a (click)="openTutorProfile(t)">
-                    {{ getTutorDisplayName(t) }}
-                  </a>
-                  <span *ngIf="i < q.assignedTutors.length - 1">, </span>
+          <tbody>
+            <tr *ngFor="let q of items">
+              <td class="ps-4">
+                <span class="text-truncate d-inline-block" style="max-width: 200px;">
+                  {{ q.query || q.description || '-' }}
                 </span>
-              </ng-container>
-              <ng-template #noTutors>
-                <span>Not assigned</span>
-              </ng-template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+
+              <td>
+                <div class="d-flex flex-column">
+                  <span class="fw-medium text-dark">{{ q.createdAt | date:'mediumDate' }}</span>
+                  <span class="text-muted x-small">{{ q.createdAt | date:'shortTime' }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="text-truncate d-inline-block" style="max-width: 200px;">
+                  {{ q.description }}
+                </span>
+              </td>
+
+              <td>
+                <ng-container *ngIf="q.aiAttachmentIds?.length; else noFiles">
+                  <div class="attachment-stack">
+                    <button 
+                      *ngFor="let file of q.aiAttachmentIds; let i = index"
+                      (click)="openAttachments(file)"
+                      class="attachment-badge"
+                      [title]="'View File ' + (i + 1)"
+                    >
+                      <span class="file-icon">📄</span>
+                    </button>
+                    <span class="ms-2 text-muted small" *ngIf="q.aiAttachmentIds.length > 3">
+                      +{{ q.aiAttachmentIds.length - 3 }}
+                    </span>
+                  </div>
+                </ng-container>
+                <ng-template #noFiles><span class="text-muted">-</span></ng-template>
+              </td>
+
+              <td>
+                <ng-container *ngIf="q.assignedTutors?.length; else noTutors">
+                  <span class="status-badge badge-assigned">
+                    {{ q.assignedTutors.length }} Expert(s) Assigned
+                  </span>
+                </ng-container>
+                <ng-template #noTutors>
+                  <span class="status-badge badge-pending">Not assigned</span>
+                </ng-template>
+              </td>
+
+              <td class="text-end pe-4">
+                <div class="btn-group-sm">
+                  <button class="btn btn-action me-2 text-white" (click)="openDescription(q)" title="View Description">
+                    View Query
+                  </button>
+                  <button 
+  *ngIf="q.assignedTutors?.length"
+  class="btn btn-primary-soft btn-sm text-white" 
+  style="background-color: #4361ee;"
+  (click)="goToQueryExperts(q)"
+>
+  Manage Experts
+</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 🔽 Simple Description Modal -->
-<!-- Backdrop -->
-<div class="modal-backdrop" *ngIf="selectedQuery" (click)="closeDescription()"></div>
+<div class="modal-backdrop-custom" *ngIf="selectedQuery" (click)="closeDescription()"></div>
 
-<!-- Modal -->
-<div class="custom-modal" *ngIf="selectedQuery">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h5>Description</h5>
-      <button class="close-btn" (click)="closeDescription()">×</button>
+<div class="custom-modal-wrapper" *ngIf="selectedQuery">
+  <div class="modal-card-modern animate-up">
+    <div class="modal-header-modern">
+      <div>
+        <h5 class="mb-0">Query Details</h5>
+        <small class="text-muted">{{ selectedQuery.createdAt | date:'medium' }}</small>
+      </div>
+      <button class="close-icon-btn" (click)="closeDescription()">×</button>
     </div>
 
-    <div class="modal-body">
-      <p style="white-space: pre-line">
+    <div class="modal-body-modern">
+      <label class="modal-label">Detailed Description</label>
+      <div class="description-content">
         {{ selectedQuery.description }}
-      </p>
+      </div>
     </div>
 
-    <div class="modal-footer">
-      <button class="btn btn-secondary btn-sm" (click)="closeDescription()">
-        Close
-      </button>
+    <div class="modal-footer-modern">
+      <button class="btn btn-light-modern" (click)="closeDescription()">Dismiss</button>
+      <button class="btn btn-primary-modern" (click)="closeDescription()">Understood</button>
     </div>
   </div>
 </div>
-

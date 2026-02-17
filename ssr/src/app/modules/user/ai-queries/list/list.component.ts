@@ -135,6 +135,25 @@ preloadTutorDetails() {
     this.query();
   }
 
+  goToExperts() {
+    this.router.navigate(['/experts']);
+  }
+
+  goToQueryExperts(q: any) {
+    const tutors = q?.assignedTutors || [];
+    const ids = tutors
+      .map((t: any) => {
+        const raw = t?._id ?? t?.id;
+        return raw != null ? String(raw) : '';
+      })
+      .filter((id: string) => id.length > 0);
+    if (ids.length) {
+      this.router.navigate(['/experts'], { queryParams: { ids: ids.join(','), page: 1 } });
+    } else {
+      this.appService.toastError('No experts assigned to this query');
+    }
+  }
+
   openTutorProfile(tutor: any) {
     const username = tutor?.username || '';
     if (username) {
