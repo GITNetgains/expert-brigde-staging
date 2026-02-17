@@ -142,6 +142,8 @@
                 appendTo="body"
                 bindLabel="name"
                 bindValue="code"
+                [searchable]="true"
+                [searchFn]="countrySearchFn"
                 formControlName="address_country"
                 placeholder="{{ 'Enter country' | translate }}"
               ></ng-select>

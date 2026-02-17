@@ -270,12 +270,66 @@ exports.update = async (req, res, next) => {
     tutor.countryCode = validate.value.country.code || '';
   }
 
-  
+
 
     await tutor.save();
 
     if (validate.value.password) {
       await Service.User.newPassword(tutor, validate.value.password);
+    }
+
+    // ======================================================
+    // PROFILE EDIT WEBHOOK - Reverse sync to PostgreSQL
+    // Fire-and-forget: don't block the response
+    // ======================================================
+    try {
+      const updatedFieldNames = Object.keys(validate.value);
+      // Only fire webhook if meaningful fields changed (not just password)
+      const syncableFields = ['bio', 'phoneNumber', 'city', 'state', 'country',
+        'yearsExperience', 'highlights', 'languages', 'skillIds', 'industryIds',
+        'name', 'email', 'timezone', 'consultationFee'];
+      const hasSync = updatedFieldNames.some(f => syncableFields.includes(f));
+
+      if (hasSync) {
+        const webhookPayload = {
+          source: 'profile_edit',
+          mongo_user_id: String(tutor._id),
+          email: tutor.email,
+          bio: tutor.bio || null,
+          phone: tutor.phoneNumber || null,
+          city: tutor.city || null,
+          state: tutor.state || null,
+          country: (tutor.country && tutor.country.name) ? tutor.country.name : (typeof tutor.country === 'string' ? tutor.country : null),
+          country_code: tutor.countryCode || null,
+          yearsExperience: tutor.yearsExperience || null,
+          highlights: tutor.highlights || [],
+          languages: tutor.languages || [],
+          consultation_fee: tutor.consultationFee || null,
+          timezone: tutor.timezone || null,
+          updated_fields: updatedFieldNames
+        };
+
+        pm2Log('[PROFILE-EDIT-WEBHOOK] Syncing profile edit to PostgreSQL for', tutor.email,
+          'fields:', updatedFieldNames.join(', '));
+
+        // Fire-and-forget (don't await, don't block)
+        const fetch = (await import('node-fetch')).default;
+        fetch(REVERSE_SYNC_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': REVERSE_SYNC_API_KEY
+          },
+          body: JSON.stringify(webhookPayload)
+        }).then(function(resp) {
+          pm2Log('[PROFILE-EDIT-WEBHOOK] Response:', resp.status, resp.ok ? 'OK' : 'FAILED');
+        }).catch(function(err) {
+          pm2Error('[PROFILE-EDIT-WEBHOOK] Error (non-blocking):', err && err.message ? err.message : err);
+        });
+      }
+    } catch (webhookError) {
+      // Never fail the main request if webhook fails
+      pm2Error('[PROFILE-EDIT-WEBHOOK] Setup error:', webhookError && webhookError.message ? webhookError.message : webhookError);
     }
 
     res.locals.update = tutor;
@@ -426,6 +480,10 @@ exports.remove = async (req, res, next) => {
 };
 
 const EXPERT_REGISTRATION_WEBHOOK_URL = 'http://13.205.83.59:5678/webhook/expert-registration';
+
+// REVERSE SYNC: Expert profile edits -> PostgreSQL
+const REVERSE_SYNC_URL = 'http://13.205.83.59:8002/sync/expert-from-mongo';
+const REVERSE_SYNC_API_KEY = 'expertbridge-reverse-sync-m7n3p5';
 const EXPERT_REGISTRATION_WEBHOOK_API_KEY = 'expertbridge-cv-ingestion-a7f3e9b2d4c1';
 
 /**

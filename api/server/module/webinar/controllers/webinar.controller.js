@@ -21,11 +21,11 @@ const validateSchema = Joi.object().keys({
   isFree: Joi.boolean().allow(null, '').optional(),
   gradeIds: Joi.array().items(Joi.string()).optional(),
   subjectIds: Joi.array().min(1).items(Joi.string()).required(),
-  topicIds: Joi.array().min(1).items(Joi.string()).required(),
+  topicIds: Joi.array().items(Joi.string()).optional(),
   age: Joi.object().keys({
     from: Joi.number(),
     to: Joi.number()
-  })
+  }).optional()
 });
 
 exports.findOne = async (req, res, next) => {
@@ -101,6 +101,12 @@ exports.list = async (req, res, next) => {
     });
     if (req.query.tutorId) {
       query.tutorId = req.query.tutorId;
+    }
+    if (req.query.tutorIds) {
+      const tutorIds = req.query.tutorIds.split(',').filter(Boolean);
+      if (tutorIds.length) {
+        query.tutorId = { $in: tutorIds };
+      }
     }
     if (req.query.categoryIds) {
       const categoryIds = req.query.categoryIds.split(',');

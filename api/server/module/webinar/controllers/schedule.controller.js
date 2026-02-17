@@ -120,7 +120,7 @@ exports.list = async (req, res, next) => {
       query.tutorId = req.user._id;
       return next(
         PopulateResponse.error({
-          message: 'Missing tutorId in the query'
+          message: 'Missing expert ID in the query'
         })
       );
     }

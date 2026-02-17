@@ -79,7 +79,7 @@
                 <img src="../assets/images/1-on-1.svg" alt="1 on 1" class="img-sm mt-n1 me-1" translate />
                 <span translate>1-on-1</span>
               </button>
-              <!-- <button
+              <button
                 class="btn btn-default no-hover scrollTo"
                 id="btn-view-webinars"
               >
@@ -89,9 +89,9 @@
                   class="img-sm mt-n1 me-1"
                   translate
                 />
-                <span translate>View Group Classes</span>
+                <span translate>View Group Sessions</span>
               </button>
-              <button
+              <!-- <button
                 class="btn btn-default no-hover scrollTo"
                 id="btn-view-courses"
               >
@@ -188,10 +188,10 @@
             <app-card-text [content]="tutor.bio" [showChar]="500"></app-card-text>
           </div>
         </div>
-        <!-- 
+        
         <div class="card card-border mb-3" id="view-webinars">
           <div class="card-header">
-            <h4 class="color-light-black" translate>Group Classes</h4>
+            <h4 class="color-light-black" translate>Group Sessions</h4>
           </div>
           <div class="card-body">
             <div *ngIf="!webinarOptions.webinars.length">
@@ -273,10 +273,10 @@
                   >
                 </div>
               </div>
-            </div> -->
+            </div>
         <!-- <app-card-webinar *ngFor="let webinar of webinarOptions.webinars" [webinar]="webinar"
             [hidden]="!webinarOptions.webinars.length" class="col-md-4 mb-4"></app-card-webinar> -->
-        <!-- <div class="row mt-3">
+        <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="webinarOptions.count>webinarOptions.pageSize"
@@ -293,7 +293,7 @@
               </div>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <!-- <div class="card card-border mb-3" id="view-courses">
           <div class="card-header">
@@ -363,10 +363,8 @@
                   >
                 </div>
               </div>
-            </div> -->
-        <!-- <app-card-course *ngFor="let course of courseOptions.courses" [course]="course"
-            [hidden]="!courseOptions.courses.length" class="col-md-4 mb-4"></app-card-course> -->
-        <!-- <div class="row mt-3">
+            </div>
+        <div class="row mt-3">
               <div
                 class="col-md-12 text-center"
                 *ngIf="courseOptions.count>courseOptions.pageSize"

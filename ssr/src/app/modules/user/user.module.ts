@@ -62,6 +62,7 @@ import { AppointmentStatusComponent } from 'src/app/components/appointment/appoi
 import { LoadingComponent } from 'src/app/components/uis/loading.component';
 import { UserAvailableTimeComponent } from 'src/app/components/calendar/tutor-available-time/tutor-available-time.component';
 import { AiQueryListComponent } from './ai-queries/list/list.component';
+import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
 
 @NgModule({
   imports: [
@@ -136,7 +137,8 @@ import { AiQueryListComponent } from './ai-queries/list/list.component';
     LessonDetailComponent,
     ModalAppointmentComponent,
     ReportFormComponent,
-    AiQueryListComponent
+    AiQueryListComponent,
+    BrowseGroupSessionsComponent
   ],
   exports: []
 })

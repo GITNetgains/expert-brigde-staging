@@ -195,8 +195,8 @@ export class DetailWebinarComponent implements OnInit {
     if (!this.auth.isLoggedin()) {
       const message =
         type === 'booking'
-          ? 'Please Log in to buy the group class'
-          : 'Please Log in to gift the Group class';
+          ? 'Please Log in to buy the group session'
+          : 'Please Log in to gift the Group session';
       return this.appService.toastError(message);
     }
     if (this.webinar.numberParticipants >= this.webinar.maximumStrength) {
@@ -213,9 +213,9 @@ export class DetailWebinarComponent implements OnInit {
             const count = resp.data.overlapSlots.length;
             const noti =
               count === 1
-                ? '1 slot is overlap with your booked class. Still book?'
+                ? '1 slot is overlap with your booked session. Still book?'
                 : count +
-                  ' slots are overlap with your booked classes. Still book?';
+                  ' slots are overlap with your booked sessions. Still book?';
             if (window.confirm(noti)) {
               this.confirmEnroll(webinar, type);
             }
@@ -246,7 +246,7 @@ export class DetailWebinarComponent implements OnInit {
         .then((resp) => {
           if (resp.data.status === 'completed') {
             this.appService.toastSuccess(
-              'Have successfully booked free group class'
+              'Have successfully booked free group session'
             );
             return this.router.navigate(['/users/lessons']);
           } else {

@@ -6,7 +6,7 @@ const { PLATFORM_ONLINE } = require('../meeting');
 
 exports.model = {
   EmailOtp: require('./models/emailOtp'),
-  // … other models
+  SignupSession: require('./models/signupSession')
 };
 
 function getDecoded(req) {
@@ -57,7 +57,9 @@ async function isAuthenticated(req, res, next) {
       })
       .populate({
         path: 'introVideo'
-      });
+      })
+      .populate({ path: 'skills', select: '_id name alias' })
+      .populate({ path: 'industries', select: '_id name alias' });
     if (!user || (user && user.type === 'student' && !user.isActive)) {
       return next(PopulateResponse.unauthenticated());
     }

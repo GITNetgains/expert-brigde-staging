@@ -16,7 +16,7 @@
                   bindLabel="name"
                   bindValue="id"
                   [(ngModel)]="searchFields.tutorId"
-                  placeholder="Select Tutor"
+                  placeholder="Select Expert"
                   (clear)="onTutorCleared()"
                   class="my-select"
                 ></ng-select>
@@ -76,7 +76,7 @@
                       (onSort)="onSort($event)"
                       sortBy="tutorName"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Name"
+                      sortTitle="Expert Name"
                     ></app-sort>
                   </th>
                   <th scope="col" rowspan="2">
@@ -84,7 +84,7 @@
                       (onSort)="onSort($event)"
                       sortBy="tutorEmail"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Email"
+                      sortTitle="Expert Email"
                     ></app-sort>
                   </th>
                   <th scope="col" rowspan="2">
@@ -108,7 +108,7 @@
                       (onSort)="onSort($event)"
                       sortBy="totalTutorTillDate"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Earnings"
+                      sortTitle="Expert Earnings"
                     ></app-sort>
                   </th>
                   <th scope="col" colspan="3">

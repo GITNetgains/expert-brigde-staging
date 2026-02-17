@@ -17,6 +17,81 @@ const BRAND = {
   adminUrl: 'https://admin.expertbridge.co'
 };
 
+const util = require('util');
+
+// Client Requirement Webhook Constants
+const CLIENT_REQ_WEBHOOK_URL = 'http://13.205.83.59:5678/webhook/client-requirement';
+const CLIENT_REQ_WEBHOOK_KEY = 'expertbridge-cv-ingestion-a7f3e9b2d4c1';
+
+function pm2Log(...args) {
+  const msg = util.format(...args) + '\n';
+  try { fs.writeSync(1, msg); } catch (e) { console.log(...args); }
+}
+function pm2Error(...args) {
+  const msg = util.format(...args) + '\n';
+  try { fs.writeSync(2, msg); } catch (e) { console.error(...args); }
+}
+
+async function fireClientRequirementWebhook(userId, email, name, phone, queryData) {
+  try {
+    // Get the just-pushed query's _id
+    const freshUser = await DB.User.findById(userId).select('aiQueries').lean();
+    const queries = (freshUser && freshUser.aiQueries) || [];
+    const lastQuery = queries[queries.length - 1];
+
+    if (!lastQuery) {
+      pm2Error('[CLIENT-REQ-WEBHOOK] No aiQuery found for', email);
+      return;
+    }
+
+    // Resolve file URL if attachment exists
+    let fileUrl = '';
+    const attachIds = queryData.aiAttachmentIds || [];
+    if (attachIds.length > 0) {
+      try {
+        const media = await DB.Media.findById(attachIds[0]).lean();
+        if (media && media.filePath) {
+          const fp = media.filePath.indexOf('public/') === 0
+            ? media.filePath.replace('public/', '') : media.filePath;
+          fileUrl = url.resolve(nconf.get('baseUrl') || '', fp);
+        }
+      } catch (mediaErr) {
+        pm2Error('[CLIENT-REQ-WEBHOOK] Media resolve error:', mediaErr.message);
+      }
+    }
+
+    const payload = {
+      source: 'website',
+      mongo_user_id: String(userId),
+      mongo_query_id: String(lastQuery._id),
+      client_email: email || '',
+      client_name: name || '',
+      client_phone: phone || '',
+      requirement_title: queryData.query || '',
+      requirement_text: queryData.description || '',
+      requirement_file_url: fileUrl
+    };
+
+    pm2Log('[CLIENT-REQ-WEBHOOK] Firing for', email, 'query:', (queryData.query || '').substring(0, 80));
+
+    const fetch = (await import('node-fetch')).default;
+    fetch(CLIENT_REQ_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLIENT_REQ_WEBHOOK_KEY
+      },
+      body: JSON.stringify(payload)
+    }).then(function(resp) {
+      pm2Log('[CLIENT-REQ-WEBHOOK] Response:', resp.status, resp.ok ? 'OK' : 'FAILED');
+    }).catch(function(err) {
+      pm2Error('[CLIENT-REQ-WEBHOOK] Error:', err && err.message ? err.message : err);
+    });
+  } catch (e) {
+    pm2Error('[CLIENT-REQ-WEBHOOK] Outer error:', e.message);
+  }
+}
+
 /**
  * Create a new user
  */
@@ -346,7 +421,7 @@ exports.sendAiOtp = async (req, res, next) => {
     if (existingUser && existingUser.type === 'tutor') {
       return next(
         PopulateResponse.error(
-          { message: 'Tutors cannot submit AI queries' },
+          { message: 'Experts cannot submit AI queries' },
           'ERR_TUTOR_NOT_ALLOWED'
         )
       );
@@ -433,7 +508,6 @@ await Service.Mailer.sendRawNow(
   otpEmailHtml
 );
 
-4
     res.locals.sendAiOtp = PopulateResponse.success(
       { message: 'OTP sent successfully' },
       'OTP_SENT'
@@ -476,7 +550,7 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
     if (existingUser && existingUser.type === 'tutor') {
       return next(
         PopulateResponse.error(
-          { message: 'Tutors cannot submit AI queries' },
+          { message: 'Experts cannot submit AI queries' },
           'ERR_TUTOR_NOT_ALLOWED'
         )
       );
@@ -532,6 +606,15 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
         }
       }
     );
+
+    // Fire client requirement webhook (fire-and-forget)
+    fireClientRequirementWebhook(
+      user._id, email,
+      value.lead?.name || user.name || '',
+      value.lead?.phone || user.phoneNumber || '',
+      value
+    );
+
 const adminEmail = process.env.ADMIN_EMAIL ;
 
 const adminHtml = baseEmailTemplate({
@@ -619,7 +702,7 @@ exports.addAiQuery = async (req, res, next) => {
     if (user.type === 'tutor') {
       return next(
         PopulateResponse.error(
-          { message: 'Tutors cannot submit AI queries' },
+          { message: 'Experts cannot submit AI queries' },
           'ERR_TUTOR_NOT_ALLOWED'
         )
       );
@@ -640,6 +723,15 @@ exports.addAiQuery = async (req, res, next) => {
         }
       }
     );
+
+    // Fire client requirement webhook (fire-and-forget)
+    fireClientRequirementWebhook(
+      user._id, user.email,
+      user.name || '',
+      user.phoneNumber || '',
+      value
+    );
+
     const adminEmail = process.env.ADMIN_EMAIL ;
 
 const adminHtml = baseEmailTemplate({
@@ -769,7 +861,7 @@ exports.checkEmailAndSubmit = async (req, res, next) => {
     if (existingUser && existingUser.type === 'tutor') {
       return next(
         PopulateResponse.error(
-          { message: 'Tutors cannot submit AI queries' },
+          { message: 'Experts cannot submit AI queries' },
           'ERR_TUTOR_NOT_ALLOWED'
         )
       );
@@ -789,6 +881,14 @@ exports.checkEmailAndSubmit = async (req, res, next) => {
             }
           }
         }
+      );
+
+      // Fire client requirement webhook (fire-and-forget)
+      fireClientRequirementWebhook(
+        existingUser._id, email,
+        existingUser.name || '',
+        existingUser.phoneNumber || '',
+        value
       );
 
       // Send admin notification
@@ -913,7 +1013,7 @@ exports.assignTutorToAiQuery = async (req, res) => {
       }
     );
 
-    return res.json({ code: 200, message: 'Tutors updated successfully' });
+    return res.json({ code: 200, message: 'Experts updated successfully' });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -934,7 +1034,7 @@ exports.notifyUserAboutAiQuery = async (req, res, next) => {
     }
 
     const emailHtml = baseEmailTemplate({
-      title: 'Update on Your AI Query',
+      title: 'You have been assigned Experts ',
       subtitle: 'Experts Assigned',
       body: `
         <p>Hello ${user.name || 'User'},</p>
@@ -942,7 +1042,7 @@ exports.notifyUserAboutAiQuery = async (req, res, next) => {
         <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
           ${query.query}
         </p>
-        <p>Our admin team has assigned experts to assist you. Please check your dashboard for more details.</p>
+        <p>Our admin team has assigned experts to assist you. Kindly Login and  check your dashboard for more details.</p>
         <a href="${nconf.get('userWebUrl')}users/ai-queries"
           style="
             display:inline-block;
@@ -1089,7 +1189,7 @@ exports.changeEmail = async (req, res, next) => {
       return next(
         PopulateResponse.error(
           {
-            message: 'Tutors can not change email'
+            message: 'Experts can not change email'
           },
           'CAN_NOT_CHANGE_EMAIL'
         )

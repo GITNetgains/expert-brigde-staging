@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthRoutingModule } from './auth.routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { SignupComponent } from './register/signup.component';
 import { TimezoneComponent } from 'src/app/components/uis/timezone.component';
 import { FileUploadComponent } from 'src/app/components/media/file-upload/file-upload.component';
@@ -19,6 +20,7 @@ import { LinkedinCallbackComponent } from './linkedin-callback/linkedin-callback
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
+    NgSelectModule,
     forwardRef(() => TimezoneComponent),
     forwardRef(() => FileUploadComponent)
   ],

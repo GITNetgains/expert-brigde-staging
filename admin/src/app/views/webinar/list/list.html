@@ -3,7 +3,7 @@
     <c-col md="12">
       <c-card>
         <c-card-header>
-          <h3>Manager Group Class</h3>
+          <h3>Manage Group Sessions</h3>
         </c-card-header>
         <c-card-body>
           <c-row>
@@ -12,7 +12,7 @@
                 <input
                   cFormControl
                   type="text"
-                  placeholder="Enter group class name"
+                  placeholder="Enter group session name"
                   [(ngModel)]="searchFields.name"
                   aria-describedby="inputGroup-sizing-sm"
                   aria-label="Sizing example input"
@@ -27,7 +27,7 @@
                   [items]="tutor"
                   bindLabel="name"
                   bindValue="_id"
-                  placeholder="Select Tutor"
+                  placeholder="Select Expert"
                   class="my-select"
                 ></ng-select>
               </div>
@@ -61,7 +61,7 @@
           <div
             class="d-flex flex-wrap justify-content-between align-items-center"
           >
-            <h4 class="mb-0">Total Group Class: {{ total }}</h4>
+            <h4 class="mb-0">Total Group Session: {{ total }}</h4>
             <app-pagination
               [currentPage]="currentPage"
               [pageSize]="pageSize"
@@ -98,7 +98,7 @@
                       (onSort)="onSort($event)"
                       sortBy="tutorId"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Name"
+                      sortTitle="Expert Name"
                     ></app-sort>
                   </th>
                   <th style="width: 200px">Categories</th>
@@ -153,9 +153,9 @@
                 @for (item of items; track item._id ?? index) {
                 <tr>
                   <td>{{ item.name }}</td>
-                  <td>{{ item.tutor.name }}</td>
+                  <td>{{ item.tutor?.name ?? '—' }}</td>
                   <td>
-                    @for (cat of item.categories; track cat) {
+                    @for (cat of (item.categories ?? []); track cat) {
                     <c-badge color="primary" class="me-1">
                       {{ cat?.name }}
                     </c-badge>

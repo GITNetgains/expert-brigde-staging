@@ -22,7 +22,6 @@ import {
   ModalBodyComponent
 } from '@coreui/angular';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
-import { AppPaginationComponent } from '@components/index';
 import { IUser } from 'src/interfaces';
 @Component({
   selector: 'app-user-create',
@@ -47,7 +46,6 @@ import { IUser } from 'src/interfaces';
     ModalComponent,
     ModalHeaderComponent,
     ModalBodyComponent,
-    AppPaginationComponent
   ],
 })
 export class CreateComponent implements OnInit {
@@ -99,7 +97,7 @@ export class CreateComponent implements OnInit {
     this.selectedCategoryId = categoryId;
     this.subjects = [];
     this.selectedSubjectId = '';
-    this.tutors = []; // Clear tutors when category changes
+    this.tutors = [];
 
     if (categoryId) {
       this.subjectService.search({ take: 100, categoryIds: categoryId, sort: 'ordering', sortType: 'asc' }).subscribe((resp) => {
@@ -131,6 +129,10 @@ export class CreateComponent implements OnInit {
   loadTutors() { }
   saveTutorAssignment() { }
   openAssignTutorModal(_: any) { }
+  openDescriptionModal(q: any) {
+    this.activeDescription = q?.description ?? '';
+    this.showDescriptionModal = true;
+  }
   deleteAiQuery(_: any) { }
   
   // CLIENT REVIEWS - Safe defaults for create mode

@@ -11,7 +11,7 @@
 <p>We will send information about the course</p>
 <br />
 <p>
-  <strong>Tutor: </strong> {{ tutor.name }} <br />
+  <strong>Expert: </strong> {{ tutor.name }} <br />
   {% if transaction.targetType === 'webinar' && webinar %}
   <strong>Webinar name: </strong> {{ webinar.name }} <br />
   {% endif %} {% if transaction.targetType === 'course' && course %}

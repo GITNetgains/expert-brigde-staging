@@ -149,21 +149,21 @@ export const navItems: INavData[] = [
           },
         ],
       },
-      {
-        name: 'Courses',
-        url: '/courses',
-        icon: 'nav-icon-bullet',
-        children: [
-          {
-            name: 'All Courses',
-            url: '/courses/list',
-          },
-          {
-            name: 'Create new',
-            url: '/courses/create',
-          },
-        ],
-      },
+      // {
+      //   name: 'Courses',
+      //   url: '/courses',
+      //   icon: 'nav-icon-bullet',
+      //   children: [
+      //     {
+      //       name: 'All Courses',
+      //       url: '/courses/list',
+      //     },
+      //     {
+      //       name: 'Create new',
+      //       url: '/courses/create',
+      //     },
+      //   ],
+      // },
     ],
   },
   {

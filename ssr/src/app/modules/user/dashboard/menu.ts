@@ -7,20 +7,20 @@ export const tutorMenus = [
     key: 'menu-my-profile-1'
   },
 
-  // {
-  //   icon: 'fi fi-rs-chalkboard-user',
-  //   title: 'Group Class',
-  //   description: 'Group classes posted by the expert will be displayed here.',
-  //   path: '/users/groupclass',
-  //   key: 'menu-webinar-list'
-  // },
-  // {
-  //   icon: 'fi fi-rs-chalkboard-user',
-  //   title: 'Create a group class',
-  //   description: 'The expert can create a new group class from here.',
-  //   path: '/users/groupclass/create',
-  //   key: 'menu-webinar-create'
-  // },
+  {
+    icon: 'fi fi-rs-chalkboard-user',
+    title: 'Group Class',
+    description: 'Group classes posted by the expert will be displayed here.',
+    path: '/users/groupclass',
+    key: 'menu-webinar-list'
+  },
+  {
+    icon: 'fi fi-rs-chalkboard-user',
+    title: 'Create a group class',
+    description: 'The expert can create a new group class from here.',
+    path: '/users/groupclass/create',
+    key: 'menu-webinar-create'
+  },
   // {
   //   icon: 'fi fi-rr-book-alt',
   //   title: 'Courses List',
@@ -57,13 +57,13 @@ export const tutorMenus = [
     path: '/users/appointments',
     key: 'menu-my-appointment'
   },
-  // {
-  //   icon: 'fi fi-rr-calendar-check',
-  //   title: 'Group class bookings',
-  //   description: 'Appointments scheduled by the expert for group classes.',
-  //   path: '/users/appointments',
-  //   key: 'menu-my-appointment-1'
-  // },
+  {
+    icon: 'fi fi-rr-calendar-check',
+    title: 'Group class bookings',
+    description: 'Appointments scheduled by the expert for group classes.',
+    path: '/users/appointments',
+    key: 'menu-my-appointment-1'
+  },
   {
     icon: 'fi fi-rr-chart-histogram',
     title: 'Earnings dashboard',
@@ -103,13 +103,13 @@ export const studentMenus = [
     path: '/users/ai-queries',
     key: 'menu-ai-queries'
   },
-  // {
-  //   icon: 'fi fi-rs-chalkboard-user',
-  //   title: 'Browse Group class categories',
-  //   description: 'Clients can filter by categories and browse group classes.',
-  //   path: '/groupclass',
-  //   key: 'menu-categories'
-  // },
+  {
+    icon: 'fi fi-rs-chalkboard-user',
+    title: 'Browse group sessions of the experts',
+    description: 'Browse group sessions from experts assigned to your group classes. Filter by category and subcategory.',
+    path: '/users/browse-group-sessions',
+    key: 'menu-categories'
+  },
   // {
   //   icon: 'fi fi-rr-book-alt',
   //   title: 'My purchased courses',
@@ -127,7 +127,7 @@ export const studentMenus = [
   {
     icon: 'fi fi-rr-credit-card',
     title: 'My Transactions ',
-    description: 'Clients see all purchases/transactions for 1‑on‑1, webinars, and courses here.',
+    description: 'Clients see all purchases/transactions for 1‑on‑1 and webinars here.',
     path: '/users/transaction',
     key: 'menu-my-transaction'
   },

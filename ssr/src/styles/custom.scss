@@ -177,6 +177,15 @@ p.error {
 }
 
 .input-border {
+  .ng-select.ng-select-multiple .ng-select-container {
+    height: auto !important;
+    min-height: calc(1.5em + 0.75rem + 17px);
+    .ng-value-container {
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
   .ng-select {
     .ng-select-container {
       // display: block;
@@ -196,6 +205,9 @@ p.error {
       color: #808080;
       .ng-value-container {
         padding: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
         .ng-placeholder {
           // position: unset !important;
           padding: unset !important;

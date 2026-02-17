@@ -63,11 +63,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/post/post.routing').then((m) => m.routes),
       },
-      {
-        path: 'courses',
-        loadChildren: () =>
-          import('./views/course/course.routes').then((m) => m.routes),
-      },
+      // {
+      //   path: 'courses',
+      //   loadChildren: () =>
+      //     import('./views/course/course.routes').then((m) => m.routes),
+      // },
       {
         path: 'test',
         loadComponent: () =>

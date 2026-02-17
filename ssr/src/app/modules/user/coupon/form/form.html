@@ -48,8 +48,8 @@
                             (change)="onTargetTypeChange()" #targetType="ngModel">
                             <option value="" selected>None</option>
                             <option value="all" selected>All</option>
-                            <option value="webinar">Group Class</option>
-                            <option value="course">Course</option>
+                            <option value="webinar">Group Session</option>
+                            <!-- <option value="course">Course</option> -->
                             <option value="subject">1 on 1 classes</option>
                         </select>
                         <div *ngIf="targetType.errors && (targetType.dirty || targetType.touched || isSubmitted)">
@@ -71,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" *ngIf="courses.length && coupon.targetType === 'course'">
+                <!-- <div class="col-md-6" *ngIf="courses.length && coupon.targetType === 'course'">
                     <div class="form-group">
                         <label>Course</label>
                         <ng-select [items]="courses" [hideSelected]="true" bindLabel="name" [closeOnSelect]="true"
@@ -82,7 +82,7 @@
                             <p style="color: red">Please select course!</p>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-6">
                     <div class="form-group">
                         <label translate>Discount value</label>

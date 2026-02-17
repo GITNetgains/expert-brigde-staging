@@ -51,7 +51,7 @@ exports.create = async (req, res, next) => {
     if (!tutor) {
       return res.status(404).send(
         PopulateResponse.notFound({
-          message: 'Tutor not found'
+          message: 'Expert not found'
         })
       );
     }

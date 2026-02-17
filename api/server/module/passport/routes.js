@@ -67,7 +67,12 @@ router.get('/v1/auth/login/google', googleController.login, Middleware.Response.
 
 router.post('/v1/auth/login/google', googleController.login, Middleware.Response.success('login'));
 
-  
+  // Tutor signup with Google/LinkedIn: exchange code → create SignupSession → return signupToken + profile
+  router.get('/v1/auth/signup/google', googleController.signup, Middleware.Response.success('signup'));
+  router.post('/v1/auth/signup/google', googleController.signup, Middleware.Response.success('signup'));
+  router.get('/v1/auth/signup/linkedin', linkedinController.signup, Middleware.Response.success('signup'));
+  router.post('/v1/auth/signup/linkedin', linkedinController.signup, Middleware.Response.success('signup'));
+
   router.post('/v1/auth/login/linkedin', linkedinController.login, Middleware.Response.success('login'));
 
 
@@ -168,6 +173,17 @@ router.get(
 router.post('/v1/auth/sendOtp', 
   authController.sendOtp, Middleware.Response.success('sendOtp',),);
 router.post('/v1/auth/verifyOtp', authController.verifyOtp, Middleware.Response.success('verifyOtp'));
+
+router.post(
+  '/v1/auth/complete-student-signup',
+  authController.completeStudentSignup,
+  Middleware.Response.success('completeStudentSignup')
+);
+router.post(
+  '/v1/auth/complete-tutor-signup',
+  authController.completeTutorSignup,
+  Middleware.Response.success('completeTutorSignup')
+);
 
 router.post(
   '/v1/auth/setPassword',

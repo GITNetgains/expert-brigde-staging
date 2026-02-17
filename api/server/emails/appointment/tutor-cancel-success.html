@@ -4,7 +4,7 @@
 
 <p>
   <strong>Session Code: </strong> {{ appointment.code }} <br />
-  <strong>Students Name: </strong> {{user.name}} <br />
+  <strong>Clients Name: </strong> {{user.name}} <br />
   <strong>Time: </strong> {{startTimeTutor}} - {{toTimeTutor}} <br />
   {% if appointment.targetType === 'webinar' && appointment.webinar %} <strong>Webinar name: </strong>
   {{appointment.webinar.name}} {% endif %} {% if

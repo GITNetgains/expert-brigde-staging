@@ -1,11 +1,11 @@
 <p>Hello {{review.rater.name}},</p>
 
 <p>
-  We are sorry your review to {% if review.type === 'webinar' && review.webinar %} the class "{{ review.webinar.name }}"
+  We are sorry your review to {% if review.type === 'webinar' && review.webinar %} the session "{{ review.webinar.name }}"
   {% endif %} {% if review.type
   === 'course' && review.course %} the course "{{ review.course.name }}" {% endif %} {% if review.type === 'subject' &&
   review.appointment &&
-  review.tutor %} the appointment with the tutor {{ review.tutor.name }} {% endif %} has been removed by admin.
+  review.tutor %} the appointment with the expert {{ review.tutor.name }} {% endif %} has been removed by admin.
 </p>
 
 <p>

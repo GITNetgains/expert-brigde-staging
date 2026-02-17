@@ -1,9 +1,9 @@
 <p>Hello {{user.name}},</p>
 <br />
 <p>
-  You have successfully enrolled for the {% if transaction.targetType === 'webinar' && webinar %} group class {{ webinar.name }}. {% endif %} {% if
+  You have successfully enrolled for the {% if transaction.targetType === 'webinar' && webinar %} group session {{ webinar.name }}. {% endif %} {% if
   transaction.targetType === 'course' && course %} course {{ course.name }}. {% endif %} {% if transaction.targetType === 'subject' && subject %}
-  <b>{{subject.name}}</b> 1 on 1 class.{% endif %}
+  <b>{{subject.name}}</b> 1 on 1 session.{% endif %}
 </p>
 <br />
 <p>

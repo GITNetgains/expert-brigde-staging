@@ -80,7 +80,7 @@ export class TutorCardComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = true;
           this.appService.toastSuccess(
-            'Added to your favorite tutor list successfully!'
+            'Added to your favorite expert list successfully!'
           );
         })
         .catch(() => this.appService.toastError());

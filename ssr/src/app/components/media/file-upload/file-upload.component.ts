@@ -99,9 +99,9 @@ export class FileUploadComponent implements OnInit, AfterViewInit {
     this.queue.push(item);
     this.totalLength = this.queue.length;
 
-    // notify existing callback
+    // notify with a copy so parent keeps the list when we clear the queue after upload
     if (this.options && this.options.onFileSelect) {
-      try { this.options.onFileSelect(this.queue); } catch (e) {}
+      try { this.options.onFileSelect([...this.queue]); } catch (e) {}
     }
 
     // auto upload
@@ -282,6 +282,10 @@ export class FileUploadComponent implements OnInit, AfterViewInit {
       this.clearQueue();
       this.uploadedItems = [];
       this.totalLength = 0;
+      // notify parent so "chosen file" / "X is selected" can clear
+      if (this.options && this.options.onFileSelect) {
+        try { this.options.onFileSelect([]); } catch (e) {}
+      }
       return;
     }
 

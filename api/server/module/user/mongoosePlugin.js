@@ -20,6 +20,8 @@ exports.User = schema => {
     passwordResetToken: { type: String, index: true },
     isActive: { type: Boolean, default: true },
     emailVerified: { type: Boolean, default: false },
+    /** Set false when user is created via signup OTP; set true after they complete profile (step 3). Existing users have undefined = treated as completed. */
+    profileCompleted: { type: Boolean, default: false },
     phoneNumber: { type: String, default: '', index: true },
     phoneVerified: { type: Boolean, default: false },
     address: { type: String, default: '' },

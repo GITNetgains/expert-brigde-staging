@@ -23,17 +23,15 @@
               <td>{{ item?.user?.paypalEmailId || "Not provided" }}</td>
             </tr>
             <tr>
-              <th>Tutor Name</th>
+              <th>Expert Name</th>
               <td>{{ item?.tutor?.name }}</td>
             </tr>
             <tr>
-              <th>Group Class / Subject / Course</th>
+              <th>Group Session / Subject</th>
               <td>
                 {{
                   item?.targetType === "webinar"
                     ? item?.webinar?.name
-                    : item?.targetType === "course"
-                    ? item?.course?.name
                     : item?.subject?.name
                 }}
               </td>
@@ -77,7 +75,7 @@
               </td>
             </tr>
             <tr>
-              <th>Tutor Fee</th>
+              <th>Expert Fee</th>
               <td>
                 {{
                   item?.transaction?.balance
@@ -93,7 +91,7 @@
               <td>" {{ item?.note }} "</td>
             </tr>
             <tr>
-              <th>Student Reason</th>
+              <th>Client Reason</th>
               <td>" {{ item?.reason }} "</td>
             </tr>
             <tr>

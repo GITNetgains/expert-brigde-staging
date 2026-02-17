@@ -13,6 +13,26 @@
       </p>
     </div>
 
+    <!-- YOUR SEARCH - show and edit -->
+    <div class="editor-card search-query-card">
+      <label class="card-label">Your search</label>
+      <div class="search-query-row">
+        <input
+          type="text"
+          [(ngModel)]="query"
+          class="search-query-input"
+          placeholder="Enter or change your search..."
+        />
+        <button
+          type="button"
+          class="btn search-again-btn"
+          (click)="searchAgain()"
+          [disabled]="loading || !query.trim()">
+          {{ loading ? 'Searching...' : 'Search again' }}
+        </button>
+      </div>
+    </div>
+
     <div *ngIf="error" class="error-msg content-container">
       {{ error }}
     </div>

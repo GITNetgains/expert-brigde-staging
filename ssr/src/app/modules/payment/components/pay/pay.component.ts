@@ -71,6 +71,12 @@ export class PayComponent implements OnInit {
       });
   }
 
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
+
   ngOnInit(): void {
     if (!this.paymentParams) {
       const params = localStorage.getItem('paymentParams');
@@ -111,7 +117,38 @@ buy(): void {
 
   this.loading = true;
 
-  // ✅ Create appointment (single or multiple sessions)
+  // Group class (webinar) or course: use enroll API (same Pay Now flow as 1-on-1)
+  const isEnrollFlow = this.paymentParams?.targetType === 'webinar' || this.paymentParams?.targetType === 'course';
+  if (isEnrollFlow) {
+    const enrollParams = { ...this.paymentParams };
+    if (this.type === 'gift' && this.paymentForm.value.emailRecipient) {
+      enrollParams.emailRecipient = this.paymentForm.value.emailRecipient;
+    }
+    this.paymentService.enroll(enrollParams)
+      .then(resp => {
+        const payment = resp?.data?.enroll ?? resp?.data;
+        if (!payment?.razorpayOrderId || !payment?.amount || !payment?.transactionId) {
+          throw new Error('Payment init failed');
+        }
+        this.paymentIntent = payment;
+        this.loading = false;
+        this.openRazorpay({
+          transactionId: payment.transactionId,
+          razorpayOrderId: payment.razorpayOrderId,
+          amount: payment.amount
+        });
+      })
+      .catch(err => {
+        this.loading = false;
+        this.submitted = false;
+        this.cleanup();
+        this.appService.toastError(err?.data?.message || err?.message || err);
+        this.router.navigate(['/payments/cancel']);
+      });
+    return;
+  }
+
+  // ✅ Create appointment (single or multiple 1-on-1 sessions)
   if (this.paymentParams?.times && this.paymentParams.times.length > 0) {
     // Multiple sessions
     this.appointmentService.checkout(this.paymentParams)
@@ -139,7 +176,7 @@ buy(): void {
       });
       
   } else {
-    // Single session
+    // Single 1-on-1 session
     this.appointmentService.create(this.paymentParams)
       .then(resp => {
         const payment = resp?.data;

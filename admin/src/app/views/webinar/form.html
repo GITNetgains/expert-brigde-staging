@@ -10,43 +10,17 @@
         class="needs-validation"
         [validated]="customStylesValidated"
       >
-        <c-row>
-          <c-col md="6">
-            <div class="mb-3">
-              <label class="fw-bold">
-                <strong>free</strong>
-                <input
-                  type="radio"
-                  name="payment"
-                  style="margin-right: 3em; margin-left: 0.5em"
-                  [value]="true"
-                  [(ngModel)]="webinar.isFree"
-                />
-              </label>
-              <label class="fw-bold ps-3">
-                <strong>paid</strong>
-                <input
-                  type="radio"
-                  style="margin-left: 0.5em"
-                  name="payment"
-                  [value]="false"
-                  [(ngModel)]="webinar.isFree"
-                />
-              </label>
-            </div>
-          </c-col>
-        </c-row>
         <c-row class="mb-3">
           @if(webinar.tutorId && webinar.tutor){
           <c-col md="6">
             <div class="mb-3">
-              <label cLabel for="name"><strong>Tutor (*)</strong></label>
+              <label cLabel for="name"><strong>Expert (*)</strong></label>
 
               <input
                 type="text"
                 class="form-control"
                 [value]="webinar.tutor?.name"
-                placeholder="Select Tutor"
+                placeholder="Select Expert"
                 readonly
                 disabled
               />
@@ -55,7 +29,7 @@
           } @if(!(webinar.tutorId && webinar.tutor)){
           <c-col md="6">
             <div class="mb-3">
-              <label cLabel for="name"><strong>Tutor Name</strong></label>
+              <label cLabel for="name"><strong>Expert Name</strong></label>
 
               <ng-select
                 cFormControl
@@ -65,7 +39,7 @@
                 (ngModelChange)="selectTutor($event)"
                 name="tutorId"
                 bindValue="_id"
-                placeholder="Select Tutor"
+                placeholder="Select Expert"
                 class="my-select"
               ></ng-select>
             </div>
@@ -149,20 +123,19 @@
                   step="any"
                   maxlength="8"
                   id="price"
-                  [min]="webinar.isFree ? 0 : 1"
-                  [required]="!webinar.isFree"
+                  min="1"
+                  required
                   #price="ngModel"
-                  [disabled]="webinar.isFree"
-                  [class.is-invalid]="!webinar.isFree && price.invalid && (price.dirty || price.touched || isSubmitted)"
+                  [class.is-invalid]="price.invalid && (price.dirty || price.touched || isSubmitted)"
                 />
-              @if(!webinar.isFree && (price.dirty || price.touched || isSubmitted)){
+              @if(price.dirty || price.touched || isSubmitted){
                 @if(price.errors?.['required'] || !price.value){
                   <c-form-feedback invalid >
-                  Price is required for paid webinars!
+                  Price is required!
                   </c-form-feedback>
                 }@else if(price.errors?.['min'] || price.value === 0 || price.value < 1){
                   <c-form-feedback invalid >
-                  Price must be greater than 0 for paid webinars!
+                  Price must be greater than 0!
                   </c-form-feedback>
                 }@else if(price.value && price.value.toString().length > 8){
                   <c-form-feedback invalid >
@@ -211,73 +184,6 @@
                 (change)="onSelectMySubjects($event)"
                 class="my-select"
                 multiple="true"
-              >
-              </ng-select>
-            </div>
-          </c-col>
-          <c-col md="6">
-            <div class="mb-3">
-              <label cLabel for="description"><strong>Topic</strong></label>
-              <ng-select
-                cFormControl
-                [items]="myTopics"
-                bindLabel="name"
-                bindValue="originalTopicId"
-                placeholder="Select Topic"
-                [(ngModel)]="webinar.topicIds"
-                class="my-select"
-                multiple="true"
-                name="topic"
-              >
-              </ng-select>
-            </div>
-          </c-col>
-        </c-row>
-        <c-row class="mb-3">
-          <c-col md="6">
-            <div class="mb-3">
-              <label cLabel><strong>Age</strong> (*)</label>
-              <ng-select
-                [items]="ageFilter"
-                [hideSelected]="true"
-                bindLabel="name"
-                [closeOnSelect]="true"
-                name="age"
-                placeholder="Choose age"
-                [(ngModel)]="webinar.age"
-                #age="ngModel"
-                required
-                class="my-select"
-              >
-                <ng-template ng-label-tmp let-item="item">
-                  <span>{{ item.from + ' - ' + item.to }}</span>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  <span>{{ item.from + ' - ' + item.to }}</span>
-                </ng-template>
-              </ng-select>
-              @if (age.errors && (age.dirty || age.touched || isSubmitted)) {
-              @if (age.errors?.['required']) {
-              <c-form-feedback invalid>Please choose age!</c-form-feedback>
-              } }
-            </div>
-          </c-col>
-          <c-col md="6">
-            <div class="mb-3">
-              <label cLabel><strong>Grades</strong> (*)</label>
-              <ng-select
-                [items]="grades"
-                multiple="true"
-                [hideSelected]="true"
-                bindLabel="name"
-                [closeOnSelect]="false"
-                name="grades"
-                placeholder="Choose Grade"
-                [(ngModel)]="webinar.gradeIds"
-                bindValue="_id"
-                #gradeId="ngModel"
-                class="my-select"
-                required
               >
               </ng-select>
             </div>
@@ -338,7 +244,7 @@
                 [(ngModel)]="webinar.featured"
                 name="open"
               />
-              Check the box if you want the group class to be featured.
+              Check the box if you want the group session to be featured.
             </div>
           </c-col>
         </c-row>

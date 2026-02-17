@@ -24,7 +24,7 @@
                 </td>
               </tr>
               <tr>
-                <td><span translate>Subject / Group Class</span></td>
+                <td><span translate>Subject / Group Session</span></td>
                 <td>
                   <span *ngIf="appointment.targetType === 'subject'"
                     >{{appointment.subject ? appointment.subject?.name : 'name'}}</span>
@@ -54,7 +54,7 @@
                     translate
                     *ngIf="appointment?.isFree"
                     translate
-                    >{{appointment.targetType === 'webinar' ? 'Free Group class'
+                    >{{appointment.targetType === 'webinar' ? 'Free Group session'
                     : 'Free Trial'}}
                   </span>
                   <span
@@ -62,7 +62,7 @@
                     translate
                     *ngIf="!appointment?.isFree"
                     translate
-                    >{{appointment.targetType === 'webinar' ? 'Paid Group class'
+                    >{{appointment.targetType === 'webinar' ? 'Paid Group session'
                     : 'Paid Lesson'}}</span
                   >
                 </td>
@@ -243,9 +243,9 @@
                   name="reason"
                 ></textarea>
               </div>
-              <button class="btn btn-default mt-3" (click)="cancel()" translate>
+              <!-- <button class="btn btn-default mt-3" (click)="cancel()" translate>
                 Can't join the course
-              </button>
+              </button> -->
             </form>
           </div>
         </div>
@@ -253,7 +253,7 @@
           <app-loading [loading]="loading"></app-loading>
           <div class="card-horizontal">
             <h5 translate *ngIf="appointment.targetType === 'webinar'">
-              Group Class Materials
+              Group Session Materials
             </h5>
             <div
               *ngIf="appointment.targetType === 'webinar' && medias.length > 0"

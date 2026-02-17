@@ -48,12 +48,12 @@
                     (onSort)="onSort($event)"
                     sortBy="tutorId"
                     [sortOption]="sortOption"
-                    sortTitle="Tutor"
+                    sortTitle="Expert"
                   ></app-sort>
                 </th>
-                <th scope="col" style="width: 150px">Group Class</th>
+                <th scope="col" style="width: 150px">Group Session</th>
                 <th scope="col" style="width: 150px">Subject</th>
-                <th scope="col" style="width: 150px">Course</th>
+                <!-- <th scope="col" style="width: 150px">Course</th> -->
                 <th style="width: 200px">
                   <app-sort
                     (onSort)="onSort($event)"
@@ -63,7 +63,7 @@
                   ></app-sort>
                 </th>
                 <th scope="col" style="width: 150px">Admin Fee</th>
-                <th scope="col" style="width: 150px">Tutor Fee</th>
+                <th scope="col" style="width: 150px">Expert Fee</th>
                 <th scope="col" style="width: 150px">
                   <app-sort
                     (onSort)="onSort($event)"
@@ -118,7 +118,7 @@
                 <td>{{ item?.tutor?.name }}</td>
                 <td>{{ item?.webinar?.name || "-" }}</td>
                 <td>{{ item?.subject?.name || "-" }}</td>
-                <td>{{ item?.course?.name || "-" }}</td>
+                <!-- <td>{{ item?.course?.name || "-" }}</td> -->
                 <td>
                   {{
                     item?.amount

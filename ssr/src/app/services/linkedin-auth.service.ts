@@ -11,22 +11,28 @@ export class LinkedinAuthService {
 
   constructor() {}
 
-  getLinkedinOAuthUrl(): string {
-    // Manual URL construction to avoid double-encoding
-    const state = this.generateRandomState();
-    
-    const url = 'https://www.linkedin.com/oauth/v2/authorization' +
+  getRedirectUri(): string {
+    return this.redirectUri;
+  }
+
+  /** @param state Optional state (e.g. 'signup_tutor') to distinguish signup from login on callback */
+  getLinkedinOAuthUrl(state?: string): string {
+    const stateParam = state || this.generateRandomState();
+    return 'https://www.linkedin.com/oauth/v2/authorization' +
       `?response_type=code` +
       `&client_id=${encodeURIComponent(this.clientId)}` +
       `&redirect_uri=${encodeURIComponent(this.redirectUri)}` +
-      `&scope=${encodeURIComponent('email,openid,profile,r_events')}` +
-      `&state=${encodeURIComponent(state)}`;
-
-    return url;
+      `&scope=${encodeURIComponent('openid,profile,email')}` +
+      `&state=${encodeURIComponent(stateParam)}`;
   }
 
-  redirectToLinkedinLogin() {
+  redirectToLinkedinLogin(): void {
     window.location.href = this.getLinkedinOAuthUrl();
+  }
+
+  /** Redirect to LinkedIn for tutor signup; callback will create SignupSession and send user to complete profile */
+  redirectToLinkedinSignup(): void {
+    window.location.href = this.getLinkedinOAuthUrl('signup_tutor');
   }
 
   extractCodeFromCallback(): string | null {

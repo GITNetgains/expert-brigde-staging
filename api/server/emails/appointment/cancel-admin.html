@@ -1,9 +1,9 @@
 <p>Hello Admin,</p>
 
 {% if userType === 'tutor' %}
-<p>Tutor <strong>{{tutor.name}}</strong> canceled the appointment with student <strong>{{user.name}}</strong>.</p>
+<p>Expert <strong>{{tutor.name}}</strong> canceled the appointment with client <strong>{{user.name}}</strong>.</p>
 {% endif %} {% if userType === 'student' %}
-<p>Student <strong>{{user.name}}</strong> canceled the appointment with tutor <strong>{{tutor.name}}</strong>.</p>
+<p>Client <strong>{{user.name}}</strong> canceled the appointment with expert <strong>{{tutor.name}}</strong>.</p>
 {% endif %}
 
 <p>

@@ -23,7 +23,7 @@
       </h2>
 
       <h2 class="text-center mb-4" *ngIf="account.type === 'student'">
-        Sign up
+        Join as a Client
       </h2>
 
       <!-- SWITCH ROLE -->
@@ -150,6 +150,10 @@
           </div>
 
           <div *ngIf="account.type === 'tutor'">
+            <!-- Avatar from Google/LinkedIn (optional) -->
+            <div class="text-center mb-3" *ngIf="account.avatarUrl">
+              <img [src]="account.avatarUrl" alt="Profile" class="rounded-circle" style="width: 64px; height: 64px; object-fit: cover;" />
+            </div>
             <!-- CV UPLOAD BLOCK (NO PARSER) -->
             <div class="card mb-3 cv-parser-card">
               <div class="card-body">
@@ -259,11 +263,17 @@
             </div>
             <div class="mb-3">
               <label>Country</label>
-              <select class="form-control" name="country" [(ngModel)]="tutorProfile.country"
-                (ngModelChange)="onCountrySelect($event?.code)">
-                <option [ngValue]="null">Select country</option>
-                <option *ngFor="let c of countries" [ngValue]="c">{{ c.name }}</option>
-              </select>
+              <ng-select
+                [items]="countries"
+                bindLabel="name"
+                [searchable]="true"
+                [searchFn]="countrySearchFn"
+                [(ngModel)]="tutorProfile.country"
+                name="country"
+                (change)="onCountrySelect($event?.code)"
+                placeholder="Select country"
+                [clearable]="true"
+              ></ng-select>
             </div>
             <div class="mb-3">
               <label>Address</label>

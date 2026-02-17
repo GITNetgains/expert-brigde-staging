@@ -11,9 +11,9 @@
               (change)="query()"
             >
               <option value="" selected translate>Enroll Type</option>
-              <option value="webinar" translate>Group Class</option>
+              <option value="webinar" translate>Group Session</option>
               <option value="subject" translate>One to One</option>
-              <option value="course" translate>Course</option>
+              <!-- <option value="course" translate>Course</option> -->
             </select>
           </div>
         </div>
@@ -89,7 +89,7 @@
               </th>
               <th>
                 <span (click)="sortBy('webinar', 'asc')" translate
-                  >Group Class</span
+                  >Group Session</span
                 >
                 <app-sort
                   [sortOption]="sortOption"
@@ -97,14 +97,14 @@
                   (onSort)="onSort($event)"
                 ></app-sort>
               </th>
-              <th>
+              <!-- <th>
                 <span (click)="sortBy('course', 'asc')" translate>Course</span>
                 <app-sort
                   [sortOption]="sortOption"
                   [sortBy]="'course'"
                   (onSort)="onSort($event)"
                 ></app-sort>
-              </th>
+              </th> -->
               <th>
                 <span (click)="sortBy('type', 'asc')" translate>Type</span>
                 <app-sort
@@ -184,10 +184,10 @@
                 {{item.webinar && item.targetType === 'webinar' ?
                 item?.webinar?.name :'-'}}
               </td>
-              <td>
+              <!-- <td>
                 {{item.course && item.targetType === 'course' ?
                 item?.course?.name : '-'}}
-              </td>
+              </td> -->
               <td>
                 <span
                   class="label label-light-primary"
@@ -207,7 +207,7 @@
                   class="label label-light-primary"
                   *ngIf="item?.targetType === 'webinar'"
                   translate
-                  >Group Class</span
+                  >Group Session</span
                 >
                 <span
                   class="label label-light-info"
@@ -215,12 +215,12 @@
                   translate
                   >One to One</span
                 >
-                <span
+                <!-- <span
                   class="label label-light-warning"
                   *ngIf="item?.targetType === 'course'"
                   translate
                   >Course</span
-                >
+                > -->
               </td>
               <td>{{item?.code}}</td>
               <td>{{item?.price | appCurrency}}</td>

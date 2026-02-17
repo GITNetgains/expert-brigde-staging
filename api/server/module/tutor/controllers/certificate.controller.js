@@ -60,7 +60,7 @@ exports.create = async function (req, res, next) {
     if (!tutor) {
       return next(
         PopulateResponse.notFound({
-          message: 'Tutor not found'
+          message: 'Expert not found'
         })
       );
     }

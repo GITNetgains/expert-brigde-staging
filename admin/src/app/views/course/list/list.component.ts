@@ -330,7 +330,7 @@ export class CourseListingComponent implements OnInit {
       error: (err: any) => {
         this.utilService.toastError({
           title: 'Error',
-          message: err.data?.message || 'Failed to load tutors',
+          message: err.data?.message || 'Failed to load experts',
         });
       },
     });

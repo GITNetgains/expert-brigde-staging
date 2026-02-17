@@ -208,7 +208,7 @@
 
               <button cButton size="sm" color="warning" class="ms-2 text-white" (click)="notifyUser(q)"
                 [disabled]="!q.assignedTutors?.length"
-                [title]="!q.assignedTutors?.length ? 'Assign a tutor first' : 'Notify user'">
+                [title]="!q.assignedTutors?.length ? 'Assign an expert first' : 'Notify user'">
                 Notify
               </button>
               <button cButton size="sm" color="danger" class="ms-2" (click)="deleteAiQuery(q)">
@@ -224,9 +224,24 @@
   </c-card-body>
 </c-card>
 
+<!-- Description modal (View AI query) -->
+<c-modal [(visible)]="showDescriptionModal">
+  <c-modal-header>
+    <h5>Query Description</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <p class="mb-0" style="white-space: pre-wrap">{{ activeDescription }}</p>
+  </c-modal-body>
+  <div class="modal-footer">
+    <button cButton color="secondary" (click)="showDescriptionModal=false">
+      Close
+    </button>
+  </div>
+</c-modal>
+
 <c-modal [(visible)]="showAssignModal">
   <c-modal-header>
-    <h5>Assign Tutor</h5>
+    <h5>Assign Expert</h5>
   </c-modal-header>
 
   <c-modal-body>
@@ -240,7 +255,7 @@
     </ng-select>
 
     <ng-select class="mt-2" [items]="assign.tutors" bindLabel="name" bindValue="_id" [multiple]="true"
-      [closeOnSelect]="false" [clearable]="true" placeholder="Select Tutors" [(ngModel)]="assign.tutorIds">
+      [closeOnSelect]="false" [clearable]="true" placeholder="Select Experts" [(ngModel)]="assign.tutorIds">
 
       <!-- Selected value (chip with cross ❌) -->
       <ng-template ng-label-tmp let-item="item" let-clear="clear">

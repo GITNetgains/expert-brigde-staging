@@ -172,10 +172,6 @@ export class ScheduleEditComponent implements OnInit {
       );
       return false;
     }
-    if (minute < 60) {
-      // this.appService.toastError('Minimum time allowed is 60 minutes!');
-      return false;
-    }
     if (moment().isAfter(startTime)) {
       this.appService.toastError('Cannot update slot in the past!');
       return false;
@@ -285,9 +281,9 @@ export class ScheduleEditComponent implements OnInit {
                       ? this.webinarColors.otherClass
                       : this.webinarColors.soloClass,
                 title: otherClass
-                  ? 'Other group class'
+                  ? 'Other group session'
                   : soloClass
-                    ? '1 on 1 class'
+                    ? '1 on 1 session'
                     : '',
                 isDisabled: otherClass || soloClass ? true : false
               };
@@ -430,7 +426,7 @@ export class ScheduleEditComponent implements OnInit {
         !this.notified &&
         window.confirm(
           this.translate.instant(
-            'You have opened a 40 + mins slot, make sure you have a pro zoom license to take this class.'
+            'You have opened a 40 + mins slot, make sure you have a pro zoom license to take this session.'
           )
         )) ||
       this.notified ||
@@ -521,7 +517,7 @@ export class ScheduleEditComponent implements OnInit {
         else slot.backgroundColor = this.soloColors.groupClass;
         slot.isDisabled = true;
 
-        slot.title = 'Group class';
+        slot.title = 'Group session';
       }
 
       this.calendarEvents.push(slot);

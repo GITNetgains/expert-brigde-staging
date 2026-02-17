@@ -90,7 +90,7 @@ export class TutorEducationComponent
     if (!this.tutorId) {
       this.util.toastError({
         title: 'Error',
-        message: 'Tutor ID is required',
+        message: 'Expert ID is required',
       });
       return;
     }
@@ -109,7 +109,7 @@ export class TutorEducationComponent
         this.isLoading = false;
         this.util.toastError({
           title: 'Error',
-          message: err.error?.message || 'Failed to load tutor information',
+          message: err.error?.message || 'Failed to load expert information',
         });
       },
     });

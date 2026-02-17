@@ -99,7 +99,7 @@
                       (onSort)="onSort($event)"
                       sortBy="tutorId"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Name"
+                      sortTitle="Expert Name"
                     ></app-sort>
                   </th>
                   <th style="width: 200px">
@@ -110,14 +110,14 @@
                       sortTitle="Webinar"
                     ></app-sort>
                   </th>
-                  <th style="width: 200px">
+                  <!-- <th style="width: 200px">
                     <app-sort
                       (onSort)="onSort($event)"
                       sortBy="courseId"
                       [sortOption]="sortOption"
                       sortTitle="Course"
                     ></app-sort>
-                  </th>
+                  </th> -->
                   <th style="width: 200px">
                     <app-sort
                       (onSort)="onSort($event)"
@@ -157,7 +157,7 @@
                   <td>{{ item?.value }}</td>
                   <td>{{ item?.tutor?.name }}</td>
                   <td>{{ item?.webinar?.name || "-" }}</td>
-                  <td>{{ item?.course?.name || "-" }}</td>
+                  <!-- <td>{{ item?.course?.name || "-" }}</td> -->
                   <td>{{ item?.expiredDate | date }}</td>
                   <td>
                     <span>{{ item?.createdAt | date }}</span>

@@ -132,13 +132,33 @@
       });
     }
 
-  loginWithLinkedin(code: string): Promise<any> {
-  return this.post('/auth/login/linkedin', { code }).then((resp: any) => {
-    this.mycookie.set('isLoggedin', 'yes', { path: '/' });
-    this.mycookie.set('accessToken', resp.data.token, { path: '/' });
-    return this.getCurrentUser();
-  });
-}
+  loginWithLinkedin(code: string, redirectUri?: string): Promise<any> {
+    const body: { code: string; redirect_uri?: string } = { code };
+    if (redirectUri) body.redirect_uri = redirectUri;
+    return this.post('/auth/login/linkedin', body).then((resp: any) => {
+      this.mycookie.set('isLoggedin', 'yes', { path: '/' });
+      this.mycookie.set('accessToken', resp.data.token, { path: '/' });
+      return this.getCurrentUser();
+    });
+  }
+
+  /** Tutor signup with Google: exchange code for signupToken + profile. Does not log in. */
+  signupWithGoogle(code: string): Promise<{ signupToken: string; email: string; name: string; avatarUrl?: string }> {
+    return this.post('/auth/signup/google', { code }).then((resp: any) => {
+      const d = resp?.data?.data ?? resp?.data ?? resp;
+      return { signupToken: d.signupToken, email: d.email, name: d.name, avatarUrl: d.avatarUrl || '' };
+    });
+  }
+
+  /** Tutor signup with LinkedIn: exchange code for signupToken + profile. Does not log in. */
+  signupWithLinkedin(code: string, redirectUri?: string): Promise<{ signupToken: string; email: string; name: string; avatarUrl?: string }> {
+    const body: { code: string; redirect_uri?: string } = { code };
+    if (redirectUri) body.redirect_uri = redirectUri;
+    return this.post('/auth/signup/linkedin', body).then((resp: any) => {
+      const d = resp?.data?.data ?? resp?.data ?? resp;
+      return { signupToken: d.signupToken, email: d.email, name: d.name, avatarUrl: d.avatarUrl || '' };
+    });
+  }
 
     register(info: any): Promise<any> {
       return this.post('/auth/register', info);
@@ -205,6 +225,14 @@ verifyOtp(payload: any) {
   return this.post('/auth/verifyOtp', payload);
 }
 
+completeStudentSignup(payload: { signupToken: string; password: string; name: string; phoneNumber?: string; address?: string }) {
+  return this.post('/auth/complete-student-signup', payload);
+}
+
+completeTutorSignup(payload: any) {
+  return this.post('/auth/complete-tutor-signup', payload);
+}
+
 setPassword(payload: any) {
   return this.post('/auth/setPassword', payload);
 }
@@ -212,9 +240,7 @@ updateStudentPersonalInfo(payload: any) {
   return this.post('/auth/student/personal-info', payload);
 }
 
-
-
-  completeTutorProfile(payload: any) {
-    return this.post('/auth/tutor/complete-profile', payload);
-  }
-  }
+completeTutorProfile(payload: any) {
+  return this.post('/auth/tutor/complete-profile', payload);
+}
+}

@@ -106,6 +106,87 @@ const otpEmailTemplate = ({ otp, purpose = 'verification' }) =>
     `
   });
 
+const tutorSignupSuccessEmailTemplate = ({ tutorName, loginUrl }) =>
+  baseEmailTemplate({
+    title: 'Welcome to ExpertBridge',
+    subtitle: 'Your account is ready',
+    body: `
+      <p>Hello ${tutorName || 'there'},</p>
+
+      <p>Congratulations! You have successfully signed up on ExpertBridge.</p>
+
+      <p>You can now <a href="${loginUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">log in</a> to your account and start setting up your profile, calendar, and availability.</p>
+
+      <p>We have also sent you a <strong>Zoom invitation link</strong> to join our team. Once you accept the invitation, you will be able to deliver sessions smoothly through Zoom. Please check your inbox (and spam folder) for the Zoom email and complete the signup to activate your account.</p>
+
+      <p>If you have any questions, please contact us at <a href="mailto:support@expertbridge.com">support@expertbridge.com</a>.</p>
+
+      <p>Best regards,<br /><strong>The ExpertBridge Team</strong></p>
+    `
+  });
+
+const studentSignupSuccessEmailTemplate = ({ studentName, loginUrl, homeUrl }) =>
+  baseEmailTemplate({
+    title: 'Welcome to ExpertBridge',
+    subtitle: 'Your account is ready',
+    body: `
+      <p>Hello ${studentName || 'there'},</p>
+
+      <p>Congratulations! You have successfully signed up on ExpertBridge..</p>
+
+      <p>You can now <a href="${loginUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">log in</a> to your account.</p>
+
+      <p><strong>What’s next?</strong></p>
+      <ul style="color:${BRAND.muted};margin:12px 0;">
+        <li>Post your queries about your requirements from the <a href="${homeUrl || '#'}" style="color:${BRAND.primary};">home page</a>.</li>
+        <li>You can attach documents or files when submitting your requirements.</li>
+        <li>Our administration will review your request and assign you suitable experts.</li>
+      </ul>
+
+      <p>If you have any questions, please contact us at <a href="mailto:support@expertbridge.com">support@expertbridge.com</a>.</p>
+
+      <p>Best regards,<br /><strong>The ExpertBridge Team</strong></p>
+    `
+  });
+
+const adminNewClientSignupEmailTemplate = ({ userName, userEmail, adminUrl }) =>
+  baseEmailTemplate({
+    title: 'New client registered',
+    subtitle: 'ExpertBridge Admin',
+    body: `
+      <p>Dear Admin,</p>
+
+      <p>A new client has registered on the system.</p>
+
+      <p><strong>Name:</strong> ${userName || '—'}<br />
+      <strong>Email:</strong> ${userEmail || '—'}</p>
+
+      <p>Please go to the admin panel to review:</p>
+      <p><a href="${adminUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">${adminUrl || 'Admin panel'}</a></p>
+
+      <p>Best regards,<br /><strong>ExpertBridge</strong></p>
+    `
+  });
+
+const adminNewExpertSignupEmailTemplate = ({ tutorName, tutorEmail, adminUrl }) =>
+  baseEmailTemplate({
+    title: 'New expert registered',
+    subtitle: 'ExpertBridge Admin',
+    body: `
+      <p>Dear Admin,</p>
+
+      <p>A new expert has registered on your system.</p>
+
+      <p><strong>Name:</strong> ${tutorName || '—'}<br />
+      <strong>Email:</strong> ${tutorEmail || '—'}</p>
+
+      <pPlease view the details in the admin panel:</p>
+      <p><a href="${adminUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">${adminUrl || 'Admin panel'}</a></p>
+
+      <p>Best regards,<br /><strong>ExpertBridge</strong></p>
+    `
+  });
+
 
 const enrollQ = require('../webinar/queue');
 exports.register = async (req, res, next) => {
@@ -202,7 +283,7 @@ address: Joi.string().allow('', null).optional()
     if (!user) {
       return next(
         PopulateResponse.error(
-          { message: 'Student not found' },
+          { message: 'Client not found' },
           'ERR_USER_NOT_FOUND'
         )
       );
@@ -275,7 +356,7 @@ exports.completeTutorProfile = async (req, res, next) => {
     if (!user) {
       return next(
         PopulateResponse.error(
-          { message: 'Tutor not found' },
+          { message: 'Expert not found' },
           'ERR_USER_NOT_FOUND'
         )
       );
@@ -684,9 +765,7 @@ exports.sendOtp = async (req, res, next) => {
 
     const email = value.email.toLowerCase();
 
-    // Prevent existing user signup
-    const existing = await DB.User.exists({ email });
-    if (existing) {
+    if (await DB.User.exists({ email })) {
       return next(
         PopulateResponse.error(
           { message: 'This email address is already taken' },
@@ -820,26 +899,18 @@ if (!domain || !domain.includes('.')) {
     // 5️⃣ OTP success → delete OTP
     await DB.EmailOtp.deleteMany({ email });
 
-    // 6️⃣ Create user
-    const baseUsername = Helper.String
-      .createAlias(email.split('@')[0])
-      .toLowerCase();
-
-    let username = baseUsername;
-
-    if (await DB.User.exists({ username })) {
-      username = `${baseUsername}-${Helper.String.randomString(5)}`;
-    }
-
-    await DB.User.create({
+    // 6️⃣ Create signup session (user is created only when they complete profile)
+    const signupToken = Helper.String.randomString(32);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 min
+    await DB.SignupSession.create({
       email,
-      username,
       type: record.type,
-      emailVerified: true
+      token: signupToken,
+      expiresAt
     });
 
     res.locals.verifyOtp = PopulateResponse.success(
-      { message: 'OTP verified. Please set password.' },
+      { message: 'OTP verified. Complete your profile.', signupToken },
       'OTP_VERIFIED'
     );
 
@@ -849,6 +920,401 @@ if (!domain || !domain.includes('.')) {
   }
 };
 
+
+/**
+ * Complete student signup: validate signup token, create User in one go. No user exists until this step.
+ */
+exports.completeStudentSignup = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      signupToken: Joi.string().required(),
+      password: Joi.string()
+        .min(8)
+        .regex(/[a-z]/)
+        .regex(/[A-Z]/)
+        .regex(/\d/)
+        .regex(/[@$!%*?&]/)
+        .required(),
+      name: Joi.string().required(),
+      phoneNumber: Joi.string().allow('', null).optional(),
+      address: Joi.string().allow('', null).optional()
+    });
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const session = await DB.SignupSession.findOne({ token: value.signupToken });
+    if (!session) {
+      return next(PopulateResponse.error({ message: 'Invalid or expired signup session. Please start again.' }, 'ERR_INVALID_SIGNUP_TOKEN'));
+    }
+    if (session.expiresAt < new Date()) {
+      await DB.SignupSession.deleteOne({ _id: session._id });
+      return next(PopulateResponse.error({ message: 'Signup session expired. Please start again.' }, 'ERR_SIGNUP_EXPIRED'));
+    }
+    if (session.type !== 'student') {
+      return next(PopulateResponse.error({ message: 'Invalid signup type.' }, 'ERR_INVALID_SIGNUP_TYPE'));
+    }
+
+    const email = session.email;
+    const baseUsername = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
+    let username = baseUsername;
+    if (await DB.User.exists({ username })) {
+      username = `${baseUsername}-${Helper.String.randomString(5)}`;
+    }
+
+    const user = new DB.User({
+      email,
+      username,
+      type: 'student',
+      emailVerified: true,
+      name: value.name.trim(),
+      phoneNumber: (value.phoneNumber || '').trim(),
+      address: (value.address || '').trim(),
+      password: value.password
+    });
+    await user.save();
+    await DB.SignupSession.deleteOne({ _id: session._id });
+
+    const loginUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/auth/login');
+    const homeUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/');
+
+    // Email to student: signup success and next steps
+    try {
+      const studentWelcomeHtml = studentSignupSuccessEmailTemplate({
+        studentName: user.name,
+        loginUrl,
+        homeUrl
+      });
+      await Service.Mailer.sendRawNow(
+        user.email,
+        'Welcome to ExpertBridge – You can now log in',
+        studentWelcomeHtml
+      );
+    } catch (mailErr) {
+      pm2Error('[completeStudentSignup] Student welcome email failed', mailErr && mailErr.message ? mailErr.message : mailErr);
+    }
+
+    // Notify admin: new client signed up (raw email so admin always receives it)
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || nconf.get('ADMIN_EMAIL');
+      if (adminEmail) {
+        const adminUrl = process.env.adminURL || nconf.get('adminWebUrl') || '';
+        const adminHtml = adminNewClientSignupEmailTemplate({
+          userName: user.name,
+          userEmail: user.email,
+          adminUrl
+        });
+        await Service.Mailer.sendRawNow(
+          adminEmail,
+          'New client signed up – ExpertBridge',
+          adminHtml
+        );
+      }
+    } catch (adminMailErr) {
+      pm2Error('[completeStudentSignup] Admin notification email failed', adminMailErr && adminMailErr.message ? adminMailErr.message : adminMailErr);
+    }
+
+    res.locals.completeStudentSignup = PopulateResponse.success(
+      { message: 'Account created successfully. Please login.' },
+      'SIGNUP_COMPLETE'
+    );
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+/**
+ * Complete tutor signup: validate signup token, create User with password and full profile in one go.
+ */
+exports.completeTutorSignup = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      signupToken: Joi.string().required(),
+      password: Joi.string()
+        .min(8)
+        .regex(/[a-z]/)
+        .regex(/[A-Z]/)
+        .regex(/\d/)
+        .regex(/[@$!%*?&]/)
+        .required(),
+      name: Joi.string().required(),
+      timezone: Joi.string().allow('', null).optional(),
+      country: Joi.object().allow(null).optional(),
+      address: Joi.string().allow('', null).optional(),
+      phoneNumber: Joi.string().allow('', null).optional(),
+      zipCode: Joi.string().allow('', null).optional(),
+      state: Joi.string().allow('', null).optional(),
+      city: Joi.string().allow('', null).optional(),
+      issueDocumentId: Joi.string().allow('', null).optional(),
+      resumeDocumentId: Joi.string().required(),
+      certificationDocumentId: Joi.string().allow('', null).optional(),
+      introVideoId: Joi.string().allow('', null).optional(),
+      introYoutubeId: Joi.string().allow('', null).optional(),
+      idYoutube: Joi.string().allow('', null).optional(),
+      bio: Joi.string().allow('', null).optional(),
+      highlights: Joi.array().items(Joi.string()).optional(),
+      yearsExperience: Joi.number().allow(null).optional(),
+      skillNames: Joi.array().items(Joi.string()).optional(),
+      industryNames: Joi.array().items(Joi.string()).optional(),
+      languages: Joi.array().items(Joi.string()).optional(),
+      avatarUrl: Joi.string().allow('', null).optional(),
+      education: Joi.array().items(Joi.object({
+        title: Joi.string().required(),
+        organization: Joi.string().allow('', null).optional(),
+        fromYear: Joi.number().required(),
+        toYear: Joi.number().allow(null).optional()
+      })).optional(),
+      experience: Joi.array().items(Joi.object({
+        title: Joi.string().required(),
+        organization: Joi.string().allow('', null).optional(),
+        fromYear: Joi.number().required(),
+        toYear: Joi.number().allow(null).optional()
+      })).optional()
+    });
+    const { error, value } = schema.validate(req.body);
+    if (error) return next(PopulateResponse.validationError(error));
+
+    const session = await DB.SignupSession.findOne({ token: value.signupToken });
+    if (!session) {
+      return next(PopulateResponse.error({ message: 'Invalid or expired signup session. Please start again.' }, 'ERR_INVALID_SIGNUP_TOKEN'));
+    }
+    if (session.expiresAt < new Date()) {
+      await DB.SignupSession.deleteOne({ _id: session._id });
+      return next(PopulateResponse.error({ message: 'Signup session expired. Please start again.' }, 'ERR_SIGNUP_EXPIRED'));
+    }
+    if (session.type !== 'tutor') {
+      return next(PopulateResponse.error({ message: 'Invalid signup type.' }, 'ERR_INVALID_SIGNUP_TYPE'));
+    }
+
+    const email = session.email;
+    const baseUsername = Helper.String.createAlias(email.split('@')[0]).toLowerCase();
+    let username = baseUsername;
+    if (await DB.User.exists({ username })) {
+      username = `${baseUsername}-${Helper.String.randomString(5)}`;
+    }
+
+    const user = new DB.User({
+      email,
+      username,
+      type: 'tutor',
+      emailVerified: true,
+      name: value.name.trim(),
+      password: value.password
+    });
+    if (value.avatarUrl && typeof value.avatarUrl === 'string' && value.avatarUrl.trim()) {
+      user.avatar = value.avatarUrl.trim();
+    }
+    await user.save();
+
+    const issueDocument = value.issueDocumentId || null;
+    const resumeDocument = value.resumeDocumentId || null;
+    const certificationDocument = value.certificationDocumentId || null;
+
+    user.timezone = value.timezone;
+    user.country = value.country;
+    user.address = value.address || '';
+    user.phoneNumber = value.phoneNumber;
+    user.zipCode = value.zipCode || '';
+    if (value.state != null) user.state = value.state;
+    if (value.city != null) user.city = value.city;
+    if (value.bio != null) user.bio = value.bio;
+    if (Array.isArray(value.highlights)) user.highlights = value.highlights;
+    if (typeof value.yearsExperience === 'number') user.yearsExperience = value.yearsExperience;
+    if (Array.isArray(value.languages)) user.languages = value.languages;
+    if (issueDocument) user.issueDocument = issueDocument;
+    if (resumeDocument) user.resumeDocument = resumeDocument;
+    if (certificationDocument) user.certificationDocument = certificationDocument;
+    if (value.introVideoId) {
+      user.introVideo = value.introVideoId;
+      user.introYoutubeId = '';
+      user.idYoutube = '';
+    } else if (value.introYoutubeId || value.idYoutube) {
+      const yid = value.introYoutubeId || value.idYoutube || '';
+      user.introYoutubeId = yid;
+      user.idYoutube = yid;
+      user.introVideo = null;
+    }
+    user.pendingApprove = false;
+    user.verified = true;
+    user.rejected = false;
+
+    if (Array.isArray(value.skillNames) && value.skillNames.length > 0) {
+      const rawNames = value.skillNames.map(n => (n || '').trim()).filter(Boolean);
+      const aliases = rawNames.map(n => n.toLowerCase().replace(/\s+/g, '-')).filter(Boolean);
+      const existingSkills = await DB.Skill.find({
+        $or: [
+          { name: { $in: rawNames.map(n => new RegExp(`^${(n || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) } },
+          { alias: { $in: aliases } }
+        ]
+      }).limit(200);
+      const existingByName = new Set(existingSkills.map(s => (s.name || '').toLowerCase().trim()).filter(Boolean));
+      const existingByAlias = new Set(existingSkills.map(s => (s.alias || '').toLowerCase().trim()).filter(Boolean));
+      const skillsToCreate = rawNames.filter(n => {
+        const lower = n.toLowerCase();
+        const alias = lower.replace(/\s+/g, '-');
+        return !existingByName.has(lower) && !existingByAlias.has(alias);
+      });
+      for (const name of skillsToCreate) {
+        try {
+          const alias = Helper.String.createAlias(name);
+          const skill = await DB.Skill.create({ name, alias });
+          existingSkills.push(skill);
+        } catch (e) { /* ignore */ }
+      }
+      user.skillIds = existingSkills.map(s => s._id);
+    }
+    if (Array.isArray(value.industryNames) && value.industryNames.length > 0) {
+      const aliases = value.industryNames.map(n => (n || '').toLowerCase().trim().replace(/\s+/g, '-')).filter(Boolean);
+      const industries = await DB.Industry.find({
+        $or: [
+          { name: { $in: value.industryNames.map(n => new RegExp(`^${(n || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) } },
+          { alias: { $in: aliases } }
+        ]
+      }).limit(50);
+      user.industryIds = industries.map(i => i._id);
+    }
+
+    const mediaIds = [issueDocument, resumeDocument, certificationDocument].filter(Boolean);
+    if (mediaIds.length) {
+      await DB.Media.updateMany(
+        { _id: { $in: mediaIds } },
+        { $set: { uploaderId: user._id, ownerId: user._id } }
+      );
+    }
+    if (value.introVideoId) {
+      await DB.Media.updateMany(
+        { _id: { $in: [value.introVideoId] } },
+        { $set: { uploaderId: user._id, ownerId: user._id } }
+      );
+    }
+    await user.save();
+
+    if (Array.isArray(value.education) && value.education.length > 0) {
+      for (let i = 0; i < value.education.length; i++) {
+        const e = value.education[i];
+        const cert = new DB.Certification({
+          title: e.title,
+          organization: e.organization || '',
+          fromYear: e.fromYear,
+          toYear: e.toYear != null ? e.toYear : e.fromYear,
+          type: 'education',
+          tutorId: user._id,
+          ordering: i
+        });
+        await cert.save();
+        await DB.User.updateOne({ _id: user._id }, { $addToSet: { educationIds: cert._id } });
+      }
+    }
+    if (Array.isArray(value.experience) && value.experience.length > 0) {
+      for (let i = 0; i < value.experience.length; i++) {
+        const e = value.experience[i];
+        const cert = new DB.Certification({
+          title: e.title,
+          organization: e.organization || '',
+          fromYear: e.fromYear,
+          toYear: e.toYear != null ? e.toYear : e.fromYear,
+          type: 'experience',
+          tutorId: user._id,
+          ordering: i
+        });
+        await cert.save();
+        await DB.User.updateOne({ _id: user._id }, { $addToSet: { experienceIds: cert._id } });
+      }
+    }
+
+    try {
+      let cvFileUrl = null;
+      if (resumeDocument) {
+        const media = await DB.Media.findOne({ _id: resumeDocument });
+        if (media) cvFileUrl = (media.toObject() || {}).fileUrl || null;
+      }
+      await fetch('http://13.205.83.59:5678/webhook/expert-registration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': 'expertbridge-cv-ingestion-a7f3e9b2d4c1' },
+        body: JSON.stringify({
+          source: 'website_registration',
+          mongo_user_id: String(user._id),
+          email: user.email,
+          name: user.name,
+          cv_file_url: cvFileUrl
+        })
+      });
+    } catch (err) {
+      pm2Error('[CV-WEBHOOK] Error', err && err.message ? err.message : err);
+    }
+
+    await DB.SignupSession.deleteOne({ _id: session._id });
+
+    // Invite tutor to Zoom (same flow as zoomus.controller.inviteUser)
+    try {
+      let zoomUser;
+      try {
+        zoomUser = await Service.ZoomUs.getUser(user.email);
+      } catch (_) {
+        zoomUser = null;
+      }
+      if (zoomUser && zoomUser.id && zoomUser.status === 'active') {
+        await DB.User.updateOne(
+          { _id: user._id },
+          { $set: { isZoomAccount: true, zoomAccountInfo: zoomUser } }
+        );
+      } else {
+        await Service.ZoomUs.createUser({
+          email: user.email,
+          firstName: (user.name || '').split(' ')[0] || '',
+          lastName: (user.name || '').split(' ').slice(1).join(' ') || ''
+        });
+      }
+    } catch (zoomErr) {
+      pm2Error('[completeTutorSignup] Zoom invite failed (signup still succeeded)', zoomErr && zoomErr.message ? zoomErr.message : zoomErr);
+    }
+
+    const loginUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/auth/login');
+
+    // Email to tutor: signup success + Zoom link sent
+    try {
+      const tutorWelcomeHtml = tutorSignupSuccessEmailTemplate({
+        tutorName: user.name,
+        loginUrl
+      });
+      await Service.Mailer.sendRawNow(
+        user.email,
+        'Welcome to ExpertBridge – You can now log in',
+        tutorWelcomeHtml
+      );
+    } catch (mailErr) {
+      pm2Error('[completeTutorSignup] Tutor welcome email failed', mailErr && mailErr.message ? mailErr.message : mailErr);
+    }
+
+    // Notify admin: new expert signed up (raw email so admin always receives it)
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || nconf.get('ADMIN_EMAIL');
+      if (adminEmail) {
+        const adminUrl = process.env.adminURL || nconf.get('adminWebUrl') || '';
+        const adminHtml = adminNewExpertSignupEmailTemplate({
+          tutorName: user.name,
+          tutorEmail: user.email,
+          adminUrl
+        });
+        await Service.Mailer.sendRawNow(
+          adminEmail,
+          'New expert signed up – ExpertBridge',
+          adminHtml
+        );
+      }
+    } catch (adminMailErr) {
+      pm2Error('[completeTutorSignup] Admin notification email failed', adminMailErr && adminMailErr.message ? adminMailErr.message : adminMailErr);
+    }
+
+    res.locals.completeTutorSignup = PopulateResponse.success(
+      { message: 'Profile completed. You can now log in.' },
+      'TUTOR_SIGNUP_COMPLETE'
+    );
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
 
 exports.setPassword = async (req, res, next) => {
   try {

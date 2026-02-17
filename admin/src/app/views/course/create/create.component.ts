@@ -297,7 +297,7 @@ export class CourseCreateComponent implements OnInit {
 
     if (!this.course.tutorId) {
       hasError = true;
-      errorMessage = 'Please select tutor!';
+      errorMessage = 'Please select expert!';
     } else if (!this.course.name) {
       hasError = true;
       errorMessage = 'Please enter course title!';
@@ -586,7 +586,7 @@ export class CourseCreateComponent implements OnInit {
       error: (err: any) => {
         this.utilService.toastError({
           title: 'Error',
-          message: err.data?.message || 'Failed to load tutors',
+          message: err.data?.message || 'Failed to load experts',
         });
       },
     });

@@ -99,6 +99,12 @@ export class UpdateComponent implements OnInit {
   private languageService = inject(LanguageService);
   private industryService = inject(IndustryService);
 
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
+
   ngOnInit() {
     this.countries = this.countryService.countries;
     this.timezones = tz.names();
@@ -152,7 +158,7 @@ export class UpdateComponent implements OnInit {
         this.loading = false;
         this.utilService.toastError({
           title: 'Error',
-          message: 'Failed to load tutor data',
+          message: 'Failed to load expert data',
         });
       },
     });
@@ -258,7 +264,7 @@ export class UpdateComponent implements OnInit {
         this.loading = false;
         this.utilService.toastSuccess({
           title: 'Success',
-          message: 'Tutor updated successfully!',
+          message: 'Expert updated successfully!',
         });
         this.router.navigate(['/tutor/list']);
       },
@@ -266,7 +272,7 @@ export class UpdateComponent implements OnInit {
         this.loading = false;
         this.utilService.toastError({
           title: 'Error',
-          message: err.error?.message || 'Failed to update tutor',
+          message: err.error?.message || 'Failed to update expert',
         });
       },
     });
@@ -277,14 +283,14 @@ export class UpdateComponent implements OnInit {
   }
 
   approve() {
-    if (confirm('Are you sure you want to approve this tutor?')) {
+    if (confirm('Are you sure you want to approve this expert?')) {
       this.tutorService.approve(this.userId as string).subscribe({
         next: (resp) => {
           this.info.rejected = false;
           this.info.pendingApprove = false;
           this.utilService.toastSuccess({
             title: 'Success',
-            message: 'Tutor approved successfully!',
+            message: 'Expert approved successfully!',
           });
         },
         error: () => {
@@ -295,19 +301,19 @@ export class UpdateComponent implements OnInit {
               if (ok) {
                 this.utilService.toastSuccess({
                   title: 'Success',
-                  message: 'Tutor approved successfully!',
+                  message: 'Expert approved successfully!',
                 });
               } else {
                 this.utilService.toastError({
                   title: 'Error',
-                  message: 'Failed to approve tutor',
+                  message: 'Failed to approve expert',
                 });
               }
             },
             error: () => {
               this.utilService.toastError({
                 title: 'Error',
-                message: 'Failed to approve tutor',
+                message: 'Failed to approve expert',
               });
             },
           });
@@ -316,7 +322,7 @@ export class UpdateComponent implements OnInit {
     }
   }
   reject() {
-    const reason = prompt('Why do you want to reject this tutor?');
+    const reason = prompt('Why do you want to reject this expert?');
     if (!reason) {
       this.utilService.toastError({
         title: 'Error',
@@ -331,7 +337,7 @@ export class UpdateComponent implements OnInit {
         this.info.pendingApprove = false;
         this.utilService.toastSuccess({
           title: 'Success',
-          message: 'Tutor rejected successfully!',
+          message: 'Expert rejected successfully!',
         });
         this.afterReject.emit(resp.data);
       },
@@ -343,19 +349,19 @@ export class UpdateComponent implements OnInit {
             if (ok) {
               this.utilService.toastSuccess({
                 title: 'Success',
-                message: 'Tutor rejected successfully!',
+                message: 'Expert rejected successfully!',
               });
             } else {
               this.utilService.toastError({
                 title: 'Error',
-                message: 'Failed to reject tutor',
+                message: 'Failed to reject expert',
               });
             }
           },
           error: () => {
             this.utilService.toastError({
               title: 'Error',
-              message: 'Failed to reject tutor',
+              message: 'Failed to reject expert',
             });
           },
         });
@@ -370,8 +376,8 @@ export class UpdateComponent implements OnInit {
           this.info.isActive = !this.info.isActive;
         }
         const message = this.info.isActive
-          ? 'Tutor activated'
-          : 'Tutor deactivated';
+          ? 'Expert activated'
+          : 'Expert deactivated';
         this.utilService.toastSuccess({
           title: 'Success',
           message: message,
@@ -380,7 +386,7 @@ export class UpdateComponent implements OnInit {
       error: (err) => {
         this.utilService.toastError({
           title: 'Error',
-          message: 'Failed to change tutor status',
+          message: 'Failed to change expert status',
         });
       },
     });

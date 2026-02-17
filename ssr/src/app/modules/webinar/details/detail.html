@@ -79,7 +79,7 @@
                   [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || emailRecipient === (currentUser && currentUser.email)"
                   class="btn btn-default btn-block" (click)="enrollWebinar(webinar, 'gift')">
                   <i class="fi fi-rr-gift color-white me-2"></i>
-                  <span translate>Gift Group Class</span>
+                  <span translate>Gift Group Session</span>
                 </button>
               </div>
             </div>
@@ -208,7 +208,7 @@
                 [disabled]="webinar.numberParticipants >= webinar.maximumStrength || !canBooking || (currentUser && currentUser._id === webinar.tutorId) || emailRecipient === (currentUser && currentUser.email)"
                 class="btn btn-default btn-block" (click)="enrollWebinar(webinar, 'gift')">
                 <i class="fi fi-rr-gift color-white me-2"></i>
-                <span translate>Gift Group Class</span>
+                <span translate>Gift Group Session</span>
               </button>
             </div>
           </div>

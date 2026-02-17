@@ -75,7 +75,7 @@ getTutorDisplayName(tutor: any): string {
     tutor?.name ||
     tutor?.username ||
     tutor?.email ||
-    'Tutor'
+    'Expert'
   );
 }
 

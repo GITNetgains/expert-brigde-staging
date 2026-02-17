@@ -81,6 +81,7 @@ export class ListComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const page = params['page'] ? parseInt(params['page']) : 1;
       this.currentPage = !isNaN(page) ? page : 1;
+      this.searchFields.status = params['status'] != null && params['status'] !== '' ? params['status'] : '';
       this.query();
     });
   }
@@ -92,15 +93,28 @@ export class ListComponent implements OnInit {
 
   query() {
     this.loading = true;
-    const params = Object.assign(
-      {
-        page: this.currentPage,
-        take: this.pageSize,
-        sort: `${this.sortOption.sortBy}`,
-        sortType: `${this.sortOption.sortType}`,
-      },
-      this.searchFields
-    );
+    const { status, ...restSearch } = this.searchFields;
+    const params: Record<string, unknown> = {
+      page: this.currentPage,
+      take: this.pageSize,
+      sort: `${this.sortOption.sortBy}`,
+      sortType: `${this.sortOption.sortType}`,
+      ...restSearch,
+    };
+    if (status === 'rejected') {
+      params['rejected'] = true;
+    } else if (status === 'pending') {
+      params['pendingApprove'] = true;
+    } else if (status === 'approved') {
+      params['rejected'] = false;
+      params['pendingApprove'] = false;
+    } else if (status === 'activated') {
+      params['rejected'] = false;
+      params['pendingApprove'] = false;
+      params['isActive'] = true;
+    } else if (status === 'inactivated') {
+      params['isActive'] = false;
+    }
 
     this.tutorService.search(params).subscribe({
       next: (resp) => {
@@ -135,19 +149,26 @@ export class ListComponent implements OnInit {
         ? event
         : parseInt(event.target.value || event.target.innerText, 10);
     this.currentPage = page;
+    const queryParams: Record<string, string | number | null> = { page: this.currentPage };
+    if (this.searchFields['status']) {
+      queryParams['status'] = this.searchFields['status'];
+    }
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: this.currentPage },
+      queryParams,
       queryParamsHandling: 'merge',
     });
   }
 
   filter() {
     this.currentPage = 1;
-    this.query();
+    const queryParams: Record<string, string | number | null> = { page: 1 };
+    if (this.searchFields['status']) {
+      queryParams['status'] = this.searchFields['status'];
+    }
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: 1 },
+      queryParams,
       queryParamsHandling: 'merge',
       replaceUrl: true
     });
@@ -156,10 +177,9 @@ export class ListComponent implements OnInit {
   clearFilters() {
     this.searchFields = { name: '', email: '', status: '', rating: '' };
     this.currentPage = 1;
-    this.query();
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: 1 },
+      queryParams: { page: 1, status: null },
       queryParamsHandling: 'merge',
       replaceUrl: true
     });
@@ -223,7 +243,7 @@ export class ListComponent implements OnInit {
   }
 
   remove(tutor: any, index: number) {
-    if (confirm('Are you sure you want to delete this tutor?')) {
+    if (confirm('Are you sure you want to delete this expert?')) {
       this.tutorService.delete(tutor._id).subscribe({
         next: () => {
           this.utilService.toastSuccess({

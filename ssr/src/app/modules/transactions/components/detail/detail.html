@@ -57,18 +57,18 @@
                     translate
                     >1 vs 1</span
                   >
-                  <span
+                  <!-- <span
                     class="label label-light-info"
                     *ngIf="transaction?.targetType === 'course'"
                     translate
                     >Course</span
-                  >
+                  > -->
                 </td>
               </tr>
               <tr>
                 <td>
                   <span translate class="payment-detail-text"
-                    >Subject / Group Class / Course</span
+                    >Subject / Group Session</span
                   >
                 </td>
                 <td>
@@ -82,13 +82,13 @@
                     >{{transaction.webinar && transaction.targetType ===
                     'webinar' ? transaction?.webinar?.name : ''}}</a
                   >
-                  <a
+                  <!-- <a
                     class="color-light-red"
                     [routerLink]="['/courses', transaction.course && transaction.course.alias]"
                     *ngIf="transaction.targetType === 'course'"
                     >{{transaction.course && transaction.targetType === 'course'
                     ? transaction?.course?.name : ''}}</a
-                  >
+                  > -->
                   <span
                     >{{transaction.subject && transaction.targetType ===
                     'subject' ? transaction?.subject?.name : ''}}</span
@@ -243,7 +243,7 @@
             </form>
           </div>
         </div>
-        <div
+        <!-- <div
           class="mt-4"
           *ngIf="transaction.price && transaction.price > 0 && transaction.targetType === 'course'"
         >
@@ -269,6 +269,7 @@
             </form>
           </div>
         </div>
+        --> 
       </div>
     </div>
   </div>

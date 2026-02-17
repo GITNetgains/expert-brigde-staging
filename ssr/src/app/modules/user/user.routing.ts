@@ -23,6 +23,7 @@ import { ScheduleDetailComponent } from './my-schedule/detail/detail.component';
 import { ListScheduleComponent } from './my-schedule/list/list.component';
 import { LessonSpaceComponent } from './lesson-space/lesson-space.component';
 import { AiQueryListComponent } from './ai-queries/list/list.component';
+import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
 
 const routes: Routes = [
   {
@@ -95,6 +96,13 @@ const routes: Routes = [
     path: 'courses/:id',
     component: CourseUpdateComponent,
     resolve: {}
+  },
+  {
+    path: 'browse-group-sessions',
+    component: BrowseGroupSessionsComponent,
+    resolve: {
+      categories: categoriesResolver
+    }
   },
   {
     path: 'groupclass',

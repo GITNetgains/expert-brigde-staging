@@ -31,7 +31,7 @@ export class ListTransactionComponent implements OnInit {
   };
   public columns = [
     {
-      title: 'Tutor name',
+      title: 'Expert name',
       dataIndex: 'tutor',
       sorter: true,
       sortBy: 'tutorId'

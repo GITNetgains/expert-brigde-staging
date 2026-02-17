@@ -18,7 +18,7 @@
               bindValue="_id"
               [loading]="searching"
               [(ngModel)]="tutorId"
-              placeholder="Search tutor"
+              placeholder="Search expert"
               [clearable]="true"
               [virtualScroll]="true"
               class="my-select"
@@ -70,7 +70,7 @@
                       }}
                     </p>
                     <p>
-                      <strong>Tutor Balance:</strong>
+                      <strong>Expert Balance:</strong>
                       {{
                         stats?.pending?.balance
                           | currency
@@ -133,7 +133,7 @@
                       }}
                     </p>
                     <p>
-                      <strong>Tutor Balance:</strong>
+                      <strong>Expert Balance:</strong>
                       {{
                         stats?.approved?.balance
                           | currency
@@ -202,7 +202,7 @@
               bindValue="_id"
               [loading]="searching"
               [(ngModel)]="tutorId"
-              placeholder="Search tutor"
+              placeholder="Search expert"
               [clearable]="true"
               [virtualScroll]="true"
               class="my-select"
@@ -246,7 +246,7 @@
                       (onSort)="onSort($event)"
                       sortBy="tutorId"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Name"
+                      sortTitle="Expert Name"
                     ></app-sort>
                   </th>
                   <th scope="col" style="width: 50px">
@@ -270,7 +270,7 @@
                       (onSort)="onSort($event)"
                       sortBy="balance"
                       [sortOption]="sortOption"
-                      sortTitle="Tutor Balance"
+                      sortTitle="Expert Balance"
                     ></app-sort>
                   </th>
                   <th scope="col" style="width: 50px">

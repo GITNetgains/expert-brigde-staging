@@ -74,6 +74,51 @@
     font-family: inherit;
   }
 
+  /* Search query card - show and edit search on same page */
+  &.search-query-card {
+    .card-label {
+      font-weight: 600;
+      color: #1F3A52;
+      margin-bottom: 12px;
+      display: block;
+      font-size: 1rem;
+    }
+    .search-query-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-query-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 15px;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #333;
+      background: #fff;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      &::placeholder {
+        color: #a0aec0;
+      }
+      &:focus {
+        outline: none;
+        border-color: #008FCB;
+      }
+    }
+    .search-again-btn {
+      background: #008FCB;
+      color: white;
+      border: none;
+      white-space: nowrap;
+      &:hover:not(:disabled) {
+        background: #007ab3;
+      }
+    }
+  }
+
   /* Attachment Section Styles */
   &.attachment-card {
       text-align: center;
@@ -300,6 +345,14 @@
   .editor-card {
     border-width: 8px; // Slightly thinner border on mobile
     padding: 15px;
+
+    &.search-query-card .search-query-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    &.search-query-card .search-query-input {
+      min-width: 0;
+    }
 
     &.signup-card .form-header {
         flex-direction: column;

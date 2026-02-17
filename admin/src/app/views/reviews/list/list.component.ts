@@ -73,7 +73,7 @@ export class ReviewTutorComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     if (!this.tutorId) {
-      this.error = 'No tutor ID provided';
+      this.error = 'No expert ID provided';
     }
   }
 
@@ -88,7 +88,7 @@ export class ReviewTutorComponent implements OnInit, OnChanges {
     this.error = '';
 
     if (!this.tutorId) {
-      this.error = 'No tutor ID provided';
+      this.error = 'No expert ID provided';
       this.isLoading = false;
       return;
     }

@@ -12,6 +12,66 @@ const oauthClient = new OAuth2Client(
   REDIRECT_URI
 );
 
+/**
+ * Tutor signup with Google: exchange code for profile, create SignupSession, return signupToken + profile.
+ * Does NOT create User; user is created when they complete the profile form.
+ */
+exports.signup = async (req, res, next) => {
+  try {
+    const code = req.query.code || req.body.code;
+    if (!code) {
+      return next(PopulateResponse.validationError({ message: 'Missing Google OAuth code' }));
+    }
+
+    const { tokens } = await oauthClient.getToken(code);
+    if (!tokens.id_token) {
+      return next(PopulateResponse.error({ message: 'Google signup failed' }, 'GOOGLE_SIGNUP_FAILED'));
+    }
+
+    const ticket = await oauthClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const email = (payload.email || '').toLowerCase();
+    const name = payload.name || [payload.given_name, payload.family_name].filter(Boolean).join(' ') || 'Google User';
+    const avatarUrl = payload.picture || '';
+
+    if (!email) {
+      return next(PopulateResponse.error({ message: 'Google did not provide an email' }, 'GOOGLE_NO_EMAIL'));
+    }
+
+    const existingUser = await DB.User.findOne({ email });
+    if (existingUser) {
+      return next(PopulateResponse.error(
+        { message: 'This email is already registered. Please log in.' },
+        'ERR_EMAIL_ALREADY_TAKEN'
+      ));
+    }
+
+    const signupToken = Helper.String.randomString(32);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    await DB.SignupSession.create({
+      email,
+      type: 'tutor',
+      token: signupToken,
+      expiresAt
+    });
+
+    res.locals.signup = {
+      signupToken,
+      email,
+      name,
+      avatarUrl
+    };
+    return next();
+  } catch (error) {
+    console.error('GOOGLE SIGNUP ERROR:', error);
+    return next(error);
+  }
+};
+
 exports.login = async (req, res, next) => {
   try {
     // Accept code from query OR body (frontend uses GET or POST)

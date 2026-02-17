@@ -22,17 +22,17 @@
                 </td>
               </tr>
               <tr *ngIf="item.webinar">
-                <td translate>Group Class</td>
+                <td translate>Group Session</td>
                 <td><span>{{item?.webinar?.name || 'No name'}}</span></td>
               </tr>
               <tr *ngIf="item.subject">
                 <td translate>Subject</td>
                 <td><span>{{item.subject?.name || 'No name'}}</span></td>
               </tr>
-              <tr *ngIf="item.course">
+              <!-- <tr *ngIf="item.course">
                 <td translate>Course</td>
                 <td><span>{{item.course?.name || 'No name'}}</span></td>
-              </tr>
+              </tr> -->
               <tr>
                 <td translate>Request Status</td>
                 <td><app-status [status]="item?.status || ''"></app-status></td>

@@ -6,7 +6,7 @@
           <c-col md="12">
             <div class="mb-3">
               <label cLabel
-                >At the end of my course, students will be able to</label
+                >At the end of my course, clients will be able to</label
               >
               @if (course.goalCourse && course.goalCourse.length) {
               <ul>
@@ -37,7 +37,7 @@
                       type="text"
                       [(ngModel)]="courseGoal.goalCourse"
                       name="goalCourse"
-                      placeholder="At the end of my course, students will be able to"
+                      placeholder="At the end of my course, clients will be able to"
                     />
                   </div>
                 </c-col>
@@ -121,7 +121,7 @@
           <c-col md="12">
             <div class="mb-3">
               <label cLabel
-                >What will students need to know or do before starting this
+                >What will clients need to know or do before starting this
                 course?</label
               >
               @if (course.needToJoinCourse && course.needToJoinCourse.length) {
@@ -154,7 +154,7 @@
                       type="text"
                       [(ngModel)]="courseGoal.needToJoinCourse"
                       name="needToJoinCourse"
-                      placeholder="What will students need to know or do before starting this course?"
+                      placeholder="What will clients need to know or do before starting this course?"
                     />
                   </div>
                 </c-col>

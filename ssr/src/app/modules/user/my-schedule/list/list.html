@@ -5,9 +5,9 @@
       <li role="presentation" [ngClass]="{'active': tab === 'subject'}" (click)="onTabSelect('subject')">
         <a href="javascript:void(0)" translate>One on One Sessions</a>
       </li>
-      <!-- <li role="presentation" [ngClass]="{'active': tab === 'webinar'}" (click)="onTabSelect('webinar')">
+      <li role="presentation" [ngClass]="{'active': tab === 'webinar'}" (click)="onTabSelect('webinar')">
         <a href="javascript:void(0)" translate>Group Sessions</a>
-      </li> -->
+      </li>
     </ul>
     <div *ngIf="tab === 'subject'">
       <div class="card mb-3 card-filter input-border">
@@ -92,9 +92,9 @@
                 </td>
                 <!-- <td>
                   <span class="label label-light-primary" *ngIf="item?.isFree" translate>{{item?.targetType ===
-                    'webinar' ? 'Free Group Class' :'Free Trial'}}</span>
+                    'webinar' ? 'Free Group Session' :'Free Trial'}}</span>
                   <span class="label label-light-warning" *ngIf="!item.isFree" translate>{{item.targetType ===
-                    'webinar' ? 'Paid Group class' : 'Paid Lesson'}}</span>
+                    'webinar' ? 'Paid Group session' : 'Paid Lesson'}}</span>
                 </td> -->
                 <td>
                   {{(item?.displayStartTime? item?.displayStartTime : item?.startTime ) | date:'dd/MM/yyyy,HH:mma'}}
@@ -215,8 +215,8 @@
           <div class="input-border show-entries" id="table_id_length">
             <span translate>Show</span>
             <select name="table_id_length" aria-controls="table_id"
-              class="custom-select custom-select-sm form-control form-control-sm" [(ngModel)]="pageSize"
-              (change)="query()">
+              class="custom-select custom-select-sm form-control form-control-sm" [(ngModel)]="filterTransactionOptions.pageSize"
+              (change)="onPageSizeChangeWebinar()">
               <option value="10" selected>10</option>
               <option value="25">25</option>
               <option value="50">50</option>

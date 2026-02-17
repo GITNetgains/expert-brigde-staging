@@ -1,7 +1,7 @@
 <c-row class="g-4">
   @for(item of starts; track item){
   <c-col xs="12" sm="6" md="6" xl="3">
-    <a [routerLink]="[item.path]">
+    <a [routerLink]="[item.path]" [queryParams]="item.queryParams || {}">
       <div class="custom-widget" [ngClass]="'bg-' + item.color">
         <div class="widget-content">
           <div class="widget-text">

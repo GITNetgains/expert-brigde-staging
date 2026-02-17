@@ -34,7 +34,12 @@
       <div class="progress">
         <div class="bar" [style.width.%]="item.progress"></div>
       </div>
-      <div class="state">{{ item.state }}</div>
+      <div class="state">
+        <span *ngIf="item.state === 'pending'" translate>Pending</span>
+        <span *ngIf="item.state === 'uploading'" translate>Uploading...</span>
+        <span *ngIf="item.state === 'done'" translate>Uploaded</span>
+        <span *ngIf="item.state === 'error'" translate>Error</span>
+      </div>
     </div>
   </div>
 </div>

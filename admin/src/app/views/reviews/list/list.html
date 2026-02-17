@@ -25,19 +25,19 @@
                 </div>
               </div>
 
-              @if(item?.course) {
+              <!-- @if(item?.course) {
               <a
                 [routerLink]="['/courses/preview', item?.course?._id]"
                 class="d-block mb-1 text-decoration-none"
               >
                 Course: {{item?.course?.name}}
               </a>
-              } @if(item?.webinar) {
+              } --> @if(item?.webinar) {
               <a
                 [routerLink]="['/group-classes/update', item?.webinar?._id]"
                 class="d-block mb-1 text-decoration-none"
               >
-                Group Class: {{item?.webinar?.name}}
+                Group Session: {{item?.webinar?.name}}
               </a>
               } @if(item?.appointment?.subject) {
               <a

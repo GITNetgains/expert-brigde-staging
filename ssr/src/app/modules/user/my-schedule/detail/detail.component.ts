@@ -237,7 +237,7 @@ export class ScheduleDetailComponent implements OnInit {
           if (resp.data.checkOverlap) {
             this.rescheduling = false;
             this.appService.toastError(
-              'The student has some other class scheduled on date and time that you select!'
+              'The client has some other session scheduled on date and time that you select!'
             );
           } else {
             this.appointmentService

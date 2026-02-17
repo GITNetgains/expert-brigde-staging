@@ -7,9 +7,7 @@ import { TutorService } from '@services/tutor.service';
 import { MyCategoryService } from 'src/services/my-category.service';
 import { MySubjectService } from 'src/services/my-subject.service';
 import { MyTopicService } from 'src/services/my-topic.service';
-import { GradeService } from '@services/grade.service';
 import { CalendarService } from '@services/calendar.service';
-import { ageFilter } from 'src/constants/age';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FileUploadComponent } from '@components/common/uploader/uploader.component';
 import { ICalendarPayload, IUploaderOptions } from 'src/interfaces';
@@ -63,7 +61,6 @@ export class UpdateWebinarComponent implements OnInit {
     subjectIds: [],
     topicIds: []
   };
-  public ageFilter = ageFilter;
   public medias: any = [];
   public mainImageUrl: string = '';
   public tutorId: any;
@@ -100,7 +97,6 @@ export class UpdateWebinarComponent implements OnInit {
     private myCategoryService: MyCategoryService,
     private myTopicService: MyTopicService,
     private mySubjectService: MySubjectService,
-    private gradeService: GradeService,
 
     private calendarService: CalendarService,
     private utilService: UtilService
@@ -113,7 +109,6 @@ export class UpdateWebinarComponent implements OnInit {
   public mySubjects: any[] = [];
   public myTopics: any[] = [];
   public tutor: any = [];
-  public grades: any = [];
   public searchTutor: any = {
     take: 100,
     name: '',
@@ -131,8 +126,9 @@ export class UpdateWebinarComponent implements OnInit {
     onProgressAll: (progress) => {},
     onCompleteItem: (item, response) => {
       try {
-        if (response && response.data) {
-          // Remove old main image from mediaIds if replacing
+        const data = response?.data;
+        if (data && !(response as any)?.error) {
+          const mediaId = data._id || data.id;
           if (this.webinar.mainImageId) {
             const oldImageIndex = this.webinar.mediaIds.indexOf(this.webinar.mainImageId);
             if (oldImageIndex > -1) {
@@ -140,9 +136,9 @@ export class UpdateWebinarComponent implements OnInit {
             }
           }
 
-          this.webinar.mediaIds.push(response.data.id);
-          this.webinar.mainImageId = response.data.id;
-          this.mainImageUrl = response.data.thumbUrl || response.data.fileUrl || response.data.url;
+          this.webinar.mediaIds.push(mediaId);
+          this.webinar.mainImageId = mediaId;
+          this.mainImageUrl = data.thumbUrl || data.fileUrl || data.url || '';
         }
       } catch (e) {
         console.error('Error processing main image upload response:', e);
@@ -171,15 +167,16 @@ export class UpdateWebinarComponent implements OnInit {
     },
     onCompleteItem: (item, response) => {
       try {
-        if (response && response.data) {
-          this.webinar.mediaIds.push(response.data.id);
+        const data = response?.data;
+        if (data && !(response as any)?.error) {
+          const mediaId = data._id || data.id;
+          this.webinar.mediaIds.push(mediaId);
 
-          // Add the uploaded file to the medias array for immediate display
           this.medias.push({
-            _id: response.data.id,
-            name: response.data.name || item.file.name,
-            fileUrl: response.data.fileUrl || response.data.url,
-            mimeType: response.data.mimeType
+            _id: mediaId,
+            name: data.name || item?.file?.name,
+            fileUrl: data.fileUrl || data.url,
+            mimeType: data.mimeType
           });
         }
       } catch (e) {
@@ -195,9 +192,6 @@ export class UpdateWebinarComponent implements OnInit {
   };
   ngOnInit(): void {
     this.webinarId = this.route.snapshot.paramMap.get('id');
-    this.gradeService.search({}).subscribe((resp) => {
-      this.grades = resp.data.items;
-    });
     this.webinarService.findOne(this.webinarId).subscribe((resp) => {
       this.medias = resp.data.media;
       this.mainImageUrl = resp.data.mainImage.fileUrl;
@@ -218,12 +212,10 @@ export class UpdateWebinarComponent implements OnInit {
         'featured',
         'tutorId',
         'tutor',
-        'gradeIds',
-        'isFree',
         'subjectIds',
         'topicIds',
-        'age',
       ]);
+      this.webinar.isFree = false;
       this.queryMyCategory();
       this.setupFileUpload();
     });
@@ -236,7 +228,7 @@ export class UpdateWebinarComponent implements OnInit {
     if (!event.valid) {
       return this.utilService.toastError({
         title: 'Error',
-        message: 'Please fill all required fields and select a tutor.',
+        message: 'Please fill all required fields and select an expert.',
       });
     }
     if (!this.webinar.mainImageId) {
@@ -245,18 +237,19 @@ export class UpdateWebinarComponent implements OnInit {
         message: 'Please upload a main image for the webinar.',
       });
     }
-    if (!this.webinar.isFree && (this.webinar.price === null || this.webinar.price === undefined || this.webinar.price === '' || this.webinar.price === 0 || this.webinar.price < 0)) {
+    if (this.webinar.price === null || this.webinar.price === undefined || this.webinar.price === '' || this.webinar.price === 0 || this.webinar.price < 0) {
       return this.utilService.toastError({
         title: 'Validation Error',
-        message: 'Price is required and must be greater than 0 for paid webinars.',
+        message: 'Price is required and must be greater than 0.',
       });
     }
+    this.webinar.isFree = false;
     this.calendarService.checkByWebinar(this.webinarId).subscribe((check) => {
       if (!check.data.success && this.webinar.isOpen) {
         return this.utilService.toastError({
           title: 'Validation Error',
           message:
-            'Please create schedule for group class if you want the class to be public',
+            'Please create schedule for group session if you want the session to be public',
         });
       }
 
@@ -273,11 +266,9 @@ export class UpdateWebinarComponent implements OnInit {
             'mainImageId',
             'description',
             'featured',
-            'gradeIds',
             'isFree',
             'subjectIds',
             'topicIds',
-            'age',
           ])
         )
         .subscribe((resp) => {

@@ -259,7 +259,7 @@ export class CreateCouponComponent implements OnInit {
     ) {
       return this.utilService.toastError({
         title: 'Errors',
-        message: 'Please select tutor and webinar.',
+        message: 'Please select expert and webinar.',
       });
     }
     this.isSubmitted = true;

@@ -11,8 +11,9 @@ export class GoogleAuthService {
 
   constructor() {}
 
-  getGoogleOAuthUrl(): string {
-    const params = {
+  /** @param state Optional state (e.g. 'signup_tutor') to distinguish signup from login on callback */
+  getGoogleOAuthUrl(state?: string): string {
+    const params: Record<string, string> = {
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
       response_type: 'code',
@@ -20,6 +21,7 @@ export class GoogleAuthService {
       access_type: 'offline',
       prompt: 'consent'
     };
+    if (state) params['state'] = state;
 
     const query = new URLSearchParams(params).toString();
     return `https://accounts.google.com/o/oauth2/v2/auth?${query}`;
@@ -27,6 +29,11 @@ export class GoogleAuthService {
 
   redirectToGoogleLogin() {
     window.location.href = this.getGoogleOAuthUrl();
+  }
+
+  /** Redirect to Google for tutor signup; callback will create SignupSession and send user to complete profile */
+  redirectToGoogleSignup() {
+    window.location.href = this.getGoogleOAuthUrl('signup_tutor');
   }
 
   extractCodeFromCallback(): string | null {

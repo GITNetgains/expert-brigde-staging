@@ -6,35 +6,113 @@ const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
 const LINKEDIN_CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET;
 const REDIRECT_URI = process.env.LINKEDIN_REDIRECT_URI; // Should be: http://localhost:4200/auth/linkedin/callback
 
-exports.login = async (req, res, next) => {
+/**
+ * Tutor signup with LinkedIn: exchange code for profile, create SignupSession, return signupToken + profile.
+ * Uses redirect_uri from request body if provided (must match frontend), else env LINKEDIN_REDIRECT_URI.
+ */
+exports.signup = async (req, res, next) => {
   try {
-    // Accept code from both query params (GET) and body (POST)
     const code = req.query.code || req.body.code;
-    
+    const redirectUri = (req.body.redirect_uri || REDIRECT_URI || '').toString().trim();
     if (!code) {
-      console.error("No LinkedIn code provided");
-      return next(PopulateResponse.validationError({ 
-        message: "Missing LinkedIn OAuth code" 
-      }));
+      return next(PopulateResponse.validationError({ message: 'Missing LinkedIn OAuth code' }));
+    }
+    if (!redirectUri) {
+      return next(PopulateResponse.validationError({ message: 'Missing redirect_uri. Set LINKEDIN_REDIRECT_URI in API .env or ensure frontend sends redirect_uri.' }));
     }
 
-    console.log("LinkedIn code received:", code);
+    console.log('[LinkedIn signup] redirect_uri sent to LinkedIn:', redirectUri, '| from body:', !!req.body.redirect_uri);
 
-    // 1️⃣ Exchange code for access token
+    const tokenBody = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+      client_id: LINKEDIN_CLIENT_ID,
+      client_secret: LINKEDIN_CLIENT_SECRET
+    }).toString();
+
     const tokenResp = await axios.post(
       "https://www.linkedin.com/oauth/v2/accessToken",
-      null,
+      tokenBody,
       {
-        params: {
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: REDIRECT_URI,
-          client_id: LINKEDIN_CLIENT_ID,
-          client_secret: LINKEDIN_CLIENT_SECRET
-        },
-        headers: { 
-          "Content-Type": "application/x-www-form-urlencoded" 
-        }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      }
+    );
+
+    const accessToken = tokenResp.data.access_token;
+
+    const profileResp = await axios.get("https://api.linkedin.com/v2/userinfo", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    const email = (profileResp.data.email || '').toLowerCase();
+    const fullName = profileResp.data.name || [profileResp.data.given_name, profileResp.data.family_name].filter(Boolean).join(' ') || 'LinkedIn User';
+    const avatarUrl = profileResp.data.picture || '';
+
+    if (!email) {
+      return next(PopulateResponse.error({ message: 'LinkedIn did not provide an email' }, 'LINKEDIN_NO_EMAIL'));
+    }
+
+    const existingUser = await DB.User.findOne({ email });
+    if (existingUser) {
+      return next(PopulateResponse.error(
+        { message: 'This email is already registered. Please log in.' },
+        'ERR_EMAIL_ALREADY_TAKEN'
+      ));
+    }
+
+    const signupToken = Helper.String.randomString(32);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    await DB.SignupSession.create({
+      email,
+      type: 'tutor',
+      token: signupToken,
+      expiresAt
+    });
+
+    res.locals.signup = {
+      signupToken,
+      email,
+      name: fullName,
+      avatarUrl
+    };
+    return next();
+  } catch (error) {
+    console.error('LINKEDIN SIGNUP ERROR:', error.response?.data || error.message);
+    return next(error);
+  }
+};
+
+exports.login = async (req, res, next) => {
+  try {
+    const code = req.query.code || req.body.code;
+    const redirectUri = (req.body.redirect_uri || REDIRECT_URI || '').toString().trim();
+
+    if (!code) {
+      console.error("No LinkedIn code provided");
+      return next(PopulateResponse.validationError({
+        message: "Missing LinkedIn OAuth code"
+      }));
+    }
+    if (!redirectUri) {
+      return next(PopulateResponse.validationError({ message: "Missing redirect_uri. Set LINKEDIN_REDIRECT_URI or send redirect_uri in request." }));
+    }
+
+    console.log("[LinkedIn login] redirect_uri:", redirectUri, "| from body:", !!req.body.redirect_uri);
+
+    const tokenBody = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+      client_id: LINKEDIN_CLIENT_ID,
+      client_secret: LINKEDIN_CLIENT_SECRET
+    }).toString();
+
+    const tokenResp = await axios.post(
+      "https://www.linkedin.com/oauth/v2/accessToken",
+      tokenBody,
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       }
     );
 

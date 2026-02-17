@@ -123,6 +123,12 @@ export class CreateComponent implements OnInit {
   private countryService = inject(CountryService);
   private languageService = inject(LanguageService);
   private industryService = inject(IndustryService);
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
+
   ngOnInit() {
     this.countries = this.countryService.countries;
     this.timezones = tz.names();
@@ -243,7 +249,7 @@ export class CreateComponent implements OnInit {
         this.loading = false;
         this.utilService.toastSuccess({
           title: 'Success',
-          message: 'Tutor created successfully!',
+          message: 'Expert created successfully!',
         });
         this.router.navigate(['/tutor/list']);
       },
@@ -261,7 +267,7 @@ export class CreateComponent implements OnInit {
         } else {
           this.utilService.toastError({
             title: 'Error',
-            message: err.error?.message || 'Failed to create tutor',
+            message: err.error?.message || 'Failed to create expert',
           });
         }
       },

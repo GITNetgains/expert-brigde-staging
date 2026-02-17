@@ -1,22 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
-  IGrade,
   IMedia,
   IMyCategory,
   IMySubject,
-  IMyTopic,
   ISubject,
   IUser
 } from 'src/app/interface';
-import { ageFilter, quillConfig } from 'src/app/lib';
+import { quillConfig } from 'src/app/lib';
 import {
   AppService,
   CalendarService,
-  GradeService,
   MyCategoryService,
   MySubjectService,
-  MyTopicService,
   STATE,
   StateService,
   WebinarService
@@ -44,13 +40,10 @@ export class WebinarUpdateComponent implements OnInit {
   public filesSelected: any[] = [];
   public config: any;
   public quillConfig = quillConfig;
-  public grades: IGrade[] = [];
 
   public myCategories: IMyCategory[] = [];
   public mySubjects: IMySubject[] = [];
-  public myTopics: IMyTopic[] = [];
 
-  public ageFilter: any[] = ageFilter;
   public currentUser: IUser;
 
   constructor(
@@ -60,9 +53,7 @@ export class WebinarUpdateComponent implements OnInit {
     private route: ActivatedRoute,
     private myCategoryService: MyCategoryService,
     private calendarService: CalendarService,
-    private gradeService: GradeService,
     private mySubjectService: MySubjectService,
-    private myTopicService: MyTopicService,
     public stateService: StateService
   ) {
     this.maxFileSize = environment.maximumFileSize;
@@ -74,15 +65,15 @@ export class WebinarUpdateComponent implements OnInit {
     this.loading = true;
     this.webinarId = this.route.snapshot.paramMap.get('id') as string;
 
-    this.queryGrades();
     this.webinarService
       .findOne(this.webinarId)
       .then((resp) => {
         if (resp.data.media && resp.data.media.length) {
           this.medias = resp.data.media;
         }
-        this.mainImageUrl = resp.data.mainImage.thumbUrl;
+        this.mainImageUrl = resp.data?.mainImage?.thumbUrl || resp.data?.mainImage?.fileUrl || '';
         this.webinar = resp.data;
+        this.webinar.isFree = false;
         this.loading = false;
         this.queryMyCategories(true);
         this.mediaOptions = {
@@ -91,8 +82,12 @@ export class WebinarUpdateComponent implements OnInit {
             `/webinar/${this.webinarId}/upload-document`,
           fileFieldName: 'file',
           onFinish: (res: any) => {
-            this.medias.push(res.data);
-            this.appService.toastSuccess('Updated successfuly!');
+            const data = res?.data ?? res;
+            if (data) {
+              this.medias.push(data);
+              this.appService.toastSuccess('Updated successfuly!');
+            }
+            this.filesSelected = [];
           },
           onFileSelect: (res: any) => (this.filesSelected = res),
           id: 'file-upload'
@@ -105,9 +100,18 @@ export class WebinarUpdateComponent implements OnInit {
     this.mainImageOptions = {
       url: environment.apiBaseUrl + '/media/photos',
       fileFieldName: 'file',
+      uploadOnSelect: true,
       onFinish: (resp: any) => {
-        this.webinar.mainImageId = resp.data._id;
-        this.mainImageUrl = resp.data.thumbUrl;
+        const data = resp?.data ?? resp;
+        if (data && !resp?.error) {
+          this.webinar.mainImageId = data._id || data.id;
+          this.mainImageUrl = data.thumbUrl || data.fileUrl || data.mediumUrl || data.url || '';
+          this.imageSelected = [];
+        }
+      },
+      onError: (err: any) => {
+        const msg = err?.error?.message || err?.message || err?.data?.message || 'Main image upload failed';
+        this.appService.toastError(msg);
       },
       onFileSelect: (resp: any) => (this.imageSelected = resp),
       accept: 'image/*',
@@ -156,28 +160,15 @@ export class WebinarUpdateComponent implements OnInit {
         this.appService.toastError(err);
       });
   }
-  queryGrades() {
-    this.loading = true;
-    this.gradeService
-      .search({ take: 100, sort: 'ordering', sortType: 'asc' })
-      .then((resp) => {
-        this.grades = resp.data.items;
-        this.loading = false;
-      })
-      .catch((err) => {
-        this.loading = false;
-        this.appService.toastError(err);
-      });
-  }
   submit(frm: any) {
     this.isSubmitted = true;
     if (!frm.valid) {
       return this.appService.toastError('Invalid form, please try again.');
     }
-    if (this.webinar.price <= 0 && !this.webinar.isFree) {
+    if (this.webinar.price <= 0) {
       return this.appService.toastError('Price value should be greater than 0');
     }
-    if (this.webinar.isFree === true) this.webinar.price = 0;
+    this.webinar.isFree = false;
 
     if (!this.webinar.mainImageId)
       return this.appService.toastError(
@@ -189,7 +180,7 @@ export class WebinarUpdateComponent implements OnInit {
       this.config?.platformOnline === 'lessonspace'
     ) {
       return this.appService.toastError(
-        'Lesson space allows only 10 users for group class!'
+        'Lesson space allows only 10 users for group session!'
       );
     }
     this.loading = true;
@@ -197,7 +188,7 @@ export class WebinarUpdateComponent implements OnInit {
       if (!check.data.success) {
         this.loading = false;
         return this.appService.toastError(
-          'Please create schedule for group classif you want the group class to be public'
+          'Please create schedule for group session if you want the group session to be public'
         );
       }
       this.webinarService
@@ -213,10 +204,7 @@ export class WebinarUpdateComponent implements OnInit {
             'description',
             'alias',
             'isFree',
-            'gradeIds',
-            'subjectIds',
-            'topicIds',
-            'age'
+            'subjectIds'
           ])
         )
         .then(() => {
@@ -239,9 +227,7 @@ export class WebinarUpdateComponent implements OnInit {
       this.queryMySubjects(items.map((item) => item._id).join(','));
     } else {
       this.mySubjects = [];
-      this.myTopics = [];
       this.webinar.subjectIds = [];
-      this.webinar.topicIds = [];
     }
   }
 
@@ -264,10 +250,6 @@ export class WebinarUpdateComponent implements OnInit {
           this.webinar.subjectIds = mySubjectSelected.map(
             (item) => item.originalSubjectId
           );
-
-          this.queryMyTopics(
-            mySubjectSelected.map((item) => item._id).join(',')
-          );
         }
       })
       .catch((err) => {
@@ -275,41 +257,7 @@ export class WebinarUpdateComponent implements OnInit {
       });
   }
 
-  async onSelectMySubjects(items: ISubject[]) {
-    if (items?.length) {
-      this.queryMyTopics(items.map((item) => item._id).join(','));
-    } else {
-      this.myTopics = [];
-      this.webinar.topicIds = [];
-    }
-  }
-
-  queryMyTopics(mySubjectIds: string) {
-    if (!mySubjectIds) {
-      this.myTopics = [];
-      this.webinar.topicIds = [];
-    } else
-      this.myTopicService
-        .getListOfMe({
-          take: 100,
-          sort: 'ordering',
-          sortType: 'asc',
-          mySubjectIds,
-          isActive: true
-        })
-        .then((resp) => {
-          if (resp.data && resp.data.items) {
-            this.myTopics = resp.data.items;
-            const myTopicSelected = this.myTopics.filter((item) =>
-              this.webinar.topicIds.includes(item.originalTopicId)
-            );
-            this.webinar.topicIds = myTopicSelected.map(
-              (item) => item.originalTopicId
-            );
-          }
-        })
-        .catch((err) => {
-          return this.appService.toastError(err);
-        });
+  onSelectMySubjects(_items: ISubject[]) {
+    // Topics removed from group class form
   }
 }

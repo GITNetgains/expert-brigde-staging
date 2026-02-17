@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { IMylesson, ITransaction, IUser } from 'src/app/interface';
 import {
@@ -62,14 +62,23 @@ export class ListScheduleComponent implements OnInit {
     private transactionService: TransactionService,
     private modalService: NgbModal,
     private router: Router,
+    private route: ActivatedRoute,
     public stateService: StateService
   ) {
     this.seoService.setMetaTitle('My Appointments');
     this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
   }
   ngOnInit() {
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam === 'webinar') {
+      this.tab = 'webinar';
+    }
     if (this.currentUser && this.currentUser._id) {
-      this.query();
+      if (this.tab === 'subject') {
+        this.query();
+      } else {
+        this.queryAppointmentWebinar();
+      }
     }
   }
 
@@ -115,6 +124,11 @@ export class ListScheduleComponent implements OnInit {
     } else {
       this.queryAppointmentWebinar();
     }
+  }
+
+  onPageSizeChangeWebinar() {
+    this.filterTransactionOptions.currentPage = 1;
+    this.queryAppointmentWebinar();
   }
 
   doSearch(evt: any) {

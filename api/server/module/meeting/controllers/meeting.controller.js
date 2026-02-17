@@ -172,7 +172,7 @@ exports.startMeeting = async (req, res, next) => {
           return next(
             PopulateResponse.error(
               {
-                message: 'Student not found'
+                message: 'Client not found'
               },
               'ITEM_NOT_FOUND'
             )
@@ -266,7 +266,7 @@ exports.joinMeeting = async (req, res, next) => {
       if (!appointment.zoomData || !appointment.zoomData.start_url) {
         return next(
           PopulateResponse.error({
-            message: "The tutor hasn't started meeting yet."
+            message: "The expert hasn't started meeting yet."
           })
         );
       }
@@ -274,7 +274,7 @@ exports.joinMeeting = async (req, res, next) => {
       if (!zoomData || !zoomData.start_url) {
         return next(
           PopulateResponse.error({
-            message: 'The lesson has ended or there is a problem, please wait for the tutor to start and try again later'
+            message: 'The lesson has ended or there is a problem, please wait for the expert to start and try again later'
           })
         );
       }
@@ -289,7 +289,7 @@ exports.joinMeeting = async (req, res, next) => {
       if (!appointment.spaceSessionId) {
         return next(
           PopulateResponse.error({
-            message: "The tutor hasn't started meeting yet."
+            message: "The expert hasn't started meeting yet."
           })
         );
       }

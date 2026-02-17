@@ -132,10 +132,10 @@ toggleFilter(key: keyof typeof this.openFilter) {
     public stateService: StateService,
     private appService: AppService
   ) {
-    this.seoService.setMetaTitle('List Tutor');
+    this.seoService.setMetaTitle('List Expert');
 
     this.seoService.setMetaDescription(
-      "If you're looking for someone to help make calculus sound sensical , you've come to the right place.Below you'll find some of our top calculus tutors."
+      "If you're looking for someone to help make calculus sound sensical , you've come to the right place.Below you'll find some of our top calculus experts."
     );
     const data = this.route.snapshot.data['search'];
     if (data) {
@@ -422,6 +422,12 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
       this.searchFields.state = '';
     }
   }
+
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
 
   onCountryFilterChange(code: string) {
     this.searchFields.countryCode = code || '';

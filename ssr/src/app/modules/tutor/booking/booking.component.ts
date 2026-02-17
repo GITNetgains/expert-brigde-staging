@@ -219,7 +219,7 @@ export class BookingComponent implements OnInit {
   chooseSlot(time: any) {
     if (!this.isLoggedin) {
       return this.appService.toastError(
-        'Please Log in to book the 1-1 class appointment'
+        'Please Log in to book the 1-1 session appointment'
       );
     }
     this.timeSelected = {
@@ -281,7 +281,7 @@ export class BookingComponent implements OnInit {
   buyNow(time: any) {
     if (!this.isLoggedin) {
       return this.appService.toastError(
-        'Please Log in to book the 1-1 class appointment'
+        'Please Log in to book the 1-1 session appointment'
       );
     }
 
@@ -333,7 +333,7 @@ export class BookingComponent implements OnInit {
   bookingAppointment() {
     if (!this.isLoggedin) {
       return this.appService.toastError(
-        'Please Log in to book the 1-1 class appointment'
+        'Please Log in to book the 1-1 session appointment'
       );
     }
     this.submitted = true;
@@ -399,13 +399,13 @@ export class BookingComponent implements OnInit {
                   if (resp.data.canBookFree === false) {
                     this.submitted = false;
                     return this.appService.toastError(
-                      'You have taken for the maximum number of free trial classes'
+                      'You have taken for the maximum number of free trial sessions'
                     );
                   }
                   if (resp.data.canBookFreeWithTutor === false) {
                     this.submitted = false;
                     return this.appService.toastError(
-                      'You have taken a free trial class of this tutor before'
+                      'You have taken a free trial session of this expert before'
                     );
                   }
                 }
@@ -503,7 +503,7 @@ export class BookingComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = true;
           this.appService.toastSuccess(
-            'Added to your favorite tutor list successfully!'
+            'Added to your favorite expert list successfully!'
           );
         })
         .catch(() => this.appService.toastError());
@@ -519,7 +519,7 @@ export class BookingComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = false;
           this.appService.toastSuccess(
-            'Removed from your favorite tutor list successfully'
+            'Removed from your favorite expert list successfully'
           );
         })
         .catch(() => this.appService.toastError());

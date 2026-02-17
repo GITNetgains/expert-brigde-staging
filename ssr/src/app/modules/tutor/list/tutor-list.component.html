@@ -174,14 +174,18 @@
               Location <i class="fi fi-rr-angle-small-down"></i>
             </button>
             <div class="filter-body" *ngIf="openFilter.location">
-              <select class="form-control mb-2"
-                      [(ngModel)]="searchFields.countryCode"
-                      (ngModelChange)="query()">
-                <option value="">Country</option>
-                <option *ngFor="let c of countries" [value]="c.code">
-                  {{ c.name }}
-                </option>
-              </select>
+              <ng-select
+                [items]="countries"
+                bindLabel="name"
+                bindValue="code"
+                [searchable]="true"
+                [searchFn]="countrySearchFn"
+                [(ngModel)]="searchFields.countryCode"
+                (ngModelChange)="query()"
+                placeholder="Country"
+                [clearable]="true"
+                class="mb-2"
+              ></ng-select>
 
               <select class="form-control"
                       [(ngModel)]="searchFields.state"

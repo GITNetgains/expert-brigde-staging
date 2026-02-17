@@ -30,7 +30,6 @@ import {
 } from '@coreui/angular';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
 import { ReviewTutorComponent } from '../../reviews/list/list.component';
-import { AppPaginationComponent } from '@components/index';
 import { IUser } from 'src/interfaces';
 
 @Component({
@@ -58,10 +57,6 @@ import { IUser } from 'src/interfaces';
     ModalHeaderComponent,
     ModalBodyComponent,
     ReviewTutorComponent,
-    AppPaginationComponent,
-
-
-
   ]
 })
 export class UpdateComponent implements OnInit {
@@ -251,14 +246,14 @@ export class UpdateComponent implements OnInit {
         }
 
         this.showAssignModal = false;
-        this.utilService.toastSuccess({ message: 'Tutors assigned successfully' });
+        this.utilService.toastSuccess({ message: 'Experts assigned successfully' });
 
         // Reload to ensure frontend and backend are perfectly in sync
         this.loadUserData();
         this.loadAiQueries();
       },
       error: (err) => {
-        this.utilService.toastError({ message: 'Failed to assign tutors' });
+        this.utilService.toastError({ message: 'Failed to assign experts' });
       }
     });
   }
@@ -397,13 +392,13 @@ export class UpdateComponent implements OnInit {
       next: () => {
         this.utilService.toastSuccess({
           title: 'Success',
-          message: 'Tutor assigned successfully'
+          message: 'Expert assigned successfully'
         });
       },
       error: () => {
         this.utilService.toastError({
           title: 'Error',
-          message: 'Failed to assign tutor'
+          message: 'Failed to assign expert'
         });
       }
     });

@@ -3,12 +3,12 @@
     <div class="row mb-2">
       <div class="col-md-12 col-lg-12 col-sm-12">
         <h4 class="color-light-black" translate *ngIf="type ==='tutor'">Favorite tutor</h4>
-        <h4 class="color-light-black" translate *ngIf="type ==='course'">Favorite course</h4>
-        <h4 class="color-light-black" translate *ngIf="type ==='webinar'">Favorite Group Class</h4>
+        <!-- <h4 class="color-light-black" translate *ngIf="type ==='course'">Favorite course</h4> -->
+        <h4 class="color-light-black" translate *ngIf="type ==='webinar'">Favorite Group Session</h4>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12" *ngIf="!items.tutor?.length && !items.webinar?.length &&!items.course?.length && !loading">
+      <div class="col-md-12" *ngIf="!items.tutor?.length && !items.webinar?.length && !loading">
         <p>
           <strong translate>No results</strong>
         </p>
@@ -22,8 +22,8 @@
         [hidden]="(!items.tutor?.length && !loading) || !item"></app-tutor-card-favorite>
       <app-card-webinar class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items.webinar" [webinar]="item"
         [hidden]="(!items.webinar?.length && !loading) || !item"></app-card-webinar>
-      <app-card-course class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items.course" [course]="item" [hidden]="(!items.course?.length &&
-        !loading) || !item"></app-card-course>
+      <!-- <app-card-course class="col-md-4 col-lg-3 mb-4" *ngFor="let item of items.course" [course]="item" [hidden]="(!items.course?.length &&
+        !loading) || !item"></app-card-course> -->
     </div>
     <div class="row mt-5" *ngIf="!loading && total > pageSize">
       <div class="col-md-12 text-center">

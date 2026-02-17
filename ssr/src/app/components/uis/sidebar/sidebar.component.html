@@ -27,6 +27,12 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/browse-group-sessions']" routerLinkActive="active">
+              <i class="fi fi-rs-chalkboard-user"></i>
+              <span translate>Browse group sessions of the experts</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" [routerLink]="['/users/ai-queries']" routerLinkActive="active">
               <i class="fi fi-rr-comment-alt"></i>
               <span translate>AI History</span>
@@ -37,6 +43,13 @@
         <!-- Tutor Menu -->
         <ng-container *ngIf="currentUser?.type === 'tutor'">
           <div class="nav-header">Expert Menu</div>
+          <li class="nav-item">
+            <a class="nav-link" href="https://opportunities.expertbridge.co/opportunities" target="_blank" rel="noopener noreferrer">
+              <i class="fi fi-rr-briefcase"></i>
+              <span translate>Browse opportunities</span>
+            </a>
+          </li>
+
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/users/appointments']" routerLinkActive="active">
               <i class="fi fi-rr-calendar"></i>

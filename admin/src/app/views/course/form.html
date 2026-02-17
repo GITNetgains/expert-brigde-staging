@@ -90,7 +90,7 @@
               @if (course.tutorId && course.tutor) {
               <c-col md="6">
                 <div class="mb-3">
-                  <label cLabel>Tutor (*)</label>
+                  <label cLabel>Expert (*)</label>
                   <input
                     cFormControl
                     type="text"
@@ -103,13 +103,13 @@
               } @else {
               <c-col md="6">
                 <div class="mb-3">
-                  <label cLabel>Tutor (*)</label>
+                  <label cLabel>Expert (*)</label>
                   <ng-select
                     [items]="tutorItems"
                     bindLabel="name"
                     bindValue="_id"
                     [loading]="false"
-                    placeholder="Select tutor"
+                    placeholder="Select expert"
                     [clearable]="true"
                     [virtualScroll]="true"
                     (open)="loadTutors()"
@@ -120,7 +120,7 @@
                   </ng-select>
                   @if ((isSubmitted && !course.tutorId) || (isSubmitted && !course.tutorId)) {
                   <c-form-feedback invalid
-                    >Please select tutor!</c-form-feedback
+                    >Please select expert!</c-form-feedback
                   >
                   }
                 </div>

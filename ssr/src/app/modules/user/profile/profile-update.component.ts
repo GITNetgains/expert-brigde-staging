@@ -6,6 +6,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgForm } from '@angular/forms';
 import * as _ from 'lodash';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -43,6 +44,7 @@ type tplotOptions = {
 })
 export class ProfileUpdateComponent implements OnInit {
   @ViewChild('language') ngSelectComponent: NgSelectComponent;
+  @ViewChild('frmInvite') frmInvite: NgForm;
   public info: IUser;
   public avatarUrl = '';
   public checkAvatar: boolean;
@@ -58,6 +60,7 @@ export class ProfileUpdateComponent implements OnInit {
   public isEditGrade = false;
   public isEditSubject = false;
   public isEditSkill = false;
+  public isEditIndustry = false;
 
   public countries: any;
   public languages: any;
@@ -100,6 +103,8 @@ export class ProfileUpdateComponent implements OnInit {
   public cvWebhookName = '';
   public cvWebhookUrl = '';
   public cvWebhookDocUploadUrl = '';
+  /** Media ID of uploaded CV so we can also save it as resumeDocument for the tutor */
+  public cvWebhookMediaId = '';
   public sendCvWebhookLoading = false;
   public get yearsExperienceProxy(): number {
     return (this.info as any)?.yearsExperience ?? 0;
@@ -233,12 +238,35 @@ export class ProfileUpdateComponent implements OnInit {
         this.industries = resp.data.items || [];
       })
       .catch(() => this.appService.toastError());
-    if (Array.isArray((this.info as any).skills)) {
-      this.skillNames = ((this.info as any).skills || []).map((s: any) => s.name);
+
+    // Initialize skillIds and skillNames (API may return skills populated or just skillIds)
+    const rawSkillIds = (this.info as any).skillIds;
+    const rawSkills = (this.info as any).skills;
+    if (Array.isArray(rawSkills) && rawSkills.length) {
+      (this.info as any).skillIds = rawSkills.map((s: any) => s._id || s.id);
+      this.skillNames = rawSkills.map((s: any) => s.name);
+    } else if (Array.isArray(rawSkillIds) && rawSkillIds.length) {
+      (this.info as any).skillIds = rawSkillIds.map((id: any) => (typeof id === 'string' ? id : id?.toString?.() || id));
+      const skillIdSet = new Set((this.info as any).skillIds);
+      this.skillNames = (this.skills || []).filter((s: any) => skillIdSet.has(String(s._id))).map((s: any) => s.name);
+    } else {
+      (this.info as any).skillIds = (this.info as any).skillIds || [];
     }
-    if (Array.isArray((this.info as any).industries)) {
-      this.industryNames = ((this.info as any).industries || []).map((i: any) => i.name);
+
+    // Initialize industryIds and industryNames
+    const rawIndustryIds = (this.info as any).industryIds;
+    const rawIndustries = (this.info as any).industries;
+    if (Array.isArray(rawIndustries) && rawIndustries.length) {
+      (this.info as any).industryIds = rawIndustries.map((i: any) => i._id || i.id);
+      this.industryNames = rawIndustries.map((i: any) => i.name);
+    } else if (Array.isArray(rawIndustryIds) && rawIndustryIds.length) {
+      (this.info as any).industryIds = rawIndustryIds.map((id: any) => (typeof id === 'string' ? id : id?.toString?.() || id));
+      const industryIdSet = new Set((this.info as any).industryIds);
+      this.industryNames = (this.industries || []).filter((i: any) => industryIdSet.has(String(i._id))).map((i: any) => i.name);
+    } else {
+      (this.info as any).industryIds = (this.info as any).industryIds || [];
     }
+
     this.loading = false;
   }
 
@@ -281,6 +309,12 @@ export class ProfileUpdateComponent implements OnInit {
     const code = (this.info as any)?.countryCode || this.countryService.getCountryByName(this.info?.country?.name)?.code || '';
     this.states = this.countryService.getStates(code || '');
   }
+
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
 
   onCountryChange(country: any) {
     if (country) {
@@ -354,13 +388,27 @@ export class ProfileUpdateComponent implements OnInit {
       return this.tutorService
         .update(data)
         .then((resp) => {
-          console.log(resp);
-this.info.password = '';
+          this.info.password = '';
           this.info = _.merge(resp.data, this.info);
           this.languageNames = [];
           this.mapLanguageName(this.info.languages);
           this.gradeNames = [];
           this.mapGradeName(this.info.grades);
+          // Refresh skillNames and industryNames from saved skillIds/industryIds
+          this.skillNames = [];
+          this.industryNames = [];
+          const skillIds = (this.info as any).skillIds || [];
+          const industryIds = (this.info as any).industryIds || [];
+          if (skillIds.length) {
+            const skillIdSet = new Set(skillIds.map((id: any) => String(id)));
+            this.skillNames = (this.skills || []).filter((s: any) => skillIdSet.has(String(s._id))).map((s: any) => s.name);
+          }
+          if (industryIds.length) {
+            const industryIdSet = new Set(industryIds.map((id: any) => String(id)));
+            this.industryNames = (this.industries || []).filter((i: any) => industryIdSet.has(String(i._id))).map((i: any) => i.name);
+          }
+          this.isEditSkill = false;
+          this.isEditIndustry = false;
           this.appService.toastSuccess('Profile updated successfully!');
           this.utilService.notifyEvent('profileUpdate', this.info);
           this.authService.updateCurrentUser(this.info);
@@ -420,40 +468,72 @@ this.info.password = '';
   }
 
   inviteFriend() {
+    const email = (this.emailInvite || '').trim();
+    if (!email) {
+      this.appService.toastError('Email is required');
+      return;
+    }
     this.userService
-      .inviteFriend({ email: this.emailInvite })
+      .inviteFriend({ email })
       .then((resp: IResponse<any>) => {
-        if (resp.data.success) {
+        if (resp.data && resp.data.success) {
+          this.emailInvite = '';
+          if (this.frmInvite) {
+            this.frmInvite.resetForm();
+          }
           return this.appService.toastSuccess('Invited Successfully!');
         }
         return this.appService.toastError('Invite fail');
-      });
+      })
+      .catch((err: any) => this.appService.toastError(err));
   }
 
-  /** Extract file URL from upload response (upload-document returns media with fileUrl). */
+  /** Extract file URL + media id from upload response (upload-document returns media with fileUrl). */
   onCvWebhookUploadFinish(resps: any): void {
     const item = Array.isArray(resps) ? resps[0] : resps;
     const data = item?.data ?? item?.response?.data ?? item;
-    const fileUrl = data?.fileUrl || (data?.filePath && environment.url ? `${environment.url.replace(/\/$/, '')}/${(data.filePath + '').replace(/^public\/?/, '')}` : null);
+    if (!data) {
+      this.cvWebhookUrl = '';
+      this.cvWebhookMediaId = '';
+      return;
+    }
+    const fileUrl =
+      data.fileUrl ||
+      (data.filePath && environment.apiBaseUrl
+        ? `${environment.apiBaseUrl.replace(/\/v1\/?$/, '').replace(/\/$/, '')}/${(data.filePath + '').replace(
+            /^public\/?/,
+            ''
+          )}`
+        : null);
     this.cvWebhookUrl = fileUrl || '';
+    this.cvWebhookMediaId = data._id || data.id || '';
   }
 
-  sendCvWebhook() {
+  async sendCvWebhook() {
     if (!this.cvWebhookUrl) {
       this.appService.toastError('Please upload your CV / Resume first');
       return;
     }
     this.sendCvWebhookLoading = true;
-    this.tutorService
-      .sendCvWebhook({ name: this.cvWebhookName || undefined, cv_file_url: this.cvWebhookUrl })
-      .then(() => {
-        this.sendCvWebhookLoading = false;
-        this.appService.toastSuccess('CV data sent successfully');
-      })
-      .catch((err: any) => {
-        this.sendCvWebhookLoading = false;
-        this.appService.toastError(err?.message || 'Failed to send CV data');
+    try {
+      // Also persist this CV as the tutor's resumeDocument if we have the media id
+      if (this.cvWebhookMediaId) {
+        await this.tutorService.update({ resumeDocument: this.cvWebhookMediaId });
+        // update local info snapshot
+        (this.info as any).resumeDocument = this.cvWebhookMediaId as any;
+      }
+
+      await this.tutorService.sendCvWebhook({
+        name: this.cvWebhookName || undefined,
+        cv_file_url: this.cvWebhookUrl
       });
+
+      this.appService.toastSuccess('CV data sent successfully');
+    } catch (err: any) {
+      this.appService.toastError(err?.message || 'Failed to send CV data');
+    } finally {
+      this.sendCvWebhookLoading = false;
+    }
   }
 
   onChangeLanguage(e: any) {
@@ -472,16 +552,16 @@ this.info.password = '';
     const ids: string[] = [];
     (Array.isArray(event) ? event : []).forEach((el: any) => {
       if (typeof el === 'string') {
-        ids.push(el);
+        ids.push(String(el));
       } else if (el && (el._id || el.id)) {
-        ids.push(el._id || el.id);
+        ids.push(String(el._id || el.id));
       }
     });
     (this.info as any).skillIds = Array.from(new Set(ids.filter(Boolean)));
     this.skillNames = [];
-    const idSet = new Set((this.info as any).skillIds);
+    const idSet = new Set((this.info as any).skillIds.map((id: any) => String(id)));
     (this.skills || [])
-      .filter((s: any) => idSet.has(s._id))
+      .filter((s: any) => idSet.has(String(s._id)))
       .forEach((s: any) => this.skillNames.push(s.name));
     this.submit('', false);
   }

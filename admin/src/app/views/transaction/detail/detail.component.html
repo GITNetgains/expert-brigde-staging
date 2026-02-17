@@ -14,7 +14,7 @@
         >
           <tbody>
             <tr>
-              <th translate>Tutor Name</th>
+              <th translate>Expert Name</th>
               <td>
                 @if(transaction && transaction.tutor){
                 <a [routerLink]="['/tutor/update', transaction.tutor._id]">{{
@@ -47,17 +47,17 @@
               <th>Enroll Type</th>
               <td>
                 @switch(transaction?.targetType){ @case('webinar'){
-                <c-badge color="primary">Group Class</c-badge>
+                <c-badge color="primary">Group Session</c-badge>
                 } @case('subject'){
                 <c-badge color="success">One to One</c-badge>
-                } @case('course'){
+                } <!-- @case('course'){
                 <c-badge color="success">Course</c-badge>
-                } }
+                } --> }
               </td>
             </tr>
             @if(transaction.targetType === 'webinar'){
             <tr>
-              <th>Group Class</th>
+              <th>Group Session</th>
               <td>
                 <span>{{ transaction?.webinar?.name }}</span>
               </td>
@@ -71,14 +71,14 @@
                 ><span>{{ transaction.subject?.name }}</span>
               </td>
             </tr>
-            } @if(transaction.targetType === 'course'){
+            } <!-- @if(transaction.targetType === 'course'){
             <tr>
               <th>Course</th>
               <td>
                 <span>{{ transaction.course?.name }}</span>
               </td>
             </tr>
-            }
+            } -->
             <tr>
               <th>Code</th>
               <td>

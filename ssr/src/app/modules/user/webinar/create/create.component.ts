@@ -5,19 +5,16 @@ import {
   IMedia,
   IMyCategory,
   IMySubject,
-  IMyTopic,
   ISubject,
   IUser
 } from 'src/app/interface';
-import { ageFilter, randomHash, quillConfig } from 'src/app/lib';
+import { randomHash, quillConfig } from 'src/app/lib';
 import {
   AppService,
   CalendarService,
-  GradeService,
   MediaService,
   MyCategoryService,
   MySubjectService,
-  MyTopicService,
   STATE,
   StateService,
   WebinarService
@@ -38,9 +35,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
     description: '',
     alias: '',
     isFree: false,
-    gradeIds: [],
-    subjectIds: [],
-    topicIds: []
+    subjectIds: []
   } as any;
 
   public isSubmitted: Boolean = false;
@@ -55,15 +50,12 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
   public loading = false;
   public config: any;
   public quillConfig = quillConfig;
-  public grades: any[] = [];
 
   public myCategories: IMyCategory[] = [];
   public mySubjects: IMySubject[] = [];
-  public myTopics: IMyTopic[] = [];
 
   public currentUser: IUser;
 
-  public ageFilter: any[] = ageFilter;
   public tab: string = 'basicInfo';
 
   constructor(
@@ -72,9 +64,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
     private appService: AppService,
     private myCategoryService: MyCategoryService,
     private calendarService: CalendarService,
-    private gradeService: GradeService,
     private mySubjectService: MySubjectService,
-    private myTopicService: MyTopicService,
     private readonly mediaService: MediaService,
     public stateService: StateService
   ) {
@@ -87,9 +77,18 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
     this.mainImageOptions = {
       url: environment.apiBaseUrl + '/media/photos',
       fileFieldName: 'file',
+      uploadOnSelect: true,
       onFinish: (resp: any) => {
-        this.webinar.mainImageId = resp.data._id;
-        this.mainImageUrl = resp.data.thumbUrl;
+        const data = resp?.data ?? resp;
+        if (data && !resp?.error) {
+          this.webinar.mainImageId = data._id || data.id;
+          this.mainImageUrl = data.thumbUrl || data.fileUrl || data.mediumUrl || data.url || '';
+          this.imageSelected = [];
+        }
+      },
+      onError: (err: any) => {
+        const msg = err?.error?.message || err?.message || err?.data?.message || 'Main image upload failed';
+        this.appService.toastError(msg);
       },
       onFileSelect: (resp: any) => (this.imageSelected = resp),
       accept: 'image/*',
@@ -99,14 +98,17 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
       url: environment.apiBaseUrl + '/media/files',
       fileFieldName: 'file',
       onFinish: (resp: any) => {
-        this.webinar.mediaIds.push(resp.data._id);
-        this.medias.push(resp.data);
+        const data = resp?.data ?? resp;
+        if (data && !resp?.error) {
+          this.webinar.mediaIds.push(data._id || data.id);
+          this.medias.push(data);
+          this.filesSelected = [];
+        }
       },
       onFileSelect: (resp: any) => (this.filesSelected = resp),
       id: 'file-upload'
     };
     this.queryMyCategories();
-    this.queryGrades();
     this.hashWebinar = localStorage.getItem('hast_webinar');
     if (!this.hashWebinar) {
       this.hashWebinar = randomHash(32, '');
@@ -138,19 +140,6 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
         this.appService.toastError(err);
       });
   }
-  queryGrades() {
-    this.loading = true;
-    this.gradeService
-      .search({ take: 100, sort: 'ordering', sortType: 'asc' })
-      .then((resp) => {
-        this.grades = resp.data.items;
-        this.loading = false;
-      })
-      .catch((err) => {
-        this.loading = false;
-        this.appService.toastError(err);
-      });
-  }
 
   removeMedia(media: IMedia, i: any) {
     this.mediaService
@@ -170,7 +159,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
     if (!frm.valid) {
       return this.appService.toastError('Invalid form, please try again.');
     }
-    if (this.webinar.price <= 0 && !this.webinar.isFree) {
+    if (this.webinar.price <= 0) {
       return this.appService.toastError('Price value should be greater than 0');
     }
 
@@ -179,14 +168,14 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
       this.config?.platformOnline === 'lessonspace'
     ) {
       return this.appService.toastError(
-        'Lesson space allows only 10 users for group class!'
+        'Lesson space allows only 10 users for group session!'
       );
     }
     if (!this.webinar.mainImageId)
       return this.appService.toastError(
         'Please upload main image for webinar!'
       );
-    if (this.webinar.isFree === true) this.webinar.price = 0;
+    this.webinar.isFree = false;
     if (this.webinar.description) {
       this.webinar.description = this.webinar.description.replace(
         '<p data-f-id="pbf" style="text-align: center; font-size: 14px; margin-top: 30px; opacity: 0.65; font-family: sans-serif;">Powered by <a href="https://www.froala.com/wysiwyg-editor?pb=1" title="Froala Editor">Froala Editor</a></p>',
@@ -196,7 +185,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
     this.calendarService.checkByHash(this.hashWebinar).then((check) => {
       if (!check.data.success) {
         return this.appService.toastError(
-          'Please create schedule for group class if you want the group class to be public'
+          'Please create schedule for group session if you want the group session to be public'
         );
       }
       const data = this.hashWebinar
@@ -205,7 +194,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
       this.webinarService.create(data).then(
         () => {
           localStorage.removeItem('hast_webinar');
-          this.appService.toastSuccess('Group Class created successfully!');
+          this.appService.toastSuccess('Group Session created successfully!');
           this.router.navigate(['/users/groupclass']);
         },
         (err) => this.appService.toastError(err)
@@ -218,9 +207,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
       this.queryMySubjects(items.map((item) => item._id).join(','));
     } else {
       this.mySubjects = [];
-      this.myTopics = [];
       this.webinar.subjectIds = [];
-      this.webinar.topicIds = [];
     }
   }
 
@@ -242,9 +229,6 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
           this.webinar.subjectIds = mySubjectSelected.map(
             (item) => item.originalSubjectId
           );
-          this.queryMyTopics(
-            mySubjectSelected.map((item) => item._id).join(',')
-          );
         }
       })
       .catch((err) => {
@@ -252,42 +236,8 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelectMySubjects(items: ISubject[]) {
-    if (items?.length) {
-      this.queryMyTopics(items.map((item) => item._id).join(','));
-    } else {
-      this.myTopics = [];
-      this.webinar.topicIds = [];
-    }
-  }
-
-  queryMyTopics(mySubjectIds: string) {
-    if (!mySubjectIds) {
-      this.myTopics = [];
-      this.webinar.topicIds = [];
-    } else
-      this.myTopicService
-        .getListOfMe({
-          take: 100,
-          sort: 'ordering',
-          sortType: 'asc',
-          mySubjectIds,
-          isActive: true
-        })
-        .then((resp) => {
-          if (resp.data && resp.data.items) {
-            this.myTopics = resp.data.items;
-            const myTopicSelected = this.myTopics.filter((item) =>
-              this.webinar.topicIds.includes(item._id)
-            );
-            this.webinar.topicIds = myTopicSelected.map(
-              (item) => item.originalTopicId
-            );
-          }
-        })
-        .catch((err) => {
-          return this.appService.toastError(err);
-        });
+  onSelectMySubjects(_items: ISubject[]) {
+    // Topics removed from group class form
   }
 
   onTabSelect(tab = '') {

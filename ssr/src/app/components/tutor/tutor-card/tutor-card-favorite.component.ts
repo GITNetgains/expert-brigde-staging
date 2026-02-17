@@ -56,7 +56,7 @@ export class TutorCardFavoriteComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = true;
           this.appService.toastSuccess(
-            'Added to your favorite tutor list successfully!'
+            'Added to your favorite expert list successfully!'
           );
         })
         .catch(() => this.appService.toastError());
@@ -72,7 +72,7 @@ export class TutorCardFavoriteComponent implements OnInit {
         .then(() => {
           this.tutor.isFavorite = false;
           this.appService.toastSuccess(
-            'Removed from your favorite tutor list successfully!'
+            'Removed from your favorite expert list successfully!'
           );
         })
         .catch(() => this.appService.toastError());

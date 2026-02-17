@@ -209,6 +209,7 @@
                               bindLabel="name"
                               bindValue="code"
                               [searchable]="true"
+                              [searchFn]="countrySearchFn"
                               [(ngModel)]="info.country"
                               name="country"
                               #country="ngModel"
@@ -730,7 +731,7 @@
                             [disabled]="info.isZoomAccount"
                             (click)="inviteTutorJoinZoom()"
                           >
-                            Invite tutors to join the zoom
+                            Invite experts to join the zoom
                           </button>
                           }
                         </div>

@@ -13,7 +13,7 @@
               bindValue="_id"
               [loading]="searching"
               [(ngModel)]="tutorId"
-              placeholder="Search tutor"
+              placeholder="Search expert"
               [clearable]="true"
               [virtualScroll]="true"
               class="my-select"
@@ -49,9 +49,9 @@
               placeholder="Choose enroll type"
             >
               <option value="" selected>All enroll type</option>
-              <option value="webinar">Group Class</option>
+              <option value="webinar">Group Session</option>
               <option value="subject">One to One</option>
-              <option value="course">Course</option>
+              <!-- <option value="course">Course</option> -->
             </select>
           </c-col>
           <c-col sm="12" md="4">
@@ -115,7 +115,7 @@
                     (onSort)="onSort($event)"
                     sortBy="tutorId"
                     [sortOption]="sortOption"
-                    sortTitle="Tutor Name"
+                    sortTitle="Expert Name"
                   ></app-sort>
                 </th>
                 <th style="width: 150px">
@@ -131,7 +131,7 @@
                     (onSort)="onSort($event)"
                     sortBy="webinarId"
                     [sortOption]="sortOption"
-                    sortTitle="Group Class"
+                    sortTitle="Group Session"
                   ></app-sort>
                 </th>
                 <th style="width: 150px">
@@ -142,14 +142,14 @@
                     sortTitle="Subject"
                   ></app-sort>
                 </th>
-                <th style="width: 150px">
+                <!-- <th style="width: 150px">
                   <app-sort
                     (onSort)="onSort($event)"
                     sortBy="courseId"
                     [sortOption]="sortOption"
                     sortTitle="Course"
                   ></app-sort>
-                </th>
+                </th> -->
                 <th style="width: 150px">
                   <app-sort
                     (onSort)="onSort($event)"
@@ -239,7 +239,7 @@
                     >{{ item?.tutorSubject?.name }} - </span
                   >{{ item?.subject ? item?.subject?.name : "-" }}
                 </td>
-                <td>{{ item?.course ? item?.course?.name : "-" }}</td>
+                <!-- <td>{{ item?.course ? item?.course?.name : "-" }}</td> -->
                 <td>
                   @switch(item?.type){ @case('booking'){
                   <c-badge color="primary">Booking</c-badge>
@@ -249,12 +249,12 @@
                 </td>
                 <td>
                   @switch(item?.targetType){ @case('webinar'){
-                  <c-badge color="success">Group Class</c-badge>
+                  <c-badge color="success">Group Session</c-badge>
                   } @case('subject'){
                   <c-badge color="primary">One-One</c-badge>
-                  }@case('course'){
+                  }<!-- @case('course'){
                   <c-badge color="warning">Course</c-badge>
-                  } }
+                  } --> }
                 </td>
                 <td>{{ item?.code }}</td>
                 <td>

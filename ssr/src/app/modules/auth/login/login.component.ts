@@ -164,6 +164,21 @@ resendOtp() {
         })
         .catch((err) => {
           this.loading = false;
+          const code = err?.message || err?.code;
+          if (code === 'ERR_PROFILE_INCOMPLETE') {
+            const msg =
+              err?.data?.message || err?.message || 'Please complete your profile to sign in.';
+            this.appService.toastError(msg);
+            const type = err?.data?.type;
+            this.router.navigate(['/auth/sign-up'], {
+              queryParams: {
+                email: this.credentials.email,
+                step: 'details',
+                ...(type ? { type } : {})
+              }
+            });
+            return;
+          }
           this.appService.toastError(err);
         });
     }
@@ -199,6 +214,21 @@ resendOtp() {
         })
         .catch((err) => {
           this.loading = false;
+          const code = err?.message || err?.code;
+          if (code === 'ERR_PROFILE_INCOMPLETE') {
+            const msg =
+              err?.data?.message || err?.message || 'Please complete your profile to sign in.';
+            this.appService.toastError(msg);
+            const type = err?.data?.type;
+            this.router.navigate(['/auth/sign-up'], {
+              queryParams: {
+                email: this.credentials.email,
+                step: 'details',
+                ...(type ? { type } : {})
+              }
+            });
+            return;
+          }
           this.appService.toastError(err);
         });
     }

@@ -1,5 +1,14 @@
 <div class="modal-header">
-  <h2 class="modal-title" translate>Certificate</h2>
+  <h2 class="modal-title" translate>
+    {{ 
+      type === 'experience' 
+        ? ('Experience' | translate) 
+        : type === 'education' 
+          ? ('Education' | translate) 
+          : ('Certificate' | translate) 
+    }}
+  </h2>
+  
 
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
   </button>

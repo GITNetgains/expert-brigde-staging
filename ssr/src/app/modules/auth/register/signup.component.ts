@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GoogleAuthService } from 'src/app/services/google-auth.service';
 import { LinkedinAuthService } from 'src/app/services/linkedin-auth.service';
@@ -12,6 +13,17 @@ import {
   CountryService
 } from 'src/app/services';
 
+const SIGNUP_PENDING_KEY = 'expertbridge_signup_pending';
+
+interface PendingSignup {
+  step: 'details';
+  email: string;
+  type: 'tutor' | 'student';
+  signupToken?: string;
+  name?: string;
+  avatarUrl?: string;
+}
+
 @Component({
   templateUrl: 'signup.component.html',
   styleUrls: ['signup.component.scss']
@@ -22,7 +34,8 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * ========================= */
   public account: any = {
     email: '',
-    type: ''
+    type: '',
+    avatarUrl: '' as string | undefined
   };
 
   public step: 'email' | 'otp' | 'details' = 'email';
@@ -31,6 +44,9 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
   public submitted = false;
   public loading = false;
   public isAgreeWithTerms = true;
+
+  /** Set after verifyOtp; required to complete signup (user is created only then). */
+  private signupToken = '';
 
   /* =========================
    * OTP
@@ -89,8 +105,8 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private stateService: StateService,
     private googleAuth: GoogleAuthService,
     private linkedinAuth: LinkedinAuthService,
-    private countryService: CountryService
-    
+    private countryService: CountryService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     const config: any = this.stateService.getState(STATE.CONFIG);
     if (config?.siteName) {
@@ -125,6 +141,80 @@ if (mappedType) {
     const base = (this.auth as any).getBaseApiEndpoint();
     this.docUploadUrl = `${base}/tutors/upload-document`;
     this.introUploadUrl = `${base}/tutors/upload-introVideo`;
+    this.restoreSignupState();
+  }
+
+  /** Restore from query (e.g. login redirect) or sessionStorage. If URL type=expert|client and stored pending is for the other type, clear and show email step so we never mix expert/client flows. */
+  private restoreSignupState(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const qStep = this.route.snapshot.queryParams['step'];
+    const qEmail = this.route.snapshot.queryParams['email'];
+    const qType = this.route.snapshot.queryParams['type'] as string | undefined;
+    const urlAccountType = this.mapViewTypeToAccountType(qType || '');
+
+    const fromQuery: PendingSignup | null = qStep === 'details' && qEmail
+      ? { step: 'details', email: String(qEmail).toLowerCase().trim(), type: (qType === 'tutor' || qType === 'student' ? qType : urlAccountType || 'student') as 'tutor' | 'student' }
+      : null;
+
+    const storedPending = this.getPendingSignup();
+    const pending = fromQuery ?? storedPending;
+
+    if (urlAccountType && storedPending && storedPending.type !== urlAccountType) {
+      this.clearPendingSignup();
+      this.signupToken = '';
+      this.step = 'email';
+      this.account.email = '';
+      this.account.type = urlAccountType;
+      this.lockType = true;
+      return;
+    }
+
+    if (pending) {
+      this.step = 'details';
+      this.account.email = pending.email;
+      this.account.type = pending.type;
+      this.account.avatarUrl = pending.avatarUrl;
+      this.lockType = true;
+      if (pending.signupToken) {
+        this.signupToken = pending.signupToken;
+      }
+      if (pending.name && this.account.type === 'tutor') {
+        this.tutorProfile.name = pending.name;
+      }
+    }
+    if (urlAccountType) {
+      this.account.type = urlAccountType;
+      this.lockType = true;
+    }
+  }
+
+  private getPendingSignup(): PendingSignup | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    try {
+      const raw = sessionStorage.getItem(SIGNUP_PENDING_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw) as PendingSignup;
+      if (data.step !== 'details' || !data.email || !data.type) return null;
+      if (data.signupToken) this.signupToken = data.signupToken;
+      return data;
+    } catch {
+      this.clearPendingSignup();
+      return null;
+    }
+  }
+
+  private setPendingSignup(data: PendingSignup): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      sessionStorage.setItem(SIGNUP_PENDING_KEY, JSON.stringify(data));
+    } catch {}
+  }
+
+  private clearPendingSignup(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      sessionStorage.removeItem(SIGNUP_PENDING_KEY);
+    } catch {}
   }
 
   ngAfterViewInit(): void {
@@ -146,14 +236,22 @@ if (mappedType) {
   }
 
   /* =========================
-   * SOCIAL LOGIN
+   * SOCIAL SIGNUP / LOGIN (tutor: signup → complete profile; otherwise login)
    * ========================= */
   loginWithGoogle(): void {
-    this.googleAuth.redirectToGoogleLogin();
+    if (this.account.type === 'tutor') {
+      this.googleAuth.redirectToGoogleSignup();
+    } else {
+      this.googleAuth.redirectToGoogleLogin();
+    }
   }
 
   loginWithLinkedin(): void {
-    this.linkedinAuth.redirectToLinkedinLogin();
+    if (this.account.type === 'tutor') {
+      this.linkedinAuth.redirectToLinkedinSignup();
+    } else {
+      this.linkedinAuth.redirectToLinkedinLogin();
+    }
   }
 
   passwordRules = {
@@ -244,16 +342,15 @@ if (
 
       this.loading = true;
 
-      try {
-        await this.auth.sendOtp({
-          email: this.account.email.toLowerCase().trim(),
-          type: this.account.type
-        });
-
-        this.step = 'otp';
-        this.startOtpTimer(60);
-        this.appService.toastSuccess('OTP sent to your email');
-      } catch (err) {
+    try {
+      await this.auth.sendOtp({
+        email: this.account.email.toLowerCase().trim(),
+        type: this.account.type
+      });
+      this.step = 'otp';
+      this.startOtpTimer(60);
+      this.appService.toastSuccess('OTP sent to your email');
+    } catch (err) {
         this.appService.toastError(err);
       } finally {
         this.loading = false;
@@ -271,13 +368,21 @@ if (
       this.loading = true;
 
       try {
-        await this.auth.verifyOtp({
+        const res: any = await this.auth.verifyOtp({
           email: this.account.email.toLowerCase().trim(),
           otp: this.otpToken.trim()
         });
-
+        const data = res?.data?.data ?? res?.data ?? res;
+        const token = data?.signupToken;
+        if (!token) {
+          this.appService.toastError('Invalid response. Please try again.');
+          return;
+        }
+        this.signupToken = token;
         this.step = 'details';
         this.submitted = false;
+        const email = this.account.email.toLowerCase().trim();
+        this.setPendingSignup({ step: 'details', email, type: this.account.type, signupToken: token });
         this.appService.toastSuccess('OTP verified. Complete your profile');
       } catch (err) {
         this.appService.toastError(err);
@@ -325,31 +430,31 @@ if (this.newPassword !== this.confirmPassword) {
       this.loading = false;
       return;
     }
-if (phoneNumber && !this.isValidPhone(phoneNumber)) {
-  this.appService.toastError('Please enter valid phone number');
-  return;
-}
-
-if (address && address.length < 5) {
-  this.appService.toastError('Please enter valid address');
-  return;
-}
+    if (phoneNumber && !this.isValidPhone(phoneNumber)) {
+      this.appService.toastError('Please enter valid phone number');
+      return;
+    }
+    if (address && address.length < 5) {
+      this.appService.toastError('Please enter valid address');
+      return;
+    }
+    if (!this.signupToken) {
+      this.appService.toastError('Session expired. Please start signup again.');
+      this.clearPendingSignup();
+      this.step = 'email';
+      this.loading = false;
+      return;
+    }
 
     try {
-      // Set password first
-      await this.auth.setPassword({
-        email: this.account.email.toLowerCase().trim(),
-        password: this.newPassword
-      });
-
-      // Update profile
-      await this.auth.updateStudentPersonalInfo({
-        email: this.account.email.toLowerCase().trim(),
+      await this.auth.completeStudentSignup({
+        signupToken: this.signupToken,
+        password: this.newPassword,
         name: name.trim(),
         phoneNumber: phoneNumber.trim(),
         address: address.trim()
       });
-
+      this.clearPendingSignup();
       this.appService.toastSuccess('Account created successfully. Please login.');
       this.router.navigate(['/auth/login']);
     } finally {
@@ -367,25 +472,45 @@ if (address && address.length < 5) {
       this.loading = false;
       return;
     }
+    if (!this.signupToken) {
+      this.appService.toastError('Session expired. Please start signup again.');
+      this.clearPendingSignup();
+      this.step = 'email';
+      this.loading = false;
+      return;
+    }
 
     try {
-      // Set password first
-      await this.auth.setPassword({
-        email: this.account.email.toLowerCase().trim(),
-        password: this.newPassword
-      });
-
-      // Complete tutor profile with minimal required info
       const payload: any = {
-        email: this.account.email.toLowerCase().trim(),
+        signupToken: this.signupToken,
+        password: this.newPassword,
         name: this.tutorProfile.name.trim(),
-        resumeDocumentId: this.tutorProfile.resumeDocumentId
+        resumeDocumentId: this.tutorProfile.resumeDocumentId,
+        ...(this.account.avatarUrl ? { avatarUrl: this.account.avatarUrl } : {}),
+        timezone: this.tutorProfile.timezone,
+        country: this.tutorProfile.country,
+        address: this.tutorProfile.address,
+        phoneNumber: this.tutorProfile.phoneNumber,
+        zipCode: this.tutorProfile.zipCode,
+        state: this.tutorProfile.state,
+        city: this.tutorProfile.city,
+        issueDocumentId: this.tutorProfile.issueDocumentId,
+        certificationDocumentId: this.tutorProfile.certificationDocumentId,
+        introVideoId: this.tutorProfile.introVideoType === 'upload' ? this.tutorProfile.introVideoId : undefined,
+        introYoutubeId: this.tutorProfile.introVideoType === 'youtube' ? (this.tutorProfile.introYoutubeId || this.tutorProfile.introVideoId) : undefined,
+        idYoutube: this.tutorProfile.introYoutubeId || this.tutorProfile.introVideoId,
+        bio: this.tutorProfile.bio,
+        highlights: this.tutorProfile.highlights,
+        yearsExperience: this.tutorProfile.yearsExperience,
+        skillNames: this.tutorProfile.skillNames,
+        industryNames: this.tutorProfile.industryNames,
+        languages: this.tutorProfile.languages,
+        education: this.tutorProfile.education,
+        experience: this.tutorProfile.experience
       };
-
-      await this.auth.completeTutorProfile(payload);
-
+      await this.auth.completeTutorSignup(payload);
+      this.clearPendingSignup();
       this.appService.toastSuccess('Expert profile submitted. You can now log in.');
-      this.auth.removeToken();
       this.router.navigate(['/auth/login']);
     } finally {
       this.loading = false;
@@ -451,6 +576,12 @@ if (address && address.length < 5) {
   onTimezoneChange(tz: string): void {
     this.tutorProfile.timezone = tz;
   }
+
+  /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
+  countrySearchFn = (term: string, item: any) => {
+    if (!term || !item?.name) return true;
+    return item.name.toLowerCase().startsWith(term.toLowerCase());
+  };
 
   onCountrySelect(code: string): void {
     const country = this.countries.find((x: any) => x.code === code);
@@ -587,6 +718,7 @@ isValidEmail(email: string): boolean {
       clearInterval(this.otpInterval);
       this.otpInterval = null;
     }
+    this.clearPendingSignup();
   }
 
   goBackToOtp(): void {

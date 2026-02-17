@@ -40,7 +40,7 @@ export class WebinarListingComponent implements OnInit {
     private modalService: NgbModal,
     public stateService: StateService
   ) {
-    this.seoService.setMetaTitle('My Group Classes');
+    this.seoService.setMetaTitle('My Group Sessions');
     this.config = this.stateService.getState(STATE.CONFIG);
   }
 

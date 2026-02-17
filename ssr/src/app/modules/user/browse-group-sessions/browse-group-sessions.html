@@ -1,0 +1,96 @@
+<section class="sm-padding">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-12 col-lg-12 col-sm-12 text-center">
+        <h2 class="color-light-black">
+          <span translate>Browse group sessions of the experts</span>
+        </h2>
+        <p class="content-title mt-3" translate>
+          Group sessions from experts assigned to your group classes. Filter by category and subcategory.
+        </p>
+      </div>
+    </div>
+
+    <div class="top-list">
+      <div class="title-main">
+        <h4><strong translate>Group Sessions</strong></h4>
+      </div>
+      <div class="input-group input-search">
+        <div class="input-group-prepend border-none d-flex">
+          <span class="input-group-text">
+            <i class="fi fi-rs-search color-light-red"></i>
+          </span>
+        </div>
+        <input
+          type="text"
+          class="form-control border-none"
+          placeholder="{{ 'Search here..' | translate }}"
+          (keyup)="doSearch($event)"
+        />
+      </div>
+    </div>
+
+    <div class="row row-filter">
+      <div class="col-md-4">
+        <div class="input-border form-filter">
+          <h4 (click)="showMoreFilter=!showMoreFilter">
+            <i class="fi fi-rr-bars-filter"></i> <span translate>Filter</span>
+          </h4>
+          <div [ngClass]="showMoreFilter ? 'filter show' : 'filter'">
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Category</label>
+              <select
+                class="custom-select form-control"
+                [(ngModel)]="searchFields.categoryIds"
+                (change)="selectCategory()"
+              >
+                <option selected translate value="">None</option>
+                <option *ngFor="let cate of categories" [value]="cate._id">
+                  {{ cate.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold font-sm" translate>Subcategory</label>
+              <select
+                class="custom-select form-control"
+                [(ngModel)]="searchFields.subjectIds"
+                (change)="selectSubject()"
+              >
+                <option selected translate value="">None</option>
+                <option *ngFor="let sub of subjects" [value]="sub._id">
+                  {{ sub.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <p *ngIf="loadingTutors" translate>Loading...</p>
+        <p *ngIf="!loadingTutors && assignedTutorIds.length === 0 && !loading" class="text-muted" translate>
+          You have no group class appointments yet. Book a group session from the main Group Sessions page to see experts here.
+        </p>
+        <p *ngIf="!items.length && !loading && assignedTutorIds.length > 0" translate>No results</p>
+        <p *ngIf="loading && !loadingTutors"><span translate>Loading</span>...</p>
+        <div class="row row-md" *ngIf="items.length > 0">
+          <app-card-webinar
+            class="col-md-6 col-lg-4 mb-3"
+            *ngFor="let item of items"
+            [webinar]="item"
+          ></app-card-webinar>
+        </div>
+        <div *ngIf="totalWebinars > pageSize && !loading">
+          <ngb-pagination
+            [collectionSize]="totalWebinars"
+            [(page)]="currentPage"
+            [pageSize]="pageSize"
+            [maxSize]="2"
+            (pageChange)="pageChange()"
+            class="card-pagination pagination"
+          ></ngb-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

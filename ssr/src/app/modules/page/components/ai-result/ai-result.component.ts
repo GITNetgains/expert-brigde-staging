@@ -191,6 +191,14 @@ export class AiResultComponent implements OnInit, OnDestroy {
     this.editableText = this.answer;
   }
 
+  /** Update URL with current query and re-fetch AI result (allows changing search on same page) */
+  searchAgain() {
+    const q = (this.query || '').trim();
+    if (!q || this.loading) return;
+    this.router.navigate(['/pages/ai-result'], { queryParams: { q } });
+    // Route queryParams subscription will run and call fetch()
+  }
+
 lead = {
   name: '',
   email: '',

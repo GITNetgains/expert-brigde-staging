@@ -89,8 +89,8 @@
                 >
                   <option value="" selected>None</option>
                   <option value="all" selected>All</option>
-                  <option value="webinar">Group Class</option>
-                  <option value="course">Course</option>
+                  <option value="webinar">Group Session</option>
+                  <!-- <option value="course">Course</option> -->
                   <option value="subject">1 on 1 classes</option>
                   <!-- <option value="package">Package</option> -->
                 </select>
@@ -156,7 +156,7 @@
         <c-row>
           <c-col md="6">
             <div class="mb-3">
-              <label cLabel for="name"><strong>Tutor</strong></label>
+              <label cLabel for="name"><strong>Expert</strong></label>
               <ng-select
                 [items]="tutor"
                 [hideSelected]="true"
@@ -164,7 +164,7 @@
                 [closeOnSelect]="true"
                 (change)="selectTutor($event)"
                 name="webinar"
-                placeholder="Choose tutor"
+                placeholder="Choose expert"
                 [(ngModel)]="coupon.tutorId"
                 bindValue="_id"
                 #webinar="ngModel"

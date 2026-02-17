@@ -26,7 +26,7 @@ exports.enroll = async (req, res, next) => {
 
     const tutor = await DB.User.findOne({ _id: validate.value.tutorId });
     if (!tutor) {
-      return next(PopulateResponse.error({ message: 'Tutor not found' }));
+      return next(PopulateResponse.error({ message: 'Expert not found' }));
     }
     let webinar = null;
     let course = null;

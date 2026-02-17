@@ -6,18 +6,14 @@ exports.stats = async (req, res, next) => {
       // emailVerified: true
     });
 
-    const totalTutors = await DB.User.count({
-      role: 'user',
-      type: 'tutor'
-      // emailVerified: true
-    });
+    // Match tutor list API: count by type only (no role filter)
+    const totalTutors = await DB.User.count({ type: 'tutor' });
 
+    // Pending: not yet approved and not rejected (mutually exclusive with approved/rejected)
     const totalTutorPendingApproved = await DB.User.count({
-      role: 'user',
       type: 'tutor',
-      // emailVerified: true,
-      // rejected: true,
-      pendingApprove: true
+      pendingApprove: true,
+      rejected: false
     });
 
     const payoutRequestPendingByTutor = await DB.PayoutRequest.aggregate([
@@ -68,30 +64,32 @@ exports.stats = async (req, res, next) => {
 
     const totalCourses = await DB.Course.count();
 
-    const totalTutorActive = await DB.User.count({
-      role: 'user',
-      type: 'tutor',
-      isActive: true
-    });
-
-    const totalTutorInActive = await DB.User.count({
-      role: 'user',
-      type: 'tutor',
-      isActive: false
-    });
-
     const totalTutorApproved = await DB.User.count({
-      role: 'user',
       type: 'tutor',
       rejected: false,
       pendingApprove: false
     });
 
-    const totalTutorRejected = await DB.User.count({
-      role: 'user',
+    // Activated = approved and isActive true (matches expert list filter "activated")
+    const totalTutorActive = await DB.User.count({
       type: 'tutor',
-      rejected: true,
-      pendingApprove: false
+      rejected: false,
+      pendingApprove: false,
+      isActive: true
+    });
+
+    // Inactivated = approved and isActive false (matches expert list filter "inactivated")
+    const totalTutorInActive = await DB.User.count({
+      type: 'tutor',
+      rejected: false,
+      pendingApprove: false,
+      isActive: false
+    });
+
+    // Rejected: explicitly rejected (mutually exclusive with pending/approved)
+    const totalTutorRejected = await DB.User.count({
+      type: 'tutor',
+      rejected: true
     });
 
     const totalLanguages = await DB.I18nLanguage.count();
@@ -119,6 +117,7 @@ exports.stats = async (req, res, next) => {
       totalAppointments,
       totalTutorRejected,
       totalCoursePendingApproved,
+      totalCoursesPendingForApproval: totalCoursePendingApproved,
       totalContacts
     };
     return next();

@@ -66,10 +66,10 @@
                     aria-controls="table_id"
                     rowspan="1"
                     colspan="1"
-                    aria-label="Group Class: activate to sort column ascending"
+                    aria-label="Group Session: activate to sort column ascending"
                   >
                     <span (click)="sortBy('webinarId', 'desc')" translate
-                      >Group Class</span
+                      >Group Session</span
                     >
                     <app-sort
                       [sortOption]="sortOption"
@@ -77,7 +77,7 @@
                       (onSort)="onSort($event)"
                     ></app-sort>
                   </th>
-                  <th
+                  <!-- <th
                     tabindex="0"
                     aria-controls="table_id"
                     rowspan="1"
@@ -92,7 +92,7 @@
                       [sortBy]="'courseId'"
                       (onSort)="onSort($event)"
                     ></app-sort>
-                  </th>
+                  </th> -->
                   <th
                     tabindex="0"
                     aria-controls="table_id"
@@ -181,7 +181,7 @@
                   <td>{{item?.tutor?.name}}</td>
                   <td>{{item.subject ? item.subject?.name :'-'}}</td>
                   <td>{{item.webinar ? item?.webinar?.name :'-'}}</td>
-                  <td>{{item.course ? item?.course?.name : '-'}}</td>
+                  <!-- <td>{{item.course ? item?.course?.name : '-'}}</td> -->
                   <td>{{item?.amount| appCurrency}}</td>
                   <td>{{item?.reason }}</td>
                   <td>

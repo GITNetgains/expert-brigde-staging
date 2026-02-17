@@ -1,4 +1,4 @@
-<p>Hello {{ tutor.name }},</p>
+<p>Hello {% if tutor.showPublicIdOnly %} {{ tutor.userId }} {% else %} {{ tutor.name }} {% endif %},</p>
 <br />
 <p>
   Your appointment {{webinar.name}} will start at {{startTime}}. Please be sure to arrive on time! :) You can click

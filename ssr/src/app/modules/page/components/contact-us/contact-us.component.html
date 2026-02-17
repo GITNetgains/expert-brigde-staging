@@ -76,12 +76,13 @@
     [(ngModel)]="model.message"
     placeholder="Message*"
     required
+    minlength="5"
   ></textarea>
 
   <button
     type="submit"
     class="btn-submit"
-    [disabled]="loading || !contactForm.valid"
+    [disabled]="loading"
   >
     {{ loading ? 'Sending...' : 'Submit' }}
   </button>

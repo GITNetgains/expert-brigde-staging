@@ -79,7 +79,8 @@
               {{info.country?.name}}
             </p>
             <ng-select [hidden]="!isEditProfile" [items]="countries" appendTo="body" name="country" bindLabel="name"
-              [multiple]="false" [closeOnSelect]="true" [(ngModel)]="info.country" (change)="onCountryChange($event)"
+              [multiple]="false" [closeOnSelect]="true" [searchable]="true" [searchFn]="countrySearchFn"
+              [(ngModel)]="info.country" (change)="onCountryChange($event)"
               required #country="ngModel">
             </ng-select>
           </div>
@@ -287,34 +288,7 @@
             </button>
           </div>
         </form>
-        <div *ngIf="info" class="card mt-4">
-          <div class="card-header">
-            <h4 translate>Update password</h4>
-          </div>
-          <div class="card-body">
-            <form class="row" #frmPass="ngForm" (submit)="submit(frmPass)" ngNativeValidate>
-              <div class="col-md-8 rmb-2">
-                <div class="form-group input-border mb-0">
-                  <input type="password" class="form-control" [(ngModel)]="info.password" name="password"
-                    #password="ngModel" minlength="6" placeholder="{{'Enter password' | translate}}" />
-                  <div *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)">
-                    <p [hidden]="!password.errors['minlength']" style="color: red">
-                      Password must be at least 6 characters!
-                    </p>
-                  </div>
-                  <p class="help help-block">
-                    <small>Leave blank to keep the current password</small>
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-4 text-end rtxt-left">
-                <button class="btn btn-default btn-block" type="submit" translate>
-                  Update
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+       
         <div *ngIf="info && info.type==='student'" class="card mt-4">
           <div class="card-header">
             <h4 translate>Update email</h4>
@@ -346,48 +320,38 @@
             </form>
           </div>
         </div>
-        <div class="card mt-4 mb-4" *ngIf="info && info.type === 'tutor'">
+       
+      </div>
+
+      <div class="col-lg-7 col-md-12">
+        <div *ngIf="info" class="card mt-4">
           <div class="card-header">
-            <h4 translate>Invite Friend</h4>
+            <h4 translate>Update password</h4>
           </div>
           <div class="card-body">
-            <form class="row" #frmInvite="ngForm" (submit)="inviteFriend()" ngNativeValidate>
+            <form class="row" #frmPass="ngForm" (submit)="submit(frmPass)" ngNativeValidate>
               <div class="col-md-8 rmb-2">
                 <div class="form-group input-border mb-0">
-                  <input type="email" class="form-control" placeholder="{{'user@example.com' | translate}}"
-                    [(ngModel)]="emailInvite" name="email-invite" #emailInViteFriend="ngModel"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
-                  <div *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)">
-                    <p [hidden]="!emailInViteFriend.errors['required']" class="error" translate>
-                      Email is required
-                    </p>
-                    <p [hidden]="!emailInViteFriend.errors['pattern']" class="error" translate>
-                      Email is invalid format
+                  <input type="password" class="form-control" [(ngModel)]="info.password" name="password"
+                    #password="ngModel" minlength="6" placeholder="{{'Enter password' | translate}}" />
+                  <div *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)">
+                    <p [hidden]="!password.errors['minlength']" style="color: red">
+                      Password must be at least 6 characters!
                     </p>
                   </div>
+                  <p class="help help-block">
+                    <small>Leave blank to keep the current password</small>
+                  </p>
                 </div>
               </div>
               <div class="col-md-4 text-end rtxt-left">
                 <button class="btn btn-default btn-block" type="submit" translate>
-                  Invite
+                  Update
                 </button>
               </div>
             </form>
-            <div class="mt-3 share-me" *ngIf="info.type==='tutor' && info.username">
-              <h5 translate class="me-3">Share my profile</h5>
-              <share-button button="facebook" theme="circles-light"></share-button>
-              <share-button button="twitter" theme="circles-light"></share-button>
-              <!-- <share-button
-                button="instagram"
-                theme="circles-light"
-                [icon]="['fab', 'instagram']"
-              ></share-button> -->
-            </div>
           </div>
         </div>
-      </div>
-
-      <div class="col-lg-7 col-md-12">
         <div class="card">
           <div class="card-header">
             <h4><span translate>Description</span></h4>
@@ -465,10 +429,12 @@
           <div class="card-body">
             <form class="form-group" #frmSkill="ngForm" (submit)="submit(frmSkill)" *ngIf="isEditSkill"
               ngNativeValidate>
-              <ng-select [items]="skills" [hideSelected]="true" appendTo="body" [multiple]="true" bindLabel="name"
-                [closeOnSelect]="false" name="skills" placeholder="{{'Choose skills' |  translate}}"
-                [(ngModel)]="info.skillIds" bindValue="_id" #tutorSkills="ngModel" (change)="onChangeSkill($event)"
-                [addTag]="addSkillTag">
+              <ng-select [items]="skills" [hideSelected]="true" appendTo="body" [multiple]="true"
+                [closeOnSelect]="false" [searchable]="true" bindLabel="name" name="skills"
+                placeholder="Choose skills or type to add new - press Enter to add"
+                addTagText="Press Enter to add"
+                [(ngModel)]="info.skillIds" bindValue="_id" #tutorSkills="ngModel"
+                (change)="onChangeSkill($event)" [addTag]="addSkillTag">
               </ng-select>
             </form>
             <div class="list-grades">
@@ -480,15 +446,16 @@
           <div class="card-header">
             <h4 translate>Choose Industries</h4>
             <div class="card-header-right">
-              <a href="javascript:void(0)" (click)="isEditSkill=!isEditSkill"><i
+              <a href="javascript:void(0)" (click)="isEditIndustry=!isEditIndustry"><i
                   class="fi fi-rr-pencil text-secondary"></i></a>
             </div>
           </div>
           <div class="card-body">
-            <form class="form-group" #frmIndustry="ngForm" (submit)="submit(frmIndustry)" *ngIf="isEditSkill"
+            <form class="form-group" #frmIndustry="ngForm" (submit)="submit(frmIndustry)" *ngIf="isEditIndustry"
               ngNativeValidate>
-              <ng-select [items]="industries" [hideSelected]="true" appendTo="body" [multiple]="true" bindLabel="name"
-                [closeOnSelect]="false" name="industries" placeholder="{{'Choose industries' |  translate}}"
+              <ng-select [items]="industries" [hideSelected]="true" appendTo="body" [multiple]="true"
+                [closeOnSelect]="false" [searchable]="true" bindLabel="name" name="industries"
+                placeholder="Choose industries (select multiple)"
                 [(ngModel)]="info.industryIds" bindValue="_id" #tutorIndustries="ngModel"
                 (change)="onChangeIndustry($event)">
               </ng-select>
@@ -828,6 +795,45 @@
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+        <div class="card mt-4 mb-4" *ngIf="info && info.type === 'tutor'">
+          <div class="card-header">
+            <h4 translate>Invite Friend</h4>
+          </div>
+          <div class="card-body">
+            <form class="row" #frmInvite="ngForm" (submit)="inviteFriend()" ngNativeValidate>
+              <div class="col-md-8 rmb-2">
+                <div class="form-group input-border mb-0">
+                  <input type="email" class="form-control" placeholder="{{'user@example.com' | translate}}"
+                    [(ngModel)]="emailInvite" name="email-invite" #emailInViteFriend="ngModel"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
+                  <div *ngIf="emailInViteFriend.errors && (emailInViteFriend.dirty || emailInViteFriend.touched)">
+                    <p [hidden]="!emailInViteFriend.errors['required']" class="error" translate>
+                      Email is required
+                    </p>
+                    <p [hidden]="!emailInViteFriend.errors['pattern']" class="error" translate>
+                      Email is invalid format
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 text-end rtxt-left">
+                <button class="btn btn-default btn-block" type="submit" translate>
+                  Invite
+                </button>
+              </div>
+            </form>
+            <div class="mt-3 share-me" *ngIf="info.type==='tutor' && info.username">
+              <h5 translate class="me-3">Share my profile</h5>
+              <share-button button="facebook" theme="circles-light"></share-button>
+              <share-button button="twitter" theme="circles-light"></share-button>
+              <!-- <share-button
+                button="instagram"
+                theme="circles-light"
+                [icon]="['fab', 'instagram']"
+              ></share-button> -->
+            </div>
           </div>
         </div>
       </div>
