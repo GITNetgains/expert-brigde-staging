@@ -164,15 +164,16 @@ export class BookingComponent implements OnInit {
     private seo: SeoService
   ) {
     this.tutor = this.route.snapshot.data['tutor'];
-    this.seo.setMetaTitle(`${this.tutor.name} Schedule`);
+    const displayName = this.tutor.showPublicIdOnly === true ? String(this.tutor.userId || '') : (this.tutor.name || '');
+    this.seo.setMetaTitle(`${displayName} Schedule`);
     this.seo.addMetaTags([
       {
         property: 'og:title',
-        content: this.tutor.name
+        content: displayName
       },
       {
         property: 'og:image',
-        content: this.tutor.avatarUrl
+        content: this.tutor.showPublicIdOnly === true ? '' : (this.tutor.avatarUrl || '')
       },
       {
         property: 'og:description',
@@ -183,11 +184,6 @@ export class BookingComponent implements OnInit {
 
   ngOnInit() {
     this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
-    this.route.queryParams.subscribe((params) => {
-      if (params.isFree && params.isFree === 'true') {
-        this.booking.isFree = true;
-      }
-    });
     this.config = this.stateService.getState(STATE.CONFIG);
     this.maxFreeSlotToBook = this.config.maxFreeSlotToBook;
 
@@ -340,7 +336,7 @@ export class BookingComponent implements OnInit {
     this.booking.redirectSuccessUrl =
       environment.url + this.router.url + '/success';
     this.booking.cancelUrl = environment.url + this.router.url + '/cancel';
-    // this.booking.isFree = false;
+    this.booking.isFree = false;
     if (
       !this.usedCoupon &&
       this.coupon &&
@@ -357,11 +353,7 @@ export class BookingComponent implements OnInit {
     modalStripe.componentInstance.tutor = this.tutor;
     modalStripe.componentInstance.slot = this.timeSelected;
     modalStripe.componentInstance.price = modalStripe.componentInstance.price =
-      this.booking.isFree
-        ? 0
-        : this.appliedCoupon
-          ? this.salePrice
-          : this.price;
+      this.appliedCoupon ? this.salePrice : this.price;
     modalStripe.componentInstance.config = this.config;
     modalStripe.componentInstance.appliedCoupon = this.appliedCoupon;
     if (
@@ -375,42 +367,7 @@ export class BookingComponent implements OnInit {
     modalStripe.result.then(
       (result) => {
         if (result.confirmed) {
-          if (this.booking.isFree) {
-            this.appointmentService
-              .checkFree({ tutorId: this.booking.tutorId })
-              .then((resp) => {
-                if (
-                  resp.data.canBookFree === true &&
-                  resp.data.canBookFreeWithTutor
-                ) {
-                  this.appointmentService
-                    .create(this.booking)
-                    .then(() => {
-                      this.appService.toastSuccess('Booking successfully!');
-                      this.submitted = false;
-                      return this.router.navigate(['/users/lessons']);
-                    })
-                    .catch((err) => {
-                      this.submitted = false;
-                      this.router.navigate(['/payments/cancel']);
-                      this.appService.toastError(err);
-                    });
-                } else {
-                  if (resp.data.canBookFree === false) {
-                    this.submitted = false;
-                    return this.appService.toastError(
-                      'You have taken for the maximum number of free trial sessions'
-                    );
-                  }
-                  if (resp.data.canBookFreeWithTutor === false) {
-                    this.submitted = false;
-                    return this.appService.toastError(
-                      'You have taken a free trial session of this expert before'
-                    );
-                  }
-                }
-              });
-          } else if (this.salePrice <= 0 && this.appliedCoupon) {
+          if (this.salePrice <= 0 && this.appliedCoupon) {
             this.appointmentService
               .create(this.booking)
               .then(() => {
@@ -431,7 +388,7 @@ export class BookingComponent implements OnInit {
                 type: 'booking',
                 targetType: 'subject',
                 targetName: this.subject.name,
-                tutorName: this.tutor.name
+                tutorName: this.tutor.showPublicIdOnly === true ? String(this.tutor.userId || '') : (this.tutor.name || '')
               },
               state: this.booking
             });
@@ -527,7 +484,7 @@ export class BookingComponent implements OnInit {
   }
 
   fundTransfer() {
-    this.router.navigate(['/tutors/zipCode'], {
+    this.router.navigate(['/experts/zipCode'], {
       queryParams: { zipCode: this.zipCode }
     });
   }

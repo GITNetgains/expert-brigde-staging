@@ -153,7 +153,7 @@ if (mappedType) {
     const urlAccountType = this.mapViewTypeToAccountType(qType || '');
 
     const fromQuery: PendingSignup | null = qStep === 'details' && qEmail
-      ? { step: 'details', email: String(qEmail).toLowerCase().trim(), type: (qType === 'tutor' || qType === 'student' ? qType : urlAccountType || 'student') as 'tutor' | 'student' }
+      ? { step: 'details', email: String(qEmail).toLowerCase().trim(), type: (urlAccountType || (qType === 'tutor' || qType === 'student' ? qType : null) || 'student') as 'tutor' | 'student' }
       : null;
 
     const storedPending = this.getPendingSignup();

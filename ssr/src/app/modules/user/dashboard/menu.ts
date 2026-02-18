@@ -9,16 +9,16 @@ export const tutorMenus = [
 
   {
     icon: 'fi fi-rs-chalkboard-user',
-    title: 'Group Class',
-    description: 'Group classes posted by the expert will be displayed here.',
-    path: '/users/groupclass',
+    title: 'Group sessions',
+    description: 'Group sessions posted by the expert will be displayed here.',
+    path: '/users/groupsession',
     key: 'menu-webinar-list'
   },
   {
     icon: 'fi fi-rs-chalkboard-user',
-    title: 'Create a group class',
-    description: 'The expert can create a new group class from here.',
-    path: '/users/groupclass/create',
+    title: 'Create a group sessions',
+    description: 'The expert can create a new group session from here.',
+    path: '/users/groupsession/create',
     key: 'menu-webinar-create'
   },
   // {
@@ -47,7 +47,7 @@ export const tutorMenus = [
     icon: 'fi fi-rr-calendar-clock',
     title: 'Set your calendar',
     description: 'Allows the expert to book appointments for 1‑on‑1 sessions.',
-    path: '/users/1on1classes',
+    path: '/users/1on1sessions',
     key: 'menu-my-schedule'
   },
   {

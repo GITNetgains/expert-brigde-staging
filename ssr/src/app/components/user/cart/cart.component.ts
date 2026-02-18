@@ -70,7 +70,7 @@ export class CartComponent implements OnInit {
       queryParams: {
         type: 'booking',
         targetType: 'subject',
-        title: `Make your Payment for classes with tutor ${this.tutor.name}`
+        title: `Make your Payment for classes with Expert ${this.tutor.showPublicIdOnly === true ? this.tutor.userId : this.tutor.name}`
       },
       state: paymentParams
     });

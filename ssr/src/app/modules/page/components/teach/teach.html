@@ -122,12 +122,13 @@
           [config]="slideConfig">
           <div class="testimonial-list position-relative" ngxSlickItem *ngFor="let tutor of tutors">
             <div class="teachers-img">
-              <img src="{{tutor.avatarUrl}}" onerror="this.src='/assets/images/default-avatar.jpg'" />
+              <img *ngIf="tutor.showPublicIdOnly !== true" src="{{tutor.avatarUrl}}" onerror="this.src='/assets/images/default-avatar.jpg'" />
+              <span *ngIf="tutor.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
             </div>
             <div class="outer">
               <div class="inner">
                 <div class="content text-center">
-                  <h5 class="card-title">{{tutor.name}}</h5>
+                  <h5 class="card-title">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h5>
                   <div class="rating-stars text-center">
                     <ul id="stars">
                       <app-star-rating [rate]="tutor?.ratingAvg"></app-star-rating>

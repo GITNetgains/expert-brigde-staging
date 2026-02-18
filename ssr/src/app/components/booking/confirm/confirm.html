@@ -19,7 +19,7 @@
     <div class="col-md-12">
       <h5 *ngIf="price!==0 || (price === 0 && appliedCoupon)">
         <span translate>Make your payment for the session</span>
-        {{subject.name}} with expert {{tutor?.name}}
+        {{subject.name}} with expert {{ tutor?.showPublicIdOnly === true ? tutor?.userId : tutor?.name }}
       </h5>
       <h5 *ngIf="price===0 && !appliedCoupon">
         <span translate>Confirm to book a free slot with</span> {{subject.name}}

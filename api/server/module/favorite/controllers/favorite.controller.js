@@ -115,8 +115,44 @@ exports.list = async (req, res, next) => {
       type === 'tutor'
         ? {
             path: 'tutor',
-            // include public-id controls so UI can decide what to show
-            select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
+             // IMPORTANT: this list must include all fields the frontend cards use,
+            // otherwise things like consultation fee, highlights, and experience
+            // will be missing on the "Favorite tutor" screen.
+            select: [
+              'name',
+              'avatarUrl',
+              'username',
+              'country',
+              'state',
+              'city',
+              'featured',
+              'ratingAvg',
+              'totalRating',
+              'avatar',
+              'userId',
+              'showPublicIdOnly',
+              // pricing / consultation fee
+              'price1On1Class',
+              'consultationFee',
+              // profile meta used in cards
+              'highlights',
+              'yearsExperience',
+              // virtual refs needed for experience / grades
+              'grades',
+              'experienceIds'
+            ].join(' '),
+            populate: [
+              {
+                // short experience list for card (title, org, years)
+                path: 'experience',
+                select: 'title organization fromYear toYear'
+              },
+              {
+                // keep grade names consistent with main tutor listings
+                path: 'gradeItems',
+                select: '_id name alias'
+              }
+            ]
           }
         : type === 'webinar'
         ? {

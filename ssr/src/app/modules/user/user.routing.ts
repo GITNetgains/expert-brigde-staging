@@ -49,7 +49,7 @@ const routes: Routes = [
     }
   },
   {
-    path: '1on1classes',
+    path: '1on1sessions',
     component: ScheduleComponent
   },
   {
@@ -104,16 +104,20 @@ const routes: Routes = [
       categories: categoriesResolver
     }
   },
+  { path: 'groupclass', redirectTo: 'groupsession', pathMatch: 'full' },
+  { path: 'groupclass/create', redirectTo: 'groupsession/create', pathMatch: 'full' },
+  { path: 'groupclass/:id', redirectTo: 'groupsession/:id', pathMatch: 'full' },
+  { path: '1on1classes', redirectTo: '1on1sessions', pathMatch: 'full' },
   {
-    path: 'groupclass',
+    path: 'groupsession',
     component: WebinarListingComponent
   },
   {
-    path: 'groupclass/create',
+    path: 'groupsession/create',
     component: WebinarCreateComponent
   },
   {
-    path: 'groupclass/:id',
+    path: 'groupsession/:id',
     component: WebinarUpdateComponent
   },
   {

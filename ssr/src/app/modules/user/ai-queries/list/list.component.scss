@@ -2,14 +2,11 @@
   --primary-color: #4361ee;
   --bg-light: #f8f9fa;
   --border-color: #e9ecef;
-  --text-main: #2b2d42;
 }
 
-/* Dashboard Layout */
 .dashboard-container {
   background-color: var(--bg-light);
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .table-card {
@@ -19,75 +16,98 @@
   overflow: hidden;
 }
 
-/* Table Styling */
-.table thead th {
-  background-color: #fcfcfd;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  color: #6c757d;
-  padding: 16px 12px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.table tbody tr {
-  transition: background 0.2s;
-}
-
-.table tbody tr:hover {
-  background-color: #f8faff;
-}
-
-/* Badges & Buttons */
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.badge-assigned { background: #e7f3ff; color: #007bff; }
-.badge-pending { background: #fff4e5; color: #ff8c00; }
-
-.btn-primary-soft {
-  background: #eef2ff;
+/* New Interactive Triggers */
+.btn-view-trigger {
+  background: #f0f3ff;
   color: var(--primary-color);
+  border: 1px solid #dbe4ff;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  &:hover { background: var(--primary-color); color: white; }
+}
+
+.status-badge-trigger {
   border: none;
-  font-weight: 500;
-  border-radius: 6px;
+  background: #f1f5f9;
+  color: #64748b;
   padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  &.assigned {
+    background: #e7f3ff;
+    color: #007bff;
+    &:hover:not(:disabled) { background: #007bff; color: white; }
+  }
 }
 
-.btn-action {
-  background: white;
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  border-radius: 6px;
-  padding: 6px 14px;
-}
-
-/* Attachment Icons */
-.attachment-badge {
-  background: #f1f3f5;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  margin-right: 4px;
-  transition: transform 0.2s;
-}
-.attachment-badge:hover { transform: translateY(-2px); background: #e9ecef; }
-
-/* Backdrop - Fixed to cover the whole screen and blur the background */
+/* Modal Enhancements */
 .modal-backdrop-custom {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6); /* Slightly darker for better contrast */
-  backdrop-filter: blur(4px); /* Modern blur effect */
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
   z-index: 2000;
 }
 
-/* Modal Wrapper - Centers the card regardless of content length */
+.custom-modal-wrapper {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2001; padding: 15px;
+}
+
+.modal-card-modern {
+  background: white; width: 100%; max-width: 550px;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.3s ease-out;
+}
+
+.modal-body-modern {
+  padding: 1.5rem; max-height: 60vh; overflow-y: auto;
+}
+
+.expert-row {
+  background: #f8fafc; border-radius: 10px;
+  border: 1px solid #f1f5f9;
+}
+
+.expert-avatar-circle {
+  width: 35px; height: 35px; background: var(--primary-color);
+  color: white; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-weight: bold;
+}
+
+.description-full {
+  line-height: 1.6; color: #334155; white-space: pre-wrap;
+}
+
+/* Breakpoints */
+@media (max-width: 768px) {
+  .dashboard-header h3 { font-size: 1.25rem; }
+  .table-card { border-radius: 0; border-left: none; border-right: none; }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Backdrop with modern blur */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+}
+
+/* Modal centering and sizing */
 .custom-modal-wrapper {
   position: fixed;
   inset: 0;
@@ -96,73 +116,91 @@
   justify-content: center;
   z-index: 2001;
   padding: 20px;
-  pointer-events: none; /* Allows clicking backdrop through the wrapper */
 }
 
-/* Modal Card - Fixed maximum height */
 .modal-card-modern {
   background: white;
   width: 100%;
-  max-width: 650px;
-  max-height: 85vh; /* Prevents modal from going off-screen */
-  border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  max-height: 80vh; /* Keeps it from going off screen */
+  border-radius: 20px;
   display: flex;
-  flex-direction: column; /* Required for internal scrolling */
-  pointer-events: auto; /* Re-enables clicks inside the card */
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modalIn 0.3s ease-out;
+  position: relative;
 }
 
-/* Header - Stay fixed at the top */
+/* Header styling */
 .modal-header-modern {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0; /* Prevents header from shrinking */
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: none;
+  
+  h5 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  .close-icon-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Aligns with your image's top-left X button */
+    border: 1.5px solid #000;
+    background: white;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    &:hover { background: #f1f5f9; }
+  }
 }
 
-/* Scrollable Body - This is the magic part */
+/* Scrollable Body Text */
 .modal-body-modern {
-  padding: 1.5rem;
-  overflow-y: auto; /* Scrollbar appears here if text is long */
-  flex-grow: 1;    /* Takes up remaining space */
-  background: #fdfdfd;
+  padding: 1rem 2.5rem 1.5rem;
+  overflow-y: auto; /* Required for the scrollbar in your image */
+  flex-grow: 1;
+
+  .description-full {
+    line-height: 1.7;
+    color: #334155;
+    font-size: 1.05rem;
+    white-space: pre-wrap; /* Preserves line breaks and lists */
+  }
+
+  /* Custom Scrollbar to match modern look */
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { 
+    background: #94a3b8; 
+    border-radius: 10px; 
+  }
 }
 
-/* Footer - Stay fixed at the bottom */
+/* Orange Close Button */
 .modal-footer-modern {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  padding: 1rem 2.5rem 1.5rem;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-shrink: 0; /* Prevents footer from shrinking */
-}
+  justify-content: flex-start;
 
-/* Close Icon Button */
-.close-icon-btn {
-  background: #f1f5f9;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #64748b;
-  transition: all 0.2s;
-}
-
-.close-icon-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+  .btn-close-accent {
+    background: #ee675c; /* Matches the orange in your image */
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover { background: #d9534f; }
+  }
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(15px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }

@@ -66,6 +66,9 @@ exports.startMeeting = async (req, res, next) => {
           appointment.zoomData = zoomData;
           appointment.meetingId = zoomData.id;
           appointment.platform = platformOnline;
+          appointment.status = 'progressing';
+          appointment.meetingStart = true;
+          appointment.meetingStartAt = new Date();
           await appointment.save();
           data.zoomus.url = zoomData.start_url;
           data.zoomus.signature = await Service.ZoomUs.generateSignature({
@@ -82,15 +85,18 @@ exports.startMeeting = async (req, res, next) => {
           );
         }
         if (appointment.targetType === 'webinar') {
-          const appointments = await DB.Appointment.find({
+          const slotAppointments = await DB.Appointment.find({
             status: { $in: ['booked', 'pending', 'progressing'] },
             slotId: appointment.slotId
           });
-          if (appointments && appointments.length) {
-            for (const a of appointments) {
+          if (slotAppointments && slotAppointments.length) {
+            for (const a of slotAppointments) {
               a.zoomData = zoomData;
               a.meetingId = zoomData.id;
               a.platform = platformOnline;
+              a.status = 'progressing';
+              a.meetingStart = true;
+              a.meetingStartAt = new Date();
               await a.save();
             }
           }
@@ -113,6 +119,9 @@ exports.startMeeting = async (req, res, next) => {
             appointment.zoomData = zoomData;
             appointment.meetingId = zoomData.id;
             appointment.platform = platformOnline;
+            appointment.status = 'progressing';
+            appointment.meetingStart = true;
+            appointment.meetingStartAt = new Date();
             await appointment.save();
             data.zoomus.url = zoomData.start_url;
             data.zoomus.signature = await Service.ZoomUs.generateSignature({
@@ -129,6 +138,10 @@ exports.startMeeting = async (req, res, next) => {
             );
           }
         }
+        appointment.status = 'progressing';
+        appointment.meetingStart = true;
+        appointment.meetingStartAt = appointment.meetingStartAt || new Date();
+        await appointment.save();
         data.zoomus.url = zoomData.start_url;
         data.zoomus.signature = await Service.ZoomUs.generateSignature({
           meetingNumber: zoomData.id,
@@ -137,15 +150,18 @@ exports.startMeeting = async (req, res, next) => {
         data.zoomus.meetingNumber = zoomData.id;
         data.zoomus.password = zoomData.password;
         if (appointment.targetType === 'webinar') {
-          const appointments = await DB.Appointment.find({
+          const restartAppointments = await DB.Appointment.find({
             status: { $in: ['booked', 'pending', 'progressing'] },
             slotId: appointment.slotId
           });
-          if (appointments && appointments.length) {
-            for (const a of appointments) {
+          if (restartAppointments && restartAppointments.length) {
+            for (const a of restartAppointments) {
               a.zoomData = zoomData;
               a.meetingId = zoomData.id;
               a.platform = platformOnline;
+              a.status = 'progressing';
+              a.meetingStart = true;
+              a.meetingStartAt = new Date();
               await a.save();
             }
           }
@@ -192,19 +208,22 @@ exports.startMeeting = async (req, res, next) => {
       if (spaceData && spaceData.client_url) {
         appointment.spaceSessionId = spaceData.session_id;
         appointment.platform = platformOnline;
+        appointment.status = 'progressing';
+        appointment.meetingStart = true;
+        appointment.meetingStartAt = new Date();
         await appointment.save();
         if (appointment.targetType === 'webinar') {
-          const appointments = await DB.Appointment.find({
-            _id: {
-              $ne: appointment._id
-            },
+          const spaceAppointments = await DB.Appointment.find({
             status: { $in: ['booked', 'pending', 'progressing'] },
             slotId: appointment.slotId
           });
-          if (appointments && appointments.length) {
-            for (const a of appointments) {
+          if (spaceAppointments && spaceAppointments.length) {
+            for (const a of spaceAppointments) {
               a.spaceSessionId = spaceData.session_id;
               a.platform = platformOnline;
+              a.status = 'progressing';
+              a.meetingStart = true;
+              a.meetingStartAt = new Date();
               await a.save();
             }
           }

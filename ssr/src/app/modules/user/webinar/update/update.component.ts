@@ -209,7 +209,7 @@ export class WebinarUpdateComponent implements OnInit {
         )
         .then(() => {
           this.appService.toastSuccess('Updated successfuly!');
-          this.router.navigate(['/users/groupclass']);
+          this.router.navigate(['/users/groupsession']);
           this.loading = false;
         })
         .catch((err) => {

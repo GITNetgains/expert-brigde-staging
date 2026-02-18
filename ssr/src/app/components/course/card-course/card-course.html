@@ -39,9 +39,10 @@
           <img
             *ngIf="course?.tutor?.showPublicIdOnly !== true"
             src="{{course?.tutor?.avatarUrl}}"
-            [alt]="course?.tutor?.name"
+            [alt]="course?.tutor?.showPublicIdOnly === true ? course?.tutor?.userId : course?.tutor?.name"
             onerror="this.src='/assets/images/default-avatar.jpg'"
           />
+          <span *ngIf="course?.tutor?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
           <h5 class="cate-profile-name pt-sm">{{ course?.tutor?.showPublicIdOnly === true ? course?.tutor?.userId : course?.tutor?.name }}</h5>
         </a>
       </div>

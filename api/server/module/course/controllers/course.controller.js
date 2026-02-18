@@ -32,7 +32,7 @@ exports.findOne = async (req, res, next) => {
     }
     const query = Helper.App.isMongoId(id) ? { _id: id } : { alias: id };
     const course = await DB.Course.findOne(query)
-      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio' })
+      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio userId showPublicIdOnly' })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'mainImage', select: '_id name filePath thumbPath fileUrl thumbUrl convertStatus uploaded' })
       .populate({ path: 'videoIntroduction', select: '_id name filePath fileUrl convertStatus uploaded' })
@@ -63,6 +63,17 @@ exports.findOne = async (req, res, next) => {
       });
 
       data.booked = booked > 0;
+    }
+
+    // Apply showPublicIdOnly for students viewing tutor (any non-admin, non-tutor viewer; or anonymous)
+    const isStudentViewing = !req.user || (req.user.role !== 'admin' &&
+      (!course.tutorId || req.user._id.toString() !== course.tutorId.toString()));
+    if (isStudentViewing && data.tutor) {
+      if (data.tutor.showPublicIdOnly === true) {
+        data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
+        data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
+        delete data.tutor.avatarUrl;
+      }
     }
 
     req.course = course;
@@ -144,7 +155,7 @@ exports.list = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Course.count(query);
     let items = await DB.Course.find(query)
-      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar' })
+      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly' })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'mainImage', select: '_id name filePath thumbPath fileUrl thumbUrl convertStatus uploaded' })
       .populate({ path: 'videoIntroduction', select: '_id name filePath fileUrl convertStatus uploaded' })
@@ -178,6 +189,16 @@ exports.list = async (req, res, next) => {
       }
       const enrolledCount = await DB.Transaction.count({ targetId: item._id, paid: true, targetType: 'course' });
       data.enrolledCount = enrolledCount;
+
+      // Apply showPublicIdOnly for students viewing tutor (any non-admin, non-tutor viewer; or anonymous)
+      const isStudentViewing = !req.user || (req.user.role !== 'admin' &&
+        (!item.tutorId || req.user._id.toString() !== item.tutorId.toString()));
+      if (isStudentViewing && data.tutor && data.tutor.showPublicIdOnly === true) {
+        data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
+        data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
+        delete data.tutor.avatarUrl;
+      }
+
       return data;
     }));
     res.locals.list = { count, items };

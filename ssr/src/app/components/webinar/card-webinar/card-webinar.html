@@ -4,7 +4,7 @@
     <span translate>Featured</span>
   </div>
   <a
-    [routerLink]="['/groupclass',webinar.alias]"
+    [routerLink]="['/groupsession',webinar.alias]"
     class="hyperlink card-img-top"
   >
     <img
@@ -26,6 +26,7 @@
             alt="tutor avatar"
             onerror="this.src='/assets/images/default-avatar.jpg'"
           />
+          <span *ngIf="webinar?.tutor?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
           <h5>{{ webinar?.tutor?.showPublicIdOnly === true ? webinar?.tutor?.userId : webinar?.tutor?.name }}</h5>
         </a>
       </div>
@@ -61,21 +62,21 @@
       <a
         *ngIf="!webinar.booked && systemService.showBooking()"
         class="btn btn-default"
-        [routerLink]="['/groupclass',webinar.alias]"
+        [routerLink]="['/groupsession',webinar.alias]"
         translate
         >Book Now</a
       >
       <a
         *ngIf="!systemService.showBooking()"
         class="btn btn-default"
-        [routerLink]="['/groupclass',webinar.alias]"
+        [routerLink]="['/groupsession',webinar.alias]"
         translate
         >Details</a
       >
       <a
         *ngIf="webinar.booked"
         class="btn btn-purchased"
-        [routerLink]="['/groupclass',webinar.alias]"
+        [routerLink]="['/groupsession',webinar.alias]"
         translate
         >Purchased</a
       >

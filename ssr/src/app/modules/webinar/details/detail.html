@@ -10,7 +10,7 @@
             <div class="detail-box-title flex-column">
               <h4 class="font-weight-bold">{{webinar?.name}}</h4>
               <div class="course-detail-categories">
-                <a *ngFor="let cat of webinar.categories; let i = index" [routerLink]="['/groupclass']"
+                <a *ngFor="let cat of webinar.categories; let i = index" [routerLink]="['/groupsession']"
                   [queryParams]="{ categoryIds: cat._id }"><span class="badge badge-default">{{ cat.name }}</span></a>
               </div>
             </div>
@@ -59,12 +59,8 @@
             </div>
             <div class="show-mobile">
               <div class="mt-2">
-                <h4 class="color-light-red" *ngIf="!appliedCoupon">
-                  <strong>{{ webinar?.price |appCurrency}}</strong>
-                </h4>
-                <h4 class="color-light-red mt-3" *ngIf="appliedCoupon">
-                  <small class="text-line-through me-1">{{ webinar?.price | appCurrency}}</small>
-                  <strong>{{salePrice | appCurrency}}</strong>
+                <h4 class="color-light-red">
+                  <strong>{{ webinar?.price | appCurrency}}</strong>
                 </h4>
               </div>
               <div class="mt-2 button-list" *ngIf="showBooking">
@@ -86,9 +82,10 @@
           </div>
         </div>
         <div class="card card-border card-body show-mobile mb-3">
-          <app-apply-coupon [options]="optionsCoupon" (doApply)="applyCoupon($event)"
-            *ngIf="webinar && webinar.price > 0" (doCancel)="onCancelCoupon($event)"></app-apply-coupon>
-          <div class="mt-2" *ngIf="salePrice<=0">
+          <div class="mt-2" *ngIf="webinar?.isFree || (webinar?.price ?? 0) <= 0">
+            <label class="required-label" style="display: block; margin-bottom: 5px; font-weight: bold">
+              {{'Recipient\'s email id' | translate}}
+            </label>
             <input type="email" class="form-control email-recipent-input"
               placeholder="{{'Recipient\'s email id' | translate}}" name="email" [(ngModel)]="emailRecipient"
               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" #emailId="ngModel" />
@@ -177,16 +174,13 @@
             <img src="{{webinar?.mainImage?.fileUrl}}" alt="" />
           </div>
           <div class="card-body">
-            <h4 class="color-light-red" *ngIf="!appliedCoupon">
+            <h4 class="color-light-red">
               <strong>{{ webinar?.price | appCurrency}}</strong>
             </h4>
-            <h4 class="color-light-red mt-3" *ngIf="appliedCoupon">
-              <small class="text-line-through me-1">{{ webinar?.price | appCurrency}}</small>
-              <strong>{{salePrice |appCurrency}}</strong>
-            </h4>
-            <app-apply-coupon [options]="optionsCoupon" (doApply)="applyCoupon($event)"
-              *ngIf="webinar && webinar.price > 0" (doCancel)="onCancelCoupon($event)"></app-apply-coupon>
-            <div class="mt-2" *ngIf="salePrice<=0">
+            <div class="mt-2" *ngIf="webinar?.isFree || (webinar?.price ?? 0) <= 0">
+              <label class="required-label" style="display: block; margin-bottom: 5px; font-weight: bold">
+                {{'Recipient\'s email id' | translate}}
+              </label>
               <input type="email" class="form-control email-recipent-input"
                 placeholder="{{'Recipient\'s email id' | translate}}" name="email" [(ngModel)]="emailRecipient"
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" #emailId="ngModel" />

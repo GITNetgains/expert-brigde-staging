@@ -36,7 +36,7 @@ exports.findOne = async (req, res, next) => {
     }
     const query = Helper.App.isMongoId(id) ? { _id: id } : { alias: id };
     let webinar = await DB.Webinar.findOne(query, { availableTimeRange: 0, slotIds: 0, hashWebinar: 0 })
-      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner' })
+      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner userId showPublicIdOnly' })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'subjects', select: '_id name alias' })
       .populate({ path: 'topics', select: '_id name alias' })
@@ -80,6 +80,17 @@ exports.findOne = async (req, res, next) => {
       data.booked = booked && pendingAppointment ? true : false;
       if (req.user._id.toString() === webinar.tutorId.toString()) {
         data.canUpdate = await Service.Webinar.canUpdateWebinar(webinar._id);
+      }
+    }
+
+    // Apply showPublicIdOnly for students viewing tutor (any non-admin, non-tutor viewer)
+    const isStudentViewing = req.user && req.user.role !== 'admin' &&
+      (!webinar.tutorId || req.user._id.toString() !== webinar.tutorId.toString());
+    if (isStudentViewing && data.tutor) {
+      if (data.tutor.showPublicIdOnly === true) {
+        data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
+        data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
+        delete data.tutor.avatarUrl;
       }
     }
 
@@ -178,7 +189,7 @@ exports.list = async (req, res, next) => {
       .populate({
         path: 'tutor',
         match: { name: { $regex: req.query.tutorName, $options: 'i' } },
-        select: 'name avatarUrl username country featured ratingAvg totalRating avatar '
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
       })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'mainImage', select: '_id name filePath thumbPath fileUrl thumbUrl convertStatus uploaded' })
@@ -218,9 +229,32 @@ exports.list = async (req, res, next) => {
           });
 
           data.booked = booked && pendingAppointment ? true : false;
+
+          // Apply showPublicIdOnly for students viewing tutor (any non-admin, non-tutor viewer)
+          const isStudentViewing = req.user && req.user.role !== 'admin' &&
+            (!item.tutorId || req.user._id.toString() !== item.tutorId.toString());
+          if (isStudentViewing && data.tutor) {
+            if (data.tutor.showPublicIdOnly === true) {
+              data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
+              data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
+              delete data.tutor.avatarUrl;
+            }
+          }
+
           return data;
         })
       );
+    } else {
+      // When no user logged in, apply showPublicIdOnly for all tutors (public view = student view)
+      items = items.map(item => {
+        const data = item.toObject ? item.toObject() : item;
+        if (data.tutor && data.tutor.showPublicIdOnly === true) {
+          data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
+          data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
+          delete data.tutor.avatarUrl;
+        }
+        return data;
+      });
     }
     res.locals.list = { count, items };
     next();

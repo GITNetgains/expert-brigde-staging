@@ -1486,6 +1486,19 @@ p {
     border: 6px solid rgb(240, 240, 240);
     object-fit: cover;
   }
+  .avatar-placeholder {
+    width: 10em;
+    height: 10em;
+    margin: 0px auto;
+    border-radius: 100%;
+    border: 6px solid rgb(240, 240, 240);
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 2.5em;
+  }
 }
 
 .slick-next,

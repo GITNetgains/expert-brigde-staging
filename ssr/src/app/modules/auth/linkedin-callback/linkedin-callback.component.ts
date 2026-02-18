@@ -66,12 +66,12 @@ export class LinkedinCallbackComponent implements OnInit {
           };
           sessionStorage.setItem(SIGNUP_PENDING_KEY, JSON.stringify(pending));
           this.appService.toastSuccess('Complete your profile to finish signing up.');
-          this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'tutor' } });
+          this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
         })
         .catch((err: any) => {
           const msg = err?.error?.message || err?.message || 'LinkedIn signup failed';
           this.appService.toastError(msg);
-          this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'tutor' } });
+          this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
         });
       return;
     }

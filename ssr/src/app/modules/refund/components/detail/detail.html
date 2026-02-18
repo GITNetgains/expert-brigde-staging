@@ -17,7 +17,7 @@
                     class="link-pink"
                     [routerLink]="['/experts', item.tutor._id]"
                     *ngIf="item && item.tutor"
-                    >{{item?.tutor?.name }}
+                    >{{ item?.tutor?.showPublicIdOnly === true ? item?.tutor?.userId : item?.tutor?.name }}
                   </a>
                 </td>
               </tr>

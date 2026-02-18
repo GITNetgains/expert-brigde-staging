@@ -60,7 +60,7 @@
     <div class="row mt-3 mb-3" [hidden]="!webinars.length">
       <div class="col-md-12 d-flex align-items-center justify-content-between">
         <h3 translate>Group Sessions</h3>
-        <a [routerLink]="['/groupclass']" class="btn btn-default">
+        <a [routerLink]="['/groupsession']" class="btn btn-default">
           <span translate>View All</span>
         </a>
       </div>
@@ -114,15 +114,17 @@
         >
           <div class="teachers-img">
             <img
+              *ngIf="tutor.showPublicIdOnly !== true"
               src="{{ tutor.avatarUrl }}"
               onerror="this.src='/assets/images/default-avatar.jpg'"
               alt="tutor avatar"
             />
+            <span *ngIf="tutor.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
           </div>
           <div class="outer">
             <div class="inner">
               <div class="content text-center">
-                <h5 class="card-title">{{ tutor.name }}</h5>
+                <h5 class="card-title">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h5>
                 <div class="rating-stars text-center">
                   <ul id="stars">
                     <app-star-rating
@@ -151,9 +153,8 @@
               <a
                 class="btn btn-footer btn-block"
                 [routerLink]="['/experts', tutor.username, 'booking']"
-                [queryParams]="{ isFree: 'true' }"
                 ><i class="fi fi-rs-paper-plane color-white me-2"></i>
-                <span> <span translate>Free Trial</span></span>
+                <span> <span translate>Book</span></span>
               </a>
             </div>
           </div>

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import {
-  ICoupon,
   IMylesson,
   IStatsReview,
   IUser,
@@ -34,12 +33,6 @@ export class DetailWebinarComponent implements OnInit {
   public slotChunks: IMylesson[][];
   public isShowingMoreSlots = false;
   public emailRecipient: any = '';
-  public salePrice: any;
-  public coupon: ICoupon;
-  public saleValue: any;
-  public usedCoupon = false;
-  public appliedCoupon = false;
-  public couponCode: any = '';
   public canBooking = false;
   public currentUser: IUser;
   public booked = false;
@@ -49,11 +42,6 @@ export class DetailWebinarComponent implements OnInit {
   public optionsReview: any = {
     webinarId: ''
   };
-  public optionsCoupon: any = {
-    webinarId: '',
-    tutorId: '',
-    targetType: 'webinar'
-  };
   public type: any;
   public statsReview: IStatsReview = {
     ratingAvg: 0,
@@ -62,7 +50,6 @@ export class DetailWebinarComponent implements OnInit {
   };
   public config: any;
   public showBooking = false;
-  public appliedCouponCode: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -140,12 +127,6 @@ export class DetailWebinarComponent implements OnInit {
           ratingScore: this.webinar.ratingScore
         }
       };
-      this.optionsCoupon.tutorId = this.webinar.tutor._id;
-      this.optionsCoupon.webinarId = this.webinar._id;
-      if (this.webinar.coupon && this.auth.isLoggedin()) {
-        this.optionsCoupon.couponId = this.webinar.coupon._id;
-      }
-      this.salePrice = this.webinar.price;
       this.slotLeft =
         this.webinar.maximumStrength - this.webinar.numberParticipants;
 
@@ -237,10 +218,7 @@ export class DetailWebinarComponent implements OnInit {
       type: type,
       emailRecipient: this.emailRecipient
     });
-    if (this.appliedCouponCode && this.appliedCoupon) {
-      params.couponCode = this.appliedCouponCode;
-    }
-    if (this.salePrice <= 0 || webinar.isFree) {
+    if (webinar.price <= 0 || webinar.isFree) {
       return this.webinarService
         .enroll(params)
         .then((resp) => {
@@ -264,46 +242,10 @@ export class DetailWebinarComponent implements OnInit {
           type: type,
           targetType: 'webinar',
           targetName: webinar.name,
-          tutorName: webinar.tutor.name
+          tutorName: webinar.tutor.showPublicIdOnly === true ? String(webinar.tutor.userId || '') : (webinar.tutor.name || '')
         },
         state: params
       });
-    }
-  }
-
-  checkUsedCoupon(used: boolean) {
-    this.usedCoupon = used;
-  }
-
-  applyCoupon(event: { appliedCoupon: boolean; coupon: ICoupon }) {
-    this.appliedCoupon = event.appliedCoupon;
-    if (this.appliedCoupon) {
-      this.appliedCouponCode = event.coupon.code;
-      if (event.coupon.type === 'percent') {
-        this.saleValue = event.coupon.value;
-        this.salePrice =
-          this.webinar.price - this.webinar.price * (this.saleValue / 100) <= 0
-            ? 0
-            : this.webinar.price - this.webinar.price * (this.saleValue / 100);
-      } else if (event.coupon.type === 'money') {
-        this.saleValue =
-          event.coupon.value > this.webinar.price
-            ? this.webinar.price
-            : event.coupon.value;
-        this.salePrice = this.webinar.price - this.saleValue;
-      }
-      this.appService.toastSuccess('Applied coupon');
-    } else {
-      this.salePrice = this.webinar.price || 0;
-    }
-  }
-
-  onCancelCoupon(event: { cancelled: boolean }) {
-    if (event.cancelled) {
-      this.salePrice = this.webinar.price || 0;
-      this.saleValue = 0;
-      this.appliedCoupon = false;
-      this.appliedCouponCode = '';
     }
   }
 

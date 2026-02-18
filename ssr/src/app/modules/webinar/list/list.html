@@ -153,7 +153,11 @@
         </div>
       </div>
       <div class="col-md-8">
-        <p translate *ngIf="!items.length && !loading">No results</p>
+        <p *ngIf="loadingUser" translate>Loading...</p>
+        <p *ngIf="!loadingUser && currentUser?.role === 'user' && assignedTutorIds.length === 0 && !loading" class="text-muted" translate>
+          You have no assigned experts yet. Contact your administrator to get assigned to group sessions.
+        </p>
+        <p translate *ngIf="!loadingUser && items.length === 0 && !loading && (assignedTutorIds.length > 0 || currentUser?.role !== 'user')">No results</p>
         <p *ngIf="loading"><span translate>Loading</span>...</p>
         <div class="row row-md" *ngIf="items.length >0">
           <app-card-webinar

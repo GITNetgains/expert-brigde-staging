@@ -19,7 +19,7 @@
                     class="color-light-red"
                     [routerLink]="['/experts', transaction.tutor.username]"
                     *ngIf="transaction && transaction.tutor"
-                    >{{transaction?.tutor?.name}}</a
+                    >{{ transaction?.tutor?.showPublicIdOnly === true ? transaction?.tutor?.userId : transaction?.tutor?.name }}</a
                   >
                 </td>
               </tr>
@@ -77,7 +77,7 @@
                   </span>
                   <a
                     class="color-light-red"
-                    [routerLink]="['/groupclass',transaction.webinar && transaction.webinar.alias]"
+                    [routerLink]="['/groupsession',transaction.webinar && transaction.webinar.alias]"
                     *ngIf="transaction.targetType === 'webinar'"
                     >{{transaction.webinar && transaction.targetType ===
                     'webinar' ? transaction?.webinar?.name : ''}}</a

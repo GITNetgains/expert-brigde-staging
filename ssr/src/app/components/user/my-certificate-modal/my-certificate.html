@@ -19,9 +19,9 @@
               translate>online course on </span>{{myCourse?.completedAt|date:'longDate'}}
           </p>
         </div>
-        <h2>{{myCourse?.course?.tutor?.name}}</h2>
+        <h2>{{ myCourse?.course?.tutor?.showPublicIdOnly === true ? myCourse?.course?.tutor?.userId : myCourse?.course?.tutor?.name }}</h2>
         <!-- <hr> -->
-        <h5>{{myCourse?.course?.tutor?.name}},<span translate> Instructor</span></h5>
+        <h5>{{ myCourse?.course?.tutor?.showPublicIdOnly === true ? myCourse?.course?.tutor?.userId : myCourse?.course?.tutor?.name }},<span translate> Instructor</span></h5>
         <h6>&</h6>
         <img src="{{appConfig?.siteLogo || 'assets/images/logo/livelearn-header-logo.png'}}" />
       </div>

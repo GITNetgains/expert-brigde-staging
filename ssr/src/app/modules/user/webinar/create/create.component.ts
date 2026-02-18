@@ -195,7 +195,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
         () => {
           localStorage.removeItem('hast_webinar');
           this.appService.toastSuccess('Group Session created successfully!');
-          this.router.navigate(['/users/groupclass']);
+          this.router.navigate(['/users/groupsession']);
         },
         (err) => this.appService.toastError(err)
       );

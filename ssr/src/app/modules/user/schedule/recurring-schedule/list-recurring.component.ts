@@ -84,9 +84,19 @@ export class ListRecurringScheduleComponent implements OnInit {
   }
 
   renderTime(time: any) {
-    const hour = moment(time, 'HH:mm').toDate().getHours();
-    const minute = moment(time, 'HH:mm').toDate().getMinutes();
-
+    if (time == null || time === '') {
+      return '--:--';
+    }
+    const m = moment(time, ['HH:mm', 'H:m'], true);
+    if (!m.isValid()) {
+      return '--:--';
+    }
+    const d = m.toDate();
+    if (typeof d.getHours !== 'function') {
+      return '--:--';
+    }
+    const hour = d.getHours();
+    const minute = d.getMinutes();
     return `${hour.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}:${minute.toLocaleString(
       'en-US',
       { minimumIntegerDigits: 2, useGrouping: false }

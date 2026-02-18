@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IUser, IWebinar, ICourse } from 'src/app/interface';
 import { SeoService, FavoriteService, AppService } from 'src/app/services';
 declare let $: any;
@@ -24,13 +24,25 @@ export class FavoriteComponent {
   public haveResults = false;
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private seoService: SeoService,
     private favoriteService: FavoriteService,
     private appService: AppService
   ) {
     this.seoService.setMetaTitle('My favorite');
     this.route.params.subscribe((params) => {
-      this.type = params.type === 'groupclass' ? 'webinar' : params.type;
+      const urlType = params.type;
+      // Redirect old URL segments to new ones (tutor→expert, groupclass→groupsession)
+      if (urlType === 'tutor') {
+        this.router.navigate(['/users/favorites', 'expert'], { replaceUrl: true });
+        return;
+      }
+      if (urlType === 'groupclass') {
+        this.router.navigate(['/users/favorites', 'groupsession'], { replaceUrl: true });
+        return;
+      }
+      // URL uses expert/groupsession; API expects tutor/webinar
+      this.type = urlType === 'expert' ? 'tutor' : urlType === 'groupsession' ? 'webinar' : urlType;
       this.query();
     });
   }

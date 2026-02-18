@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col-md-3">
-            <a class="btn btn-default" [routerLink]="['/users/groupclass/create']"><i
+            <a class="btn btn-default" [routerLink]="['/users/groupsession/create']"><i
                 class="fi fi-rr-plus me-2 font-sm"></i> <span translate>Add</span></a>
           </div>
         </div>
@@ -85,7 +85,7 @@
             </td>
             <td>{{item.createdAt | date}}</td>
             <td>
-              <a class="btn btn-outline-dark" [routerLink]="['/users/groupclass', item._id]">
+              <a class="btn btn-outline-dark" [routerLink]="['/users/groupsession', item._id]">
                 <i class="fi fi-rs-pencil"></i>
               </a>
             </td>

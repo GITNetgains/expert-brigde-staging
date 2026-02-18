@@ -282,7 +282,7 @@ export class CourseDetailComponent implements OnInit, AfterViewInit {
           type: type,
           targetType: 'course',
           targetName: this.course.name,
-          tutorName: this.course.tutor.name
+          tutorName: this.course.tutor.showPublicIdOnly === true ? String(this.course.tutor.userId || '') : (this.course.tutor.name || '')
         },
         state: params
       });

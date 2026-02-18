@@ -53,9 +53,11 @@ const routes: Routes = [
       import('./modules/course/course.module').then((mod) => mod.CourseModule),
     resolve: { categories: categoriesResolver }
   },
+  { path: 'groupclass', redirectTo: 'groupsession', pathMatch: 'full' },
   {
-    path: 'groupclass',
+    path: 'groupsession',
     component: FullComponent,
+    canActivate: [AuthGuard],
     data: { preload: true, loadAfter: 0 },
     loadChildren: () =>
       import('./modules/webinar/webinar.module').then(

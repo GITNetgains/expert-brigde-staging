@@ -5,6 +5,7 @@ import { ICategory, ISubject, ITopic, IWebinar } from 'src/app/interface';
 import { ageFilter } from 'src/app/lib';
 import {
   AppService,
+  AuthService,
   GradeService,
   STATE,
   SeoService,
@@ -47,6 +48,9 @@ export class WebinarListingComponent implements OnInit {
   public subjects: ISubject[] = [];
   public topics: ITopic[] = [];
   public ageFilter: any[] = ageFilter;
+  public assignedTutorIds: string[] = [];
+  public loadingUser = true;
+  public currentUser: any;
 
   constructor(
     private webinarService: WebinarService,
@@ -57,7 +61,8 @@ export class WebinarListingComponent implements OnInit {
     private subjectService: SubjectService,
     private topicService: TopicService,
     public stateService: StateService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.seoService.setMetaTitle('List Sessions');
     this.config = this.stateService.getState(STATE.CONFIG);
@@ -84,25 +89,67 @@ export class WebinarListingComponent implements OnInit {
       .then((resp) => {
         this.grades = resp.data.items;
       });
+
+    if (!this.authService.isLoggedin()) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.authService.getCurrentUser().then((user: any) => {
+      this.currentUser = user;
+      this.loadingUser = false;
+      if (user?.role === 'user' && user?.assignedTutors?.length) {
+        this.assignedTutorIds = (user.assignedTutors || []).map((t: any) =>
+          typeof t === 'string' ? t : (t._id || t)
+        );
+      } else if (user?.type === 'tutor' && user?._id) {
+        this.assignedTutorIds = [user._id];
+      }
+      this.query();
+    }).catch(() => {
+      this.loadingUser = false;
+      this.assignedTutorIds = [];
+      this.query();
+    });
   }
 
   query() {
+    if (this.loadingUser) return;
+
+    const user = this.currentUser;
+    const isStudent = user?.role === 'user';
+    const isTutor = user?.type === 'tutor';
+    const isAdmin = user?.role === 'admin';
+
+    if (isStudent && this.assignedTutorIds.length === 0) {
+      this.items = [];
+      this.totalWebinars = 0;
+      this.loading = false;
+      return;
+    }
+
+    const params: any = {
+      page: this.currentPage,
+      take: this.pageSize,
+      isOpen: true,
+      disabled: false,
+      ...(this.sortOption.sortType && this.sortOption.sortBy
+        ? {
+            sort: `${this.sortOption.sortBy}`,
+            sortType: `${this.sortOption.sortType}`
+          }
+        : { sort: 'createdAt', sortType: 'desc' }),
+      ...this.searchFields,
+      ...this.dateChange
+    };
+
+    if (!isAdmin && this.assignedTutorIds.length > 0) {
+      params.tutorIds = this.assignedTutorIds.join(',');
+    }
+
     this.loading = true;
     this.webinarService
-      .search({
-        page: this.currentPage,
-        take: this.pageSize,
-        isOpen: true,
-        disabled: false,
-        ...(this.sortOption.sortType && this.sortOption.sortBy
-          ? {
-              sort: `${this.sortOption.sortBy}`,
-              sortType: `${this.sortOption.sortType}`
-            }
-          : { sort: 'createdAt', sortType: 'desc' }),
-        ...this.searchFields,
-        ...this.dateChange
-      })
+      .search(params)
       .then((resp) => {
         this.totalWebinars = resp.data.count;
         this.items = resp.data.items;

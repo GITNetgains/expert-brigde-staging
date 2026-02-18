@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AppService, AuthService, SeoService, UserService, TutorService } from 'src/app/services';
 
 @Component({
+  selector: 'app-ai-query-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
 })
@@ -17,13 +18,17 @@ export class AiQueryListComponent implements OnInit {
   userId = '';
   tutorCache: Record<string, any> = {};
 
+  // Modal State
+  selectedQuery: any = null;
+  activeModal: 'description' | 'experts' | null = null;
+
   constructor(
     private auth: AuthService,
     private userService: UserService,
     private tutorService: TutorService,
     private seo: SeoService,
     private appService: AppService,
-    private router: Router
+    public router: Router
   ) {
     this.seo.setMetaTitle('AI Query History');
   }
@@ -38,135 +43,72 @@ export class AiQueryListComponent implements OnInit {
       this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/users/ai-queries' } });
     }
   }
-  selectedQuery: any = null;
 
-openDescription(q: any) {
-  this.selectedQuery = q;
-}
-
-closeDescription() {
-  this.selectedQuery = null;
-}
-
-openAttachments(file: any) {
-  if (!file) return;
-
-  const url = file.fileUrl || file.url;
-  if (url) {
-    window.open(url, '_blank');
-  } else {
-    this.appService.toastError('File URL not found');
+  openDescription(q: any) {
+    this.selectedQuery = q;
+    this.activeModal = 'description';
   }
-}
 
-getTutorDisplayName(tutor: any): string {
-  const id = tutor?._id || tutor?.id || '';
-  const detail = id ? this.tutorCache[id] : null;
-  const rawFlag =
-    (detail && (detail.showPublicIdOnly ?? detail.profile?.showPublicIdOnly)) ??
-    tutor?.showPublicIdOnly;
-  const onlyPublicId = typeof rawFlag === 'string' ? rawFlag === 'true' : !!rawFlag;
-  if (onlyPublicId) {
-    return (detail && detail.userId) || tutor.userId || '';
+  openExpertsList(q: any) {
+    if (!q.assignedTutors?.length) return;
+    this.selectedQuery = q;
+    this.activeModal = 'experts';
   }
-  return (
-    (detail && (detail.profile?.name || detail.name || detail.username || detail.email)) ||
-    tutor?.profile?.name ||
-    tutor?.name ||
-    tutor?.username ||
-    tutor?.email ||
-    'Expert'
-  );
-}
 
-query() {
-  this.loading = true;
+  closeModal() {
+    this.selectedQuery = null;
+    this.activeModal = null;
+  }
 
-  const params = {
-    page: this.currentPage,
-    take: this.pageSize,
-    sort: this.sortOption.sortBy,
-    sortType: this.sortOption.sortType,
-    ...this.searchFields
-  };
+  openAttachments(file: any) {
+    if (!file) return;
+    const url = file.fileUrl || file.url;
+    if (url) window.open(url, '_blank');
+    else this.appService.toastError('File URL not found');
+  }
 
-  this.userService.searchAiQueries(this.userId, params)
-    .then((resp: any) => {
-      this.items = Array.isArray(resp?.data) ? resp.data : [];
-      this.total = this.items.length;
-      this.loading = false;
-      this.preloadTutorDetails();
-    })
-    .catch(() => {
-      this.loading = false;
-      this.appService.toastError('Failed to load AI queries');
-    });
-}
+  getTutorDisplayName(tutor: any): string {
+    const id = tutor?._id || tutor?.id || '';
+    const detail = this.tutorCache[id];
+    if (detail?.showPublicIdOnly) return detail.userId || '';
+    return detail?.name || detail?.username || tutor?.name || 'Expert';
+  }
 
+  query() {
+    this.loading = true;
+    const params = { page: this.currentPage, take: this.pageSize, sort: this.sortOption.sortBy, sortType: this.sortOption.sortType, ...this.searchFields };
+    this.userService.searchAiQueries(this.userId, params)
+      .then((resp: any) => {
+        this.items = Array.isArray(resp?.data) ? resp.data : [];
+        this.total = this.items.length;
+        this.loading = false;
+        this.preloadTutorDetails();
+      })
+      .catch(() => {
+        this.loading = false;
+        this.appService.toastError('Failed to load AI queries');
+      });
+  }
 
-
-preloadTutorDetails() {
-  const ids = new Set<string>();
-
-  for (const q of this.items) {
-    for (const t of q?.assignedTutors || []) {
+  preloadTutorDetails() {
+    const ids = new Set<string>();
+    this.items.forEach(q => q?.assignedTutors?.forEach((t: any) => {
       const id = t?._id || t?.id;
-      if (id && !this.tutorCache[id]) {
-        ids.add(id);
-      }
-    }
-  }
-
-  if (!ids.size) return; // ✅ IMPORTANT
-
-  Promise.all(
-    Array.from(ids).map(id =>
-      this.tutorService.findOne(id)
-        .then(resp => this.tutorCache[id] = resp?.data || {})
-        .catch(() => {})
-    )
-  );
-}
-
-
-
-  pageChange(page: number) {
-    this.currentPage = page;
-    this.query();
-  }
-
-  goToExperts() {
-    this.router.navigate(['/experts']);
+      if (id && !this.tutorCache[id]) ids.add(id);
+    }));
+    if (!ids.size) return;
+    Array.from(ids).forEach(id => {
+      this.tutorService.findOne(id).then(resp => this.tutorCache[id] = resp?.data || {});
+    });
   }
 
   goToQueryExperts(q: any) {
-    const tutors = q?.assignedTutors || [];
-    const ids = tutors
-      .map((t: any) => {
-        const raw = t?._id ?? t?.id;
-        return raw != null ? String(raw) : '';
-      })
-      .filter((id: string) => id.length > 0);
-    if (ids.length) {
-      this.router.navigate(['/experts'], { queryParams: { ids: ids.join(','), page: 1 } });
-    } else {
-      this.appService.toastError('No experts assigned to this query');
-    }
-  }
-
-  openTutorProfile(tutor: any) {
-    const username = tutor?.username || '';
-    if (username) {
-      this.router.navigate(['/experts', username]);
+    const ids = (q?.assignedTutors || []).map((t: any) => t?._id || t?.id).filter((id: any) => !!id);
+    if (!ids.length) {
+      this.appService.toastError('No assigned experts for this query');
       return;
     }
-    const id = tutor?._id || tutor?.id || '';
-    if (id) {
-      this.tutorService.findOne(id).then((resp: any) => {
-        const data = resp?.data || {};
-        const uname = data?.username || '';
-        if (uname) this.router.navigate(['/experts', uname]);
-      }).catch(() => {});
-    }
+    this.router.navigate(['/experts'], { queryParams: { ids: ids.join(','), page: 1 } });
+    this.closeModal();
   }
 }

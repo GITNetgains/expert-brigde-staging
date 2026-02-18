@@ -19,7 +19,7 @@
                     [routerLink]="['/experts', appointment.tutor.username]"
                     *ngIf="appointment && appointment.tutor"
                   >
-                    {{appointment?.tutor?.name}}
+                    {{ appointment?.tutor?.showPublicIdOnly === true ? appointment?.tutor?.userId : appointment?.tutor?.name }}
                   </a>
                 </td>
               </tr>
@@ -31,7 +31,7 @@
                   >
                   <a
                     class="color-light-red"
-                    [routerLink]="['/groupclass', appointment.webinar.alias]"
+                    [routerLink]="['/groupsession', appointment.webinar.alias]"
                     *ngIf="appointment.targetType === 'webinar'"
                     >{{appointment.webinar && appointment.targetType ===
                     'webinar' ? appointment?.webinar?.name : ''}}</a

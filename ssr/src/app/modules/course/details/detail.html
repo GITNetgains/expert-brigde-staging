@@ -41,7 +41,7 @@
               <div id="stars" class="pt-3">
                 <app-star-rating [rate]="course?.tutor?.ratingAvg"></app-star-rating>
                 <span style="padding-left: 5px">{{course?.tutor?.ratingAvg}} ({{course?.tutor?.totalRating}}
-                  rating for this tutor)</span>
+                  rating for this experts)</span>
               </div>
               <div id="stars" class="pt-2">
                 <app-star-rating [rate]="course?.ratingAvg"></app-star-rating>
@@ -397,10 +397,10 @@
             <span class="offer ms-1" *ngIf="appliedCoupon&&course?.coupon?.type==='money'">
               -${{saleValue}}</span>
             <p class="color-light-red mt-1"></p>
-            <div *ngIf="!course?.booked && currentUser?._id!==tutorId" class="mb-2">
+            <!-- <div *ngIf="!course?.booked && currentUser?._id!==tutorId" class="mb-2">
               <app-apply-coupon *ngIf="course && course.price > 0" [options]="optionsCoupon"
                 (doApply)="applyCoupon($event)" (doCancel)="onCancelCoupon($event)"></app-apply-coupon>
-            </div>
+            </div> -->
             <div class="d-grid gap-2">
               <button [disabled]="(currentUser && currentUser._id === course?.tutorId) || course?.booked"
                 *ngIf="showBooking" class="btn btn-default btn-block" (click)="enrollCourse(course, 'booking')">

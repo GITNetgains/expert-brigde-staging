@@ -49,6 +49,18 @@
               <span translate>Browse opportunities</span>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/groupsession']" routerLinkActive="active">
+              <i class="fi fi-rs-chalkboard-user"></i>
+              <span translate>Group sessions</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/groupsession/create']" routerLinkActive="active">
+              <i class="fi fi-rr-plus"></i>
+              <span translate>Add group session</span>
+            </a>
+          </li>
 
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/users/appointments']" routerLinkActive="active">
@@ -57,7 +69,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/users/1on1classes']" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/users/1on1sessions']" routerLinkActive="active">
               <i class="fi fi-rr-time-check"></i>
               <span translate>Availability</span>
             </a>
@@ -112,7 +124,7 @@
         <ng-container *ngIf="showBooking">
           <div class="nav-header">Favorites</div>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/users/favorites', 'tutor']" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/users/favorites', 'expert']" routerLinkActive="active">
               <i class="fi fi-rr-heart"></i>
               <span translate>My Wishlist</span>
             </a>

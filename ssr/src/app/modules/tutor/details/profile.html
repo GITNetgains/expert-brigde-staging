@@ -64,8 +64,8 @@
         </div>
       </div>
       <div class="profile-detail-right">
-        <div class="card card-border mb-3" *ngIf="tutor?.introVideo?.fileUrl || introVideoUrl">
-          <div class="video-play">
+        <div class="card card-border mb-3">
+          <div class="video-play" *ngIf="tutor?.introVideo?.fileUrl || introVideoUrl">
             <video
               width="100%"
               height="100%"
@@ -205,7 +205,7 @@
             >
               <div class="card-img">
                 <a
-                  [routerLink]="['/groupclass',webinar.alias]"
+                  [routerLink]="['/groupsession',webinar.alias]"
                   class="hyperlink card-img-top"
                 >
                   <img
@@ -260,14 +260,14 @@
                   <a
                     *ngIf="!webinar.booked"
                     class="btn btn-default"
-                    [routerLink]="['/groupclass',webinar?.alias]"
+                    [routerLink]="['/groupsession',webinar?.alias]"
                     translate
                     >Book Now</a
                   >
                   <a
                     *ngIf="webinar.booked"
                     class="btn btn-purchased"
-                    [routerLink]="['/groupclass',webinar?.alias]"
+                    [routerLink]="['/groupsession',webinar?.alias]"
                     translate
                     >Purchased</a
                   >

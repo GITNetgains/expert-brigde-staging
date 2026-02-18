@@ -81,7 +81,7 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="avatar-circle me-2"><i class="fi fi-rr-user"></i></div>
-                      <a class="hyperlink fw-bold" target="_blank" [routerLink]="['/experts', item?.tutor?.username]">{{item?.tutor?.name}}</a>
+                      <a class="hyperlink fw-bold" target="_blank" [routerLink]="['/experts', item?.tutor?.username]">{{ item?.tutor?.showPublicIdOnly === true ? item?.tutor?.userId : item?.tutor?.name }}</a>
                     </div>
                   </td>
                   <td>{{(item?.webinar?.name || item?.subject?.name || '') | ellipsis:50}}</td>
@@ -148,7 +148,7 @@
                   <td>
                     <div class="d-flex align-items-center">
                         <div class="avatar-circle me-2"><i class="fi fi-rr-user"></i></div>
-                        <a class="hyperlink fw-bold" target="_blank" [routerLink]="['/experts', item?.tutor?.username]">{{item?.tutor?.name}}</a>
+                        <a class="hyperlink fw-bold" target="_blank" [routerLink]="['/experts', item?.tutor?.username]">{{ item?.tutor?.showPublicIdOnly === true ? item?.tutor?.userId : item?.tutor?.name }}</a>
                     </div>
                   </td>
                   <td>{{item.webinar ? item?.webinar?.name : '-'}}</td>

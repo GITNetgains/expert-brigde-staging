@@ -104,9 +104,7 @@ export class TutorCardComponent implements OnInit {
   }
 
   bookFree() {
-    this.router.navigate(['/appointments', this.tutor.username], {
-      queryParams: { isFree: true }
-    });
+    this.router.navigate(['/experts', this.tutor.username, 'booking']);
   }
 
   chat() {
