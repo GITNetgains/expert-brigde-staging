@@ -4,14 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ContactService } from '@services/contact.service';
 import { Subscription } from 'rxjs';
 import { StatItem } from '../../../interfaces/dashboard.interface';
-import { 
-  cilSchool, 
-  cilPeople, 
-  cilUserUnfollow, 
-  cilUserX, 
-  cilGlobeAlt, 
-  cilCalendar, 
-  cilBook, 
+import {
+  cilSchool,
+  cilPeople,
+  cilUserUnfollow,
+  cilUserX,
+  cilGlobeAlt,
+  cilCalendar,
+  cilBook,
   cilCreditCard,
   cilLanguage,
   cilContact

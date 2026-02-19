@@ -1,10 +1,10 @@
 <section class="sm-padding">
   <div class="container">
     <h4 class="color-light-black mb-3" *ngIf="webinar._id">
-      <span translate>Update group class</span> {{webinar?.name}}
+      <span translate>Update group session</span> {{webinar?.name}}
     </h4>
     <h4 class="color-light-black mb-3" *ngIf="!webinar._id" translate>
-      Create new group class
+      Create new group session
     </h4>
 
     <div class="tab-content card" id="main_form">
@@ -30,7 +30,7 @@
                 </div>
                 <div *ngIf="name.errors && (name.dirty || name.touched || isSubmitted)">
                   <p [hidden]="!name.errors['required']" style="color: red" translate>
-                    Please enter group class name!
+                    Please enter group session name!
                   </p>
                 </div>
               </div>
@@ -90,7 +90,7 @@
                   <div
                     *ngIf="maximum.value > 10 && config?.platformOnline ==='lessonspace' && (maximum.dirty || maximum.touched || isSubmitted)">
                     <p style="color: red" translate>
-                      Lesson space allows only 10 users for group class!
+                      Lesson space allows only 10 users for group session!
                     </p>
                   </div>
                 </div>
@@ -173,7 +173,7 @@
             <div class="row mb-3">
               <div class="col-md-12">
                 <h5 class="color-light-black" translate>
-                  Update slot for group class
+                  Update slot for group session
                 </h5>
                 <app-schedule-calendar [type]="'webinar'" [webinarName]="webinar.name || null" [webinarId]="webinarId"
                   [hashWebinar]="hashWebinar" [slotDuration]="currentUser.defaultSlotDuration">

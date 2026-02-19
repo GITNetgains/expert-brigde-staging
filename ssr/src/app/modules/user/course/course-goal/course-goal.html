@@ -1,7 +1,7 @@
 <div class="input-border">
   <form (submit)="submit()" #frm="ngForm">
     <div class="form-group">
-      <label translate>All the end of my course, students will be able to</label>
+      <label translate>All the end of my course, clients will be able to</label>
       <div class="row mb-3">
         <div class="col-md-12">
           <ul *ngIf="course.goalCourse.length" style="padding: 0;">
@@ -16,7 +16,7 @@
             <div class="col-md-10">
               <div class="form-group">
                 <input type="text" [(ngModel)]="courseGoal.goalCourse" name="goalCourse" class="form-control"
-                  placeholder="{{'All the end of my course, students will be able to'|translate}}" />
+                  placeholder="{{'All the end of my course, clients will be able to'|translate}}" />
               </div>
             </div>
             <div class="col-md-2">
@@ -62,7 +62,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label translate>What will students need to know or do before starting this course?</label>
+          <label translate>What will clients need to know or do before starting this course?</label>
           <ul *ngIf="course.needToJoinCourse.length" style="padding: 0;">
             <li style="list-style: none" *ngFor="let item of course.needToJoinCourse, let i=index">
               <button type="button" class="btn-transparent" (click)="removeItem('needToJoinCourse',i)">
@@ -76,7 +76,7 @@
               <div class="form-group">
                 <input type="text" [(ngModel)]="courseGoal.needToJoinCourse" name="needToJoinCourse"
                   class="form-control"
-                  placeholder="{{'What will students need to know or do before starting this course?'|translate}}" />
+                  placeholder="{{'What will clients need to know or do before starting this course?'|translate}}" />
               </div>
             </div>
             <div class="col-md-2">

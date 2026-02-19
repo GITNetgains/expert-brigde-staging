@@ -1,0 +1,482 @@
+// Profile Settings – Modern dashboard UI with glassmorphism & responsive
+$primary: var(--primary-color, #E4543C);
+$primary-hover: var(--primary-color-hover, #c92556);
+$glass-bg: rgba(255, 255, 255, 0.12);
+$glass-border: rgba(255, 255, 255, 0.2);
+$glass-card: rgba(255, 255, 255, 0.85);
+$glass-card-border: rgba(255, 255, 255, 0.5);
+$shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
+$shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+$radius: 16px;
+$radius-sm: 12px;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #f8f9fc 0%, #eef1f8 50%, #e8ecf4 100%);
+}
+
+// Hero / banner section
+.profile-settings-page .profile-hero {
+  position: relative;
+  padding: 2.5rem 0;
+  background-position: center 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(228, 84, 60, 0.75) 0%, rgba(201, 37, 86, 0.6) 100%);
+    backdrop-filter: blur(0);
+  }
+
+  .profile-hero-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .profile-card-glass {
+    background: $glass-bg;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid $glass-border;
+    border-radius: $radius;
+    padding: 1.75rem 1.5rem;
+    box-shadow: $shadow-soft;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .profile-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-upload-avatar,
+    .btn-delete-avatar {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      color: $primary;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: $shadow-card;
+      transition: transform 0.2s, background 0.2s;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 2;
+
+      &:hover {
+        background: #fff;
+        color: $primary;
+        transform: scale(1.08);
+      }
+    }
+
+    &:hover .btn-upload-avatar,
+    &:hover .btn-delete-avatar {
+      display: inline-flex;
+    }
+
+    .btn-upload-avatar {
+      right: -4px;
+      top: -4px;
+    }
+
+    .btn-delete-avatar {
+      right: -4px;
+      top: 36px;
+    }
+  }
+
+  .profile-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .profile-name {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-edit-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: #fff;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Main content area
+.profile-settings-page .profile-content {
+  padding: 2rem 0 3rem;
+}
+
+// Glass cards for all sections
+.glass-card {
+  background: $glass-card;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid $glass-card-border;
+  border-radius: $radius;
+  box-shadow: $shadow-card;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.25s, transform 0.25s;
+
+  &:hover {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 0 0 1rem 0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      color: #1a1d2e;
+    }
+
+    .card-header-right a {
+      color: #6c757d;
+      padding: 0.35rem;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+
+      &:hover {
+        color: $primary;
+        background: rgba(228, 84, 60, 0.08);
+      }
+    }
+  }
+
+  .card-body {
+    padding: 0;
+  }
+}
+
+// Edit profile form (left column)
+.edit-profile-form-glass {
+  background: $glass-card;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid $glass-card-border;
+  border-radius: $radius;
+  box-shadow: $shadow-card;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+
+  .item-profile-form {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1rem;
+    align-items: start;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    h6 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin: 0;
+      padding-top: 0.35rem;
+    }
+
+    p.text-secondary2 {
+      margin: 0;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 0.5rem 0.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba(228, 84, 60, 0.15);
+        outline: none;
+      }
+    }
+
+    .error {
+      font-size: 0.8rem;
+      color: #dc2626;
+      margin: 0.35rem 0 0 0;
+    }
+
+    .switch {
+      margin: 0;
+    }
+  }
+
+  .form-actions {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .btn-primary-glass {
+    background: $primary;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+
+    &:hover {
+      background: $primary-hover;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-outline-glass {
+    background: transparent;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover {
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+  }
+}
+
+// Right column cards (password, description, skills, etc.)
+.profile-settings-page .glass-card {
+  .list-grades .badge {
+    background: rgba(228, 84, 60, 0.1);
+    color: $primary;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0.25rem 0.25rem 0.25rem 0;
+  }
+
+  .nav-tabs {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    gap: 0.5rem;
+
+    .nav-link {
+      border: none;
+      border-radius: 10px;
+      font-weight: 500;
+      color: #64748b;
+      padding: 0.5rem 1rem;
+      transition: color 0.2s, background 0.2s;
+
+      &.active {
+        background: rgba(228, 84, 60, 0.1);
+        color: $primary;
+      }
+
+      &:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.04);
+        color: #1e293b;
+      }
+    }
+  }
+
+  .card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $radius-sm;
+    background: rgba(255, 255, 255, 0.6);
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  .btn-default {
+    background: $primary;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: background 0.2s, transform 0.2s;
+
+    &:hover {
+      background: $primary-hover;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-outline-dark {
+    border-radius: 8px;
+    font-weight: 500;
+  }
+}
+
+// Update email / password forms inside glass cards
+.profile-settings-page .glass-card .form-control {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(228, 84, 60, 0.15);
+    outline: none;
+  }
+}
+
+// Share / invite section
+.share-me {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+// Responsive
+@media (max-width: 991px) {
+  .profile-settings-page .profile-hero .profile-card-glass {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-settings-page .profile-hero .profile-meta {
+    text-align: center;
+  }
+
+  .edit-profile-form-glass .item-profile-form {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .edit-profile-form-glass .item-profile-form h6 {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  :host {
+    background: #f1f5f9;
+  }
+
+  .profile-settings-page .profile-hero {
+    padding: 1.5rem 0;
+  }
+
+  .profile-settings-page .profile-hero .profile-card-glass {
+    padding: 1.25rem 1rem;
+  }
+
+  .profile-settings-page .profile-hero .profile-avatar-wrap img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-settings-page .profile-hero .profile-name {
+    font-size: 1.25rem;
+  }
+
+  .profile-settings-page .profile-content {
+    padding: 1.25rem 0 2rem;
+  }
+
+  .glass-card,
+  .edit-profile-form-glass {
+    padding: 1.25rem 1rem;
+    border-radius: $radius-sm;
+  }
+
+  .edit-profile-form-glass .form-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 575px) {
+  .profile-settings-page .glass-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// Ensure ng-select fits glass style (global override scoped to this component)
+:host ::ng-deep .edit-profile-form-glass .ng-select .ng-select-container {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  min-height: 42px;
+}
+
+:host ::ng-deep .edit-profile-form-glass .ng-select.ng-select-focused .ng-select-container {
+  border-color: $primary;
+  box-shadow: 0 0 0 3px rgba(228, 84, 60, 0.15);
+}

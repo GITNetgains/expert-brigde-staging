@@ -40,7 +40,8 @@ type tplotOptions = {
 };
 @Component({
   selector: 'app-profile-update',
-  templateUrl: './form.html'
+  templateUrl: './form.html',
+  styleUrls: ['./profile-update.component.scss']
 })
 export class ProfileUpdateComponent implements OnInit {
   @ViewChild('language') ngSelectComponent: NgSelectComponent;
@@ -306,8 +307,14 @@ export class ProfileUpdateComponent implements OnInit {
   }
 
   updateStates() {
-    const code = (this.info as any)?.countryCode || this.countryService.getCountryByName(this.info?.country?.name)?.code || '';
-    this.states = this.countryService.getStates(code || '');
+    const country = this.info?.country;
+    let code = (this.info as any)?.countryCode || (country && (country as any).code) || '';
+    if (!code && country && (country as any).name) {
+      const found = this.countryService.getCountryByName((country as any).name);
+      code = (found && found.code) ? found.code : '';
+    }
+    code = (code || '').toString().trim().toUpperCase();
+    this.states = this.countryService.getStates(code) || [];
   }
 
   /** Filter countries by name starting with search term (e.g. type "i" → India, Iceland) */
@@ -330,11 +337,6 @@ export class ProfileUpdateComponent implements OnInit {
   submit(frm: any, isSubmitForm = true) {
     if (isSubmitForm) {
       this.isSubmitted = true;
-      if (this.info.type === 'tutor') {
-        if (!this.info.introVideoId)
-          return this.appService.toastError('Please upload introduction video');
-      }
-
       if (this.info.type === 'tutor') {
         this.info.introYoutubeId = '';
         (this.info as any).idYoutube = '';

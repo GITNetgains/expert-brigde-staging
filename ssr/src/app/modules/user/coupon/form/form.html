@@ -50,7 +50,7 @@
                             <option value="all" selected>All</option>
                             <option value="webinar">Group Session</option>
                             <!-- <option value="course">Course</option> -->
-                            <option value="subject">1 on 1 classes</option>
+                            <option value="subject">1 on 1 sessions</option>
                         </select>
                         <div *ngIf="targetType.errors && (targetType.dirty || targetType.touched || isSubmitted)">
                             <p [hidden]="!targetType.errors['required']" style="color: red">Please choose target

@@ -1,10 +1,11 @@
-<section class="profile-page">
+<section class="profile-page group-session-detail">
   <div class="container" *ngIf="webinar">
     <div class="detail-box">
       <div class="detail-box-left">
         <div class="card card-border mb-3">
           <div class="detail-box-video show-mobile">
-            <img src="{{webinar?.mainImage?.fileUrl}}" alt="" />
+            <img [src]="webinar?.mainImage?.fileUrl || 'assets/images/webinar.svg'" alt="{{webinar?.name}}"
+              onerror="this.style.display='none'" loading="lazy" />
           </div>
           <div class="card-body">
             <div class="detail-box-title flex-column">
@@ -24,12 +25,12 @@
             <div class="rating-stars pt-3">
               <app-star-rating [rate]="webinar?.tutor?.ratingAvg"></app-star-rating>
               {{webinar?.tutor?.ratingAvg}}
-              <span style="padding-left: 5px">({{webinar?.tutor?.totalRating}} rating for this tutor)</span>
+              <span style="padding-left: 5px">({{webinar?.tutor?.totalRating}} rating for this expert)</span>
             </div>
             <div class="rating-stars pt-2">
               <app-star-rating [rate]="webinar?.ratingAvg"></app-star-rating>
               {{webinar?.ratingAvg}}
-              <span style="padding-left: 5px">({{webinar?.totalRating}} rating for this group class)</span>
+              <span style="padding-left: 5px">({{webinar?.totalRating}} rating for this group session)</span>
             </div>
 
             <div class="mt-2">
@@ -38,11 +39,11 @@
                   translate>Participants:</span>
                 {{ webinar?.numberParticipants }}
               </p>
-              <p class="card-text mb-1 rtxt-left">
+              <!-- <p class="card-text mb-1 rtxt-left">
                 <img src="assets/images/webinar/certified-img.svg" alt="" class="me-2 image-sm" translate /><span
                   translate>Completed by</span><span> {{webinar?.tutor?.completedByLearner}} </span>
                 <span translate>Learners</span>
-              </p>
+              </p> -->
               <p class="card-text rtxt-left">
                 <img src="assets/images/webinar/clock.png" alt="" class="me-2 image-sm" /><span translate>{{slotLeft}}
                 </span><span translate *ngIf="1 < slotLeft"> Slots left </span>
@@ -171,7 +172,8 @@
       <div class="detail-box-right">
         <div class="card card-border card-sticky show-desktop">
           <div class="detail-box-video">
-            <img src="{{webinar?.mainImage?.fileUrl}}" alt="" />
+            <img [src]="webinar?.mainImage?.fileUrl || 'assets/images/webinar.svg'" alt="{{webinar?.name}}"
+              onerror="this.style.display='none'" loading="lazy" />
           </div>
           <div class="card-body">
             <h4 class="color-light-red">

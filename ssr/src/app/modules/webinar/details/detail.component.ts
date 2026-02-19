@@ -21,7 +21,8 @@ import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-webinar-detail',
-  templateUrl: './detail.html'
+  templateUrl: './detail.html',
+  styleUrls: ['./detail.component.scss']
 })
 export class DetailWebinarComponent implements OnInit {
   closeResult: string;

@@ -1,150 +1,135 @@
 .blogs-section {
   padding: 60px 0;
-  overflow:visible;
   background-color: #fff;
 }
 
 .blogs-header {
   text-align: center;
-  margin-bottom: 30px;
-}
-.meta-row  {
-display: flex;
-  align-items: center;
-  gap: 0px !important;
-  justify-content: space-between;
-  color: #666;
-  font-size:14px;
-  margin:10px 0px;
-}label
+  margin-bottom: 40px;
 
+  .caption {
+    font-size: 18px;
+    color: #607087;
+    margin-bottom: 8px;
+  }
 
-.blogs-header .caption {
-  color: #4879fa;
-  font-weight: 500;
-}
-
-.blogs-header .title {
-  font-size: 54px;
-  font-weight: 600;
-  color: #0c2a51;
-}
-
-/* Swiper Styling */
-.blog-swiper {
-  padding-bottom: 50px;
-  position: relative;
-
-  --swiper-navigation-color: #0c2a51;
-  --swiper-navigation-size: 22px;
-
-  .swiper-button-prev,
-  .swiper-button-next {
-    background: #fff !important;
-    width: 42px !important;
-    height: 42px !important;
-    border-radius: 50%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    background: rgb(222, 17, 17);
-    padding: 10px;
-    border-radius: 50%;
-    padding: 10px 15px;
+  .title {
+    font-size: 54px;
+    font-weight: 600;
+    color: #0c2a51;
+    margin: 0;
   }
 }
 
-/* Blog Card Styles */
+.view-all {
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* Wrapper to hold arrows and swiper side-by-side */
+.swiper-navigation-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.blog-swiper {
+  flex: 1;
+  width: 100%;
+  padding-bottom: 50px;
+  --swiper-pagination-color: #f05a3f;
+  --swiper-pagination-bullet-inactive-color: #c8d0da;
+}
+
+/* Custom Navigation Buttons */
+.custom-nav-btn {
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+
+  i {
+    font-size: 20px;
+    color: #0c2a51;
+    display: flex;
+  }
+
+  &:hover {
+    background: #fdfdfd;
+    transform: translateY(-2px);
+    i { color: #f05a3f; }
+  }
+}
+
 .blog-card {
   padding: 5px;
   height: 100%;
 }
 
-.card-inner[_ngcontent-livelearn-ssr-app-c34] {
+.card-inner {
     background: #FEFEFD;
     border-radius: 12px;
     padding: 16px;
     display: flex;
-    justify-content: space-between;
     flex-direction: column;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     height: 100%;
-    // margin: 0 18px;
 }
-// swiper-container.blog-swiper.swiper-initialized.swiper-horizontal.swiper-backface-hidden {
-//     padding: 0 40px;
-// }
+
 .thumb {
   height: 200px;
   border-radius: 10px;
   overflow: hidden;
-}
-
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.tagline {
-  margin-top: 12px;
-  color: #4879fa;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  // gap: 15px;
-
+  img { width: 100%; height: 100%; object-fit: cover; }
 }
 
 .card-title {
   font-size: 18px;
   font-weight: 600;
   color: #0c2a51;
+  margin: 12px 0;
+  min-height: 54px; /* keeps titles aligned */
 }
 
-.swiper-button-prev:after, :host(.swiper-rtl) .swiper-button-next:after {
-    content: 'prev';
-    background: #F3F2EF;
-    color: #BFBFBF;
-    height: 40px;
-    width: 40px;
-    border-radius: 30px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    font-weight: 900;
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
 }
-
-
 
 .read-more {
   color: #f05a3f;
   font-weight: 500;
-  font-size: 15px;
   text-decoration: none;
-  display:flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #BDBCB9 ;
-  padding-top: 5px ;
-}
-
-.view-all {
-  text-align: center;
-  margin-top: 20px;
+  border-top: 1px solid #BDBCB9;
+  padding-top: 10px;
+  margin-top: auto;
+  
+  .arrow-icon { width: 18px; }
 }
 
 @media (max-width: 992px) {
-  .blog-swiper {
-    --swiper-navigation-size: 18px;
-  }
+  .blogs-header .title { font-size: 38px; }
 }
 
 @media (max-width: 768px) {
   .blogs-header .title { font-size: 32px; }
-  .thumb { height: 160px; }
+  .custom-nav-btn { display: none; } /* Hide arrows on mobile */
+  .swiper-navigation-wrapper { gap: 0; }
 }

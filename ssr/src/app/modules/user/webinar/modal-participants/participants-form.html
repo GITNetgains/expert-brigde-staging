@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h3 class="modal-title" translate *ngIf="!loading">
-    Number of students who have enrolled for this class:
+    Number of clients who have enrolled for this session:
     {{participants?.length}}
   </h3>
   <button
@@ -11,7 +11,7 @@
   ></button>
 </div>
 <div class="modal-body">
-  <h3 *ngIf="!loading && participants.length>0" translate>List of students:</h3>
+  <h3 *ngIf="!loading && participants.length>0" translate>List of clients:</h3>
   <ul
     class="students-enrolled mt-2 mb-2"
     *ngIf="!loading && participants.length<=11"

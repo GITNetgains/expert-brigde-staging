@@ -59,8 +59,8 @@ export const tutorMenus = [
   },
   {
     icon: 'fi fi-rr-calendar-check',
-    title: 'Group class bookings',
-    description: 'Appointments scheduled by the expert for group classes.',
+    title: 'Group session bookings',
+    description: 'Appointments scheduled by the expert for group sessions.',
     path: '/users/appointments',
     key: 'menu-my-appointment-1'
   },
@@ -106,7 +106,7 @@ export const studentMenus = [
   {
     icon: 'fi fi-rs-chalkboard-user',
     title: 'Browse group sessions',
-    description: 'Browse group sessions from experts assigned to your group classes. Filter by category and subcategory.',
+    description: 'Browse group sessions from experts assigned to your group sessions. Filter by category and subcategory.',
     path: '/users/browse-group-sessions',
     key: 'menu-categories'
   },

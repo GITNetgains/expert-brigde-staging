@@ -107,6 +107,87 @@
     </c-card>
   </c-col>
 </c-row>
+@if (status === 'pending') {
+<c-row [gutter]="3" class="mb-4">
+  <c-col xs="12" sm="12" md="6">
+    <c-card>
+      <c-card-header>
+        <h4>Approve Request</h4>
+      </c-card-header>
+      <c-card-body>
+        <label cLabel>
+          <strong>Note</strong>
+        </label>
+        <textarea
+          cFormControl
+          id="approveNote"
+          name="approveNote"
+          rows="3"
+          placeholder="Optional note"
+          [(ngModel)]="info.note"
+        ></textarea>
+      </c-card-body>
+      <c-card-footer class="text-end">
+        <button
+          cButton
+          color="success"
+          class="text-white"
+          (click)="approve(item)"
+        >
+          Approve
+        </button>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+  <c-col xs="12" sm="12" md="6">
+    <c-card>
+      <c-card-header>
+        <h4>Reject Request</h4>
+      </c-card-header>
+      <c-card-body>
+        <c-row [gutter]="3">
+          <c-col md="12">
+            <label cLabel>
+              <strong>Reject Reason</strong>
+            </label>
+            <textarea
+              cFormControl
+              id="rejectReason"
+              name="rejectReason"
+              rows="2"
+              placeholder="Required"
+              [(ngModel)]="info.rejectReason"
+            ></textarea>
+          </c-col>
+          <c-col md="12">
+            <label cLabel>
+              <strong>Note</strong>
+            </label>
+            <textarea
+              cFormControl
+              id="rejectNote"
+              name="rejectNote"
+              rows="2"
+              placeholder="Optional"
+              [(ngModel)]="info.note"
+            ></textarea>
+          </c-col>
+        </c-row>
+      </c-card-body>
+      <c-card-footer class="text-end">
+        <button
+          cButton
+          color="danger"
+          class="text-white"
+          (click)="reject(item)"
+        >
+          Reject
+        </button>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>
+}
 <c-row>
   <c-col>
     <c-card>
@@ -181,8 +262,8 @@
       </c-card-body>
       <c-card-footer>
         <c-row>
-          <c-col class="d-flex justify-content-end">
-            <a [routerLink]="['/payout/request']" class="btn btn-primary">Cancel</a>
+          <c-col class="d-flex justify-content-end gap-2">
+            <a [routerLink]="['/payout/request']" class="btn btn-secondary">Back to list</a>
           </c-col>
         </c-row>
       </c-card-footer>

@@ -4,11 +4,11 @@
   height: 120px;
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -45,7 +45,7 @@
   display: flex;
   align-items: flex-start;
   margin-left: 1rem;
-  
+
   svg {
     width: 3rem !important;
     height: 3rem !important;
@@ -63,4 +63,3 @@ c-col {
   display: flex;
   flex-direction: column;
 }
-

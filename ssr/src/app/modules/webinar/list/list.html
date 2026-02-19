@@ -3,13 +3,13 @@
     <div class="row mb-5">
       <div class="col-md-12 col-lg-12 col-sm-12 text-center">
         <h2 class="color-light-black">
-          <span translate>Step into the Classroom...</span><br />
+          <span translate>Connect with Experts.</span><br />
           <span translate>Anytime. Anywhere.</span>
         </h2>
         <p class="content-title mt-3" translate>
           <span translate
-            >Get instant access to learning in countless subjects. With hundreds
-            of live streaming lessons available 24/7.</span
+            >Book one-on-one or group sessions with verified experts. Learn from
+            industry professionals on your schedule.</span
           >
         </p>
       </div>
@@ -35,124 +35,7 @@
     </div>
 
     <div class="row row-filter">
-      <div class="col-md-4">
-        <div class="input-border form-filter">
-          <h4 (click)="showMoreFilter=!showMoreFilter">
-            <i class="fi fi-rr-bars-filter"></i> Filter
-          </h4>
-          <div [ngClass]="showMoreFilter ? 'filter show' : 'filter'">
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Date</label>
-              <app-date-range
-                (dateChange)="dateChangeEvent($event)"
-              ></app-date-range>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Grades</label>
-              <select
-                class="custom-select form-control"
-                [(ngModel)]="searchFields.gradeIds"
-                (change)="gradeChange()"
-              >
-                <option class="subject" selected value="" translate>
-                  None
-                </option>
-                <option
-                  class="subject"
-                  *ngFor="let item of grades"
-                  ngValue="{{ item._id }}"
-                >
-                  {{ item.name }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate
-                >Categories</label
-              >
-              <select
-                class="custom-select form-control"
-                [(ngModel)]="searchFields.categoryIds"
-                (change)="selectCategory()"
-              >
-                <option selected translate value="">None</option>
-                <option *ngFor="let cate of categories" value="{{cate._id}}">
-                  {{cate.name}}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Subjects</label>
-              <select
-                class="custom-select form-control"
-                [(ngModel)]="searchFields.subjectIds"
-                (change)="selectSubject()"
-              >
-                <option selected translate value="">None</option>
-                <option *ngFor="let sub of subjects" value="{{sub._id}}">
-                  {{sub.name}}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Topics</label>
-              <select
-                class="custom-select form-control"
-                [(ngModel)]="searchFields.topicIds"
-                (change)="query()"
-              >
-                <option selected translate value="">None</option>
-                <option *ngFor="let topic of topics" value="{{topic._id}}">
-                  {{topic.name}}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Price</label>
-              <select
-                class="custom-select form-control"
-                [(ngModel)]="sortOption.sortType"
-                (change)="sortPrice($event)"
-              >
-                <option selected translate value="">None</option>
-                <option value="asc" translate>Low to High</option>
-                <option value="desc" translate>High to Low</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="font-weight-bold font-sm" translate>Age</label>
-              <ng-select
-                [items]="ageFilter"
-                [hideSelected]="true"
-                bindLabel="name"
-                [closeOnSelect]="true"
-                name="age"
-                placeholder="{{'Choose age' | translate}}"
-                required
-                (change)="filterByAge($event)"
-              >
-                <ng-template ng-label-tmp let-item="item">
-                  <span class="ng-value-label"
-                    >{{ item.from + ' - ' + item.to }}</span
-                  >
-                </ng-template>
-                <ng-template
-                  ng-option-tmp
-                  let-item="item"
-                  let-search="searchTerm"
-                  let-index="index"
-                >
-                  <span
-                    >{{ item.from + ' - ' + (item.to < 100 ? item.to : 'above' )
-                    }}</span
-                  >
-                </ng-template>
-              </ng-select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-8">
+      <div class="col-12">
         <p *ngIf="loadingUser" translate>Loading...</p>
         <p *ngIf="!loadingUser && currentUser?.role === 'user' && assignedTutorIds.length === 0 && !loading" class="text-muted" translate>
           You have no assigned experts yet. Contact your administrator to get assigned to group sessions.

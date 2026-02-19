@@ -6,7 +6,7 @@
           <span translate>Browse group sessions of the experts</span>
         </h2>
         <p class="content-title mt-3" translate>
-          Group sessions from experts assigned to your group classes. Filter by category and subcategory.
+          Group sessions from experts assigned to your group sessions. Filter by category and subcategory.
         </p>
       </div>
     </div>
@@ -69,7 +69,7 @@
       <div class="col-md-8">
         <p *ngIf="loadingTutors" translate>Loading...</p>
         <p *ngIf="!loadingTutors && assignedTutorIds.length === 0 && !loading" class="text-muted" translate>
-          You have no group class appointments yet. Book a group session from your assigned experts.
+          You have no group session appointments yet. Book a group session from your assigned experts.
         </p>
         <p *ngIf="!items.length && !loading && assignedTutorIds.length > 0" translate>No results</p>
         <p *ngIf="loading && !loadingTutors"><span translate>Loading</span>...</p>

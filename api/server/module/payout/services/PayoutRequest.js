@@ -27,7 +27,7 @@ exports.calculateCurrentBalance = async tutorId => {
       status: 'completed',
       targetType: 'subject',
       meetingStart: true,
-      toTime: { $lte: moment().add(-3, 'days') }
+      toTime: { $lte: moment().add(-5, 'days') }
     });
 
     const classBalance = await DB.Transaction.aggregate([
@@ -107,14 +107,14 @@ exports.calculateCurrentBalance = async tutorId => {
             transactionId: Helper.App.toObjectId(item._id)
           });
 
-          const appointmentsIn3days = await DB.Appointment.find({
+          const appointmentsIn5days = await DB.Appointment.find({
             tutorId: Helper.App.toObjectId(tutorId),
             targetType: 'webinar',
             transactionId: Helper.App.toObjectId(item._id),
-            toTime: { $gt: moment().add(-3, 'days') }
+            toTime: { $gt: moment().add(-5, 'days') }
           });
 
-          if (countAppointment && !appointments.length && !appointmentsIn3days.length) {
+          if (countAppointment && !appointments.length && !appointmentsIn5days.length) {
             commissionWebinar += item.commission;
             balanceWebinar += item.balance;
             totalWebinar += item.total;

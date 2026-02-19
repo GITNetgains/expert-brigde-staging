@@ -4037,6 +4037,8 @@ export class CountryService {
   }
 
   getCountryByName(name: string): any {
-    return (this.countries || []).find((c: any) => c?.name === name);
+    if (!name || typeof name !== 'string') return undefined;
+    const normalized = name.trim().toLowerCase();
+    return (this.countries || []).find((c: any) => (c?.name || '').toString().trim().toLowerCase() === normalized);
   }
 }

@@ -7,7 +7,7 @@
         <p class="footer-content color-white" translate>
           {{ config.siteName }} - practise makes progress. Find top rated
           instructors guide you in every step of your journey. Try a free lesson
-          today. Tutors are waiting for you.
+          today. Experts are waiting for you.
         </p>
         <a
           class="btn btn-default"
@@ -78,7 +78,7 @@
               class="footer-link color-white"
               [routerLink]="['/experts']"
               translate
-              >Find tutors</a
+              >Find experts</a
             >
           </li>
           <div *ngIf="!isLoggedin">
@@ -224,17 +224,17 @@
 
       <div class="footer-col">
         <h4>For Client</h4>
-        <a href="#">Short Consultant</a>
-        <a href="#">Extended Project</a>
-        <a href="#">Expert Survey</a>
+        <a [routerLink]="['/pages/short-consult']" translate>Short Consult</a>
+        <a [routerLink]="['/pages/expert-surveys']" translate>Expert Survey</a>
+        <a [routerLink]="['/pages/extended-projects']" translate>Extended Project</a>
         <a href="#">Insights</a>
       </div>
 
       <div class="footer-col">
         <h4>For Expert</h4>
-        <a href="#">Short Consult</a>
-        <a href="#">Extended Project</a>
-        <a href="#">Expert Survey</a>
+        <a [routerLink]="['/pages/short-consult']" translate>Short Consult</a>
+        <a [routerLink]="['/pages/expert-surveys']" translate>Expert Survey</a>
+        <a [routerLink]="['/pages/extended-projects']" translate>Extended Project</a>
         <a href="#">Insights</a>
       </div>
 

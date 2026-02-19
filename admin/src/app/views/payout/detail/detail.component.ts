@@ -1,15 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   BadgeComponent,
   BorderDirective,
+  ButtonDirective,
   CardBodyComponent,
   CardComponent,
   CardFooterComponent,
   CardHeaderComponent,
   ColComponent,
   ContainerComponent,
+  FormControlDirective,
+  FormLabelDirective,
+  GutterDirective,
   RowComponent,
   TableDirective,
 } from '@coreui/angular';
@@ -23,6 +28,7 @@ import { UtilService } from '@services/util.service';
   styleUrl: './detail.component.scss',
   imports: [
     CommonModule,
+    FormsModule,
     ContainerComponent,
     RowComponent,
     ColComponent,
@@ -34,6 +40,10 @@ import { UtilService } from '@services/util.service';
     BorderDirective,
     RouterLink,
     BadgeComponent,
+    ButtonDirective,
+    FormControlDirective,
+    FormLabelDirective,
+    GutterDirective,
   ],
 })
 export class DetailComponent implements OnInit {
@@ -106,7 +116,7 @@ export class DetailComponent implements OnInit {
             message: 'Success',
           });
           this.status = 'rejected';
-          this.router.navigate(['/requestPayout']);
+          this.router.navigate(['/payout/request']);
         },
         error: () => {
           this.toasty.toastError({
