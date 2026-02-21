@@ -153,13 +153,12 @@ exports.list = async (req, res, next) => {
     items = await Promise.all(
       items.map(async item => {
         const data = item.toObject();
-        if (moment.utc().isAfter(moment.utc(data.toTime))) {
+        if (moment.utc().add(30, 'minutes').isAfter(moment.utc(data.startTime))) {
           data.disable = true;
         } else {
           data.disable = false;
         }
         data.booked = false;
-        data.bookedRanges = [];
         if (item.type === 'webinar') {
           const countBooked = await DB.Transaction.count({ slotId: item._id, paid: true });
           const webinar = await DB.Webinar.findOne({ _id: item.webinarId });
@@ -168,25 +167,20 @@ exports.list = async (req, res, next) => {
             data.booked = true;
           }
         } else if (item.type === 'subject') {
-          const overlappingAppointments = await DB.Appointment.find({
-            tutorId: query.tutorId,
-            targetType: { $ne: 'webinar' },
-            status: { $in: ['progressing', 'booked', 'pending', 'completed'] },
+          const countBooked = await DB.Appointment.count({
+            startTime: moment(item.startTime).toDate(),
+            toTime: moment(item.toTime).toDate(),
             paid: true,
-            startTime: { $lt: moment(item.toTime).toDate() },
-            toTime: { $gt: moment(item.startTime).toDate() }
-          }).select('startTime toTime').lean();
-
-          if (overlappingAppointments.length > 0) {
-            data.bookedRanges = overlappingAppointments.map(a => ({
-              startTime: a.startTime,
-              toTime: a.toTime
-            }));
-            const fullyBooked = overlappingAppointments.some(a =>
-              moment(a.startTime).isSameOrBefore(moment(item.startTime)) &&
-              moment(a.toTime).isSameOrAfter(moment(item.toTime))
-            );
-            data.booked = fullyBooked;
+            status: {
+              $in: ['progressing', 'booked', 'pending', 'completed']
+            },
+            targetType: {
+              $ne: 'webinar'
+            },
+            tutorId: query.tutorId
+          });
+          if (countBooked) {
+            data.booked = true;
           }
         }
         return data;

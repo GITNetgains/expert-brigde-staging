@@ -241,7 +241,7 @@ exports.startMeeting = async (req, res, next) => {
 exports.joinMeeting = async (req, res, next) => {
   try {
     const appointmentId = req.params.appointmentId;
-    const appointment = await DB.Appointment.findOne({ _id: appointmentId, status: { $in: ['pending', 'progressing'] } }).populate({
+    const appointment = await DB.Appointment.findOne({ _id: appointmentId, status: { $in: ['booked', 'pending', 'progressing'] } }).populate({
       path: 'transaction',
       select: req.user.role !== 'admin' ? '-commission -balance -paymentInfo' : ''
     });

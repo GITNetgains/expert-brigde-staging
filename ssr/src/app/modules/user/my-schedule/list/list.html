@@ -109,7 +109,7 @@
                     class="btn btn-outline-dark btn-action me-2">
                     <i class="fi fi-rr-eye"></i>
                   </button>
-                  <a *ngIf="item?.status==='pending' || item?.status === 'progressing'" href="javascript:void(0)"
+                  <a *ngIf="item?.status==='booked' || item?.status==='pending' || item?.status === 'progressing'" href="javascript:void(0)"
                     class="img-zoom" (click)="startMeeting(item._id)">
                     <img src="{{'assets/images/zoom.png'}}" alt="" />
                   </a>

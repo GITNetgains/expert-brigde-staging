@@ -248,9 +248,6 @@ export class BookingComponent implements OnInit {
       return;
     }
     this.cartService.updateTutorId(this.tutor._id);
-    const durationHours = (moment(time.end).unix() - moment(time.start).unix()) / 3600;
-    const proRatedOriginal = Math.round(this.price * durationHours * 100) / 100;
-    const proRatedSale = Math.round(this.salePrice * durationHours * 100) / 100;
     this.cartService.updateCart({
       product: {
         ...this.timeSelected,
@@ -261,8 +258,8 @@ export class BookingComponent implements OnInit {
       },
       quantity: 1,
       price:
-        !this.usedCoupon && this.appliedCoupon ? proRatedSale : proRatedOriginal,
-      originalPrice: proRatedOriginal,
+        !this.usedCoupon && this.appliedCoupon ? this.salePrice : this.price,
+      originalPrice: this.price,
       type: 'subject',
       couponCode:
         !this.usedCoupon &&
@@ -355,8 +352,8 @@ export class BookingComponent implements OnInit {
     modalStripe.componentInstance.subject = this.subject;
     modalStripe.componentInstance.tutor = this.tutor;
     modalStripe.componentInstance.slot = this.timeSelected;
-    const bookingDurationHours = (moment(this.timeSelected.toTime).unix() - moment(this.timeSelected.startTime).unix()) / 3600;
-    modalStripe.componentInstance.price = Math.round((this.appliedCoupon ? this.salePrice : this.price) * bookingDurationHours * 100) / 100;
+    modalStripe.componentInstance.price = modalStripe.componentInstance.price =
+      this.appliedCoupon ? this.salePrice : this.price;
     modalStripe.componentInstance.config = this.config;
     modalStripe.componentInstance.appliedCoupon = this.appliedCoupon;
     if (

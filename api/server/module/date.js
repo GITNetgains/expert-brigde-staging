@@ -2,7 +2,9 @@ const moment = require('moment');
 const momentTimeZone = require('moment-timezone');
 
 exports.formatDate = (date, format = 'DD/MM/YYYY HH:mm', timezone = '') => {
-  let result = timezone ? momentTimeZone(date).tz(timezone).format(format) : moment(date).format(format);
+  // Default to Asia/Kolkata if no timezone provided
+  const tz = timezone || 'Asia/Kolkata';
+  let result = momentTimeZone(date).tz(tz).format(format);
   return result;
 };
 

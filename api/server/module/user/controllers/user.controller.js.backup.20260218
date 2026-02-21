@@ -389,7 +389,7 @@ ${body}
 <!-- FOOTER -->
 <tr>
 <td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
-© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.co
+© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.com
 </td>
 </tr>
 

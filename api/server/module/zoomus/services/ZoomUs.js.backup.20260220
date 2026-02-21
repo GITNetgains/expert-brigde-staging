@@ -58,8 +58,6 @@ exports.createUser = async options => {
             return reject(error);
           }
 
-          console.log('[ZOOM-CREATE-USERC] Result:', response.statusCode, JSON.stringify(body));
-
           if (response.statusCode === 201 || (body && body.id)) {
             try {
               await DB.User.updateOne(
@@ -124,14 +122,13 @@ exports.createMeeting = async options => {
       settings: {
         host_video: true,
         participant_video: true,
-        join_before_host: true,
-        jbh_time: 0,
+        join_before_host: false,
         mute_upon_entry: false,
         waiting_room: false,
         auto_recording: 'cloud',
         approval_type: 0,
         audio: 'both',
-        meeting_authentication: false,
+        meeting_authentication: false
       }
     };
 
@@ -140,7 +137,7 @@ exports.createMeeting = async options => {
     return new Promise((resolve, reject) =>
       request(
         {
-          uri: 'https://api.zoom.us/v2/users/me/meetings',
+          uri: `https://api.zoom.us/v2/users/${options.email}/meetings`,
           method: 'POST',
           json: meetingPayload,
           headers

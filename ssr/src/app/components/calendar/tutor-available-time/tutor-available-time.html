@@ -29,35 +29,46 @@
                   <div class="slot-box bg-color-default" [ngClass]="time.booked || time.isDisabled ? 'booked':''">
                     <p>{{ time.text }}</p>
                     <p *ngIf="time.booked" class="slot-booked">Booked</p>
-                    <p *ngIf="time.isDisabled" class="slot-booked">Unavailable</p>
-                    <ng-container *ngIf="stateService.showBooking() && !reschedule">
+                    <p *ngIf="time.isDisabled && !time.booked" class="slot-booked">Unavailable</p>
+
+                    <ng-container *ngIf="!time.booked && !time.isDisabled">
+                      <div class="duration-picker" *ngIf="time.durationOptions?.length > 1">
+                        <select [(ngModel)]="time.selectedDuration" (ngModelChange)="onDurationChange(time)" class="form-select form-select-sm dp-select">
+                          <option *ngFor="let opt of time.durationOptions" [ngValue]="opt.value">{{opt.label}}</option>
+                        </select>
+                        <select *ngIf="time.startTimeOptions?.length > 1" [(ngModel)]="time.selectedStartTime" class="form-select form-select-sm dp-select">
+                          <option *ngFor="let opt of time.startTimeOptions" [value]="opt.value">{{opt.label}} - {{getEndForStart(time, opt.value)}}</option>
+                        </select>
+                      </div>
+
+                      <ng-container *ngIf="stateService.showBooking() && !reschedule">
+                        <button
+                          *ngIf="!isFree"
+                          class="btn btn-default btn-sm btn-slot btn-block"
+                          type="button"
+                          (click)="time.durationOptions?.length > 1 ? addToCartWithDuration(time) : addToCart(time)"
+                          [ngClass]="{'btn-default': !time.addedToCart, 'btn-success': time.addedToCart }"
+                        >
+                          <i class="fas fa-cart-plus" *ngIf="!time.addedToCart"></i>
+                          <span *ngIf="time.addedToCart">Added</span>
+                        </button>
+                        <button
+                          class="btn btn-default btn-sm btn-buy-now btn-block"
+                          type="button"
+                          (click)="time.durationOptions?.length > 1 ? bookWithDuration(time) : selectSlot(time)"
+                        >
+                          Book now
+                        </button>
+                      </ng-container>
                       <button
-                        *ngIf="!time.booked && !time.isDisabled && !isFree"
-                        class="btn btn-default btn-sm btn-slot btn-block"
-                        type="button"
-                        (click)="addToCart(time)"
-                        [ngClass]="{'btn-default': !time.addedToCart, 'btn-success': time.addedToCart }"
-                      >
-                        <i class="fas fa-cart-plus" *ngIf="!time.addedToCart"></i>
-                        <span *ngIf="time.addedToCart">Added</span>
-                      </button>
-                      <button
-                        *ngIf="!time.booked && !time.isDisabled"
+                        *ngIf="reschedule"
                         class="btn btn-default btn-sm btn-buy-now btn-block"
                         type="button"
-                        (click)="selectSlot(time)"
+                        (click)="time.durationOptions?.length > 1 ? bookWithDuration(time) : selectSlot(time)"
                       >
-                        Book now
+                        Select
                       </button>
                     </ng-container>
-                    <button
-                      *ngIf="!time.booked && !time.isDisabled && reschedule"
-                      class="btn btn-default btn-sm btn-buy-now btn-block"
-                      type="button"
-                      (click)="selectSlot(time)"
-                    >
-                      Select
-                    </button>
                   </div>
                 </li>
               </ul>
