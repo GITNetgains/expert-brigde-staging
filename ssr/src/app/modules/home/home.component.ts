@@ -149,7 +149,7 @@ export class HomeComponent implements OnInit {
       },
       {
         property: 'og:description',
-        content: homeSEO?.description || 'Livelearn is online learning platform'
+        content: homeSEO?.description || 'ExpertBridge is an AI-powered expert network connecting businesses with verified industry professionals'
       },
       {
         name: 'keywords',

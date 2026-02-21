@@ -88,7 +88,7 @@ export class DetailWebinarComponent implements OnInit {
       },
       {
         property: 'og:description',
-        content: 'Livelearn is online learning platform'
+        content: 'ExpertBridge is an AI-powered expert network connecting businesses with verified industry professionals'
       }
     ]);
     this.populateDependent();
