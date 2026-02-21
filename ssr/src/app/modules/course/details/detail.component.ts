@@ -121,7 +121,7 @@ export class CourseDetailComponent implements OnInit, AfterViewInit {
           (this.config?.homepagePicture &&
           this.config?.homepagePicture?.howItWork
             ? this.config?.homepagePicture?.howItWork
-            : `${environment.url}/assets/images/tutors01.jpg`)
+            : `https://expertbridge.co/assets/images/og-image.png`)
       },
       {
         property: 'og:description',

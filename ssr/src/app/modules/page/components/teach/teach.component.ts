@@ -77,7 +77,7 @@ export class TeachWithUsComponent implements OnInit {
           this.config?.teachWithUsPicture &&
           this.config?.teachWithUsPicture?.banner
             ? this.config?.teachWithUsPicture?.banner
-            : `${environment.url}/assets/images/tutors01.jpg`
+            : `https://expertbridge.co/assets/images/og-image.png`
       },
       {
         property: 'og:description',

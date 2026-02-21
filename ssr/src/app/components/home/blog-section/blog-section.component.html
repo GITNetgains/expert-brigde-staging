@@ -31,7 +31,6 @@
 
               <div class="meta-row">
                 <span class="date-blog">{{ item?.createdAt | date:'dd MMM, yyyy' }}</span>
-                <span class="author-blog">• written by {{ getAuthor(item) }}</span>
               </div>
 
               <a class="read-more" [routerLink]="['/blogs', item?.alias || item?._id]">
