@@ -89,7 +89,7 @@
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>State</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
-              {{(info?.state || 'Waiting for update') | ellipsis: 20}}
+              {{(info?.state || '-') | ellipsis: 20}}
             </p>
             <ng-select [hidden]="!isEditProfile" [items]="states" appendTo="body" name="state" [multiple]="false"
               [closeOnSelect]="true" [searchable]="true" [addTag]="true" addTagText="Add state"
@@ -99,7 +99,7 @@
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>City</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
-              {{(info?.city || 'Waiting for update') | ellipsis: 20}}
+              {{(info?.city || '-') | ellipsis: 20}}
             </p>
             <input *ngIf="isEditProfile" type="text" class="form-control mar-bot-15" [(ngModel)]="info.city"
               name="city" />
@@ -107,7 +107,7 @@
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}">
             <h6><span translate>Address</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
-              {{(info?.address || 'Waiting for update') | ellipsis: 20}}
+              {{(info?.address || '-') | ellipsis: 20}}
             </p>
             <input *ngIf="isEditProfile" type="text" class="form-control mar-bot-15" [(ngModel)]="info.address"
               name="address" />
@@ -248,7 +248,7 @@
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>Highlights</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
-              {{ (info?.highlights?.join(', ') || 'Waiting for update') | ellipsis: 20 }}
+              {{ (info?.highlights?.join(', ') || '-') | ellipsis: 20 }}
             </p>
             <ng-select [hidden]="!isEditProfile" [items]="info?.highlights || []" appendTo="body" name="highlights"
               [multiple]="true" [closeOnSelect]="true" [hideSelected]="true" [addTag]="true"

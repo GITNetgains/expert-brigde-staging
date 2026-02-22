@@ -11,3 +11,6 @@ dist/
 # Ignore OS files
 .DS_Store
 thumbs.db
+# Backup files
+*.backup_*
+*.bak
