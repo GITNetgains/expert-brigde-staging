@@ -44,7 +44,7 @@
         <ng-container *ngIf="currentUser?.type === 'tutor'">
           <div class="nav-header">Expert Menu</div>
           <li class="nav-item">
-            <a class="nav-link" href="https://opportunities.expertbridge.co/opportunities" target="_blank" rel="noopener noreferrer">
+            <a class="nav-link" [href]="opportunitiesUrl" target="_blank" rel="noopener noreferrer">
               <i class="fi fi-rr-briefcase"></i>
               <span translate>Browse opportunities</span>
             </a>

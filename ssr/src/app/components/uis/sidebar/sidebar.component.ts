@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { IUser } from 'src/app/interface';
 import { AuthService, CartService, STATE, StateService, SystemService } from 'src/app/services';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class SidebarComponent {
   flag = '';
   cartCount = 0;
   showBooking = false;
+  opportunitiesUrl = 'https://opportunities.expertbridge.co/opportunities';
   unreadNotificationCount = 0;
   constructor(
     private authService: AuthService,
@@ -29,12 +31,14 @@ export class SidebarComponent {
     public stateService: StateService,
     private modalService: NgbModal,
     private cartService: CartService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    @Inject(SsrCookieService) private cookieService: SsrCookieService
   ) {
     this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
     if (this.currentUser) {
       this.notificationService.countUnread().then(resp => (this.unreadNotificationCount = resp.data.count || 0));
     }
+    this._buildOpportunitiesUrl();
 
     this.authService.userLoaded$.subscribe(() => {
       this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
@@ -44,6 +48,7 @@ export class SidebarComponent {
           .then(resp => (this.unreadNotificationCount = resp.data.count || 0))
           .catch(() => (this.unreadNotificationCount = 0));
       }
+      this._buildOpportunitiesUrl();
     });
 
     this.config = this.stateService.getState(STATE.CONFIG);
@@ -55,6 +60,16 @@ export class SidebarComponent {
     });
     this.showBooking = this.stateService.showBooking();
   }
+  private _buildOpportunitiesUrl() {
+    const base = 'https://opportunities.expertbridge.co/opportunities';
+    try {
+      const token = this.cookieService.get('accessToken');
+      this.opportunitiesUrl = token ? base + '?token=' + token : base;
+    } catch {
+      this.opportunitiesUrl = base;
+    }
+  }
+
   logout() {
     this.authService.removeToken();
     window.location.href = '/';
