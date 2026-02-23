@@ -7,7 +7,7 @@
 </p>
 <br />
 <p>
-  <strong>Expert: </strong> {{tutor.name}} <br />
+  <strong>Expert: </strong> {% if tutor.showPublicIdOnly %}Expert (ID: {{ tutor.userId }}){% else %}{{tutor.name}}{% endif %} <br />
   <strong>Webinar name: </strong> {{webinar.name}} <br />
   <strong>Code: </strong> {{transaction.code}} <br />
 </p>

@@ -3,7 +3,7 @@
 <p>Your appointment {{ appointment.code }} has been canceled.</p>
 
 <p>
-  <strong>Expert: </strong> {{tutor.name}} <br />
+  <strong>Expert: </strong> {% if tutor.showPublicIdOnly %}Expert (ID: {{ tutor.userId }}){% else %}{{tutor.name}}{% endif %} <br />
   <strong>Time: </strong> {{startTimeUser}} - {{toTimeUser}}
   <br />
   <strong>Canceled by: </strong> {{cancelBy.name}} <br />
