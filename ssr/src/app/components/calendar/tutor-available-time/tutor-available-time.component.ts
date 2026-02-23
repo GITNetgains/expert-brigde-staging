@@ -274,21 +274,23 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
         durationOptions: [] as any[]
       } as any;
 
-      if (moment().add(5, 'minute').isAfter(moment(slot.start)) || minute < 60) {
+      if (moment().add(5, 'minute').isAfter(moment(slot.start)) || minute < 30) {
         slot.backgroundColor = '#ddd';
         slot.isDisabled = true;
-        slot.title = minute < 60 ? 'Minimum 60 mins' : 'Not available';
+        slot.title = minute < 30 ? 'Minimum 30 mins' : 'Not available';
         slot.available = false;
       } else {
-        for (let d = 60; d <= minute; d += 30) {
-          const hrs = d / 60;
-          slot.durationOptions.push({
-            value: d,
-            label: hrs === 1 ? '1 hour' : hrs + ' hours'
-          });
+        for (let d = 30; d <= minute; d += 30) {
+          const h = Math.floor(d / 60);
+          const m = d % 60;
+          let label = '';
+          if (h === 0) { label = d + ' min'; }
+          else if (m === 0) { label = h + (h === 1 ? ' hr' : ' hrs'); }
+          else { label = h + ' hr ' + m + ' min'; }
+          slot.durationOptions.push({ value: d, label: label });
         }
         let t = win.start.clone();
-        while (t.clone().add(60, 'minutes').isSameOrBefore(win.end)) {
+        while (t.clone().add(30, 'minutes').isSameOrBefore(win.end)) {
           slot.startTimeOptions.push({
             value: t.toISOString(),
             label: t.format('HH:mm')

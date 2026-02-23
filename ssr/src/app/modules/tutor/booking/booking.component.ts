@@ -235,9 +235,9 @@ export class BookingComponent implements OnInit {
     }
 
     const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
-    if (minute < 60) {
+    if (minute < 30) {
       return this.appService.toastError(
-        'Minimum booking duration is 60 minutes'
+        'Minimum booking duration is 30 minutes'
       );
     }
 
@@ -285,9 +285,9 @@ export class BookingComponent implements OnInit {
     }
 
     const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
-    if (minute < 60) {
+    if (minute < 30) {
       return this.appService.toastError(
-        'Minimum booking duration is 60 minutes'
+        'Minimum booking duration is 30 minutes'
       );
     }
 
