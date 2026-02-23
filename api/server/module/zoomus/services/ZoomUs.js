@@ -114,13 +114,18 @@ exports.createMeeting = async options => {
   try {
     const headers = await getZoomRequestHeader();
     
-    // Build meeting payload
+    // Build anonymous booking reference for topic
+    const bookingRef = options.appointmentId
+      ? options.appointmentId.toString().slice(-8)
+      : Math.random().toString(16).slice(2, 10);
+
+    // Build meeting payload — NO participant names or emails
     const meetingPayload = {
-      topic: options.topic || 'Tutoring Session',
-      type: 2, // Scheduled meeting (CHANGED FROM 1)
-      start_time: options.startTime, // ADDED
-      duration: options.duration || 60, // ADDED
-      timezone: options.timezone || 'Asia/Calcutta', // ADDED
+      topic: `ExpertBridge Consultation | Booking #${bookingRef}`,
+      type: 2, // Scheduled meeting
+      start_time: options.startTime,
+      duration: options.duration || 60,
+      timezone: options.timezone || 'Asia/Calcutta',
       settings: {
         host_video: true,
         participant_video: true,
@@ -132,6 +137,8 @@ exports.createMeeting = async options => {
         approval_type: 0,
         audio: 'both',
         meeting_authentication: false,
+        meeting_invitees: [],
+        registrants_email_notification: false,
       }
     };
 

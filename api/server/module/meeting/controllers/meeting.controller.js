@@ -56,7 +56,7 @@ exports.startMeeting = async (req, res, next) => {
           : req.user.name;
         // ✅ UPDATED: Added startTime, duration, topic, timezone
         const zoomData = await Service.ZoomUs.createMeeting({
-          email: req.user.email,
+          appointmentId: appointmentId,
           topic: appointment.description || `${tutorDisplayName}'s Tutoring Session`,
           startTime: appointment.startTime.toISOString(),
           duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
@@ -109,7 +109,7 @@ exports.startMeeting = async (req, res, next) => {
             : req.user.name;
           // ✅ UPDATED: Added startTime, duration, topic, timezone
           zoomData = await Service.ZoomUs.createMeeting({
-            email: req.user.email,
+            appointmentId: appointmentId,
             topic: appointment.description || `${tutorDisplayName}'s Tutoring Session`,
             startTime: appointment.startTime.toISOString(),
             duration: Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)),
