@@ -123,6 +123,14 @@ const schema = new Schema(
       type: String,
       default: ''
     },
+    razorpayOrderId: {
+      type: String,
+      default: ''
+    },
+    paymentGateway: {
+      type: String,
+      default: ''
+    },
     paymentInfo: {
       type: Schema.Types.Mixed,
       default: {}

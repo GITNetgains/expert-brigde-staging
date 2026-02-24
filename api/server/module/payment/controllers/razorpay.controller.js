@@ -163,7 +163,13 @@ exports.confirm = async (req, res, next) => {
       return next(PopulateResponse.notFound());
     }
 
-    // 🔍 Verify payment from Razorpay
+    // Idempotency: skip if already completed
+    if (transaction.status === 'completed') {
+      res.locals.confirm = { success: true, message: 'Already completed' };
+      return next();
+    }
+
+    // Verify payment from Razorpay
     const payment = await razorpay.payments.fetch(
       value.razorpayPaymentId
     );
@@ -174,9 +180,27 @@ exports.confirm = async (req, res, next) => {
       );
     }
 
-    // Save info ONLY (no business logic)
+    // Save payment info
     transaction.paymentInfo = payment;
     await transaction.save();
+
+    // Complete payment and trigger downstream business logic
+    // (same as webhook: commission, enrollment, notifications)
+    try {
+      switch (transaction.type) {
+        case 'booking':
+        case 'gift':
+          await Service.Payment.updatePayment(transaction);
+          break;
+        case 'booking-multiple':
+          await Service.Payment.updatePaymentMutilple(transaction);
+          break;
+      }
+      console.log('Confirm: payment fully processed for transaction', transaction._id);
+    } catch (bizErr) {
+      // Money was captured, so log the error but don't fail the response
+      console.error('Confirm: downstream logic error for transaction', transaction._id, bizErr);
+    }
 
     res.locals.confirm = { success: true };
     return next();
