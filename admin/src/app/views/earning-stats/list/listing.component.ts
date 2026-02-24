@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EarningStatsService } from '@services/earning.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { CommonModule } from '@angular/common';
 import { saveAs } from 'file-saver';
 import { EyeIconComponent } from '@components/common/icons/eye-icon/eye-icon.component';
@@ -66,8 +67,10 @@ export class ListingEarningComponent implements OnInit {
     private earningStatsService: EarningStatsService,
     private utilService: UtilService,
     private route: ActivatedRoute,
-    private tutorService: TutorService
+    private tutorService: TutorService,
+    private appConfigService: AppConfigService
   ) {
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.route.queryParams.subscribe((params) => {
       const page = params['page'] ? parseInt(params['page']) : 1;
       this.currentPage = !isNaN(page) ? page : 1;

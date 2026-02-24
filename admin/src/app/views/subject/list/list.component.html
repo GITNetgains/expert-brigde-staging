@@ -160,6 +160,15 @@
                       >
                         {{ item.isActive ? "Activated" : "Deactivated" }}
                       </button>
+                      <button
+                        cButton
+                        color="danger"
+                        class="btn btn-sm"
+                        (click)="deleteSubject(item)"
+                        title="Delete subject"
+                      >
+                        <svg cIcon name="cilTrash" size="sm"></svg>
+                      </button>
                     </div>
                   </td>
                 </tr>

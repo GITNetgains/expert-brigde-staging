@@ -65,15 +65,13 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="name"
-                            >Full Name (<span class="text-danger">*</span
-                            >)</label
+                            >Full Name</label
                           >
                           <c-input-group class="mb-3 has-validation">
                             <input
                               cFormControl
                               id="name"
                               [(ngModel)]="info.name"
-                              required
                               name="name"
                               #name="ngModel"
                               placeholder="Enter name"
@@ -90,15 +88,13 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="username"
-                            >Username (<span class="text-danger">*</span
-                            >)</label
+                            >Username</label
                           >
                           <c-input-group class="mb-3 has-validation">
                             <input
                               cFormControl
                               id="username"
                               [(ngModel)]="info.username"
-                              required
                               name="username"
                               #username="ngModel"
                               placeholder="Enter username"
@@ -115,14 +111,14 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="timezone"
-                            >Timezone (<span class="text-danger">*</span
-                            >)</label
+                            >Timezone</label
                           >
                           <div class="position-relative">
                             <app-timezone
                               #timezoneComponent
                               [userTz]="info.timezone"
                               [isSubmitted]="isSubmitted"
+                              [required]="false"
                               (onChange)="info.timezone = $event"
                               (onValidationChange)="onTimezoneValidationChange($event)"
                             ></app-timezone>
@@ -162,8 +158,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="phoneNumber"
-                            >Phone Number (<span class="text-danger">*</span
-                            >)</label
+                            >Phone Number</label
                           >
                           <c-input-group class="mb-3 has-validation">
                             <input
@@ -177,7 +172,6 @@
                               minlength="9"
                               maxlength="15"
                               #phone="ngModel"
-                              required
                             />
                             @if(phone.errors && (phone.dirty || phone.touched ||
                             isSubmitted))
@@ -201,7 +195,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="country"
-                            >Country (<span class="text-danger">*</span>)</label
+                            >Country</label
                           >
                           <div class="position-relative">
                             <ng-select
@@ -214,7 +208,6 @@
                               name="country"
                               #country="ngModel"
                               placeholder="Select country"
-                              required
                               [clearable]="true"
                               class="my-select"
                             >
@@ -264,7 +257,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="address"
-                            >Address (<span class="text-danger">*</span>)</label
+                            >Address</label
                           >
                           <c-input-group class="mb-3 has-validation">
                             <input
@@ -275,7 +268,6 @@
                               name="address"
                               placeholder="Enter address"
                               #address="ngModel"
-                              required
                             />
                             @if(address.errors && (address.dirty ||
                             address.touched || isSubmitted)){
@@ -290,8 +282,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="zipCode"
-                            >Zip Code (<span class="text-danger">*</span
-                            >)</label
+                            >Zip Code</label
                           >
                           <c-input-group class="mb-3 has-validation">
                             <input
@@ -305,7 +296,6 @@
                               maxlength="10"
                               #zipcode="ngModel"
                               pattern="[0-9A-Z]+"
-                              required
                             />
                             @if(zipcode.errors && (zipcode.dirty ||
                             zipcode.touched || isSubmitted)){
@@ -329,8 +319,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="languages"
-                            >Languages (<span class="text-danger">*</span
-                            >)</label
+                            >Languages</label
                           >
                           <div class="position-relative">
                             <ng-select
@@ -343,17 +332,9 @@
                               name="languages"
                               #languageField="ngModel"
                               placeholder="Select languages"
-                              required
                               class="my-select"
                             >
                             </ng-select>
-                            @if(languageField.errors && (languageField.dirty ||
-                            languageField.touched || isSubmitted)) {
-                            @if(languageField.errors['required']) {
-                            <div class="invalid-feedback d-block">
-                              Please select at least one language!
-                            </div>
-                            } }
                       </div>
                     </div>
                   </c-col>
@@ -398,8 +379,7 @@
                       <c-col md="6">
                         <div class="mb-3">
                           <label cLabel for="commissionRate"
-                            >Commission Rate (<span class="text-danger">*</span
-                            >)</label
+                            >Commission Rate</label
                           >
                           <c-input-group class="mb-1 has-validation">
                             <input
@@ -414,20 +394,10 @@
                               placeholder="Enter commission rate"
                               #commission="ngModel"
                             />
-                            @if(commission.errors && (commission.dirty ||
+                            @if(commission.value != null && commission.value !== '' && (commission.value < 0 || commission.value > 1) && (commission.dirty ||
                             commission.touched || isSubmitted)){
                             <c-form-feedback invalid>
-                              Commission rate is required
-                            </c-form-feedback>
-                            } @else if(commission.value < 0 && (commission.dirty
-                            || commission.touched || isSubmitted)){
-                            <c-form-feedback invalid>
-                              Commission rate must be greater than 0!
-                            </c-form-feedback>
-                            } @else if(commission.value > 1 && (commission.dirty
-                            || commission.touched || isSubmitted)){
-                            <c-form-feedback invalid>
-                              Commission rate must be less than 1!
+                              Commission rate must be between 0 and 1
                             </c-form-feedback>
                             }
                           </c-input-group>

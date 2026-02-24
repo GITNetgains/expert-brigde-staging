@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { authGuard } from '../guards/auth.guard';
+import { appConfigResolver } from './app-config.resolver';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,9 @@ export const routes: Routes = [
       title: 'Home',
     },
     canActivate: [authGuard],
+    resolve: {
+      appConfig: appConfigResolver,
+    },
     children: [
       {
         path: 'dashboard',
@@ -52,6 +56,11 @@ export const routes: Routes = [
         path: 'users',
         loadChildren: () =>
           import('./views/user/user.routes').then((m) => m.routes),
+      },
+      {
+        path: 'queries',
+        loadChildren: () =>
+          import('./views/queries/queries.routes').then((m) => m.routes),
       },
       {
         path: 'tutor',

@@ -313,7 +313,7 @@ module.exports = router => {
    * @apiPermission Authenticated user
    */
   router.put(
-    '/v1/appointments/:id/reSchedule',
+    '/v1/appointments/:appointmentId/reSchedule',
     Middleware.isAuthenticated,
     appointmentController.reSchedule,
     Middleware.Response.success('reSchedule')

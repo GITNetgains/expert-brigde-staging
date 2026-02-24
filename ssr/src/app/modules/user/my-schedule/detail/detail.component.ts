@@ -231,7 +231,8 @@ export class ScheduleDetailComponent implements OnInit {
         .checkOverlap({
           startTime: time.start,
           toTime: time.end,
-          userId: this.appointment.userId
+          userId: this.appointment.userId,
+          excludeAppointmentId: this.appointment._id
         })
         .then((resp) => {
           if (resp.data.checkOverlap) {

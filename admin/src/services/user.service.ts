@@ -59,8 +59,13 @@ export class UserService {
     return this.http.delete(`${this.apiUrl}/users/groups/${id}`);
   }
   getAiQueries(userId: string) {
-  return this.http.get(`${this.apiUrl}/users/${userId}/ai-queries`);
-}
+    return this.http.get(`${this.apiUrl}/users/${userId}/ai-queries`);
+  }
+
+  /** Get all AI queries across all users (admin). */
+  getAllAiQueries(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/ai-queries/all`);
+  }
 
 assignTutorToAiQuery(
   userId: string,

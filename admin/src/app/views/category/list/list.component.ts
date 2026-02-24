@@ -103,15 +103,14 @@ export class GradeListComponent implements OnInit {
   // navigateToGradeDetails(gradeId: number) {
   //   this.router.navigate(['/grade/details', gradeId]);
   // }
-  removeGrade(gradeId: any) {
-    if (window.confirm('Are you sure you want to delete this categories')) {
-      this.categorieService.delete(gradeId).subscribe(
-        (response) => {
-          // console.log('Garde deleted successfully:', response);
-          this.query(); // Refresh the list after deletion
+  deleteCategory(item: any) {
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      this.categorieService.delete(item._id).subscribe({
+        next: () => {
+          this.query();
         },
-        (error) => {}
-      );
+        error: () => {},
+      });
     }
   }
   sortBy(field: string, type: string) {

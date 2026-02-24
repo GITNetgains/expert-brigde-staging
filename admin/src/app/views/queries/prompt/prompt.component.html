@@ -1,0 +1,29 @@
+<c-row>
+  <c-col md="12">
+    <div class="mb-3">
+      <label cLabel>ChatGPT / Azure OpenAI system prompt</label>
+      <p class="text-muted small mb-2">This prompt is sent as the system message for the AI search (talent/hiring queries). You can edit it anytime; changes apply to new requests only.</p>
+    </div>
+    <div *ngIf="loading" class="d-flex justify-content-center p-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <ng-container *ngIf="!loading">
+      <div class="mb-3">
+        <textarea
+          cFormControl
+          [(ngModel)]="systemPrompt"
+          name="systemPrompt"
+          rows="18"
+          class="font-monospace"
+          placeholder="Enter the system prompt for the AI..."
+          style="min-height: 320px;"
+        ></textarea>
+      </div>
+      <button cButton color="primary" (click)="save()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save prompt' }}
+      </button>
+    </ng-container>
+  </c-col>
+</c-row>

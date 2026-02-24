@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ReportService } from '@services/complaint.service';
+import { AppConfigService } from '@services/app-config.service';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-report-detail',
@@ -15,9 +16,10 @@ export class ReportDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private appConfigService: AppConfigService
   ) {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
   }
 
   ngOnInit() {

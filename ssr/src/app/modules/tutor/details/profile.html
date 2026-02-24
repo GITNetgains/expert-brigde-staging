@@ -7,14 +7,12 @@
             <div class="profile-img">
               <img *ngIf="tutor.showPublicIdOnly !== true" src="{{tutor.avatarUrl}}"
                 onerror="this.src='/assets/images/default-avatar.jpg'" alt="tutor avatar" />
-              <div class="favoired-icon">
-                <a *ngIf="!tutor.isFavorite" (click)="favorite()">
-                  <i class="fi fi-rs-heart color-light-red"></i>
-                </a>
-                <a *ngIf="tutor.isFavorite" (click)="unFavorite()">
-                  <i class="fi fi-ss-heart color-light-red"></i>
-                </a>
-              </div>
+                <div class="favoired-icon">
+                  <button type="button" class="favorite-btn" (click)="tutor.isFavorite ? unFavorite() : favorite()"
+                    [attr.aria-label]="tutor.isFavorite ? 'Remove from favorites' : 'Add to favorites'">
+                    <i class="fi color-light-red" [ngClass]="tutor.isFavorite ? 'fi-ss-heart' : 'fi-rs-heart'"></i>
+                  </button>
+                </div>
             </div>
             <div class="profile-info">
               <h5 class="font-weight-bold">
@@ -48,16 +46,16 @@
                 <div class="col-md-12">
                   <app-send-message-btn [recipientId]="tutor._id"></app-send-message-btn>
                 </div>
-                <div class="col-md-12 mt-3" *ngIf="tutor && tutor.username">
+                <!-- <div class="col-md-12 mt-3" *ngIf="tutor && tutor.username">
                   <strong translate>Share me:</strong>
                   <share-button button="facebook" theme="circles-light"></share-button>
                   <share-button button="twitter" theme="circles-light"></share-button>
-                  <!-- <share-button
+                  <share-button
                     button="instagram"
                     theme="circles-light"
                     [icon]="['fab', 'instagram']"
-                  ></share-button> -->
-                </div>
+                  ></share-button>
+                </div> -->
               </div>
             </div>
           </div>
@@ -105,11 +103,19 @@
               </button> -->
             </div>
             <div class="tutor-info-m">
+              <div class="" *ngIf="tutor && tutor.bio">
+                <div class="card-header">
+                  <h4 class="card-title" translate>Profile Summary</h4>
+                </div>
+                <div class="card-body">
+                  <app-card-text [content]="tutor.bio" [showChar]="500"></app-card-text>
+                </div>
+              </div>
               <div class="item-tutor-info">
                 <h5 translate>Languages</h5>
                 <div class="text-line-break">{{languageNames.join(', ')}}</div>
               </div>
-              <div class="item-tutor-info">
+              <!-- <div class="item-tutor-info">
                 <h5 class="rmt-4 mt-3" translate *ngIf="tutor.gradeItems.length">
                   Grades which they take classes for
                 </h5>
@@ -128,9 +134,9 @@
                       *ngIf="i < tutor.subjects.length - 1">,
                     </span></span>
                 </div>
-              </div>
+              </div> -->
               <!-- Tutor not option select category -->
-              <div class="item-tutor-info">
+              <!-- <div class="item-tutor-info">
                 <h5 translate *ngIf="tutor.categories && tutor.categories.length">
                   Categories
                 </h5>
@@ -139,7 +145,7 @@
                       *ngIf="i < tutor.categories.length - 1">,
                     </span></span>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -180,14 +186,7 @@
             </div>
           </div>
         </div>
-        <div class="card card-border mb-3" *ngIf="tutor && tutor.bio">
-          <div class="card-header">
-            <h4 class="card-title" translate>About Me</h4>
-          </div>
-          <div class="card-body">
-            <app-card-text [content]="tutor.bio" [showChar]="500"></app-card-text>
-          </div>
-        </div>
+        
         
         <div class="card card-border mb-3" id="view-webinars">
           <div class="card-header">

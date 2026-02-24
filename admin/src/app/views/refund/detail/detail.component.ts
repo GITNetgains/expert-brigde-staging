@@ -19,6 +19,7 @@ import {
 } from '@coreui/angular';
 import { RequestRefundService } from '@services/request-refund.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 
 @Component({
   selector: 'app-detail',
@@ -55,9 +56,10 @@ export class DetailComponent {
   private refundService = inject(RequestRefundService);
   private toasty = inject(UtilService);
   private location = inject(Location);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.id = this.route.snapshot.paramMap.get('id') || '';
     this.refundService.findOne(this.id).subscribe({
       next: (res: any) => {

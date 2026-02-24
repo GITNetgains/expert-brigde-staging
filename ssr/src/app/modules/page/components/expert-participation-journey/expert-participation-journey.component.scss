@@ -1,0 +1,290 @@
+/* Expert's Participation Journey – same design as mock, responsive */
+
+$primary: #0d2b3e;
+$primary-light: #e8f4fc;
+$white: #fff;
+$text: #0d2b3e;
+$shadow: rgba(0, 0, 0, 0.06);
+$radius: 12px;
+$radius-lg: 16px;
+
+.journey-page {
+  min-height: 100vh;
+  background: #f5fafd;
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.journey-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(13, 43, 62, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.journey-circles {
+  position: absolute;
+  inset: 0;
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(13, 43, 62, 0.04);
+    &.circle-1 { width: 200px; height: 200px; top: 5%; right: 5%; }
+    &.circle-2 { width: 120px; height: 120px; bottom: 15%; left: 3%; }
+    &.circle-3 { width: 80px; height: 80px; top: 40%; right: 10%; }
+  }
+}
+
+.journey-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+/* Header */
+.journey-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.journey-logo {
+  display: inline-block;
+  margin-bottom: 24px;
+  .logo-img {
+    height: 40px;
+    width: auto;
+    display: block;
+  }
+}
+
+.journey-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.journey-subtitle {
+  font-size: clamp(15px, 2vw, 18px);
+  color: $text;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Steps */
+.journey-steps {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.steps-track {
+  display: none;
+  @media (min-width: 992px) {
+    display: block;
+    position: absolute;
+    top: 100px;
+    left: 5%;
+    right: 5%;
+    height: 2px;
+    .track-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, $primary 0, $primary 6px, transparent 6px, transparent 12px);
+      opacity: 0.4;
+    }
+    .track-dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -4px;
+      height: 10px;
+      background: radial-gradient(circle, $primary 2px, transparent 2px);
+      background-size: 12px 10px;
+      background-repeat: repeat-x;
+      opacity: 0.5;
+    }
+  }
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+}
+
+.step-card {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: 20px 16px;
+  box-shadow: 0 4px 16px $shadow;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px $shadow;
+  }
+  @media (min-width: 992px) {
+    padding: 20px 12px;
+  }
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $primary-light;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.step-icon {
+  margin-bottom: 12px;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  i.fi {
+    font-size: 2rem;
+    line-height: 1;
+  }
+}
+
+.step-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 8px;
+  line-height: 1.3;
+  @media (min-width: 992px) {
+    font-size: 14px;
+  }
+}
+
+.step-desc {
+  font-size: 13px;
+  color: $text;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.9;
+  @media (min-width: 992px) {
+    font-size: 12px;
+  }
+}
+
+/* Process summary */
+.journey-summary {
+  margin-bottom: 32px;
+}
+
+.summary-bar {
+  background: $primary;
+  color: $white;
+  text-align: center;
+  padding: 14px 20px;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: $text;
+  font-size: 14px;
+  line-height: 1.6;
+  li {
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 8px;
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: $primary;
+    }
+  }
+  strong {
+    color: $text;
+  }
+}
+
+/* CTAs */
+.journey-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  min-height: 48px;
+  border: 2px solid transparent;
+}
+
+.btn-primary-cta {
+  background: $primary;
+  color: $white;
+  &:hover {
+    background: darken($primary, 6%);
+    color: $white;
+  }
+}
+
+.btn-secondary-cta {
+  background: $white;
+  color: $primary;
+  border-color: $primary;
+  &:hover {
+    background: $primary-light;
+    color: $primary;
+  }
+}
+
+@media (max-width: 575px) {
+  .journey-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn {
+    width: 100%;
+    max-width: 320px;
+  }
+}

@@ -188,17 +188,22 @@ export class ScheduleEditComponent implements OnInit {
   }
 
   loadStatic() {
+    if (!this.calendarApi || !this.calendarApi.view) {
+      return;
+    }
+    const view = this.calendarApi.view;
+    const activeStart = view.activeStart;
+    const activeEnd = view.activeEnd;
+    if (activeStart == null || activeEnd == null) {
+      return;
+    }
     this.calendarEvents = [];
     this.calendarApi.removeAllEvents();
     if (this.currentUser && this.currentUser._id) {
       this.calendar
         .search({
-          startTime: moment(this.calendarApi.view.activeStart)
-            .toDate()
-            .toISOString(),
-          toTime: moment(this.calendarApi.view.activeEnd)
-            .toDate()
-            .toISOString(),
+          startTime: moment(activeStart).toDate().toISOString(),
+          toTime: moment(activeEnd).toDate().toISOString(),
           webinarId: this.webinarId || '',
           take: 10000,
           type: !this.type || this.type === 'subject' ? '' : 'webinar',

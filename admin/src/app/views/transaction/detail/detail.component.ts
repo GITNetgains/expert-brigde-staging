@@ -13,6 +13,7 @@ import {
 } from '@coreui/angular';
 import { TransactionService } from '@services/transaction.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -40,9 +41,10 @@ export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private toasty = inject(UtilService);
   private transactionService = inject(TransactionService);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.tId = this.route.snapshot.paramMap.get('id');
     if (this.tId) {
       this.transactionService

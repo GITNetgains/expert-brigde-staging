@@ -236,6 +236,10 @@ exports.update = async (req, res, next) => {
 
     Object.assign(tutor, validate.value);
 
+    if ('bio' in validate.value) {
+      tutor.markModified('bio');
+    }
+
     // ✅ SKILLS UPDATE
     if (validate.value.skillIds) {
       tutor.skillIds = _.uniq(validate.value.skillIds);

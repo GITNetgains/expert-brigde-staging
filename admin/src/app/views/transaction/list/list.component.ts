@@ -36,6 +36,7 @@ import { TransactionService } from '@services/transaction.service';
 import { TutorService } from '@services/tutor.service';
 import { UserService } from '@services/user.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { ISortOption } from 'src/interfaces';
 import { EyeIconComponent } from '@components/common/icons/eye-icon/eye-icon.component';
 
@@ -103,9 +104,10 @@ export class ListComponent implements OnInit {
   private userService = inject(UserService);
   private tutorService = inject(TutorService);
   private transactionService = inject(TransactionService);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.route.queryParams.subscribe((params) => {
       const page = params['page'] ? parseInt(params['page']) : 1;
       this.currentPage = !isNaN(page) ? page : 1;

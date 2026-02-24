@@ -188,7 +188,11 @@ export class LessonDetailComponent implements OnInit {
       };
       this.rescheduling = true;
       this.appointmentService
-        .checkOverlap({ startTime: time.start, toTime: time.end })
+        .checkOverlap({
+          startTime: time.start,
+          toTime: time.end,
+          excludeAppointmentId: this.appointment._id
+        })
         .then((resp) => {
           if (resp.data.checkOverlap) {
             if (

@@ -21,6 +21,7 @@ import {
   MyTopicService,
   TutorService,
 } from 'src/services';
+import { AppConfigService } from '@services/app-config.service';
 import { environment } from 'src/environments/environment';
 import { ageFilter } from 'src/constants/age';
 import { imageMimeTypes, videoMimeTypes } from 'src/constants';
@@ -89,6 +90,7 @@ export class CourseUpdateComponent implements OnInit {
   private mySubjectService = inject(MySubjectService);
   private myTopicService = inject(MyTopicService);
   private tutorService = inject(TutorService);
+  private appConfigService = inject(AppConfigService);
 
   public maxFileSize: number = 1024;
   public tab: number = 1;
@@ -131,7 +133,7 @@ export class CourseUpdateComponent implements OnInit {
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       );
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.setupTutorSearch();
 
     this.courseService.findOne(this.courseId).subscribe({

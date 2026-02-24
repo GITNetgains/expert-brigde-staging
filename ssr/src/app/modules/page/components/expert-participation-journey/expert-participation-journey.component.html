@@ -1,0 +1,54 @@
+<section class="journey-page">
+  <div class="journey-bg">
+    <div class="journey-dots"></div>
+    <div class="journey-circles">
+      <span class="circle circle-1"></span>
+      <span class="circle circle-2"></span>
+      <span class="circle circle-3"></span>
+    </div>
+  </div>
+
+  <div class="container journey-container">
+    <!-- Header -->
+    <header class="journey-header">
+      <a routerLink="/" class="journey-logo">
+        <img src="assets/images/logo.svg" alt="ExpertBridge" class="logo-img" onerror="this.src='assets/images/logo.png'" />
+      </a>
+      <h1 class="journey-title">Expert's Participation Journey</h1>
+      <p class="journey-subtitle">Share your knowledge. Shape the future. Grow with us:</p>
+    </header>
+
+    <!-- Steps -->
+    <div class="journey-steps">
+      <div class="steps-track">
+        <span class="track-line" aria-hidden="true"></span>
+        <span class="track-dots" aria-hidden="true"></span>
+      </div>
+      <div class="steps-grid">
+        <article class="step-card" *ngFor="let step of steps; let i = index">
+          <div class="step-number">{{ step.num }}</div>
+          <div class="step-icon"><i class="fi {{ step.icon }}"></i></div>
+          <h3 class="step-title">{{ step.title }}</h3>
+          <p class="step-desc">{{ step.desc }}</p>
+        </article>
+      </div>
+    </div>
+
+    <!-- Process summary -->
+    <div class="journey-summary">
+      <div class="summary-bar">
+        This entire process generally takes between 15 min to 7 days.
+      </div>
+      <ul class="summary-list">
+        <li><strong>Responsiveness Matters:</strong> Fast replies increase your chances of selection</li>
+        <li><strong>Fast-Track Selection:</strong> Be notified instantly via our platform</li>
+      </ul>
+    </div>
+
+    <!-- CTAs -->
+    <div class="journey-cta">
+      <a [routerLink]="['/auth/sign-up']" class="btn btn-primary-cta">Apply to Join the Network</a>
+      <a [routerLink]="['/auth/login']" class="btn btn-secondary-cta">Already a member? Log in here</a>
+    </div>
+  </div>
+</section>

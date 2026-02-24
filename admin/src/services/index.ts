@@ -1,4 +1,5 @@
 export * from './auth.service';
+export * from './ai.service';
 export * from './util.service';
 export * from './appointment.service';
 export * from './user.service';
@@ -14,6 +15,7 @@ export * from './request-payout.service';
 export * from './request-refund.service';
 export * from './transaction.service';
 export * from './config.service';
+export * from './app-config.service';
 export * from './currency.service';
 export * from './template.service';
 export * from './testimonial.service';

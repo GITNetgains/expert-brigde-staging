@@ -215,7 +215,7 @@
         </div>
         <div *ngIf="showCalendar">
           <p class="text-secondary mt-5" translate>
-            You can reschedule the appointment 8 hours in advance.
+            You can reschedule the appointment until 1 hour before the start time.
           </p>
           <div class="card-horizontal p-4 text-border position-relative">
             <app-loading [loading]="rescheduling"></app-loading>
@@ -274,7 +274,7 @@
                 </div>
               </div>
             </div>
-            <h5 translate>Lesson Materials</h5>
+            <h5 translate>Documents to be shared with the expert</h5>
             <div *ngIf="documents.length" class="mt-3">
               <div
                 class="d-flex justify-content-between"

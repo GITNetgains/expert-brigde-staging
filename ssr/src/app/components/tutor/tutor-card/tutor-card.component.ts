@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TemplateRef, ViewChild } from '@angular/core';
 import {
   Component,
@@ -33,6 +33,8 @@ export class TutorCardComponent implements OnInit {
   @Input() isBorder: boolean;
   @ViewChild('introVideoTpl') introVideoTpl: TemplateRef<any>;
   public videoUrl: any;
+  /** When true, full bio is shown in the card (no navigation). */
+  public bioExpanded = false;
 
   @Output() hover = new EventEmitter();
   constructor(
@@ -55,6 +57,20 @@ export class TutorCardComponent implements OnInit {
 
   @HostListener('mouseleave') onMouseLeave() {
     this.hover.emit({ top: null, tutor: null });
+  }
+
+  toggleBioExpanded(): void {
+    this.bioExpanded = !this.bioExpanded;
+  }
+
+  /** Sanitized bio for safe HTML rendering (line breaks + simple markdown bold **text**) */
+  get sanitizedBio(): SafeHtml {
+    const bio = this.tutor?.bio || '';
+    if (!bio) return this.sanitizer.bypassSecurityTrustHtml('');
+    let html = String(bio)
+      .replace(/\n/g, '<br>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   ngOnInit() {

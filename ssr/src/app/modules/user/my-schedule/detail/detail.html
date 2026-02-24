@@ -153,7 +153,7 @@
               </td>
             </tr>
             <tr
-              *ngIf="canReschedule && (appointment?.status === 'booked' || appointment?.status === 'pending')"
+              *ngIf="(appointment?.status === 'booked' || appointment?.status === 'pending') && appointment?.targetType !== 'webinar'"
             >
               <td><span translate>Reschedule class</span></td>
               <td>
@@ -163,6 +163,9 @@
                 >
                   <span translate>Reschedule</span>
                 </a>
+                <p *ngIf="!canReschedule" class="text-muted small mt-1 mb-0" translate>
+                  Rescheduling is allowed until 1 hour before the start time.
+                </p>
               </td>
             </tr>
             <tr *ngIf="appointment.recordings?.shareUrl">
@@ -214,14 +217,14 @@
     <div class="col-md-7">
       <div class="mb-4" *ngIf="showCalendar">
         <p class="text-secondary" translate>
-          You can reschedule the appointment 8 hours in advance.
+          You can reschedule the appointment until 1 hour before the start time.
         </p>
         <div class="card-horizontal p-4 text-border position-relative">
           <app-loading [loading]="rescheduling"></app-loading>
           <app-tutor-available-time
             [tutorId]="appointment.tutor._id"
             [isFree]="appointment.isFree"
-            (onSelect)="chooseSlot($event)"
+            (doSelect)="chooseSlot($event)"
             [reschedule]="true"
           ></app-tutor-available-time>
         </div>
@@ -260,6 +263,7 @@
         <div class="card">
           <div class="card-header">
             <h4 translate>Lesson Materials</h4>
+            <p class="mb-0 mt-1 text-muted small" translate>Documents to be shared with the expert</p>
           </div>
           <!-- <label class="content-title" translate style="width: 100%">Update lesson materials </label> -->
           <div class="card-body">
@@ -270,7 +274,7 @@
               >
                 <div>
                   <i class="fa fa-file" aria-hidden="true"></i>
-                  <span> {{item?.name}}</span>
+                  <span translate>Name</span>: <span>{{item?.name}}</span>
                 </div>
 
                 <div>

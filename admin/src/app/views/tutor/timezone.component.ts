@@ -17,7 +17,7 @@ import moment from 'moment-timezone';
           name="timezone"
           #timezoneModel="ngModel"
           placeholder="Select timezone"
-          required
+          [required]="required"
           bindValue="$this"
           bindLabel="$this"
           [clearable]="true"
@@ -39,6 +39,8 @@ import moment from 'moment-timezone';
 export class TimezoneComponent implements OnInit {
   @Input() userTz: string = '';
   @Input() isSubmitted: boolean = false;
+  /** When false, timezone is optional (e.g. admin tutor form). */
+  @Input() required: boolean = true;
   @Output() onChange = new EventEmitter<string>();
   @Output() onValidationChange = new EventEmitter<boolean>();
   
@@ -58,7 +60,7 @@ export class TimezoneComponent implements OnInit {
     
     setTimeout(() => {
       this.onChange.emit(this.userTz);
-      this.isValid = !!this.userTz;
+      this.isValid = this.required ? !!this.userTz : true;
       this.onValidationChange.emit(this.isValid);
     });
   }
@@ -120,14 +122,14 @@ export class TimezoneComponent implements OnInit {
   private validateTimezone(): void {
     setTimeout(() => {
       if (this.timezoneModel) {
-        this.isValid = this.timezoneModel.valid ?? false;
+        this.isValid = this.required ? (this.timezoneModel.valid ?? false) : true;
         this.onValidationChange.emit(this.isValid);
       }
     });
   }
 
   public shouldShowError(): boolean {
-    if (!this.timezoneModel) return false;
+    if (!this.required || !this.timezoneModel) return false;
     
     return (
       (this.timezoneModel.invalid ?? false) &&

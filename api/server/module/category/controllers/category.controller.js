@@ -6,7 +6,7 @@ const validateSchema = Joi.object().keys({
   alias: Joi.string().allow([null, '']).optional(),
   description: Joi.string().allow([null, '']).optional(),
   ordering: Joi.number().allow([null, '']).optional(),
-  imageId: Joi.string().required(),
+  imageId: Joi.string().allow(null, '').optional(),
   isActive: Joi.boolean().allow(null, '').optional()
 });
 
@@ -38,6 +38,9 @@ exports.create = async (req, res, next) => {
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
     }
+    if (validate.value.imageId === '') {
+      validate.value.imageId = null;
+    }
 
     let alias = req.body.alias ? Helper.String.createAlias(req.body.alias) : Helper.String.createAlias(req.body.name);
     const count = await DB.Category.count({ alias });
@@ -67,6 +70,9 @@ exports.update = async (req, res, next) => {
     const validate = Joi.validate(req.body, validateSchema);
     if (validate.error) {
       return next(PopulateResponse.validationError(validate.error));
+    }
+    if (validate.value.imageId === '') {
+      validate.value.imageId = null;
     }
 
     let alias = validate.value.alias ? Helper.String.createAlias(validate.value.alias) : Helper.String.createAlias(validate.value.name);

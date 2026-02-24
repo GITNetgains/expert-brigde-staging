@@ -56,8 +56,8 @@ export class BookingComponent implements OnInit {
   public isLoggedin = false;
   public showMore = false;
   public showChar = 500;
-  // tslint:disable-next-line:max-line-length
-  public urlYoutube: any;
+  /** Introduction video URL (uploaded file). No YouTube – if not set, video block is hidden. */
+  public introVideoUrl: string | null = null;
   public languages: any;
   public languageNames: any = [];
   public objectLanguage: any = {};
@@ -190,9 +190,7 @@ export class BookingComponent implements OnInit {
     this.price = this.tutor.price1On1Class;
     this.booking.tutorId = this.tutor._id;
     this.isLoggedin = this.authService.isLoggedin();
-    this.urlYoutube = this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${this.tutor.idYoutube}`
-    );
+    this.setIntroVideoUrl();
     this.languages = this.languageService.getLang();
     this.objectLanguage = this.languageService.languages;
     if (this.tutor.languages) {
@@ -402,6 +400,19 @@ export class BookingComponent implements OnInit {
         return;
       }
     );
+  }
+
+  /** Set intro video URL from tutor's uploaded intro video; no YouTube. */
+  private setIntroVideoUrl(): void {
+    const introVideo: any = (this.tutor as any).introVideo;
+    if (introVideo && (introVideo.fileUrl || introVideo.originalPath || introVideo.filePath)) {
+      this.introVideoUrl =
+        introVideo.fileUrl ||
+        introVideo.mediumUrl ||
+        introVideo.thumbUrl ||
+        introVideo.originalPath ||
+        introVideo.filePath;
+    }
   }
 
   mapLanguageName(languageKeys: any) {
