@@ -1,4 +1,5 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IStaticPage } from 'src/app/interface';
 import { SeoService, StaticPageService } from 'src/app/services';
@@ -19,7 +20,8 @@ export class StaticPageComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private pageService: StaticPageService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.route.params.subscribe((params) => {
       this.alias = params.alias;
@@ -46,43 +48,45 @@ export class StaticPageComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {}
 
-  // ✅ SINGLE ngAfterViewInit
-ngAfterViewInit() {
-  document.addEventListener('click', (event: any) => {
-    const question = event.target.closest('.faq-question');
-    if (!question) return;
+  ngAfterViewInit() {
+    // Only run in browser; document is not defined during SSR
+    if (!isPlatformBrowser(this.platformId)) return;
 
-    const item = question.closest('.faq-item') as HTMLElement;
-    const answer = item.querySelector('.faq-answer') as HTMLElement;
-    if (!answer) return;
+    document.addEventListener('click', (event: any) => {
+      const question = event.target.closest('.faq-question');
+      if (!question) return;
 
-    const isOpen = item.classList.contains('open');
+      const item = question.closest('.faq-item') as HTMLElement;
+      const answer = item.querySelector('.faq-answer') as HTMLElement;
+      if (!answer) return;
 
-    // Close other open items smoothly
-    document.querySelectorAll('.faq-item.open').forEach((openItem: any) => {
-      if (openItem !== item) {
-        const openAnswer = openItem.querySelector('.faq-answer') as HTMLElement;
-        openAnswer.style.height = openAnswer.scrollHeight + 'px';
+      const isOpen = item.classList.contains('open');
+
+      // Close other open items smoothly
+      document.querySelectorAll('.faq-item.open').forEach((openItem: any) => {
+        if (openItem !== item) {
+          const openAnswer = openItem.querySelector('.faq-answer') as HTMLElement;
+          openAnswer.style.height = openAnswer.scrollHeight + 'px';
+          requestAnimationFrame(() => {
+            openAnswer.style.height = '0px';
+          });
+          openItem.classList.remove('open');
+        }
+      });
+
+      // Toggle current item
+      if (!isOpen) {
+        item.classList.add('open');
+        answer.style.height = answer.scrollHeight + 'px';
+      } else {
+        answer.style.height = answer.scrollHeight + 'px';
         requestAnimationFrame(() => {
-          openAnswer.style.height = '0px';
+          answer.style.height = '0px';
         });
-        openItem.classList.remove('open');
+        item.classList.remove('open');
       }
     });
-
-    // Toggle current item
-    if (!isOpen) {
-      item.classList.add('open');
-      answer.style.height = answer.scrollHeight + 'px';
-    } else {
-      answer.style.height = answer.scrollHeight + 'px';
-      requestAnimationFrame(() => {
-        answer.style.height = '0px';
-      });
-      item.classList.remove('open');
-    }
-  });
-}
+  }
 
 
   getImage(item: any): string {
