@@ -3,8 +3,12 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const express = require('express');
-const app = require('./app');
+const appPromise = require('./app');
 
-app.app.use('/docs', express.static(path.join(__dirname, '..', 'apidocs')));
-
-app.startHttpServer();
+appPromise.then((app) => {
+  app.app.use('/docs', express.static(path.join(__dirname, '..', 'apidocs')));
+  app.startHttpServer();
+}).catch((err) => {
+  console.error('Failed to bootstrap API:', err);
+  process.exit(1);
+});
