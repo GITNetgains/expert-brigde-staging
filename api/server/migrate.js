@@ -1,6 +1,7 @@
 const migrate = require('migrate');
 require('dotenv').config();
-require('./app');
+const appPromise = require('./app');
+
 class MongoDbStore {
   async load(fn) {
     let data = null;
@@ -40,26 +41,31 @@ class MongoDbStore {
   }
 }
 
-migrate.load(
-  {
-    // Set class as custom stateStore
-    stateStore: new MongoDbStore(),
-    // do not filter lib folder, load only js file
-    filterFunction: fileName => fileName.includes('.js') && !fileName.includes('lib/')
-  },
-  async (err, set) => {
-    if (err) {
-      console.log('migrate er>>>', err);
-      throw err;
-    }
-
-    set.up(err2 => {
-      if (err2) {
-        throw err2;
+appPromise.then(() => {
+  migrate.load(
+    {
+      // Set class as custom stateStore
+      stateStore: new MongoDbStore(),
+      // do not filter lib folder, load only js file
+      filterFunction: fileName => fileName.includes('.js') && !fileName.includes('lib/')
+    },
+    async (err, set) => {
+      if (err) {
+        console.log('migrate er>>>', err);
+        throw err;
       }
-      // eslint-disable-next-line no-console
-      console.log('Migrations successfully ran');
-      process.exit();
-    });
-  }
-);
+
+      set.up(err2 => {
+        if (err2) {
+          throw err2;
+        }
+        // eslint-disable-next-line no-console
+        console.log('Migrations successfully ran');
+        process.exit();
+      });
+    }
+  );
+}).catch((err) => {
+  console.error('Failed to bootstrap API:', err);
+  process.exit(1);
+});

@@ -4,20 +4,19 @@ require('dotenv').config({
   path: path.join(__dirname, '.env')
 });
 
-// const app = express();
-
-const kernel = require('../server/app');
-
-global.request = require('supertest')(kernel.app);
-global.expect = require('chai').expect;
-global.testUtil = require('./util')(global.request);
-
+const appPromise = require('../server/app');
 const SeedUser = require('./helpers/seed-user');
 const SeedConfig = require('../server/migrations/config');
 const SeedMedia = require('./helpers/seed-media');
 const Cleanup = require('./helpers/clean-up');
 
+global.expect = require('chai').expect;
+
 before(async () => {
+  const kernel = await appPromise;
+  global.request = require('supertest')(kernel.app);
+  global.testUtil = require('./util')(global.request);
+
   await SeedConfig();
   const userData = await SeedUser();
   global.admin = userData.admin;
