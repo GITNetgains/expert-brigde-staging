@@ -1,0 +1,76 @@
+.table-available-time {
+  overflow: auto;
+  max-height: 500px;
+
+  .table {
+    margin: 0;
+    th {
+      padding: 0.75rem;
+      text-align: center;
+      position: sticky;
+      background-color: #fff;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      border-left: 1px solid #ddd;
+      &:first-child {
+        border: 0;
+      }
+    }
+    td {
+      border-left: 1px solid #ddd;
+      &:first-child {
+        border: 0;
+      }
+    }
+  }
+
+  .calendar-btn-group {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .btn-prev {
+      position: absolute;
+      left: 0;
+    }
+
+    .btn-next {
+      position: absolute;
+      right: 0;
+    }
+  }
+
+  .list-slot-by-day {
+    padding: 0;
+    list-style: none;
+    text-align: center;
+    li {
+      .slot-box {
+        color: #fff;
+        min-width: 100px;
+        border-radius: 10px;
+        padding: 5px;
+        &.booked {
+          opacity: 80%;
+        }
+
+        p {
+          margin-bottom: 2px;
+          line-height: 1.5em;
+        }
+
+        .btn.btn-block {
+          margin-top: 5px;
+        }
+      }
+      margin: 5px 0px;
+    }
+  }
+}
+@media (max-width: 576px) {
+  .calendar-btn-group {
+    h4 {
+      font-size: 15px;
+    }
+  }
+}

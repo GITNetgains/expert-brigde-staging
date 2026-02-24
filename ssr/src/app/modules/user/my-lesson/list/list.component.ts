@@ -146,23 +146,9 @@ export class ListLessonComponent implements OnInit {
           if (
             resp.data &&
             resp.data.platform === 'zoomus' &&
-            resp.data['zoomus'].signature
+            resp.data['zoomus'].url
           ) {
-            const zoomDisplayName = (this.currentUser.type === 'tutor' && this.currentUser.showPublicIdOnly)
-              ? String(this.currentUser.userId || this.currentUser._id)
-              : this.currentUser.name;
-            const token = encrypt(
-              {
-                meetingInfo: resp.data['zoomus'],
-                appointmentId,
-                currentUser: { ...pick(this.currentUser, ['email', 'type']), name: zoomDisplayName }
-              },
-              ''
-            );
-
-            window.location.href = `${
-              environment.zoomSiteUrl
-            }?token=${encodeURIComponent(token)}`;
+            window.open(resp.data['zoomus'].url, '_blank');
           } else if (
             resp.data &&
             resp.data.platform === 'lessonspace' &&
@@ -177,6 +163,8 @@ export class ListLessonComponent implements OnInit {
                 appointmentId
               }
             });
+          } else {
+            this.appService.toastError('Meeting link not available yet. Please wait for the expert to start the meeting.');
           }
         })
         .catch((err) => {

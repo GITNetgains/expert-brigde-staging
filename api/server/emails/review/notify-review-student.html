@@ -1,6 +1,6 @@
 <p>Hello {{student.name}},</p>
 <br />
-<p><strong>{{tutor.name}}</strong> has reviewed the session.</p>
+<p><strong>{% if tutor.showPublicIdOnly %}Expert (ID: {{ tutor.userId }}){% else %}{{tutor.name}}{% endif %}</strong> has reviewed the session.</p>
 <br />
 <p><strong>Appointment: </strong> #{{appointment.code}}</p>
 <p>

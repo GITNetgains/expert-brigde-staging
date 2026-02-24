@@ -53,7 +53,7 @@ exports.cancel = async (appointmentId, reason, cancelBy) => {
     const user = await DB.User.findOne({ _id: appointment.userId });
     const tutor = await DB.User.findOne({ _id: appointment.tutorId });
     const startTimeUser = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', user.timezone || '');
-    const toTimeUser = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm');
+    const toTimeUser = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', user.timezone || '');
     const startTimeTutor = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
 
@@ -325,8 +325,8 @@ exports.checkNotStart = async appointmentId => {
     const tutor = await DB.User.findOne({ _id: appointment.tutorId });
     const user = await DB.User.findOne({ _id: appointment.userId });
 
-    const startTime = moment(appointment.startTime).format('DD/MM/YYYY HH:mm');
-    const toTime = moment(appointment.toTime).format('DD/MM/YYYY HH:mm');
+    const startTime = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
+    const toTime = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const data = {
       subject: `Tutor did not start meeting for the class #${appointment.code}`,
       appointment: appointment.toObject(),

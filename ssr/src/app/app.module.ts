@@ -72,7 +72,7 @@ export function createTranslateLoader(http: HttpClient) {
     DashboardLayoutComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'livelearn-ssr-app' }),
+    BrowserModule.withServerTransition({ appId: 'expertbridge-ssr-app' }),
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,

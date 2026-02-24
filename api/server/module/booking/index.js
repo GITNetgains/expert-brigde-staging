@@ -34,5 +34,15 @@ exports.agendaJobs = [
     name: 'get-zoom-recording',
     interval: '5 minutes',
     job: require('./agenda/get-zoom-recording')
+  },
+  {
+    name: 'session-reminder',
+    interval: '2 minutes',
+    job: require('./agenda/session-reminder')
+  },
+  {
+    name: 'session-harvester',
+    interval: '15 minutes',
+    job: require('./agenda/session-harvester')
   }
 ];

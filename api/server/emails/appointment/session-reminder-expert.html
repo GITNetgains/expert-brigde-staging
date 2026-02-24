@@ -1,0 +1,26 @@
+<p>Hello,</p>
+<p>This is a reminder that your consultation session is starting in <strong>10 minutes</strong>.</p>
+<table style="width:100%; border-collapse:collapse; margin:20px 0;">
+  <tr>
+    <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9; width:140px;"><strong>Session</strong></td>
+    <td style="padding:8px; border:1px solid #ddd;">ExpertBridge Consultation</td>
+  </tr>
+  <tr>
+    <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Date &amp; Time</strong></td>
+    <td style="padding:8px; border:1px solid #ddd;">{{ startTime }} - {{ toTime }}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Code</strong></td>
+    <td style="padding:8px; border:1px solid #ddd;">#{{ appointment.code }}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Client</strong></td>
+    <td style="padding:8px; border:1px solid #ddd;">{% if user.showPublicIdOnly %}Client (Booking #{{ appointment.code }}){% else %}{{ user.name }}{% endif %}</td>
+  </tr>
+</table>
+{% if appointment.zoomData && appointment.zoomData.start_url %}
+<p style="margin:20px 0;">
+  <a href="{{ appointment.zoomData.start_url }}" style="background-color:#2D89EF; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:4px; font-weight:bold;">Start Meeting</a>
+</p>
+<p style="color:#666; font-size:13px;">If the button doesn't work, copy this link: {{ appointment.zoomData.start_url }}</p>
+{% endif %}

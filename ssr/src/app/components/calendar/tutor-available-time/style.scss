@@ -74,3 +74,21 @@
     }
   }
 }
+
+.duration-picker {
+  margin: 4px 0;
+  .dp-select {
+    font-size: 11px;
+    padding: 2px 4px;
+    height: auto;
+    margin-bottom: 3px;
+    color: #333;
+    background-color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 4px;
+    &:focus {
+      outline: none;
+      border-color: #fff;
+    }
+  }
+}

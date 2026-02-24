@@ -299,6 +299,7 @@ exports.update = async (req, res, next) => {
           source: 'profile_edit',
           mongo_user_id: String(tutor._id),
           email: tutor.email,
+          name: tutor.name || null,
           bio: tutor.bio || null,
           phone: tutor.phoneNumber || null,
           city: tutor.city || null,
@@ -437,12 +438,7 @@ if (hasMin || hasMax) {
       query.rejected = false;
       query.emailVerified = true;
 
-      const isZoomPlatform = await Service.Meeting.isPlatform(
-        PLATFORM_ONLINE.ZOOM_US
-      );
-      if (isZoomPlatform) {
-      query.isZoomAccount = true;
-      }
+      // isZoomAccount filter removed - experts no longer need Zoom accounts
     }
 
     const sort = Helper.App.populateDBSort(req.query);
@@ -489,8 +485,41 @@ exports.changeStatus = async (req, res, next) => {
  */
 exports.remove = async (req, res, next) => {
   try {
+    // Capture user data BEFORE deletion for webhook
+    const deletedEmail = req.tutor.email;
+    const deletedMongoId = String(req.tutor._id);
+    const deletedName = req.tutor.name || '';
+
     await req.tutor.remove();
     res.locals.remove = { success: true };
+
+    // [DELETE-WEBHOOK] Notify PostgreSQL to archive the candidate record
+    try {
+      const fetch = (await import('node-fetch')).default;
+      const webhookPayload = {
+        action: 'ARCHIVE',
+        email: deletedEmail,
+        mongo_user_id: deletedMongoId,
+        name: deletedName,
+        source: 'admin_delete_tutor'
+      };
+      pm2Log('[DELETE-WEBHOOK] Archiving tutor in PostgreSQL:', deletedEmail);
+      fetch(REVERSE_SYNC_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': REVERSE_SYNC_API_KEY
+        },
+        body: JSON.stringify(webhookPayload)
+      }).then(function(r) {
+        pm2Log('[DELETE-WEBHOOK] Response status:', r.status);
+      }).catch(function(err) {
+        pm2Error('[DELETE-WEBHOOK] Error (non-blocking):', err.message);
+      });
+    } catch (webhookErr) {
+      pm2Error('[DELETE-WEBHOOK] Setup error (non-blocking):', webhookErr.message);
+    }
+
     return next();
   } catch (e) {
     return next(e);

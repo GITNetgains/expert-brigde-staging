@@ -137,6 +137,9 @@ if (recaptchaResult.action && recaptchaResult.action !== 'contact_us') {
         <p><strong>Phone:</strong> ${value.phoneNumber}</p>
         <hr />
         <p style="white-space:pre-line">${value.message}</p>
+        <div style="text-align:center;padding:14px;background:#0F172A;color:#fff;font-size:12px;margin-top:30px;">
+          © 2026 ExpertBridge · <a href="mailto:support@expertbridge.co" style="color:#93C5FD;">support@expertbridge.co</a>
+        </div>
       </div>
       `
     );
@@ -149,6 +152,9 @@ if (recaptchaResult.action && recaptchaResult.action !== 'contact_us') {
         <h2>Thank you for contacting us</h2>
         <p>Hi ${value.name},</p>
         <p>We’ll get back to you shortly.</p>
+        <div style="text-align:center;padding:14px;background:#0F172A;color:#fff;font-size:12px;margin-top:30px;">
+          © 2026 ExpertBridge · <a href="mailto:support@expertbridge.co" style="color:#93C5FD;">support@expertbridge.co</a>
+        </div>
       </div>
       `
     );

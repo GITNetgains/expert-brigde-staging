@@ -18,8 +18,8 @@ exports.create = async (req, res, next) => {
       return next(PopulateResponse.validationError(validate.error));
     }
     const minute = (moment(req.body.toTime).unix() - moment(req.body.startTime).unix()) / 60;
-    if (minute < 60) {
-      return next(PopulateResponse.error({ message: 'Minimum booking duration is 60 minutes' }));
+    if (minute < 30) {
+      return next(PopulateResponse.error({ message: 'Minimum booking duration is 30 minutes' }));
     }
     const data = await Service.Booking.create(
       Object.assign(

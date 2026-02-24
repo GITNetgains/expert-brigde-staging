@@ -143,11 +143,12 @@
                 </td>
               </tr>
               <tr
-                *ngIf="appointment?.status==='pending' || appointment?.status === 'progressing'"
+                *ngIf="appointment?.status==='booked' || appointment?.status==='pending' || appointment?.status === 'progressing'"
               >
                 <td><span translate>Join class</span></td>
                 <td>
                   <a
+                    *ngIf="appointment?.zoomLinkActive !== false"
                     href="javascript:void(0)"
                     class="btn btn-default btn-pink"
                     (click)="joinMeeting()"
@@ -155,6 +156,18 @@
                     <span translate>Click to join class</span>
                   </a>
                 </td>
+              </tr>
+              <tr *ngIf="appointment?.zoomData && appointment?.zoomLinkActive !== false">
+                <td><span translate>Meeting ID</span></td>
+                <td><strong>{{appointment.zoomData?.id}}</strong></td>
+              </tr>
+              <tr *ngIf="appointment?.zoomData?.password && appointment?.zoomLinkActive !== false">
+                <td><span translate>Password</span></td>
+                <td><strong>{{appointment.zoomData?.password}}</strong></td>
+              </tr>
+              <tr *ngIf="appointment?.zoomData?.join_url && appointment?.zoomLinkActive !== false">
+                <td><span translate>Direct Zoom Link</span></td>
+                <td><a [href]="appointment.zoomData?.join_url" target="_blank" class="btn btn-sm btn-outline-primary">Open in Zoom App</a></td>
               </tr>
               <tr
                 *ngIf="canReschedule && (appointment?.status === 'booked' || appointment?.status === 'pending')"

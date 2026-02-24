@@ -83,12 +83,12 @@
                 <h5 translate>Step 3</h5>
                 <div class="step-3">
                   <p class="slot-btn mb-0 d-inline-block" *ngIf="!appliedCoupon">
-                    {{price | appCurrency }}/<span translate>Slot</span>
+                    {{price | appCurrency }}/<span translate>Hour</span>
                   </p>
                   <p class="slot-btn mb-0 d-inline-block" *ngIf="appliedCoupon">
                     <small class="text-line-through me-1">
                       {{price| appCurrency}}</small>
-                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span translate>Slot</span>
+                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span translate>Hour</span>
                   </p>
                 </div>
               </div>

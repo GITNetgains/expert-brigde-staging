@@ -102,6 +102,8 @@ export interface IMylesson {
   topic: ITopic;
   category: ICategory;
   report: any;
+  zoomData: any;
+  zoomLinkActive?: boolean;
 }
 
 export interface IMyCourse {

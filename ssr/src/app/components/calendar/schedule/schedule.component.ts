@@ -426,18 +426,7 @@ export class ScheduleEditComponent implements OnInit {
         .add(this.slotDuration - minute, 'minutes')
         .toDate();
     }
-    if (
-      (this.slotDuration > 40 &&
-        !this.notified &&
-        window.confirm(
-          this.translate.instant(
-            'You have opened a 40 + mins slot, make sure you have a pro zoom license to take this session.'
-          )
-        )) ||
-      this.notified ||
-      this.slotDuration <= 40
-    ) {
-      this.notified = true;
+    {
       this.calendar
         .create({
           startTime,
@@ -495,15 +484,15 @@ export class ScheduleEditComponent implements OnInit {
       };
       if (
         slot.type === 'subject' &&
-        moment().utc().add(30, 'minute').isAfter(moment.utc(slot.start))
+        moment().utc().isAfter(moment.utc(slot.end))
       ) {
         slot.backgroundColor = '#ddd';
         slot.isDisabled = true;
-        slot.title = 'Not available';
+        slot.title = 'Past slot';
       }
 
       if (slot.type === 'subject' && slot.isFree !== this.isFree) {
-        if (moment().utc().add(30, 'minute').isAfter(moment.utc(slot.start)))
+        if (moment().utc().isAfter(moment.utc(slot.end)))
           slot.backgroundColor = '#ddd';
         else slot.backgroundColor = this.soloColors.otherType;
         slot.isDisabled = true;
@@ -517,7 +506,7 @@ export class ScheduleEditComponent implements OnInit {
         slot.title = item.isFree ? 'Free slot - Booked' : 'Paid slot - Booked';
       }
       if (slot.type === 'webinar') {
-        if (moment().utc().add(30, 'minute').isAfter(moment.utc(slot.start)))
+        if (moment().utc().isAfter(moment.utc(slot.end)))
           slot.backgroundColor = '#ddd';
         else slot.backgroundColor = this.soloColors.groupClass;
         slot.isDisabled = true;

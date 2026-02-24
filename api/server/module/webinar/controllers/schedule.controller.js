@@ -32,10 +32,7 @@ exports.create = async (req, res, next) => {
     if (!tutor) {
       return next(PopulateResponse.error({ message: 'Can not found the Expert!' }));
     }
-    const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
-    if (!tutor.isZoomAccount && isZoomPlatform) {
-      return next(PopulateResponse.error({ message: 'Expert is not active on zoom!' }));
-    }
+    // isZoomAccount check removed - experts no longer need Zoom accounts
     const data = await Service.Schedule.create(tutorId, validate.value);
     if (data.type === 'webinar' && data.webinarId) {
       await DB.Webinar.update(
@@ -156,12 +153,13 @@ exports.list = async (req, res, next) => {
     items = await Promise.all(
       items.map(async item => {
         const data = item.toObject();
-        if (moment.utc().add(30, 'minutes').isAfter(moment.utc(data.startTime))) {
+        if (moment.utc().isAfter(moment.utc(data.toTime))) {
           data.disable = true;
         } else {
           data.disable = false;
         }
         data.booked = false;
+        data.bookedRanges = [];
         if (item.type === 'webinar') {
           const countBooked = await DB.Transaction.count({ slotId: item._id, paid: true });
           const webinar = await DB.Webinar.findOne({ _id: item.webinarId });
@@ -170,20 +168,25 @@ exports.list = async (req, res, next) => {
             data.booked = true;
           }
         } else if (item.type === 'subject') {
-          const countBooked = await DB.Appointment.count({
-            startTime: moment(item.startTime).toDate(),
-            toTime: moment(item.toTime).toDate(),
+          const overlappingAppointments = await DB.Appointment.find({
+            tutorId: query.tutorId,
+            targetType: { $ne: 'webinar' },
+            status: { $in: ['progressing', 'booked', 'pending', 'completed'] },
             paid: true,
-            status: {
-              $in: ['progressing', 'booked', 'pending', 'completed']
-            },
-            targetType: {
-              $ne: 'webinar'
-            },
-            tutorId: query.tutorId
-          });
-          if (countBooked) {
-            data.booked = true;
+            startTime: { $lt: moment(item.toTime).toDate() },
+            toTime: { $gt: moment(item.startTime).toDate() }
+          }).select('startTime toTime').lean();
+
+          if (overlappingAppointments.length > 0) {
+            data.bookedRanges = overlappingAppointments.map(a => ({
+              startTime: a.startTime,
+              toTime: a.toTime
+            }));
+            const fullyBooked = overlappingAppointments.some(a =>
+              moment(a.startTime).isSameOrBefore(moment(item.startTime)) &&
+              moment(a.toTime).isSameOrAfter(moment(item.toTime))
+            );
+            data.booked = fullyBooked;
           }
         }
         return data;

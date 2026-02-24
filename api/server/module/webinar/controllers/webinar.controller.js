@@ -278,11 +278,7 @@ exports.create = async (req, res, next) => {
     if (!tutor) {
       return next(PopulateResponse.error({ message: 'Can not found the Expert!' }));
     }
-    const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
-
-    if (!tutor.isZoomAccount && isZoomPlatform) {
-      return next(PopulateResponse.error({ message: 'Expert is not active on zoom!' }));
-    }
+    // isZoomAccount check removed - experts no longer need Zoom accounts
     let hashWebinar = validate.value.hashWebinar || null;
     if (!hashWebinar) {
       return next(PopulateResponse.error({ message: 'Please add schedule for webinar' }));

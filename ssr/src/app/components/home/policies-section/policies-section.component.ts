@@ -11,17 +11,17 @@ export class PoliciesSectionComponent implements OnInit {
   policyItems = [
     {
       title: 'Verified Experts',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      text: 'Every expert is vetted for credentials, experience, and professional standing before joining our network',
       icon: 'assets/images/homepage/icon4.svg'
     },
     {
       title: 'Data Privacy',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      text: 'Your information is protected with enterprise-grade encryption and strict confidentiality protocols',
       icon: 'assets/images/homepage/icon5.svg'
     },
     {
       title: 'Secure Payment',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      text: 'All transactions are processed through PCI-compliant payment gateways with full fraud protection',
       icon: 'assets/images/homepage/icon6.svg'
     }
   ];

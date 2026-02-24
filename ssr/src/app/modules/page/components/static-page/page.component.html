@@ -15,7 +15,7 @@
             <h5 class="card-title">{{ item?.title }}</h5>
             <p class="card-text">
               <small class="text-muted">
-                {{ item?.createdAt | date:'dd MMM, yyyy' }} • {{ getAuthor(item) }}
+                {{ item?.createdAt | date:'dd MMM, yyyy' }}
               </small>
             </p>
             <a class="btn btn-link p-0" [routerLink]="['/blogs', item?.alias || item?._id]">Read more</a>

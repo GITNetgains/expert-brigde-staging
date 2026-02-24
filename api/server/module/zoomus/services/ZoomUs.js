@@ -58,6 +58,8 @@ exports.createUser = async options => {
             return reject(error);
           }
 
+          console.log('[ZOOM-CREATE-USERC] Result:', response.statusCode, JSON.stringify(body));
+
           if (response.statusCode === 201 || (body && body.id)) {
             try {
               await DB.User.updateOne(
@@ -112,23 +114,31 @@ exports.createMeeting = async options => {
   try {
     const headers = await getZoomRequestHeader();
     
-    // Build meeting payload
+    // Build anonymous booking reference for topic
+    const bookingRef = options.appointmentId
+      ? options.appointmentId.toString().slice(-8)
+      : Math.random().toString(16).slice(2, 10);
+
+    // Build meeting payload — NO participant names or emails
     const meetingPayload = {
-      topic: options.topic || 'Tutoring Session',
-      type: 2, // Scheduled meeting (CHANGED FROM 1)
-      start_time: options.startTime, // ADDED
-      duration: options.duration || 60, // ADDED
-      timezone: options.timezone || 'Asia/Calcutta', // ADDED
+      topic: `ExpertBridge Consultation | Booking #${bookingRef}`,
+      type: 2, // Scheduled meeting
+      start_time: options.startTime,
+      duration: options.duration || 60,
+      timezone: options.timezone || 'Asia/Calcutta',
       settings: {
         host_video: true,
         participant_video: true,
-        join_before_host: false,
+        join_before_host: true,
+        jbh_time: 0,
         mute_upon_entry: false,
         waiting_room: false,
         auto_recording: 'cloud',
         approval_type: 0,
         audio: 'both',
-        meeting_authentication: false
+        meeting_authentication: false,
+        meeting_invitees: [],
+        registrants_email_notification: false,
       }
     };
 
@@ -137,7 +147,7 @@ exports.createMeeting = async options => {
     return new Promise((resolve, reject) =>
       request(
         {
-          uri: `https://api.zoom.us/v2/users/${options.email}/meetings`,
+          uri: 'https://api.zoom.us/v2/users/me/meetings',
           method: 'POST',
           json: meetingPayload,
           headers

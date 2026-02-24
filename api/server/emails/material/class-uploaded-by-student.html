@@ -1,6 +1,6 @@
 <p>Hello {{tutor.name}},</p>
 <br />
-<p>Your client {{user.name}} has uploaded new material for your session {{appointment.code}} {{startTime}} - {{toTime}}
+<p>Your client {% if user.showPublicIdOnly %}Client (Booking #{{ appointment.code }}){% else %}{{user.name}}{% endif %} has uploaded new material for your session {{appointment.code}} {{startTime}} - {{toTime}}
 </p>
 <p>Please sign in to your client dashboard to view the new materials</p>
 <p>

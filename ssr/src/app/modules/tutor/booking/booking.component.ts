@@ -177,7 +177,7 @@ export class BookingComponent implements OnInit {
       },
       {
         property: 'og:description',
-        content: 'Livelearn is online learning platform'
+        content: 'ExpertBridge is an online expert consultation platform'
       }
     ]);
   }
@@ -233,9 +233,9 @@ export class BookingComponent implements OnInit {
     }
 
     const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
-    if (minute < 60) {
+    if (minute < 30) {
       return this.appService.toastError(
-        'Minimum booking duration is 60 minutes'
+        'Minimum booking duration is 30 minutes'
       );
     }
 
@@ -246,6 +246,9 @@ export class BookingComponent implements OnInit {
       return;
     }
     this.cartService.updateTutorId(this.tutor._id);
+    const durationHours = (moment(time.end).unix() - moment(time.start).unix()) / 3600;
+    const proRatedOriginal = Math.round(this.price * durationHours * 100) / 100;
+    const proRatedSale = Math.round(this.salePrice * durationHours * 100) / 100;
     this.cartService.updateCart({
       product: {
         ...this.timeSelected,
@@ -256,8 +259,8 @@ export class BookingComponent implements OnInit {
       },
       quantity: 1,
       price:
-        !this.usedCoupon && this.appliedCoupon ? this.salePrice : this.price,
-      originalPrice: this.price,
+        !this.usedCoupon && this.appliedCoupon ? proRatedSale : proRatedOriginal,
+      originalPrice: proRatedOriginal,
       type: 'subject',
       couponCode:
         !this.usedCoupon &&
@@ -280,9 +283,9 @@ export class BookingComponent implements OnInit {
     }
 
     const minute = (moment(time.end).unix() - moment(time.start).unix()) / 60;
-    if (minute < 60) {
+    if (minute < 30) {
       return this.appService.toastError(
-        'Minimum booking duration is 60 minutes'
+        'Minimum booking duration is 30 minutes'
       );
     }
 
@@ -350,8 +353,8 @@ export class BookingComponent implements OnInit {
     modalStripe.componentInstance.subject = this.subject;
     modalStripe.componentInstance.tutor = this.tutor;
     modalStripe.componentInstance.slot = this.timeSelected;
-    modalStripe.componentInstance.price = modalStripe.componentInstance.price =
-      this.appliedCoupon ? this.salePrice : this.price;
+    const bookingDurationHours = (moment(this.timeSelected.toTime).unix() - moment(this.timeSelected.startTime).unix()) / 3600;
+    modalStripe.componentInstance.price = Math.round((this.appliedCoupon ? this.salePrice : this.price) * bookingDurationHours * 100) / 100;
     modalStripe.componentInstance.config = this.config;
     modalStripe.componentInstance.appliedCoupon = this.appliedCoupon;
     if (

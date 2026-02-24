@@ -451,7 +451,7 @@ ${body}
 <!-- FOOTER -->
 <tr>
 <td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
-© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.com
+© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.co
 </td>
 </tr>
 
@@ -1165,6 +1165,37 @@ exports.remove = async (req, res, next) => {
       user: user.getPublicProfile()
     });
     await user.remove();
+
+    // [DELETE-WEBHOOK] Notify PostgreSQL to archive the candidate record
+    // Only fire for tutor/expert deletions, not client or admin deletions
+    if (user.type === 'tutor' || user.role === 'tutor') {
+      try {
+        const fetch = (await import('node-fetch')).default;
+        const webhookPayload = {
+          action: 'ARCHIVE',
+          email: user.email,
+          mongo_user_id: String(user._id),
+          name: user.name || '',
+          source: 'admin_delete_user'
+        };
+        pm2Log('[DELETE-WEBHOOK] Archiving user in PostgreSQL:', user.email);
+        fetch('http://13.205.83.59:8002/sync/expert-from-mongo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': 'expertbridge-reverse-sync-m7n3p5'
+          },
+          body: JSON.stringify(webhookPayload)
+        }).then(function(r) {
+          pm2Log('[DELETE-WEBHOOK] Response status:', r.status);
+        }).catch(function(err) {
+          pm2Error('[DELETE-WEBHOOK] Error (non-blocking):', err.message);
+        });
+      } catch (webhookErr) {
+        pm2Error('[DELETE-WEBHOOK] Setup error (non-blocking):', webhookErr.message);
+      }
+    }
+
     res.locals.remove = {
       success: true
     };

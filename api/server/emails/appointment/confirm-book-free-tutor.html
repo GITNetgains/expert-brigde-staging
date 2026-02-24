@@ -2,7 +2,7 @@
 <br />
 <p>Please find details of your free trial booking:</p>
 <br />
-<p>Client name: {{user.name}}</p>
+<p>Client name: {% if user.showPublicIdOnly %}Client (Booking #{{ appointment.code }}){% else %}{{user.name}}{% endif %}</p>
 <p>Date and time: {{startTimeTutor}} - {{toTimeTutor}}</p>
 <p>Duration: {{duration}}</p>
 <p>Session code: {{appointment.code}}</p>

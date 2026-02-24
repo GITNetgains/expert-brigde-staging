@@ -13,9 +13,9 @@ exports.register = async data => {
     const user = new DB.User(data);
     user.type = 'tutor';
     user.emailVerifiedToken = Helper.String.randomString(48);
-    // Auto-approve tutors on signup so they can log in immediately
+    // Require admin approval before expert can go live
     user.verified = true;
-    user.pendingApprove = false;
+    user.pendingApprove = true;
     user.rejected = false;
 
     if (data.issueDocument && data.resumeDocument && data.certificationDocument) {
@@ -121,17 +121,8 @@ exports.approve = async tutorId => {
         }
       }
     );
-    const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
-    if (isZoomPlatform) {
-      const zoomUser = await Service.ZoomUs.getUser(tutor.email);
-      if (zoomUser && zoomUser.id && zoomUser.status === 'active') {
-        tutor.isZoomAccount = true;
-        tutor.zoomAccountInfo = zoomUser;
-        await tutor.save();
-      } else {
-        await Service.ZoomUs.createUser({ email: tutor.email });
-      }
-    }
+
+    // Zoom user creation removed - experts use start_url (no Zoom account needed)
 
     await Service.Mailer.send('tutor-approve', tutor.email, {
       subject: 'Congratulations! - Your profile has been approved !',

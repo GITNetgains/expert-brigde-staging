@@ -145,11 +145,11 @@ export class HomeComponent implements OnInit {
           this.config?.homepagePicture &&
           this.config?.homepagePicture?.howItWork
             ? this.config?.homepagePicture?.howItWork
-            : `${environment.url}/assets/images/tutors01.jpg`
+            : `https://expertbridge.co/assets/images/og-image.png`
       },
       {
         property: 'og:description',
-        content: homeSEO?.description || 'Livelearn is online learning platform'
+        content: homeSEO?.description || 'ExpertBridge is an AI-powered expert network connecting businesses with verified industry professionals'
       },
       {
         name: 'keywords',

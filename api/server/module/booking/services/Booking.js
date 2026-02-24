@@ -108,11 +108,15 @@ exports.create = async options => {
       })
     );
     appointment.paid = options.isFree || false;
+    const bookingDurationHours = moment(options.toTime).diff(moment(options.startTime), 'minutes') / 60;
+    const hourlyRate = subject.price || tutor.price1On1Class;
+    const proRatedPrice = Math.round(hourlyRate * bookingDurationHours * 100) / 100;
+
     const data = {
       appointmentId: appointment._id,
       name: `Book appointment with ${tutor.name}`,
       description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
-      price: subject.price || tutor.price1On1Class,
+      price: proRatedPrice,
       redirectSuccessUrl: options.redirectSuccessUrl,
       cancelUrl: options.cancelUrl,
       userId: options.userId,
@@ -154,7 +158,7 @@ exports.create = async options => {
   tutorId: tutor._id,
   targetType: options.targetType,
   target: subject,
-  price: subject.price || tutor.price1On1Class,
+  price: proRatedPrice,
   name: `Book appointment with ${tutor.name}`,
   description: `${user.name} booking slot of ${subject.name} with ${tutor.name}`,
   redirectSuccessUrl: options.redirectSuccessUrl,
@@ -242,7 +246,8 @@ exports.checkout = async (
       });
 
       if (valid && canAddAppoiment && subject) {
-        let itemPrice = subject.price || tutor.price1On1Class;
+        const checkoutDurationHours = (moment(time.toTime).diff(moment(time.startTime), 'minutes')) / 60;
+        let itemPrice = Math.round((subject.price || tutor.price1On1Class) * checkoutDurationHours * 100) / 100;
         let discountPrice = 0;
         let discountAmount = 0;
         let discountValue = 0;
@@ -259,7 +264,7 @@ exports.checkout = async (
 
           if (appliedCoupon) {
             const dataDiscount = await Service.Coupon.calculate({
-              price: subject.price || tutor.price1On1Class,
+              price: itemPrice,
               couponId: appliedCoupon
             });
             totalPrice += dataDiscount.discountPrice;
@@ -279,7 +284,7 @@ exports.checkout = async (
             couponCode = appliedCoupon.code;
           }
         } else {
-          totalPrice += subject.price || tutor.price1On1Class;
+          totalPrice += itemPrice;
         }
 
         const appointment = new DB.Appointment(
@@ -302,7 +307,7 @@ exports.checkout = async (
           targetId: appointment.subjectId,
           description: appointment.description,
           targetType: data.targetType,
-          originalPrice: subject.price || tutor.price1On1Class,
+          originalPrice: Math.round((subject.price || tutor.price1On1Class) * checkoutDurationHours * 100) / 100,
           type: 'booking',
           paymentGateway: 'razorpay',
           price: itemPrice,
