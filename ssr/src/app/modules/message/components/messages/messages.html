@@ -2,11 +2,13 @@
   <div class="top-mesgs">
     <i class="fi fi-rs-angle-left" (click)="goBack()"></i>
     <img
+      *ngIf="receiver?.showPublicIdOnly !== true"
       [src]="receiver?.avatarUrl"
       onerror="this.src='/assets/images/default-avatar.jpg'"
       alt="sunil"
     />
-    <h4 *ngIf="receiver">{{receiver?.name}}</h4>
+    <span *ngIf="receiver?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
+    <h4 *ngIf="receiver">{{ receiver?.showPublicIdOnly === true ? receiver?.userId : receiver?.name }}</h4>
   </div>
   <div class="msg_history" #commentEl [scrollTop]="scrolltop">
     <div *ngIf="items.length < total" class="text-center mb-3">

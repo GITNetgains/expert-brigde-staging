@@ -76,8 +76,10 @@ exports.checkOverlapSlot = async (req, res, next) => {
     if (req.body.userId) {
       userId = req.body.userId;
     }
+    if (req.body.excludeAppointmentId) {
+      options.excludeAppointmentId = req.body.excludeAppointmentId;
+    }
     const checkOverlap = await Service.Booking.checkOverlapSlot({ ...options, userId });
-    console.log(checkOverlap);
 
     res.locals.checkOverlap = {
       checkOverlap

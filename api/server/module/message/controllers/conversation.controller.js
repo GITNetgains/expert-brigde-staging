@@ -59,7 +59,7 @@ exports.list = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Conversation.countDocuments(query);
     const items = await DB.Conversation.find(query)
-      .populate({ path: 'members', select: '_id name username avatar avatarUrl' })
+      .populate({ path: 'members', select: '_id name username avatar avatarUrl userId showPublicIdOnly' })
       .populate({
         path: 'lastMessage'
       })
@@ -151,7 +151,7 @@ exports.findOne = async (req, res, next) => {
       );
     }
     const conversation = await DB.Conversation.findOne({ _id: id })
-      .populate({ path: 'members', select: '_id name username avatar avatarUrl' })
+      .populate({ path: 'members', select: '_id name username avatar avatarUrl userId showPublicIdOnly' })
       .populate({
         path: 'lastMessage'
       });

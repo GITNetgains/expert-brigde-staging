@@ -5,23 +5,9 @@ const apiKey = process.env.AZURE_OPENAI_KEY;
 const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
 const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-04-01-preview";
 
-module.exports.search = async (req, res, next) => {
-  try {
-    const { query } = req.body || {};
-    
-    if (!query) {
-      res.locals.searchResult = { answer: "No query provided." };
-      return next();
-    }
+const AI_PROMPT_CONFIG_KEY = "aiSystemPrompt";
 
-    const client = new AzureOpenAI({
-      endpoint,
-      apiKey,
-      deployment,
-      apiVersion
-    });
-
-const systemPrompt = `
+const DEFAULT_SYSTEM_PROMPT = `
 You are an assistant that responds to talent or hiring-related queries with a polished, professional pitch.
 
 QUERY HANDLING RULES:
@@ -59,6 +45,31 @@ RESPONSE STRUCTURE (only if input is meaningful):
    - Call to action
 `;
 
+async function getSystemPrompt() {
+  const config = await DB.Config.findOne({ key: AI_PROMPT_CONFIG_KEY }).lean();
+  if (config && config.value != null) {
+    return typeof config.value === "string" ? config.value : (config.value.text || DEFAULT_SYSTEM_PROMPT);
+  }
+  return DEFAULT_SYSTEM_PROMPT;
+}
+
+module.exports.search = async (req, res, next) => {
+  try {
+    const { query } = req.body || {};
+    
+    if (!query) {
+      res.locals.searchResult = { answer: "No query provided." };
+      return next();
+    }
+
+    const client = new AzureOpenAI({
+      endpoint,
+      apiKey,
+      deployment,
+      apiVersion
+    });
+
+    const systemPrompt = await getSystemPrompt();
 
     const response = await client.chat.completions.create({
       model: deployment,
@@ -81,5 +92,40 @@ RESPONSE STRUCTURE (only if input is meaningful):
       answer: "Azure OpenAI error occurred. Check server logs." 
     };
     return next();
+  }
+};
+
+module.exports.getPrompt = async (req, res, next) => {
+  try {
+    const systemPrompt = await getSystemPrompt();
+    res.locals.aiPrompt = { systemPrompt };
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.updatePrompt = async (req, res, next) => {
+  try {
+    const { systemPrompt } = req.body || {};
+    if (systemPrompt == null || typeof systemPrompt !== "string") {
+      return res.status(400).json({ code: 400, message: "systemPrompt (string) is required." });
+    }
+    await DB.Config.findOneAndUpdate(
+      { key: AI_PROMPT_CONFIG_KEY },
+      {
+        $set: {
+          key: AI_PROMPT_CONFIG_KEY,
+          value: systemPrompt,
+          group: "system",
+          updatedAt: new Date()
+        }
+      },
+      { upsert: true, new: true }
+    );
+    res.locals.aiPrompt = { systemPrompt };
+    return next();
+  } catch (err) {
+    return next(err);
   }
 };

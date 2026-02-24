@@ -351,11 +351,73 @@ exports.getAiQueries = async (req, res) => {
   }
 };
 
+/**
+ * Get all AI queries across all users (admin only).
+ * Returns flat list with userId, userName, userEmail for each query.
+ */
+exports.getAllAiQueries = async (req, res) => {
+  try {
+    const users = await DB.User.find(
+      { 'aiQueries.0': { $exists: true } },
+      { name: 1, email: 1, aiQueries: 1 }
+    )
+      .populate('aiQueries.aiAttachmentIds')
+      .populate('aiQueries.assignedTutors', 'name email avatar userId')
+      .lean();
+
+    const items = [];
+    for (const user of users) {
+      const queries = user.aiQueries || [];
+      for (const q of queries) {
+        items.push({
+          ...q,
+          userId: user._id,
+          userName: user.name || '',
+          userEmail: user.email || ''
+        });
+      }
+    }
+
+    // Sort by createdAt descending
+    items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return res.json({
+      code: 200,
+      data: items
+    });
+  } catch (err) {
+    return res.status(500).json({
+      code: 500,
+      message: err.message
+    });
+  }
+};
+
 exports.deleteAiQuery = async (req, res) => {
-  await DB.User.updateOne(
+  const user = await DB.User.findOneAndUpdate(
     { _id: req.params.userId },
-    { $pull: { aiQueries: { _id: req.params.queryId } } }
+    { $pull: { aiQueries: { _id: req.params.queryId } } },
+    { new: true }
   );
+
+  if (user) {
+    // Recompute global assignedTutors from remaining aiQueries
+    const globalTutorIds = [];
+    const seen = new Set();
+    for (const q of user.aiQueries || []) {
+      const list = q.assignedTutors || [];
+      for (const t of list) {
+        const id = (t && t._id) ? t._id.toString() : (t && t.toString ? t.toString() : null);
+        if (id && !seen.has(id)) {
+          seen.add(id);
+          globalTutorIds.push(new mongoose.Types.ObjectId(id));
+        }
+      }
+    }
+    await DB.User.findByIdAndUpdate(req.params.userId, {
+      $set: { assignedTutors: globalTutorIds }
+    });
+  }
 
   res.json({ code: 200 });
 };
@@ -1005,13 +1067,23 @@ exports.assignTutorToAiQuery = async (req, res) => {
       return res.status(404).json({ message: 'User or query not found' });
     }
 
-    // 2. Add these tutors to the global list (avoiding duplicates)
-    await DB.User.findByIdAndUpdate(
-      userObjectId,
-      { 
-        $addToSet: { assignedTutors: { $each: tutorObjectIds } } 
+    // 2. Recompute global assignedTutors from ALL aiQueries (so removing an expert
+    //    from a query also removes them from the user's global list when no longer assigned anywhere)
+    const globalTutorIds = [];
+    const seen = new Set();
+    for (const q of user.aiQueries || []) {
+      const list = q.assignedTutors || [];
+      for (const t of list) {
+        const id = (t && t._id) ? t._id.toString() : (t && t.toString ? t.toString() : null);
+        if (id && !seen.has(id)) {
+          seen.add(id);
+          globalTutorIds.push(new mongoose.Types.ObjectId(id));
+        }
       }
-    );
+    }
+    await DB.User.findByIdAndUpdate(userObjectId, {
+      $set: { assignedTutors: globalTutorIds }
+    });
 
     return res.json({ code: 200, message: 'Experts updated successfully' });
   } catch (err) {

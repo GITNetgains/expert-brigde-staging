@@ -122,12 +122,33 @@ export class SubjectListComponent implements OnInit, OnChanges {
     );
   }
 
+  deleteSubject(item: any) {
+    if (window.confirm('Are you sure you want to delete this subject?')) {
+      const id = item._id ?? item.id;
+      this.subjectService.delete(id).subscribe({
+        next: () => {
+          this.utilService.toastSuccess({
+            title: 'Success',
+            message: 'Subject deleted successfully',
+          });
+          this.query();
+        },
+        error: () => {
+          this.utilService.toastError({
+            title: 'Error',
+            message: 'Could not delete subject',
+          });
+        },
+      });
+    }
+  }
+
   updateSubject(subject: any) {
     const sub = pick(subject, ['name', 'alias', 'categoryIds', 'isActive']);
     sub.isActive = !subject.isActive;
     if (!this.updating) {
       this.updating = true;
-      this.subjectService.update(subject.id, sub).subscribe(
+      this.subjectService.update(subject.id ?? subject._id, sub).subscribe(
         (response) => {
           this.updating = false;
           this.query();

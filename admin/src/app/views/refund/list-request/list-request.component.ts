@@ -20,6 +20,7 @@ import { IconModule } from '@coreui/icons-angular';
 import { AuthService } from '@services/auth.service';
 import { RequestRefundService } from '@services/request-refund.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ISortOption } from 'src/interfaces';
@@ -71,9 +72,10 @@ export class ListRequestComponent {
   private toasty = inject(UtilService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.route.queryParams.subscribe((params) => {
       const page = params['page'] ? parseInt(params['page']) : 1;
       this.currentPage = !isNaN(page) ? page : 1;

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EarningStatsService } from '@services/earning.service';
+import { AppConfigService } from '@services/app-config.service';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-earning-stats-detail',
@@ -15,9 +16,10 @@ export class EarningStatsDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private earningStatsService: EarningStatsService
+    private earningStatsService: EarningStatsService,
+    private appConfigService: AppConfigService
   ) {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
   }
 
   ngOnInit() {

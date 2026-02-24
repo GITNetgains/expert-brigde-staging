@@ -227,7 +227,29 @@ export class RecurringFormComponent implements OnInit {
         return this.appService.toastError('You cannot book past time slots. Please select a start date/time that is in the future.');
       }
 
-      this.calendarService.createRecurring(this.recurring).then(
+      // Send payload with explicit ISO date strings so backend never receives undefined or invalid dates
+      const toDate = (v: Date | { year: number; month: number; day: number } | string | null): Date | null => {
+        if (!v) return null;
+        if (v instanceof Date) return v;
+        if (typeof v === 'object' && 'year' in v && 'month' in v && 'day' in v) {
+          return new Date((v as { year: number; month: number; day: number }).year, (v as { year: number; month: number; day: number }).month - 1, (v as { year: number; month: number; day: number }).day);
+        }
+        return moment(v).toDate();
+      };
+      const rangeStartDate = toDate(this.recurring.range.start);
+      const rangeEndDate = toDate(this.recurring.range.end);
+      if (!rangeStartDate || !rangeEndDate) {
+        return this.appService.toastError('Please fill all required fields: start/end time, days of week, and date range.');
+      }
+      const payload = {
+        ...this.recurring,
+        range: {
+          start: rangeStartDate.toISOString(),
+          end: rangeEndDate.toISOString()
+        }
+      };
+
+      this.calendarService.createRecurring(payload).then(
         (resp) => {
           const overlapSlots =
             resp &&

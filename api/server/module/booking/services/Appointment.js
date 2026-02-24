@@ -732,7 +732,7 @@ exports.isAppointment = async data => {
 exports.canReschedule = async appointment => {
   try {
     if (appointment.targetType === 'webinar') return false;
-    return !!moment().isSameOrBefore(moment(appointment.startTime).subtract(480, 'minutes').toDate());
+    return !!moment().isSameOrBefore(moment(appointment.startTime).subtract(60, 'minutes').toDate());
   } catch (e) {
     throw e;
   }

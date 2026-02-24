@@ -48,6 +48,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   onContentChange(value: string) {
     // Clean the content before emitting to handle pasted content with conflicting styles
     const cleanedValue = this.cleanPastedContent(value);
+    this.html = cleanedValue ?? '';
     this.contentChange.emit(cleanedValue);
   }
 

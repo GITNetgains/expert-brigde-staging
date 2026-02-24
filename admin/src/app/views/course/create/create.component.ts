@@ -21,6 +21,7 @@ import {
   MyTopicService,
   TutorService,
 } from 'src/services';
+import { AppConfigService } from '@services/app-config.service';
 import { environment } from 'src/environments/environment';
 import { ageFilter } from 'src/constants/age';
 import { imageMimeTypes, videoMimeTypes } from 'src/constants';
@@ -89,6 +90,7 @@ export class CourseCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private mySubjectService = inject(MySubjectService);
   private myTopicService = inject(MyTopicService);
+  private appConfigService = inject(AppConfigService);
 
   public course: Partial<ICourse> = {
     tutorId: '',
@@ -172,7 +174,7 @@ export class CourseCreateComponent implements OnInit {
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       );
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.queryGrades();
     this.setupFileUploadOptions();
     this.setupTutorSearch();

@@ -10,7 +10,6 @@ const Queue = require('./queue');
 const swig = require('./template-engine').getSwigEngine();
 
 const mailFrom = nconf.get('mailFrom');
-console.log('mailFrom', mailFrom);
 const viewsPath = path.join(__dirname, '..', '..', 'emails');
 const sendgridApiKey = nconf.get('SENDGRID_API_KEY');
 const emailQ = Queue.create('email');

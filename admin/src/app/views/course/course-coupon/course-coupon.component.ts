@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { pick } from 'lodash-es';
 import { UtilService, CouponService } from 'src/services';
+import { AppConfigService } from '@services/app-config.service';
 import dayjs, { Dayjs } from 'dayjs';
 import {
   ButtonDirective,
@@ -58,6 +59,7 @@ export class CourseCouponComponent implements OnInit {
   private utilService = inject(UtilService);
   private couponService = inject(CouponService);
   private route = inject(ActivatedRoute);
+  private appConfigService = inject(AppConfigService);
 
   @Input() coupon: any = {
     name: '',
@@ -102,7 +104,7 @@ export class CourseCouponComponent implements OnInit {
     };
   }
   ngOnInit() {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.coupon.tutorId = this.tutorId;
     if (this.course && this.course._id) {
       this.coupon.courseId = this.course._id;

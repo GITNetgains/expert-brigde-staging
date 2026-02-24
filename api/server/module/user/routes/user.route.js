@@ -169,7 +169,14 @@ router.post(
 );
 
 
-  // GET AI queries
+  // GET all AI queries (admin) - must be before :userId route
+  router.get(
+    '/v1/users/ai-queries/all',
+    Middleware.hasRole('admin'),
+    userController.getAllAiQueries
+  );
+
+  // GET AI queries for one user
   router.get(
     '/v1/users/:userId/ai-queries',
     Middleware.isAuthenticated,

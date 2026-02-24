@@ -228,7 +228,7 @@ export class UpdateComponent implements OnInit {
       name: this.info.name,
       username: this.info.username,
       email: this.info.email,
-      bio: this.info.bio,
+      bio: this.info.bio ?? '',
       isActive: this.info.isActive,
       emailVerified: this.info.emailVerified,
       phoneVerified: this.info.phoneVerified,

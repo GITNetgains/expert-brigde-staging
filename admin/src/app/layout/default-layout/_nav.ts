@@ -50,6 +50,11 @@ export const navItems: INavData[] = [
     ],
   },
   {
+    name: 'Queries',
+    url: '/queries/list',
+    iconComponent: { name: 'cil-chat-bubble' },
+  },
+  {
     name: 'Appointments',
     url: '/appointment',
     iconComponent: { name: 'cil-calendar' },

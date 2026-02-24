@@ -6,6 +6,7 @@ import { CardBodyComponent, CardComponent, TextColorDirective, CardGroupComponen
 import { IconDirective } from '@coreui/icons-angular';
 import { AuthService } from '@services/index';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { AppToastComponent } from '@components/toast';
 import { IToast } from 'src/interfaces';
 
@@ -47,10 +48,11 @@ export class ForgotComponent implements OnInit {
     auth: AuthService,
     public router: Router,
     private route: ActivatedRoute,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private appConfigService: AppConfigService
   ) {
     this.Auth = auth;
-    this.appConfig = this.route.snapshot.data['appConfig'];
+    this.appConfig = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
   }
 
   ngOnInit(): void {

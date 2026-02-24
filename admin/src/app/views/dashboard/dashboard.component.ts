@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { firstPageService } from '../../../services/firstPage.service';
 import { ActivatedRoute } from '@angular/router';
 import { ContactService } from '@services/contact.service';
+import { AppConfigService } from '@services/app-config.service';
 import { Subscription } from 'rxjs';
 import { StatItem } from '../../../interfaces/dashboard.interface';
 import {
@@ -173,9 +174,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private starterService: firstPageService,
     private route: ActivatedRoute,
-    private contactService: ContactService
+    private contactService: ContactService,
+    private appConfigService: AppConfigService
   ) {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
   }
 
   ngOnInit() {

@@ -8,7 +8,7 @@ import { AiResultComponent } from './components/ai-result/ai-result.component';
 import { AuthGuard } from 'src/app/services/guard/auth.guard';
 import { AboutComponent } from './components/about/about.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
-import { ServicesComponent } from './components/services/services.component';
+import { ExpertParticipationJourneyComponent } from './components/expert-participation-journey/expert-participation-journey.component';
 
 const routes: Routes = [
   {
@@ -24,12 +24,12 @@ const routes: Routes = [
     component: ContactUsComponent
   },
   {
-    path: 'services',
-    component: ServicesComponent
-  },
-  {
     path: 'how-does-it-work',
     component: WorkComponent
+  },
+  {
+    path: 'expert-participation-journey',
+    component: ExpertParticipationJourneyComponent
   },
   // {
   //   path: 'teach-with-us',

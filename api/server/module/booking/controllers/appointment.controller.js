@@ -441,24 +441,50 @@ exports.removeDocument = async (req, res, next) => {
 
 exports.reSchedule = async (req, res, next) => {
   try {
-    const appointment = await DB.Appointment.findOne({ _id: req.params.id });
-    if (!appointment) return next(PopulateResponse.notFound());
-    let canReschedule = await Service.Appointment.canReschedule(appointment);
-    if (!canReschedule) {
+    const validateSchema = Joi.object().keys({
+      startTime: Joi.date().required(),
+      toTime: Joi.date().required()
+    });
+    const validate = Joi.validate(
+      {
+        startTime: req.body.startTime ? new Date(req.body.startTime) : undefined,
+        toTime: req.body.toTime ? new Date(req.body.toTime) : undefined
+      },
+      validateSchema
+    );
+    if (validate.error) {
       return next(
         PopulateResponse.error({
-          message: 'Cannot reschedule the class starting within 8 hours'
+          message: 'startTime and toTime are required and must be valid dates'
         })
       );
     }
-    const startTime = req.body.startTime;
-    const toTime = req.body.toTime;
 
-    await DB.Appointment.update(
-      { _id: req.params.id },
-      {
-        $set: { startTime, toTime }
-      }
+    const appointmentId = req.params.appointmentId;
+    const appointment = await DB.Appointment.findOne({ _id: appointmentId });
+    if (!appointment) return next(PopulateResponse.notFound());
+
+    const isTutor = req.user._id.toString() === appointment.tutorId.toString();
+    const isStudent = req.user._id.toString() === appointment.userId.toString();
+    if (!isTutor && !isStudent) {
+      return next(PopulateResponse.forbidden());
+    }
+
+    const canReschedule = await Service.Appointment.canReschedule(appointment);
+    if (!canReschedule) {
+      return next(
+        PopulateResponse.error({
+          message: 'Cannot reschedule the class starting within 1 hour'
+        })
+      );
+    }
+
+    const startTime = validate.value.startTime;
+    const toTime = validate.value.toTime;
+
+    await DB.Appointment.updateOne(
+      { _id: appointmentId },
+      { $set: { startTime, toTime } }
     );
 
     await enrollQ.rescheduleClass(appointment._id);

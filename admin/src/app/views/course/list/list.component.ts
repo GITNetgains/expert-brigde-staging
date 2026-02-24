@@ -45,6 +45,7 @@ import {
   TutorService,
   UtilService,
 } from 'src/services';
+import { AppConfigService } from '@services/app-config.service';
 import { ICourse, ISortOption } from 'src/interfaces';
 import { IconModule } from '@coreui/icons-angular';
 import { cilTrash, cilPencil } from '@coreui/icons';
@@ -86,6 +87,7 @@ export class CourseListingComponent implements OnInit {
   private tutorService = inject(TutorService);
   private categoryService = inject(CategoryService);
   private route = inject(ActivatedRoute);
+  private appConfigService = inject(AppConfigService);
 
   count: number = 0;
   items: ICourse[] = [];
@@ -116,7 +118,7 @@ export class CourseListingComponent implements OnInit {
       this.query();
     });
 
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.queryCategories();
     this.initSearchStreams();
   }

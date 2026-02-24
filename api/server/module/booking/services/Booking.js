@@ -200,6 +200,9 @@ exports.checkOverlapSlot = async options => {
         }
       ]
     };
+    if (options.excludeAppointmentId) {
+      query._id = { $ne: options.excludeAppointmentId };
+    }
     const count = await DB.Appointment.count(query);
     return count > 0;
   } catch (e) {

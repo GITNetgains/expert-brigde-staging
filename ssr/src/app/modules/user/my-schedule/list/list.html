@@ -85,7 +85,7 @@
               <tr *ngFor="let item of appointments, let i = index">
                 <td>{{item?.user?.name}}</td>
                 <td style="width: 20%">{{(item?.webinar?.name || item?.subject?.name || '') | ellipsis:50}}</td>
-                <td>{{item?.targetType}}</td>
+                <!-- <td>{{item?.targetType}}</td> -->
                 <td>
                   <span class="label label-light-primary" *ngIf="item?.paid" translate>Yes</span>
                   <span class="label label-light-danger" *ngIf="!item?.paid" translate>No</span>

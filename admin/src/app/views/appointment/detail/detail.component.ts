@@ -13,6 +13,7 @@ import {
 } from '@coreui/angular';
 import { AppointmentService } from '@services/appointment.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { pick } from 'lodash-es';
 
 @Component({
@@ -41,9 +42,10 @@ export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private toasty = inject(UtilService);
   private appointmentService = inject(AppointmentService);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.aId = this.route.snapshot.paramMap.get('id');
     this.appointmentService.findOne(this.aId).subscribe({
       next: (resp) => {

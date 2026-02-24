@@ -15,6 +15,9 @@ exports.create = async data => {
 
 const getDayOfRange = async (range, dayOfWeeks, timezone) => {
   try {
+    if (!range || range.start == null || range.end == null) {
+      return [];
+    }
     let daysArray = [];
     let currentDate = timezone ? moment(range.start).tz(timezone) : moment(range.start);
     const endDate = timezone ? moment(range.end).tz(timezone) : moment(range.end);
@@ -33,8 +36,11 @@ const getDayOfRange = async (range, dayOfWeeks, timezone) => {
 exports.createRecurringSlots = async recurring => {
   try {
     const { tutorId, start, end, range, dayOfWeek, _id: recurringId } = recurring;
+    if (!range || range.start == null || range.end == null) {
+      throw new Error('Recurring schedule range (start/end) is required.');
+    }
     const tutor = await DB.User.findOne({ _id: tutorId });
-    const dayGetFromRange = await getDayOfRange(range, dayOfWeek, tutor.timezone);
+    const dayGetFromRange = await getDayOfRange(range, dayOfWeek, tutor && tutor.timezone ? tutor.timezone : null);
     const slots = [];
     const overlapSlots = [];
     const startHour = moment(start, 'HH:mm').toDate().getHours();

@@ -1,35 +1,24 @@
 <div class="expert-card" [ngClass]="{ active: isBorder }">
 
-  <!-- HEADER -->
+  <!-- HEADER (image box removed; name/user ID and consultation fee only) -->
   <div class="expert-header">
-    <a [routerLink]="['/experts', tutor.username]" class="avatar-wrap avatar-link">
-      <img
-        *ngIf="tutor.showPublicIdOnly !== true"
-        class="avatar"
-        [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'"
-        onerror="this.src='assets/images/default-avatar.jpg'"
-        alt="avatar"
-      />
-      <span *ngIf="tutor.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
-    </a>
-
     <div class="expert-meta">
-      <div class="name-location">
-      <h3 class="name">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h3>
-
-      <p class="location">
-        {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}
-      </p>
+      <div class="name-fee-row">
+        <div class="name-location">
+          <h3 class="name">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h3>
+          <p class="location">
+            {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}
+          </p>
+        </div>
+        <p class="fee">
+          <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" /> Consultation Fee:
+          <a>{{ ($any(tutor).price1On1Class != null && $any(tutor).price1On1Class !== '') ? ($any(tutor).price1On1Class | appCurrency) : '—' }}/hr</a>
+        </p>
       </div>
-
-      <p class="fee">
-        <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" /> Consultation Fee:
-        <a>{{ ($any(tutor).price1On1Class != null && $any(tutor).price1On1Class !== '') ? ($any(tutor).price1On1Class | appCurrency) : '—' }}/hr</a>
-      </p>
     </div>
   </div>
 
-  <!-- EXPERIENCE -->
+  <!-- WORK EXPERIENCE (commented out – bio shown instead)
   <div class="experience" *ngIf="$any(tutor).experience?.length">
     <div
       class="experience-item"
@@ -39,15 +28,24 @@
       <span>{{ ($any(exp).title || '') + ($any(exp).organization ? ' at ' + $any(exp).organization : '') + (($any(exp).fromYear || $any(exp).toYear) ? ' (' + ($any(exp).fromYear || '') + ($any(exp).fromYear && $any(exp).toYear ? '–' : '') + ($any(exp).toYear || '') + ')' : '') || 'Experience' }}</span>
     </div>
   </div>
+  -->
 
-  <!-- DESCRIPTION -->
+  <!-- HIGHLIGHTS (commented out – bio shown instead)
   <div class="description" *ngIf="$any(tutor).highlights?.length">
     <div
       class="desc-item"
-      *ngFor="let d of $any(tutor).highlights | slice:0:3"
+      *ngFor="let d of $any(tutor).highlights | slice:0:4"
     >
       – {{ d }}
     </div>
+  </div>
+  -->
+
+  <!-- Bio: max 6 lines then "more..." – expand in place, no navigation -->
+  <div class="bio-wrap" *ngIf="tutor.bio">
+    <div class="bio" [class.bio-expanded]="bioExpanded" [innerHTML]="sanitizedBio"></div>
+    <a href="javascript:void(0)" class="bio-more" (click)="toggleBioExpanded()" *ngIf="!bioExpanded">more...</a>
+    <a href="javascript:void(0)" class="bio-more" (click)="toggleBioExpanded()" *ngIf="bioExpanded">less</a>
   </div>
 
   <!-- DIVIDER -->
@@ -55,8 +53,8 @@
 
   <!-- ACTIONS -->
   <div class="card-actions">
-    <a [routerLink]="['/experts', tutor.username]">Watch</a>
-    <a>Engage</a>
+    <a [routerLink]="['/experts', tutor.username]">View</a>
+    <a [routerLink]="['/experts', tutor.username, 'booking']">Engage</a>
     <a (click)="favorite()" *ngIf="!tutor.isFavorite">Shortlist</a>
     <a (click)="unFavorite()" *ngIf="tutor.isFavorite">Remove</a>
     <a>Response</a>

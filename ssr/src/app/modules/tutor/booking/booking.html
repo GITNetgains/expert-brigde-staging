@@ -39,9 +39,9 @@
       </div>
       <div class="profile-detail-right">
         <div class="card card-border mb-3">
-          <div class="video-play">
-            <iframe width="100%" height="100%" [src]="urlYoutube" frameborder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <!-- Introduction video only (no YouTube); if not available, nothing shown – next content follows -->
+          <div class="video-play" *ngIf="introVideoUrl">
+            <video controls class="intro-video" [src]="introVideoUrl"></video>
           </div>
           <div class="card-body">
             <div class="tutor-info-m">

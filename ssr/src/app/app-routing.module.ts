@@ -81,7 +81,7 @@ const routes: Routes = [
   },
   { path: 'about', redirectTo: 'pages/about', pathMatch: 'full' },
   { path: 'contact-us', redirectTo: 'pages/contact-us', pathMatch: 'full' },
-  { path: 'services', redirectTo: 'pages/services', pathMatch: 'full' },
+  { path: 'expert-participation-journey', redirectTo: 'pages/expert-participation-journey', pathMatch: 'full' },
   {
     path: 'blogs',
     component: FullComponent,

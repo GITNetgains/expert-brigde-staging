@@ -20,6 +20,7 @@ import {
 } from '@coreui/angular';
 import { RequestPayoutService } from '@services/request-payout.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 
 @Component({
   selector: 'app-detail',
@@ -61,10 +62,11 @@ export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private toasty = inject(UtilService);
   private payoutService = inject(RequestPayoutService);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
 
     this.payoutService.findOne(id).subscribe({
       next: (res: any) => {

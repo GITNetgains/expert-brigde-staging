@@ -2897,7 +2897,6 @@ input:checked + .slider {
   position: absolute;
   top: 7px;
   right: 7px;
-  cursor: pointer;
 
   &.course {
     top: auto;
@@ -2905,15 +2904,43 @@ input:checked + .slider {
     right: 15px;
   }
 
-  a {
+  a,
+  .favorite-btn {
     width: 40px;
     height: 40px;
     line-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 5px;
-    display: block;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 0;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    i {
+      font-size: 1.25rem;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.85);
+      transform: scale(1.08);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
   }
 }
 

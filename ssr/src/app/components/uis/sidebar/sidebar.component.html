@@ -21,6 +21,12 @@
         <ng-container *ngIf="currentUser?.type === 'student'">
           <div class="nav-header">Client Menu</div>
           <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/ai-queries']" routerLinkActive="active">
+              <i class="fi fi-rr-comment-alt"></i>
+              <span translate>Project Requriements</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" [routerLink]="['/users/lessons']" routerLinkActive="active">
               <i class="fi fi-rr-calendar-check"></i>
               <span translate>My Appointments</span>
@@ -32,12 +38,7 @@
               <span translate>Browse group sessions </span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/users/ai-queries']" routerLinkActive="active">
-              <i class="fi fi-rr-comment-alt"></i>
-              <span translate>AI History</span>
-            </a>
-          </li>
+         
         </ng-container>
 
         <!-- Tutor Menu -->
@@ -126,7 +127,7 @@
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/users/favorites', 'expert']" routerLinkActive="active">
               <i class="fi fi-rr-heart"></i>
-              <span translate>My Wishlist</span>
+              <span translate>Shortlist</span>
             </a>
           </li>
         </ng-container>

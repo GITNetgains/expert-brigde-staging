@@ -79,8 +79,9 @@ export class ConversationsComponent implements OnDestroy {
   mapConversationName(conversations: any = []) {
     return conversations.map((conversation: any) => {
       const member = (conversation.members || []).filter((m: any) => m._id && m._id !== this.currentUser._id);
-      conversation.name = member.length ? member[0].name : this.currentUser.name;
-      conversation.member = member.length ? member[0] : this.currentUser;
+      const other = member.length ? member[0] : this.currentUser;
+      conversation.member = other;
+      conversation.name = other.showPublicIdOnly === true ? (other.userId || other.name) : (other.name || '');
       return conversation;
     });
   }

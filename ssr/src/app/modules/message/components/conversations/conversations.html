@@ -43,10 +43,12 @@
             <div class="chat_people" (click)="selectConversation(conversation)">
               <div class="chat_img">
                 <img
+                  *ngIf="conversation?.member?.showPublicIdOnly !== true"
                   [src]="conversation?.member?.avatarUrl"
                   onerror="this.src='/assets/images/default-avatar.jpg'"
                   [alt]="conversation?.member?.username"
                 />
+                <span *ngIf="conversation?.member?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
               </div>
               <div class="chat_ib">
                 <h5>
@@ -77,10 +79,11 @@
           <div class="chat_list" *ngFor="let c of contacts">
             <div class="chat_people">
               <div class="chat_img">
-                <img [src]="c?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="c?.name" />
+                <img *ngIf="c?.showPublicIdOnly !== true" [src]="c?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="c?.name" />
+                <span *ngIf="c?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
               </div>
               <div class="chat_ib">
-                <h5>{{c?.name}}</h5>
+                <h5>{{ c?.showPublicIdOnly === true ? c?.userId : c?.name }}</h5>
                 <p>{{c?.bio || ''}}</p>
                 <button class="btn btn-default btn-sm mt-2" type="button" (click)="startConversation(c?._id)" translate>
                   Start Chat

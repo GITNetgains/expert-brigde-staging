@@ -24,6 +24,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { RequestPayoutService } from '@services/request-payout.service';
 import { TutorService } from '@services/tutor.service';
 import { UtilService } from '@services/util.service';
+import { AppConfigService } from '@services/app-config.service';
 import { type ChartData } from 'chart.js';
 import { Dayjs } from 'dayjs';
 import { of, Subject } from 'rxjs';
@@ -146,9 +147,10 @@ export class ListComponent implements OnInit {
   private toasty = inject(UtilService);
   private tutorService = inject(TutorService);
   private payoutService = inject(RequestPayoutService);
+  private appConfigService = inject(AppConfigService);
 
   ngOnInit() {
-    this.config = this.route.snapshot.data['appConfig'];
+    this.config = this.appConfigService.getConfig() ?? this.route.snapshot.data['appConfig'];
     this.initSearchStreams();
     this.query();
     this.queryStats();
