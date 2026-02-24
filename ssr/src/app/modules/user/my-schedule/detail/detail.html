@@ -144,6 +144,7 @@
               <td><span translate>Start class</span></td>
               <td>
                 <a
+                  *ngIf="appointment?.zoomLinkActive !== false"
                   href="javascript:void(0)"
                   class="btn btn-default btn-pink"
                   (click)="startMeeting()"
@@ -152,15 +153,15 @@
                 </a>
               </td>
             </tr>
-            <tr *ngIf="appointment?.zoomData">
+            <tr *ngIf="appointment?.zoomData && appointment?.zoomLinkActive !== false">
               <td><span translate>Meeting ID</span></td>
               <td><strong>{{appointment.zoomData?.id}}</strong></td>
             </tr>
-            <tr *ngIf="appointment?.zoomData?.password">
+            <tr *ngIf="appointment?.zoomData?.password && appointment?.zoomLinkActive !== false">
               <td><span translate>Password</span></td>
               <td><strong>{{appointment.zoomData?.password}}</strong></td>
             </tr>
-            <tr *ngIf="appointment?.zoomData?.start_url">
+            <tr *ngIf="appointment?.zoomData?.start_url && appointment?.zoomLinkActive !== false">
               <td><span translate>Direct Zoom Link</span></td>
               <td><a [href]="appointment.zoomData?.start_url" target="_blank" class="btn btn-sm btn-outline-primary">Open in Zoom App</a></td>
             </tr>

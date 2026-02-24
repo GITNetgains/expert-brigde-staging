@@ -186,7 +186,15 @@ const schema = new Schema(
     webinarInfo: {
       type: Schema.Types.Mixed,
       default: null
-    }
+    },
+    // Session harvester fields
+    updatedByHarvester: { type: Date },
+    sessionCompleted: { type: Boolean, default: false },
+    sessionStatus: { type: String },
+    actualDuration: { type: Number },
+    creditIssued: { type: Number, default: 0 },
+    sessionLogId: { type: String },
+    zoomLinkActive: { type: Boolean, default: true }
   },
   {
     timestamps: {

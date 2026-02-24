@@ -177,7 +177,7 @@ export class BookingComponent implements OnInit {
       },
       {
         property: 'og:description',
-        content: 'Livelearn is online learning platform'
+        content: 'ExpertBridge is an online expert consultation platform'
       }
     ]);
   }

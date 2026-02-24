@@ -103,6 +103,7 @@ export interface IMylesson {
   category: ICategory;
   report: any;
   zoomData: any;
+  zoomLinkActive?: boolean;
 }
 
 export interface IMyCourse {

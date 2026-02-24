@@ -102,7 +102,7 @@
                       <a [routerLink]="['/users/lessons', item._id ]" class="btn-action-custom btn-view-orange me-2">
                         <i class="fi fi-rr-eye"></i>
                       </a>
-                      <a *ngIf="item?.status==='booked' || item?.status==='pending' || item?.status === 'progressing'" 
+                      <a *ngIf="(item?.status==='booked' || item?.status==='pending' || item?.status === 'progressing') && item?.zoomLinkActive !== false" 
                          href="javascript:void(0)" 
                          class="zoom-action-link" 
                          (click)="joinMeeting(item._id)">
