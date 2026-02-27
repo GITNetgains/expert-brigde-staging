@@ -556,12 +556,20 @@ exports.sendCvWebhook = async (req, res, next) => {
       return next(PopulateResponse.error({ message: 'Only experts can use this' }, 'ERR_FORBIDDEN'));
     }
 
+    // Rewrite localhost API URLs to public URL so n8n (Docker) can reach them
+    let cvFileUrl = value.cv_file_url;
+    if (cvFileUrl && cvFileUrl.includes('localhost:9000')) {
+      cvFileUrl = cvFileUrl
+        .replace('http://localhost:9000', 'https://api.expertbridge.co')
+        .replace('/public/documents/', '/documents/');
+    }
+
     const webhookBody = {
       source: 'profile_dashboard',
       mongo_user_id: String(user._id),
       email: user.email,
       name: value.name != null && value.name !== '' ? value.name : user.name,
-      cv_file_url: value.cv_file_url
+      cv_file_url: cvFileUrl
     };
 
     pm2Log('[CV-WEBHOOK] Profile dashboard: calling expert-registration webhook', JSON.stringify({
