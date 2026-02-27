@@ -200,16 +200,33 @@ class SessionHarvester {
     if (logResult.rows.length === 0) return;
     var log = logResult.rows[0];
 
-    // Get pricing from the transaction
-    var hourlyRate = 0;
+    // Get pricing and commission info from the transaction
+       var transaction = null;
+    var baseTutorAmount = 0; // total amount belonging to tutor for the booked session
+    var totalCommissionAmount = 0; // total platform commission for the booked session
+    var commissionRate = 0; // derived effective commission rate for reporting
     try {
-      var transaction = await DB.Transaction.findOne({ _id: appointment.transactionId });
+      transaction = await DB.Transaction.findOne({ _id: appointment.transactionId });
       if (transaction) {
-        var totalPrice = transaction.price || transaction.priceDiscount || 0;
-        // Convert total price to hourly rate
+        // Use the tutor's share (balance/originalPrice) to derive hourly rate
+        baseTutorAmount =
+          (typeof transaction.balance === 'number' && transaction.balance > 0
+            ? transaction.balance
+            : (typeof transaction.originalPrice === 'number' && transaction.originalPrice > 0
+              ? transaction.originalPrice
+              : 0));
+
+        totalCommissionAmount = transaction.commission || 0;
+
+        // Effective commission rate for reporting (already applied in payment)
+        if (baseTutorAmount > 0 && totalCommissionAmount > 0) {
+          commissionRate = totalCommissionAmount / baseTutorAmount;
+        }
+
+        // Convert tutor base amount to hourly rate
         var bookedHours = log.scheduled_duration_minutes / 60;
-        if (bookedHours > 0 && totalPrice > 0) {
-          hourlyRate = totalPrice / bookedHours;
+        if (bookedHours > 0 && baseTutorAmount > 0) {
+          hourlyRate = baseTutorAmount / bookedHours;
         }
       }
     } catch (e) {
@@ -218,6 +235,7 @@ class SessionHarvester {
 
     var bookedDuration = log.scheduled_duration_minutes;
     var actualDuration = log.actual_duration_minutes || 0;
+    // Amounts here are based purely on tutor's hourly rate (no extra commission)
     var bookedAmount = hourlyRate * (bookedDuration / 60);
     var deliveredAmount = hourlyRate * (actualDuration / 60);
 
@@ -229,10 +247,12 @@ class SessionHarvester {
       creditStatus = 'pending';
     }
 
-    // Commission (default 20%)
-    var commissionRate = 0.20;
-    var platformCommission = deliveredAmount * commissionRate;
-    var expertPayout = deliveredAmount * (1 - commissionRate);
+    // Commission: do NOT hardcode; use effective rate derived from transaction
+    // This is only for reporting; commission itself was charged during payment
+    var platformCommission =
+      commissionRate > 0 ? deliveredAmount * commissionRate : 0;
+    // Tutor should receive their full delivered tutor amount
+    var expertPayout = deliveredAmount;
 
     // GST (18% standard)
     var gstRate = 0.18;
@@ -243,20 +263,49 @@ class SessionHarvester {
 
     if (log.session_status === 'no_show_expert') {
       noShowParty = 'expert';
-      noShowRefund = bookedAmount;
+      noShowRefund = transaction ? transaction.price : bookedAmount;
       expertPayout = 0;
       creditAmount = bookedAmount;
       creditStatus = 'issued';
+      console.log('noShowRefund', noShowRefund);
+      console.log('bookedAmount', bookedAmount);
+      console.log('transaction', transaction);
+      console.log('transaction.price', transaction.price);
+      console.log('transaction.originalPrice', transaction.originalPrice);
+      console.log('transaction.discountPrice', transaction.discountPrice);
+      console.log('transaction.commission', transaction.commission);
+      console.log('transaction.commissionRate', transaction.commissionRate);
     } else if (log.session_status === 'no_show_client') {
       noShowParty = 'client';
       noShowRefund = 0;
-      expertPayout = bookedAmount * (1 - commissionRate) * 0.5;
+      // Tutor gets 50% of their booked amount in case client doesn't show
+      expertPayout = bookedAmount * 0.5;
+      // Commission only on delivered/payout portion
+      platformCommission = commissionRate > 0 ? expertPayout * commissionRate : 0;
+      console.log('platformCommission', platformCommission);
+      console.log('expertPayout', expertPayout);
+      console.log('commissionRate', commissionRate);
+      console.log('bookedAmount', bookedAmount);
+      console.log('transaction', transaction);
+      console.log('transaction.price', transaction.price);
+      console.log('transaction.originalPrice', transaction.originalPrice);
+      console.log('transaction.discountPrice', transaction.discountPrice);
+      console.log('transaction.commission', transaction.commission);
+      console.log('transaction.commissionRate', transaction.commissionRate);
     } else if (log.session_status === 'no_show_both') {
       noShowParty = 'both';
       noShowRefund = bookedAmount;
       expertPayout = 0;
       creditAmount = bookedAmount;
       creditStatus = 'issued';
+      console.log('noShowRefund', noShowRefund);
+      console.log('bookedAmount', bookedAmount);
+      console.log('transaction', transaction);
+      console.log('transaction.price', transaction.price);
+      console.log('transaction.originalPrice', transaction.originalPrice);
+      console.log('transaction.discountPrice', transaction.discountPrice);
+      console.log('transaction.commission', transaction.commission);
+      console.log('transaction.commissionRate', transaction.commissionRate);
     }
 
     // Razorpay reference

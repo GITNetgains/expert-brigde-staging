@@ -97,6 +97,7 @@ export class BookingComponent implements OnInit {
     count: 0
   };
   public config: any;
+  public effectiveCommissionRate = 0; // decimal (0.1 = 10%)
 
   public myCategories: IMyCategory[] = [];
   public mySubjects: IMySubject[] = [];
@@ -188,6 +189,28 @@ export class BookingComponent implements OnInit {
     this.maxFreeSlotToBook = this.config.maxFreeSlotToBook;
 
     this.price = this.tutor.price1On1Class;
+
+    // Compute commission rate to mirror backend Payment.js:
+    // - prefer tutor.commissionRate when present
+    // - otherwise use global config.commissionRate
+    let commissionRate: any =
+      this.config && typeof this.config.commissionRate !== 'undefined'
+        ? this.config.commissionRate
+        : 0;
+    if (typeof commissionRate === 'string') {
+      commissionRate = parseFloat(commissionRate);
+    }
+    const tutorRate =
+      this.tutor && typeof (this.tutor as any).commissionRate === 'number'
+        ? (this.tutor as any).commissionRate
+        : null;
+
+    const effective =
+      tutorRate != null && typeof tutorRate === 'number'
+        ? tutorRate
+        : (typeof commissionRate === 'number' ? commissionRate : 0);
+
+    this.effectiveCommissionRate = effective || 0;
     this.booking.tutorId = this.tutor._id;
     this.isLoggedin = this.authService.isLoggedin();
     this.setIntroVideoUrl();

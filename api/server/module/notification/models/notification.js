@@ -14,7 +14,7 @@ const schema = new Schema(
     type: {
       type: String,
       default: '',
-      enum: ['payment', 'payout', 'refund', 'booking', 'course', 'webinar', 'message', 'my-course']
+      enum: ['payment', 'payout', 'refund', 'booking', 'course', 'webinar', 'message', 'my-course', 'ai-query']
     },
     unreadNotification: {
       type: Number,

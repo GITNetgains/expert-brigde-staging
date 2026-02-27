@@ -258,7 +258,7 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
         await Service.Mailer.send('appointment-tutor-cancel-success', tutor.email, data);
         const notificationStudent = {
           title: 'Cancellations',
-          description: 'Your booking was cancelled by your Tutor',
+          description: 'Your booking was cancelled by your expert',
           itemId: appointment._id,
           notifyTo: user._id,
           type: 'booking'
@@ -267,7 +267,7 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
 
         const notificationTutor = {
           title: 'Cancellations',
-          description: 'You have successfully cancelled your lesson',
+          description: 'You have successfully cancelled your session',
           itemId: appointment._id,
           notifyTo: tutor._id,
           type: 'booking'
@@ -276,7 +276,7 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
       } else {
         const notificationTutor = {
           title: 'Cancellations',
-          description: 'Your booking was cancelled by the student',
+          description: 'Your booking was cancelled by the client',
           itemId: appointment._id,
           notifyTo: tutor._id,
           type: 'booking'
@@ -294,7 +294,7 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
 
         const notificationStudent = {
           title: 'Cancellations',
-          description: 'You have successfully cancelled your lesson',
+          description: 'You have successfully cancelled your session',
           itemId: appointment._id,
           notifyTo: user._id,
           type: 'booking'
@@ -328,7 +328,7 @@ exports.checkNotStart = async appointmentId => {
     const startTime = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const toTime = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const data = {
-      subject: `Tutor did not start meeting for the class #${appointment.code}`,
+      subject: `Expert did not start meeting for the session #${appointment.code}`,
       appointment: appointment.toObject(),
       startTime,
       toTime,
@@ -342,7 +342,7 @@ exports.checkNotStart = async appointmentId => {
     const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
 
     const dataTutor = {
-      subject: `You did not start meeting for the class #${appointment.code}`,
+      subject: `You did not start meeting for the session #${appointment.code}`,
       appointment: appointment.toObject(),
       startTime: startTimeTutor,
       toTime: toTimeTutor,

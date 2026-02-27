@@ -115,9 +115,7 @@ exports.list = async (req, res, next) => {
       type === 'tutor'
         ? {
             path: 'tutor',
-             // IMPORTANT: this list must include all fields the frontend cards use,
-            // otherwise things like consultation fee, highlights, and experience
-            // will be missing on the "Favorite tutor" screen.
+            // include commissionRate & price fields for favorite tutor cards
             select: [
               'name',
               'avatarUrl',
@@ -134,6 +132,7 @@ exports.list = async (req, res, next) => {
               // pricing / consultation fee
               'price1On1Class',
               'consultationFee',
+              'commissionRate',
               // profile meta used in cards
               'highlights',
               'yearsExperience',
@@ -157,14 +156,16 @@ exports.list = async (req, res, next) => {
         : type === 'webinar'
         ? {
             path: 'webinar',
-            select: 'name tutorId mainImageId featured lastSlot price description alias',
+            select: 'name tutorId mainImageId featured lastSlot price description alias tutor',
             populate: [
               {
                 path: 'mainImage'
               },
               {
                 path: 'tutor',
-                select: 'name avatarUrl username country featured ratingAvg totalRating avatar'
+                // include tutor commissionRate for group session cards
+                select:
+                  'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly commissionRate'
               }
             ]
           }

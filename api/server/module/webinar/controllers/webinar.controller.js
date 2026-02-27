@@ -13,7 +13,7 @@ const validateSchema = Joi.object().keys({
   isOpen: Joi.boolean().allow(null, '').optional(),
   price: Joi.number().required(),
   description: Joi.string().allow([null, '']).optional(),
-  mainImageId: Joi.string().required(),
+  mainImageId: Joi.string().allow([null, '']).optional(),
   hashWebinar: Joi.string().allow([null, '']).optional(),
   featured: Joi.boolean().allow([null]).optional(),
   alias: Joi.string().allow([null, '']).optional(),
@@ -36,7 +36,11 @@ exports.findOne = async (req, res, next) => {
     }
     const query = Helper.App.isMongoId(id) ? { _id: id } : { alias: id };
     let webinar = await DB.Webinar.findOne(query, { availableTimeRange: 0, slotIds: 0, hashWebinar: 0 })
-      .populate({ path: 'tutor', select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner userId showPublicIdOnly' })
+      .populate({
+        path: 'tutor',
+        // include commissionRate so frontend can compute student-facing price = base + commission
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner userId showPublicIdOnly commissionRate'
+      })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'subjects', select: '_id name alias' })
       .populate({ path: 'topics', select: '_id name alias' })
@@ -189,7 +193,8 @@ exports.list = async (req, res, next) => {
       .populate({
         path: 'tutor',
         match: { name: { $regex: req.query.tutorName, $options: 'i' } },
-        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
+        // include commissionRate for list view as well
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly commissionRate'
       })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'mainImage', select: '_id name filePath thumbPath fileUrl thumbUrl convertStatus uploaded' })

@@ -9,6 +9,9 @@ export class ConversationService extends APIRequest {
   private conversationLoaded = new Subject<any>();
   public conversationLoaded$ = this.conversationLoaded.asObservable();
 
+  private unreadChanged = new Subject<number>();
+  public unreadChanged$ = this.unreadChanged.asObservable();
+
   list(params: any): Promise<any> {
     return this.get(this.buildUrl('/messages/conversations', params));
   }
@@ -19,6 +22,10 @@ export class ConversationService extends APIRequest {
 
   setActive(conversation: any) {
     this.conversationLoaded.next(conversation);
+  }
+
+  setUnreadTotal(total: number) {
+    this.unreadChanged.next(total);
   }
 
   read(conversationId: string, params: any): Promise<any> {

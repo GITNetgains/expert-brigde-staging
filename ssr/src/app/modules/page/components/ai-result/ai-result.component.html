@@ -13,23 +13,29 @@
       </p>
     </div>
 
-    <!-- YOUR SEARCH - show and edit -->
-    <div class="editor-card search-query-card">
-      <label class="card-label">Your search</label>
-      <div class="search-query-row">
-        <input
-          type="text"
+    <!-- Search bar only – same border as other blocks, no outer card -->
+    <div class="ai-search-bar-block">
+      <div class="ai-search-bar-inner">
+        <textarea
+          #queryTextarea
           [(ngModel)]="query"
-          class="search-query-input"
+          class="ai-search-bar-input"
           placeholder="Enter or change your search..."
-        />
-        <button
-          type="button"
-          class="btn search-again-btn"
-          (click)="searchAgain()"
-          [disabled]="loading || !query.trim()">
-          {{ loading ? 'Searching...' : 'Search again' }}
-        </button>
+          rows="1"
+          (input)="resizeSearchBar()"
+          (keydown.enter)="onSearchBarKeydown($event)"
+        ></textarea>
+        <div class="ai-search-bar-actions">
+          <button
+            type="button"
+            class="ai-search-bar-icon ai-search-bar-send"
+            aria-label="Search"
+            (click)="searchAgain()"
+            [disabled]="loading || !query.trim()"
+            title="Search">
+            <span aria-hidden="true">↑</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -39,12 +45,21 @@
 
     <!-- EDITOR -->
     <div class="editor-card">
-      <textarea
-        [(ngModel)]="editableText"
-        class="editor-box"
-        placeholder="Loading..."
-      ></textarea>
-      <p class="brand-line">Engage Brilliance, Get it Done!</p>
+      <!-- Loader when fetching AI result -->
+      <div *ngIf="loading" class="editor-loader">
+        <div class="editor-loader-spinner" aria-hidden="true"></div>
+        <p class="editor-loader-text">Generating your result...</p>
+        <p class="editor-loader-subtext">Analyzing your search and preparing recommendations</p>
+      </div>
+      <!-- Content when loaded -->
+      <ng-container *ngIf="!loading">
+        <textarea
+          [(ngModel)]="editableText"
+          class="editor-box"
+          placeholder="Your AI-generated result will appear here..."
+        ></textarea>
+        <p class="brand-line">Engage Brilliance, Get it Done!</p>
+      </ng-container>
     </div>
 
     <!-- ATTACHMENTS -->
@@ -119,7 +134,14 @@
     </div>
 
     <!-- ACTIONS -->
-    <div class="actions-right content-container">
+    <div class="actions-left content-container">
+      <button
+        type="button"
+        class="btn reset-btn"
+        (click)="clear()"
+        [disabled]="loading || submitting">
+        Clear
+      </button>
       <button
         type="button"
         class="btn submit-btn"

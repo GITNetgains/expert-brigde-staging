@@ -1,3 +1,5 @@
+const tutorDto = require('../../tutor/dto');
+
 exports.favorite = async (userId, options) => {
   const tutor = await DB.User.findOne({ _id: options.tutorId });
   if (!tutor) {
@@ -30,12 +32,16 @@ exports.isFavorite = async items => {
   return items.length
     ? items.map(item => {
         if (item.tutor) {
-          item = item.tutor.getPublicProfile();
-          item.isFavorite = true;
-          if (item.country && item.country.code) {
-            item.country.flag = new URL(`flags-png/${item.country.code.toLowerCase()}.png`, process.env.baseUrl).href;
+          // Use tutor DTO so commissionRate and price1On1Class are preserved
+          const data = tutorDto.toResponse(item.tutor);
+          data.isFavorite = true;
+          if (data.country && data.country.code) {
+            data.country.flag = new URL(
+              `flags-png/${data.country.code.toLowerCase()}.png`,
+              process.env.baseUrl
+            ).href;
           }
-          return item;
+          return data;
         }
       })
     : [];

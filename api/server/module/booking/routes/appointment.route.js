@@ -9,6 +9,8 @@ if (!fs.existsSync(documentDir)) {
   mkdirp.sync(documentDir);
 }
 
+const MAX_DOCUMENT_SIZE_MB = parseInt(process.env.MAX_DOCUMENT_SIZE_MB || process.env.MAX_PHOTO_SIZE || '10', 10);
+
 const uploadDocument = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
@@ -23,9 +25,11 @@ const uploadDocument = multer({
       }
 
       cb(null, fileName);
-    },
-    fileSize: (process.env.MAX_PHOTO_SIZE || 10) * 1024 * 1024 // 10MB limit
-  })
+    }
+  }),
+  limits: {
+    fileSize: MAX_DOCUMENT_SIZE_MB * 1024 * 1024 // 10MB default
+  }
 });
 
 module.exports = router => {

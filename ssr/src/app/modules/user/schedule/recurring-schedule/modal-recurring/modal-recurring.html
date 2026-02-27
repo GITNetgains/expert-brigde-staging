@@ -62,19 +62,6 @@
         </div>
       </div>
 
-      <div class="col-12">
-        <div class="form-group">
-          <label class="form-label fw-semibold text-muted small text-uppercase" translate>Repeat on</label>
-          <ng-select name="daysOfWeek" [items]="dayOfWeek" [multiple]="true" bindLabel="name"
-            class="custom-select-modern" [closeOnSelect]="false" placeholder="Select Days" bindValue="index"
-            [(ngModel)]="recurring.dayOfWeek" #daysOfWeekRef="ngModel" required>
-          </ng-select>
-          <div *ngIf="daysOfWeekRef.invalid && (daysOfWeekRef.dirty || daysOfWeekRef.touched || isSubmitted)" class="text-danger small mt-1">
-             Please select at least one day.
-          </div>
-        </div>
-      </div>
-
       <div class="col-md-6">
         <label class="form-label fw-semibold text-muted small text-uppercase">Start Date</label>
         <div class="input-group modern-input-group">
@@ -95,6 +82,19 @@
             (ngModelChange)="selectDate($event, 'end')" [minDate]="minDate" (click)="a.toggle()" />
         </div>
         <div *ngIf="validTime['end']" class="text-danger small mt-1">{{ dateErrorMessages['end'] }}</div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-group mt-2">
+          <label class="form-label fw-semibold text-muted small text-uppercase" translate>Repeat on</label>
+          <ng-select name="daysOfWeek" [items]="dayOfWeek" [multiple]="true" bindLabel="name"
+            class="custom-select-modern" [closeOnSelect]="false" placeholder="Select Days" bindValue="index"
+            [(ngModel)]="recurring.dayOfWeek" #daysOfWeekRef="ngModel" required>
+          </ng-select>
+          <div *ngIf="daysOfWeekRef.invalid && (daysOfWeekRef.dirty || daysOfWeekRef.touched || isSubmitted)" class="text-danger small mt-1">
+             Please select at least one day.
+          </div>
+        </div>
       </div>
 
       <div class="col-12 mt-4 pt-2 d-flex gap-2">

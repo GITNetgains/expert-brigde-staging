@@ -67,14 +67,16 @@ exports.list = async (req, res, next) => {
     let items = await DB.Favorite.find(query)
       .populate({
         path: 'webinar',
-        select: 'name tutorId mainImageId featured lastSlot price description',
+        select: 'name tutorId mainImageId featured lastSlot price description tutor',
         populate: [
           {
             path: 'mainImage'
           },
           {
-            path: 'user',
-            select: 'name avatarUrl username country featured ratingAvg totalRating avatar'
+            path: 'tutor',
+            // include commissionRate so UI can compute price + commission
+            select:
+              'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly commissionRate'
           }
         ]
       })
@@ -82,16 +84,17 @@ exports.list = async (req, res, next) => {
       .skip(page * take)
       .limit(take)
       .exec();
+
     const webinars = items.length
       ? items.map(item => {
           if (item.webinar) {
-            item.webinar.user = item.webinar.user.getPublicProfile();
-            item = item.toObject();
-            item.webinar.isFavorite = true;
-            return item.webinar;
+            const data = item.webinar.toObject();
+            data.isFavorite = true;
+            return data;
           }
         })
       : [];
+
     res.locals.list = { count, items: webinars };
     next();
   } catch (e) {

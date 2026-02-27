@@ -9,6 +9,11 @@ const schema = new Schema({
     enum: ['paypal', 'bank-account'],
     default: 'paypal'
   },
+  // Bank account region: uk, india, us, other (for bank-account type only)
+  bankAccountRegion: {
+    type: String,
+    enum: ['uk', 'india', 'us', 'other']
+  },
   paypalAccount: {
     type: String,
     trim: true
@@ -18,8 +23,29 @@ const schema = new Schema({
     // The recipient's full name
     type: String
   },
+  // Account holder's address (for PayPal or Bank Transfer)
+  accountHolderAddress: {
+    type: String
+  },
+  // Account holder's pincode or postal code
+  accountHolderPostalCode: {
+    type: String
+  },
   // The recipient's bank account number
   accountNumber: {
+    type: String
+  },
+  // Indicates if this is a personal account (Yes / No)
+  isPersonalAccount: {
+    type: Boolean,
+    default: false
+  },
+  // Tax Identification Number (TIN)1 or Unique Identification Number
+  taxIdNumber: {
+    type: String
+  },
+  // Unique Identification Number Type (in case TIN is not available)*2
+  uniqueIdentificationNumberType: {
     type: String
   },
   // The International Bank Account Number. Read More about IBANs https://www.xendpay.com/iban

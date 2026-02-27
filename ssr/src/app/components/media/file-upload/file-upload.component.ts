@@ -70,9 +70,11 @@ export class FileUploadComponent implements OnInit, AfterViewInit {
 
   private pushFileToQueue(file: File): boolean {
     // file size check (MB -> bytes)
-    const maxBytes = (environment.maximumFileSize || 10) * 1024 * 1024;
+    const maxMb = environment.maximumFileSize ?? 10;
+    const maxBytes = maxMb * 1024 * 1024;
     if (file.size > maxBytes) {
-      this.toasty.error(this.translate.instant('File size is larger than maximum size!'));
+      const msg = this.translate.instant('Maximum file size is 10 MB', { max: maxMb });
+      this.toasty.error(msg);
       return false;
     }
 

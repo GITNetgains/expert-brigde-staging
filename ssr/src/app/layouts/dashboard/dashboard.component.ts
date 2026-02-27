@@ -4,7 +4,7 @@ import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
 import { IUser } from 'src/app/interface';
-import { AuthService, CartService, STATE, StateService, SystemService } from 'src/app/services';
+import { AuthService, CartService, ConversationService, STATE, StateService, SystemService } from 'src/app/services';
 import { NotificationService } from 'src/app/services/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CartComponent } from 'src/app/components/user/cart/cart.component';
@@ -21,9 +21,11 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   public userLang: any;
   public currentUser: IUser;
   unreadNotificationCount = 0;
+  unreadMessageCount = 0;
   cartCount = 0;
   public languages: any = [];
   private onReadNotificationSubscription: Subscription;
+  private onUnreadMessageSubscription: Subscription;
   public flag: any = '/assets/images/flags/en.svg';
   constructor(
     public router: Router,
@@ -34,7 +36,8 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     private notificationService: NotificationService,
     private systemService: SystemService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private conversationService: ConversationService
   ) {
     this.config = this.stateService.getState(STATE.CONFIG);
     this.languages = this.config.i18n.languages;
@@ -47,6 +50,19 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         const { items } = resp;
         this.cartCount = items.length;
       });
+
+      this.conversationService
+        .list({ page: 1, take: 100, sort: 'updatedAt', sortType: 'desc' })
+        .then(resp => {
+          const items = resp?.data?.items || [];
+          this.unreadMessageCount = items.reduce(
+            (sum: number, conv: any) => sum + (conv.userMeta?.unreadMessage || 0),
+            0
+          );
+        })
+        .catch(() => {
+          this.unreadMessageCount = 0;
+        });
     }
 
     this.router.events
@@ -75,7 +91,11 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
       if (value > 0 && this.unreadNotificationCount >= value) {
         this.unreadNotificationCount -= value;
       }
-    })
+    });
+
+    this.onUnreadMessageSubscription = this.conversationService.unreadChanged$.subscribe(total => {
+      this.unreadMessageCount = total >= 0 ? total : 0;
+    });
     if (window.innerWidth <= this.mobileScreenWidth) this.showSidebar = false;
   }
   logout() {
@@ -110,6 +130,11 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.onReadNotificationSubscription.unsubscribe();
+    if (this.onReadNotificationSubscription) {
+      this.onReadNotificationSubscription.unsubscribe();
+    }
+    if (this.onUnreadMessageSubscription) {
+      this.onUnreadMessageSubscription.unsubscribe();
+    }
   }
 }

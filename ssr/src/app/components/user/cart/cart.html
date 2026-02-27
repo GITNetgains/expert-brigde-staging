@@ -20,8 +20,8 @@
         <div class="txt-card">
           <h3>{{item?.product?.targetInfo.name}}</h3>
           <p>
-            {{item.product.startTime | date: 'dd/MM/yyyy HH:mma'}} -
-            {{item.product.toTime | date:'dd/MM/yyyy HH:mma'}}
+            {{item.product.startTime | date: 'dd/MM/yyyy HH:mm'}} -
+            {{item.product.toTime | date:'dd/MM/yyyy HH:mm'}}
           </p>
           <p class="price-card">{{item.price | appCurrency}}</p>
         </div>

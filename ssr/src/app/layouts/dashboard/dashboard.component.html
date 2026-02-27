@@ -15,6 +15,7 @@
       <!-- Messages -->
       <a [routerLink]="['/users/conversations']" routerLinkActive="active" class="nav-icon-btn" title="Messages">
         <i class="fi fi-rr-envelope"></i>
+        <span class="badge-count" *ngIf="unreadMessageCount">{{ unreadMessageCount }}</span>
       </a>
 
       <!-- Notifications -->

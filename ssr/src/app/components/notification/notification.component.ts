@@ -11,6 +11,7 @@ import { IUser } from 'src/app/interface';
 import { INotification } from 'src/app/interface/notification';
 import * as jQuery from 'jquery';
 import { AppService } from 'src/app/services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notification',
@@ -29,7 +30,8 @@ export class NotificationComponent implements AfterViewInit {
   activeId = '';
   constructor(
     private notificationService: NotificationService,
-    private appService: AppService
+    private appService: AppService,
+    private router: Router
   ) {}
   @HostListener('click', ['$event.target'])
   onClick(btn: HTMLElement) {
@@ -52,7 +54,9 @@ export class NotificationComponent implements AfterViewInit {
         }
       });
     }
-    // this.router.navigate(param ? [url, param] : [url]);
+    if (url) {
+      this.router.navigate(param ? [url, param] : [url]);
+    }
   }
 
   closePopup() {

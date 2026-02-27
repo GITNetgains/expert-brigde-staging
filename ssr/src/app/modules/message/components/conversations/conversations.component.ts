@@ -63,6 +63,7 @@ export class ConversationsComponent implements OnDestroy {
         conversation.lastMessage = msg;
         conversation.updatedAt = msg.createdAt;
         this.conversations = orderBy(this.conversations, ['updatedAt'], ['desc']);
+        this.updateGlobalUnreadTotal();
       } else {
         this.service.findOne(msg.conversationId).then(resp => {
           if (resp.data) {
@@ -70,6 +71,7 @@ export class ConversationsComponent implements OnDestroy {
             const newConversation = this.mapConversationName([resp.data]);
             this.conversations = newConversation.concat(this.conversations);
             this.conversations = orderBy(this.conversations, ['updatedAt'], ['desc']);
+            this.updateGlobalUnreadTotal();
           }
         });
       }
@@ -86,6 +88,14 @@ export class ConversationsComponent implements OnDestroy {
     });
   }
 
+  private updateGlobalUnreadTotal() {
+    const total = (this.conversations || []).reduce(
+      (sum: number, conv: any) => sum + (conv.userMeta?.unreadMessage || 0),
+      0
+    );
+    this.service.setUnreadTotal(total);
+  }
+
   selectConversation(conversation: any) {
     this.activeConversation = conversation;
     this.service.setActive(conversation);
@@ -96,6 +106,7 @@ export class ConversationsComponent implements OnDestroy {
         .then(resp => {
           if (resp && resp.data && resp.data.success) {
             conversation.userMeta.unreadMessage = 0;
+            this.updateGlobalUnreadTotal();
           }
         })
         .catch(err => console.log(err));

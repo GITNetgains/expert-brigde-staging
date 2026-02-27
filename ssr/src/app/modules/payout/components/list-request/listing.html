@@ -23,14 +23,14 @@
           <div class="right-chart">
             <table class="table tble-responsive">
               <tbody>
-                <tr>
+                <!-- <tr>
                   <td>
                     <strong><span translate>Total Earnings</span></strong>
                   </td>
                   <td class="text-end">
                     <strong> {{balance?.total | appCurrency}} </strong>
                   </td>
-                </tr>
+                </tr> -->
                 <!-- <tr>
                   <td>
                     <strong
@@ -181,7 +181,7 @@
             <tr *ngFor="let item of items, let i = index">
               <td>{{item?.requestToTime | date}}</td>
               <td>{{item?.total | appCurrency}}</td>
-              <td>{{item?.commission | appCurrency}}</td>
+              <!-- <td>{{item?.commission | appCurrency}}</td> -->
               <td>{{item?.balance | appCurrency}}</td>
               <td><app-status [status]="item.status"></app-status></td>
             </tr>

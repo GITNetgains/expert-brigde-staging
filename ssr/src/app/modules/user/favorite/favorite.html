@@ -21,11 +21,11 @@
       </div>
 
       <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let item of items?.tutor">
-        <app-tutor-card-favorite [tutor]="item" *ngIf="item"></app-tutor-card-favorite>
+        <app-tutor-card-favorite [tutor]="item" [config]="config" *ngIf="item"></app-tutor-card-favorite>
       </div>
 
       <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let item of items.webinar">
-        <app-card-webinar [webinar]="item" *ngIf="item"></app-card-webinar>
+        <app-card-webinar [webinar]="item" [config]="config" *ngIf="item"></app-card-webinar>
       </div>
     </div>
 

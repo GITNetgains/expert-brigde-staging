@@ -61,9 +61,6 @@ export class AddCetificationComponent implements OnInit {
     if (!frm.valid) {
       return this.appService.toastError('Please complete the required fields!');
     }
-    if (!this.certificate.documentId) {
-      return this.appService.toastError('Please upload document!');
-    }
     if (this.certificate.toYear < this.certificate.fromYear) {
       return this.appService.toastError(
         'To year must be greater than from year!'
@@ -88,11 +85,14 @@ export class AddCetificationComponent implements OnInit {
       'fromYear',
       'toYear',
       'type',
-      'documentId',
       'tutorId',
       'verified',
       'ordering'
     ]);
+    // Attach documentId only if a document was actually uploaded
+    if (this.certificate.documentId) {
+      (data as any).documentId = this.certificate.documentId;
+    }
     if (this.certificate._id) {
       return this.tutorService
         .updateCertificate(this.certificate._id, data)

@@ -11,8 +11,15 @@
           </p>
         </div>
         <p class="fee">
-          <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" /> Consultation Fee:
-          <a>{{ ($any(tutor).price1On1Class != null && $any(tutor).price1On1Class !== '') ? ($any(tutor).price1On1Class | appCurrency) : '—' }}/hr</a>
+          <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" />
+          Consultation Fee:
+          <a>
+            {{
+              ($any(tutor).price1On1Class != null && $any(tutor).price1On1Class !== '')
+                ? (($any(tutor).price1On1Class * (1 + ($any(tutor).commissionRate || (config?.commissionRate || 0)))) | appCurrency)
+                : ('—')
+            }}/hr
+          </a>
         </p>
       </div>
     </div>

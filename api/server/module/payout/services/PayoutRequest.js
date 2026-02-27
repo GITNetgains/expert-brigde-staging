@@ -215,7 +215,10 @@ exports.sendRequest = async (tutorId, payoutAccount) => {
     payoutRequest.total = balance.total;
     payoutRequest.commission = balance.commission;
     payoutRequest.balance = balance.balance;
-    payoutRequest.payoutAccount = payoutAccount;
+    // Store full payout account snapshot (all PayPal/bank fields) for admin
+    payoutRequest.payoutAccount = payoutAccount && typeof payoutAccount.toObject === 'function'
+      ? payoutAccount.toObject()
+      : payoutAccount;
     payoutRequest.details = balance;
 
     await payoutRequest.save();

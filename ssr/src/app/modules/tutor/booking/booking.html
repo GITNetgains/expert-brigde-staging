@@ -1,5 +1,16 @@
 <section class="profile-page">
   <div class="container">
+    <nav class="mb-3 font-sm">
+      <a routerLink="/home">Home</a>
+      <span> / </span>
+      <a routerLink="/experts">Experts</a>
+      <span> / </span>
+      <a [routerLink]="['/experts', tutor.username]">
+        {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}
+      </a>
+      <span> / </span>
+      <span>1-on-1</span>
+    </nav>
     <div class="profile-detail">
       <div class="profile-detail-left">
         <div class="card card-border card-body profile-card mb-3">
@@ -34,6 +45,12 @@
               <span class="ms-2 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
             </div>
             <app-send-message-btn [recipientId]="tutor._id"></app-send-message-btn>
+            <button
+              type="button"
+              class="btn bg-transparent color-white btn-link  mt-3"
+              [routerLink]="['/experts', tutor.username]">
+              ← Back to expert profile
+            </button>
           </div>
         </div>
       </div>
@@ -80,15 +97,16 @@
                 </select>
               </div>
               <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
-                <h5 translate>Step 3</h5>
-                <div class="step-3">
+                <div class="text-center ">
+                  <p class="mb-1"><strong>Survey</strong> - Per Survey</p>
+                  <p class="mb-1"><strong>For Consultation</strong> - Per Hour</p>
                   <p class="slot-btn mb-0 d-inline-block" *ngIf="!appliedCoupon">
-                    {{price | appCurrency }}/<span translate>Hour</span>
+                    {{ (price * (1 + effectiveCommissionRate)) | appCurrency }}/<span translate>Hour</span>
                   </p>
                   <p class="slot-btn mb-0 d-inline-block" *ngIf="appliedCoupon">
                     <small class="text-line-through me-1">
-                      {{price| appCurrency}}</small>
-                    {{(salePrice ? salePrice : 0) | appCurrency}}/<span translate>Hour</span>
+                      {{ (price * (1 + effectiveCommissionRate)) | appCurrency }}</small>
+                    {{ ((salePrice ? salePrice : 0) * (1 + effectiveCommissionRate)) | appCurrency}}/<span translate>Hour</span>
                   </p>
                 </div>
               </div>

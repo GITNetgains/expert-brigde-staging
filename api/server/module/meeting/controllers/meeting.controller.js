@@ -293,7 +293,7 @@ exports.joinMeeting = async (req, res, next) => {
       if (!zoomData || !zoomData.start_url) {
         return next(
           PopulateResponse.error({
-            message: 'The lesson has ended or there is a problem, please wait for the expert to start and try again later'
+            message: 'The session has ended or there is a problem, please wait for the expert to start and try again later'
           })
         );
       }
