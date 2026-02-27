@@ -52,7 +52,7 @@ export const navItems: INavData[] = [
   {
     name: 'Queries',
     url: '/queries/list',
-    iconComponent: { name: 'cil-chat-bubble' },
+    iconComponent: { name: 'cil-comment-bubble' },
   },
   {
     name: 'Appointments',
@@ -286,7 +286,7 @@ export const navItems: INavData[] = [
   {
     name: 'Contacts',
     url: '/contacts',
-    iconComponent: { name: 'cil-address-book' },
+    iconComponent: { name: 'cil-envelope-closed' },
     children: [
       {
         name: 'Listing',

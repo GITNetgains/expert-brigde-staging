@@ -269,7 +269,7 @@ enrollQ.process(async (job, done) => {
 
             const notificationTutor = {
               title: 'Free Session',
-              description: 'You have a new free trial booking!',
+              description: 'You have a new free trial session booking!',
               itemId: appointment._id,
               notifyTo: tutor._id,
               type: 'booking'
@@ -277,7 +277,7 @@ enrollQ.process(async (job, done) => {
 
             const notificationStudent = {
               title: 'Free Session',
-              description: `Successfully booked a free trial lesson with tutor ${tutor.name}!`,
+              description: `Successfully booked a free trial session with expert ${tutor.name}!`,
               itemId: appointment._id,
               notifyTo: user._id,
               type: 'booking'
@@ -297,7 +297,7 @@ enrollQ.process(async (job, done) => {
             });
             const notificationTutor = {
               title: `Booking`,
-              description: `You have a new lesson booking!`,
+              description: `You have a new session booking!`,
               itemId: appointment._id,
               notifyTo: tutor._id,
               type: 'booking'
@@ -326,7 +326,7 @@ enrollQ.process(async (job, done) => {
                 },
                 {
                   title: `Booked`,
-                  description: `You have successfully booked a lesson!`,
+                  description: `You have successfully booked a session!`,
                   itemId: appointment._id,
                   notifyTo: user._id,
                   type: 'booking'
@@ -353,7 +353,7 @@ enrollQ.process(async (job, done) => {
           const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
 
           await Service.Mailer.send('appointment-notification-reschedule-tutor', tutor.email, {
-            subject: `Reschedule class notification!`,
+            subject: `Reschedule session notification!`,
             user: user.getPublicProfile(),
             tutor: tutor.getPublicProfile(),
             appointment: appointment.toObject(),
@@ -362,8 +362,8 @@ enrollQ.process(async (job, done) => {
             toTime: toTimeTutor
           });
           const notificationTutor = {
-            title: `Reschedule class notification!`,
-            description: `Student rescheduled a lesson!`,
+            title: `Reschedule session notification!`,
+            description: `Client rescheduled a session!`,
             itemId: appointment._id,
             notifyTo: tutor._id,
             type: 'booking'
@@ -374,7 +374,7 @@ enrollQ.process(async (job, done) => {
           const toTimeUser = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', user.timezone || '');
 
           await Service.Mailer.send('appointment-notification-reschedule-user', user.email, {
-            subject: `Reschedule class successfully!`,
+            subject: `Reschedule session successfully!`,
             user: user.getPublicProfile(),
             tutor: tutor.getPublicProfile(),
             appointment: appointment.toObject(),
@@ -383,8 +383,8 @@ enrollQ.process(async (job, done) => {
             toTime: toTimeUser
           });
           const notificationUser = {
-            title: `Reschedule class successfully!`,
-            description: `You have successfully reschedule a lesson!`,
+            title: `Reschedule session successfully!`,
+            description: `You have successfully rescheduled a session!`,
             itemId: appointment._id,
             notifyTo: user._id,
             type: 'booking'

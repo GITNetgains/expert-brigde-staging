@@ -15,7 +15,7 @@
                 <td style="width: 68%">
                   <a
                     class="link-pink"
-                    [routerLink]="['/experts', item.tutor._id]"
+                    [routerLink]="['/experts', item.tutor.username]"
                     *ngIf="item && item.tutor"
                     >{{ item?.tutor?.showPublicIdOnly === true ? item?.tutor?.userId : item?.tutor?.name }}
                   </a>

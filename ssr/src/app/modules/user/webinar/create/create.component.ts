@@ -171,10 +171,6 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
         'Lesson space allows only 10 users for group session!'
       );
     }
-    if (!this.webinar.mainImageId)
-      return this.appService.toastError(
-        'Please upload main image for webinar!'
-      );
     this.webinar.isFree = false;
     if (this.webinar.description) {
       this.webinar.description = this.webinar.description.replace(

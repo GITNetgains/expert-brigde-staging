@@ -76,5 +76,8 @@
     "migrate:create": "./node_modules/.bin/migrate create"
   },
   "author": "Tuong Tran <tuong.tran@outlook.com>",
-  "license": "private"
+  "license": "private",
+  "engines": {
+    "node": ">=18"
+  }
 }

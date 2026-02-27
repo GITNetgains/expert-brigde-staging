@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_INITIALIZER, NgModule, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
@@ -10,6 +10,8 @@ import {
   HttpClient,
   HttpClientModule
 } from '@angular/common/http';
+import { registerLocaleData } from '@angular/common';
+import localeEnGb from '@angular/common/locales/en-GB';
 
 import { HeaderModule } from './components/header/header.module';
 import { FooterModule } from './components/footer/footer.module';
@@ -35,6 +37,8 @@ const config: SocketIoConfig = {
   url: environment.socketUrl,
   options: { query: {}, transports: ['websocket'], autoConnect: false }
 };
+
+registerLocaleData(localeEnGb, 'en-GB');
 export interface IEnvironment {
   production: boolean;
   version: string;
@@ -121,7 +125,11 @@ export function createTranslateLoader(http: HttpClient) {
       multi: true
     },
     CookieService,
-    SsrCookieService
+    SsrCookieService,
+    {
+      provide: LOCALE_ID,
+      useValue: 'en-GB'
+    }
     // SocketService
   ],
   bootstrap: [AppComponent]

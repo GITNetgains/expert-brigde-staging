@@ -1,3 +1,5 @@
+const tutorDto = require('../../tutor/dto');
+
 exports.favorite = async (userId, options) => {
   const webinar = await DB.Webinar.findOne({ _id: options.webinarId });
   if (!webinar) {
@@ -31,7 +33,10 @@ exports.isFavorite = async (items, userId) => {
     ? await Promise.all(
         items.map(async item => {
           if (item.webinar) {
-            item.webinar.tutor = item.webinar.tutor.getPublicProfile();
+            // Preserve tutor commission and price fields using DTO
+            if (item.webinar.tutor) {
+              item.webinar.tutor = tutorDto.toResponse(item.webinar.tutor);
+            }
             item = item.toObject();
             item.webinar.isFavorite = true;
 

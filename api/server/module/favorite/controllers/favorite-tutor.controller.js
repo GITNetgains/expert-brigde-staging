@@ -65,22 +65,26 @@ exports.list = async (req, res, next) => {
     let items = await DB.Favorite.find(query)
       .populate({
         path: 'tutor',
-        // include public-id controls so UI can decide what to show
-        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly'
+        // include commissionRate and price1On1Class so UI can compute final consultation fee
+        select:
+          'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly price1On1Class commissionRate'
       })
       .sort(sort)
       .skip(page * take)
       .limit(take)
       .exec();
+
     const tutors = items.length
       ? items.map(item => {
           if (item.tutor) {
-            item = item.tutor.getPublicProfile();
-            item.isFavorite = true;
-            return item;
+            // use DTO to include commissionRate & price1On1Class consistently
+            const data = dto.toResponse(item.tutor);
+            data.isFavorite = true;
+            return data;
           }
         })
       : [];
+
     res.locals.list = { count, items: tutors };
     next();
   } catch (e) {

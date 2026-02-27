@@ -66,17 +66,25 @@
       </div>
       <div class="col col-md-12">
         <div class="form-group">
-          <label translate>Ordering</label>
+          <label>
+            <span translate>Display order (optional)</span>
+          </label>
           <input type="number" name="ordering" class="form-control" placeholder="{{'Ordering'|translate}}"
             [(ngModel)]="certificate.ordering" #ordering="ngModel" [pattern]="'^[0-9][0-9]*$'" />
           <div *ngIf="ordering.errors && (ordering.dirty || ordering.touched || submitted)">
-            <p [hidden]="!ordering.errors.pattern" style="color: red">This minimum ordering is <b>0</b>!</p>
+            <p [hidden]="!ordering.errors.pattern" style="color: red" translate>
+              Please enter a whole number greater than or equal to 0.
+            </p>
           </div>
+          <small class="text-muted d-block mt-1" translate>
+            Leave this blank to let the system decide the position.
+          </small>
         </div>
       </div>
       <div class="col-md-12">
         <div class="form-group">
-          <label><span translate>Document</span> <span class="required">*</span>
+          <label>
+            <span translate>Document (optional)</span>
             <small class="ms-1" translate> (Maximum size: {{maxFileSize}} mb)</small>
           </label>
           <br />

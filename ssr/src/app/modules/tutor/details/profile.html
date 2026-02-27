@@ -1,5 +1,12 @@
 <section class="profile-page">
   <div class="container">
+    <nav class="mb-3 font-sm">
+      <a routerLink="/home">Home</a>
+      <span> / </span>
+      <a routerLink="/experts">Experts</a>
+      <span> / </span>
+      <span>{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</span>
+    </nav>
     <div class="profile-detail">
       <div class="profile-detail-left">
         <div class="card card-border profile-card mb-3">
@@ -28,12 +35,12 @@
                   <span style="padding-left: 5px">{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
                 </ul>
               </div>
-              <div class="">
+              <div class="mt-3 mb-3">
                 <div class="img-flag-tutor">
                   <img src="{{tutor?.country?.flag}}" alt="tutor country flag" class="image-sm"
                     onerror="this.src='/assets/images/no-image.jpg'" />
                 </div>
-                <span class="ms-2 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
+                <span class="ms-2 mt-3 mb-3 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
               </div>
               <!-- <p class="font-weight-bold text-start">
                 <img src="../assets/images/webinar/certified-img.svg" alt="tutor certificate" class="me-2 image-sm"
@@ -57,6 +64,12 @@
                   ></share-button>
                 </div> -->
               </div>
+              <button
+                type="button"
+                class="btn bg-transparent color-white btn-link  mt-3"
+                [routerLink]="['/experts']">
+                ← Back to experts
+              </button>
             </div>
           </div>
         </div>
@@ -150,9 +163,7 @@
           </div>
         </div>
         <div class="card card-border mb-3">
-          <div class="card-header">
-            <h4 class="card-title" translate>Resume</h4>
-          </div>
+          
           <div class="card-body">
             <div class="row resume-box mb-3">
               <div class="col-md-12">
@@ -251,7 +262,7 @@
                   <h5 class="color-light-red">
                     <strong *ngIf="!webinar.price" translate>Free</strong>
                     <strong *ngIf="webinar.price && webinar.price > 0"
-                      >{{ webinar.price | appCurrency}}</strong
+                      >{{ (webinar.price * (1 + (tutor?.commissionRate || config?.commissionRate || 0))) | appCurrency}}</strong
                     >
                   </h5>
                 </div>

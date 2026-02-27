@@ -1,5 +1,12 @@
 <section class="profile-page group-session-detail">
   <div class="container" *ngIf="webinar">
+    <nav class="mb-3 font-sm">
+      <a routerLink="/home">Home</a>
+      <span> / </span>
+      <a routerLink="/groupsession">Group Sessions</a>
+      <span> / </span>
+      <span>{{ webinar?.name }}</span>
+    </nav>
     <div class="detail-box">
       <div class="detail-box-left">
         <div class="card card-border mb-3">
@@ -61,7 +68,7 @@
             <div class="show-mobile">
               <div class="mt-2">
                 <h4 class="color-light-red">
-                  <strong>{{ webinar?.price | appCurrency}}</strong>
+                  <strong>{{ (webinar?.price || 0) * (1 + webinarEffectiveCommissionRate) | appCurrency}}</strong>
                 </h4>
               </div>
               <div class="mt-2 button-list" *ngIf="showBooking">
@@ -177,7 +184,7 @@
           </div>
           <div class="card-body">
             <h4 class="color-light-red">
-              <strong>{{ webinar?.price | appCurrency}}</strong>
+              <strong>{{ (webinar?.price || 0) * (1 + webinarEffectiveCommissionRate) | appCurrency}}</strong>
             </h4>
             <div class="mt-2" *ngIf="webinar?.isFree || (webinar?.price ?? 0) <= 0">
               <label class="required-label" style="display: block; margin-bottom: 5px; font-weight: bold">

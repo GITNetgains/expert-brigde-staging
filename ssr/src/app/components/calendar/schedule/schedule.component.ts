@@ -112,7 +112,17 @@ export class ScheduleEditComponent implements OnInit {
     selectLongPressDelay: 50,
     titleFormat: 'DD/MM/YYYY',
     dayHeaderFormat: 'ddd, DD/MM',
-    slotDuration: '00:10:00'
+    slotDuration: '00:10:00',
+    slotLabelFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    },
+    eventTimeFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }
   };
   public currentEvents: EventApi[] = [];
   public calendarApi: CalendarApi;

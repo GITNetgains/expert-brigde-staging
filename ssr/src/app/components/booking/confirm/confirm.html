@@ -26,7 +26,7 @@
       </h5>
       <p>
         <strong><span translate>Time</span>:</strong> {{slot.startTime | date:
-        'dd/MM/yyyy HH:mma'}} - {{slot.toTime | date:'dd/MM/yyyy HH:mma'}}
+        'dd/MM/yyyy HH:mm'}} - {{slot.toTime | date:'dd/MM/yyyy HH:mm'}}
       </p>
     </div>
   </div>
@@ -34,7 +34,7 @@
 <div class="modal-footer">
   <button class="btn btn-default" type="button" (click)="confirm()">
     <div *ngIf="price!==0">
-      <span translate>PAY</span> {{price | appCurrency}}
+      <span translate>PAY</span> {{ (totalPrice || price) | appCurrency}}
     </div>
     <span *ngIf="price===0" translate>CONFIRM</span>
   </button>

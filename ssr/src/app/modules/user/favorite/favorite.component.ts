@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IUser, IWebinar, ICourse } from 'src/app/interface';
-import { SeoService, FavoriteService, AppService } from 'src/app/services';
+import { SeoService, FavoriteService, AppService, STATE, StateService } from 'src/app/services';
 declare let $: any;
 @Component({
   templateUrl: 'favorite.html'
@@ -22,14 +22,17 @@ export class FavoriteComponent {
   };
   public loading = false;
   public haveResults = false;
+  public config: any;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private seoService: SeoService,
     private favoriteService: FavoriteService,
-    private appService: AppService
+    private appService: AppService,
+    private stateService: StateService
   ) {
     this.seoService.setMetaTitle('My favorite');
+    this.config = this.stateService.getState(STATE.CONFIG);
     this.route.params.subscribe((params) => {
       const urlType = params.type;
       // Redirect old URL segments to new ones (tutor→expert, groupclass→groupsession)

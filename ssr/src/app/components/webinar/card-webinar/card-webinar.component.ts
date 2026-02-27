@@ -18,5 +18,26 @@ export class CardWebinarComponent implements OnInit {
   @Input() config: any;
   constructor(public systemService: SystemService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Ensure we always have config for commission fallback
+    if (!this.config) {
+      this.config = this.systemService.appConfig;
+    }
+  }
+
+  get displayPrice(): number {
+    const base = this.webinar?.price || 0;
+    if (!base) return 0;
+    const tutorRate =
+      (this.webinar as any)?.tutor &&
+      typeof (this.webinar as any).tutor.commissionRate === 'number'
+        ? (this.webinar as any).tutor.commissionRate
+        : null;
+    const configRate =
+      this.config && typeof this.config.commissionRate === 'number'
+        ? this.config.commissionRate
+        : 0;
+    const effective = (tutorRate != null ? tutorRate : configRate) || 0;
+    return base * (1 + effective);
+  }
 }

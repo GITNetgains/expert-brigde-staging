@@ -160,6 +160,19 @@
                 >
               </td>
             </tr>
+            } @if (appointment?.documents?.length) {
+            <tr>
+              <th>Documents of appointment </th>
+              <td>
+                <ul class="list-unstyled mb-0">
+                  <li *ngFor="let doc of appointment.documents">
+                    <a [href]="doc.fileUrl" target="_blank">
+                      {{ doc.name || 'Document' }}
+                    </a>
+                  </li>
+                </ul>
+              </td>
+            </tr>
             }
           </tbody>
         </table>

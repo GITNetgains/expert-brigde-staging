@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, PLATFORM_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { AiService } from 'src/app/services/ai.service';
 import { AppService, StateService, STATE, UserService, AuthService } from 'src/app/services';
@@ -11,11 +11,14 @@ declare var grecaptcha: any;
   templateUrl: './ai-result.component.html',
   styleUrls: ['./ai-result.component.scss']
 })
-export class AiResultComponent implements OnInit, OnDestroy {
+export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
+
+  @ViewChild('queryTextarea') queryTextareaRef: ElementRef<HTMLTextAreaElement> | null = null;
 
   query = '';
   answer = '';
   editableText = '';
+  private queryValueChanged = false;
 
   extractedRole = '';
   extractedIndustry = '';
@@ -54,7 +57,10 @@ export class AiResultComponent implements OnInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: any
   ) {}
 
+
+
   ngOnInit() {
+  
     this.aiFileUploadOptions = {
       url: environment.apiBaseUrl + '/tutors/upload-document',
       multiple: true,
@@ -119,6 +125,7 @@ export class AiResultComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.subscribe(async (params) => {
       this.query = params['q'] || '';
+      this.queryValueChanged = true;
       this.extractKeywords(this.query);
 
       if (this.query) await this.fetch();
@@ -145,6 +152,32 @@ export class AiResultComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  /** Enter = submit, Shift+Enter = new line (ChatGPT-style) */
+  onSearchBarKeydown(event: Event) {
+    const e = event as KeyboardEvent;
+    if (e.key !== 'Enter') return;
+    if (e.shiftKey) return; // allow new line
+    event.preventDefault();
+    if (!this.loading && this.query.trim()) this.searchAgain();
+  }
+
+  /** Resize the search textarea to fit content (ChatGPT-style auto-grow) */
+  resizeSearchBar() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = this.queryTextareaRef?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    const newHeight = Math.min(el.scrollHeight, 280);
+    el.style.height = newHeight + 'px';
+  }
+
+  ngAfterViewChecked() {
+    if (this.queryValueChanged && isPlatformBrowser(this.platformId)) {
+      this.queryValueChanged = false;
+      setTimeout(() => this.resizeSearchBar(), 0);
+    }
   }
 
   extractKeywords(query: string) {
@@ -197,6 +230,16 @@ export class AiResultComponent implements OnInit, OnDestroy {
     if (!q || this.loading) return;
     this.router.navigate(['/pages/ai-result'], { queryParams: { q } });
     // Route queryParams subscription will run and call fetch()
+  }
+
+  /** Clear search and go to /pages/ai-result (fresh state) */
+  clear() {
+    if (this.loading) return;
+    this.query = '';
+    this.answer = '';
+    this.editableText = '';
+    this.error = null;
+    this.router.navigate(['/pages/ai-result']);
   }
 
 lead = {
@@ -455,6 +498,7 @@ isCompanyEmail(email: string): boolean {
 
 
   ngOnDestroy() {
+   
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;

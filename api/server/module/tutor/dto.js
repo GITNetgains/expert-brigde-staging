@@ -29,6 +29,8 @@ exports.toResponse = function (tutor, showPrivate = false, isAdmin = false) {
     certification: tutor.certification,
     isFavorite: false,
     price1On1Class: tutor.price1On1Class,
+    // expose commissionRate so frontend can compute final student price
+    commissionRate: tutor.commissionRate,
     completedByLearner: tutor.completedByLearner,
     categories: tutor.categories,
     introVideo: tutor.introVideo,

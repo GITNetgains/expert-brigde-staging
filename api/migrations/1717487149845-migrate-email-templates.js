@@ -5,23 +5,23 @@ const { join, parse } = require('path');
 const TEMPLATE_DIR = join(__dirname, '..', 'server', 'emails');
 const templates = {
   'material-class-uploaded-to-user': {
-    name: 'New material uploaded for student',
+    name: 'New material uploaded for client',
     subject: 'New material uploaded',
-    description: 'Email to student when tutor upload new material',
+    description: 'Email to client when expert uploads new material',
     path: 'material/class-uploaded.html',
     group: 'material'
   },
   'material-class-uploaded-to-tutor': {
-    name: 'New material uploaded for tutor',
+    name: 'New material uploaded for expert',
     subject: 'New material uploaded',
-    description: 'Email to tutor when student upload new material',
+    description: 'Email to expert when client uploads new material',
     path: 'material/class-uploaded-by-student.html',
     group: 'material'
   },
   'notify-review-to-user': {
-    name: 'Tutor review class',
-    subject: 'Your teacher reviewed the lesson',
-    description: 'Email to user when tutor review the lesson',
+    name: 'Expert review session',
+    subject: 'Your expert reviewed the session',
+    description: 'Email to client when expert reviews the session',
     path: 'review/notify-review-student.html',
     group: 'review'
   },
@@ -48,52 +48,52 @@ const templates = {
   },
   'appointment-tutor-cancel-success': {
     name: 'Appointment has been canceled by tutor',
-    subject: 'You have successfully cancelled your lesson',
+    subject: 'You have successfully cancelled your session',
     description: 'Email to tutor when appointment has been canceled',
     path: 'appointment/tutor-cancel-success.html',
     group: 'appointment'
   },
   'appointment-student-cancel-success': {
     name: 'Appointment has been canceled by student',
-    subject: 'You have successfully cancelled your lesson',
-    description: 'Email to student when appointment has been canceled',
+    subject: 'You have successfully cancelled your session',
+    description: 'Email to client when appointment has been canceled',
     path: 'appointment/student-cancel-success.html',
     group: 'appointment'
   },
   'tutor-not-start-meeting-to-admin': {
-    name: 'Tutor did not start meeting for the class',
-    subject: 'Tutor did not start meeting for the class',
-    description: 'Email to admin when tutor did not start meeting',
+    name: 'Expert did not start meeting for the session',
+    subject: 'Expert did not start meeting for the session',
+    description: 'Email to admin when expert did not start meeting',
     path: 'appointment/tutor-not-start-meeting-to-admin.html',
     group: 'appointment'
   },
   'tutor-not-start-meeting-to-tutor': {
-    name: 'Tutor did not start meeting for the class',
-    subject: 'You did not start meeting for the class',
-    description: 'Email to tutor when he/she did not start meeting',
+    name: 'Expert did not start meeting for the session',
+    subject: 'You did not start meeting for the session',
+    description: 'Email to expert when they did not start the meeting',
     path: 'appointment/tutor-not-start-meeting.html',
     group: 'appointment'
   },
   'appointment-group-class-notification-user': {
-    name: 'Notify user for group class meeting start time',
+    name: 'Notify client for group session start time',
     subject: '[Notification] Booking #groupClassName at #startTime',
-    description: 'Email to user for group class meeting start time',
+    description: 'Email to client for group session start time',
     path: 'appointment/notification-user.html',
     group: 'appointment',
     subject_replace_fields: ['groupClassName', 'startTime']
   },
   'appointment-class-notification-user': {
-    name: 'Notify class start time',
+    name: 'Notify session start time',
     subject: '[Notify] Appointment #appointmentCode at #startTime',
-    description: 'Email to user for class start time',
+    description: 'Email to client for session start time',
     path: 'appointment/notification-user-class.html',
     group: 'appointment',
     subject_replace_fields: ['appointmentCode', 'startTime']
   },
   'appointment-class-notification-tutor': {
-    name: 'Notify class start time',
+    name: 'Notify session start time',
     subject: '[Notify] Appointment #appointmentCode at #startTime',
-    description: 'Email to tutor for class start time',
+    description: 'Email to expert for session start time',
     path: 'appointment/notification-tutor-class.html',
     group: 'appointment',
     subject_replace_fields: ['appointmentCode', 'startTime']
@@ -132,7 +132,7 @@ const templates = {
   },
   'confirm-book-free-user': {
     name: 'User booked a slot free',
-    subject: 'Successfully booked 1 free slot with tutor #tutorName',
+    subject: 'Successfully booked 1 free session with expert #tutorName',
     description: 'Email to user when booked a slot free',
     path: 'appointment/confirm-book-free-user.html',
     group: 'appointment',
@@ -275,7 +275,7 @@ const templates = {
   'refund-approve-notify-to-tutor': {
     name: 'Admin approved refund request',
     subject: 'Approved a refund request #refundRequestCode',
-    description: 'Email to tutor when admin aprroved refund request',
+    description: 'Email to expert when admin aprroved refund request',
     path: 'refund/approve-notify-to-tutor.html',
     group: 'refund',
     subject_replace_fields: ['refundRequestCode']

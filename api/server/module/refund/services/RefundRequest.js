@@ -83,8 +83,8 @@ exports.sendRequest = async (userId, options) => {
         throw new Error('Appointment is not completed. Please send a request once the appointment is completed');
       }
 
-      const isAfter3days = moment().isSameOrAfter(moment(lastAppointment.toTime).add(3, 'days').toDate());
-      if (isAfter3days) throw new Error('Request failed. You can only send a refund request within 3 days after the class is completed.');
+      const isAfter5days = moment().isSameOrAfter(moment(lastAppointment.toTime).add(5, 'days').toDate());
+      if (isAfter5days) throw new Error('Request failed. You can only send a refund request within 5 days after the session is completed.');
     }
     const refundRequest = new DB.RefundRequest({
       userId,

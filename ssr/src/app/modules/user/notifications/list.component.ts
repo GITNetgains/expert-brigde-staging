@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { IUser } from 'src/app/interface';
 import { INotification } from 'src/app/interface/notification';
 import {
@@ -29,7 +30,8 @@ export class ListNotificationComponent implements OnInit {
     private seoService: SeoService,
     private notificationService: NotificationService,
     private appService: AppService,
-    private stateService: StateService
+    private stateService: StateService,
+    private router: Router
   ) {
     this.seoService.setMetaTitle('Notifications');
     this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
@@ -87,7 +89,9 @@ export class ListNotificationComponent implements OnInit {
         }
       });
     }
-    // this.router.navigate(param ? [url, param] : [url]);
+    if (url) {
+      this.router.navigate(param ? [url, param] : [url]);
+    }
   }
 
   removeNotification(item: INotification, index: number) {

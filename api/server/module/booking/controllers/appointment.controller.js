@@ -474,7 +474,7 @@ exports.reSchedule = async (req, res, next) => {
     if (!canReschedule) {
       return next(
         PopulateResponse.error({
-          message: 'Cannot reschedule the class starting within 1 hour'
+          message: 'Cannot reschedule the session starting within 1 hour'
         })
       );
     }

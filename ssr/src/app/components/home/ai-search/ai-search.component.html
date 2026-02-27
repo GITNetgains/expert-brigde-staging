@@ -13,20 +13,23 @@
     <h1 class="title">Engage Brilliance,<br />Get it Done</h1>
     <p class="subtitle">Find top-rated experts across industries</p>
 
-    <!-- Search Box -->
+    <!-- Search Box (ChatGPT-style: expands with content) -->
     <form (submit)="onSearch($event)" class="search-wrap">
 
       <div class="search-box">
 
-        <!-- Input -->
-        <input
-          type="text"
+        <!-- Textarea: auto-grows instead of single-line overflow -->
+        <textarea
+          #searchTextarea
           [(ngModel)]="query"
           name="query"
           class="search-input"
           placeholder="Provide a one line brief – our AI drafts your query - post in seconds"
+          rows="1"
+          (input)="resizeSearchInput()"
+          (keydown.enter)="onSearchKeydown($event)"
           required
-        />
+        ></textarea>
 
         <span class="recording-indicator" *ngIf="isRecording">
           Listening...

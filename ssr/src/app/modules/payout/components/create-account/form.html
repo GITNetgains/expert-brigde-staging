@@ -21,18 +21,112 @@
       <div class="row mb-3" *ngIf="account.type === 'paypal';else bankAccount">
         <div class="col-md-6">
           <div class="form-group">
-            <label translate><span translate>Paypal Account</span></label>
+            <label translate>Paypal registered email address</label>
             <input type="text" name="paypalAccount" #paypalAccount="ngModel" class="form-control" required
-              placeholder="{{'Enter paypal account' | translate}}" [(ngModel)]="account.paypalAccount" />
+              placeholder="{{'Enter paypal registered email address' | translate}}" [(ngModel)]="account.paypalAccount" />
             <div *ngIf="paypalAccount.errors && (paypalAccount.dirty || paypalAccount.touched || isSubmitted)">
               <p [hidden]="!paypalAccount.errors['required']" style="color: red" translate>
-                <span translate>Please enter paypal account</span>!
+                <span translate>Please enter Paypal registered email address</span>!
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label><span translate>Account Holder's Name</span> (*)</label>
+            <input type="text" name="paypalAccountHolderName" #paypalAccountHolderName="ngModel" class="form-control"
+              placeholder="{{'Enter account holder name' | translate}}" [(ngModel)]="account.accountHolderName" required />
+            <div
+              *ngIf="paypalAccountHolderName.errors && (paypalAccountHolderName.dirty || paypalAccountHolderName.touched || isSubmitted)">
+              <p [hidden]="!paypalAccountHolderName.errors['required']" style="color: red" translate>
+                <span translate>Please enter account holder's name</span>!
               </p>
             </div>
           </div>
         </div>
       </div>
+      <div class="row mb-3" *ngIf="account.type === 'paypal'">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label translate>Address</label>
+            <input type="text" name="paypalAccountHolderAddress" #paypalAccountHolderAddress="ngModel"
+              class="form-control" placeholder="{{'Enter address' | translate}}"
+              [(ngModel)]="account.accountHolderAddress" required />
+            <div
+              *ngIf="paypalAccountHolderAddress.errors && (paypalAccountHolderAddress.dirty || paypalAccountHolderAddress.touched || isSubmitted)">
+              <p [hidden]="!paypalAccountHolderAddress.errors['required']" style="color: red" translate>
+                <span translate>Please enter address</span>!
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label translate>Pincode or Postal Code</label>
+            <input type="text" name="paypalAccountHolderPostalCode" #paypalAccountHolderPostalCode="ngModel"
+              class="form-control" placeholder="{{'Enter pincode or postal code' | translate}}"
+              [(ngModel)]="account.accountHolderPostalCode" required />
+            <div
+              *ngIf="paypalAccountHolderPostalCode.errors && (paypalAccountHolderPostalCode.dirty || paypalAccountHolderPostalCode.touched || isSubmitted)">
+              <p [hidden]="!paypalAccountHolderPostalCode.errors['required']" style="color: red" translate>
+                <span translate>Please enter pincode or postal code</span>!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3" *ngIf="account.type === 'paypal'">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label translate>Tax Identification Number (TIN)1 or Unique Identification Number</label>
+            <input type="text" name="paypalTaxIdNumber" #paypalTaxIdNumber="ngModel" class="form-control"
+              placeholder="{{'Enter Tax ID or Unique Identification Number' | translate}}"
+              [(ngModel)]="account.taxIdNumber" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label translate>Unique Identification Number Type </label>
+            <input type="text" name="paypalUniqueIdentificationNumberType"
+              #paypalUniqueIdentificationNumberType="ngModel" class="form-control"
+              placeholder="{{'Enter identification type' | translate}}"
+              [(ngModel)]="account.uniqueIdentificationNumberType" />
+          </div>
+        </div>
+        <p class="small text-muted">
+          <span translate>
+             In case you do not have a Tax ID Number, then please provide any government issued identification number
+            that indicates that you are a legal resident of the country where the funds are transferred.
+          </span>
+        </p>
+        <p class="small text-muted">
+          <span translate>
+            Experts are responsible to share their correct details. Expert Bridge team is not responsible
+            for any wrong details.
+          </span>
+        </p>
+      </div>
       <ng-template #bankAccount>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label><span translate>Bank account country / region</span> (*)</label>
+              <select class="form-control" [(ngModel)]="account.bankAccountRegion" name="bankAccountRegion"
+                #bankAccountRegion="ngModel" required>
+                <option value="" translate>Select country / region</option>
+                <option value="uk">United Kingdom (UK)</option>
+                <option value="india">India</option>
+                <option value="us">United States (US)</option>
+                <option value="other">Other countries</option>
+              </select>
+              <div *ngIf="bankAccountRegion.errors && (bankAccountRegion.dirty || bankAccountRegion.touched || isSubmitted)">
+                <p [hidden]="!bankAccountRegion.errors['required']" style="color: red" translate>
+                  Please select bank account country / region
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
@@ -49,8 +143,8 @@
           </div>
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>Account Number</label>
-              <input type="number" name="accountNumber" #accountNumber="ngModel" class="form-control"
+              <label translate>Account Number</label> (*)
+              <input type="text" name="accountNumber" #accountNumber="ngModel" class="form-control"
                 placeholder="{{'Enter account number' | translate}}" [(ngModel)]="account.accountNumber" required />
               <div *ngIf="accountNumber.errors && (accountNumber.dirty || accountNumber.touched || isSubmitted)">
                 <p [hidden]="!accountNumber.errors['required']" style="color: red" translate>
@@ -59,11 +153,39 @@
               </div>
             </div>
           </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Account Holder Address</label> (*)
+              <input type="text" name="accountHolderAddress" #accountHolderAddress="ngModel" class="form-control"
+                placeholder="{{'Enter account holder address' | translate}}" [(ngModel)]="account.accountHolderAddress"
+                required />
+              <div
+                *ngIf="accountHolderAddress.errors && (accountHolderAddress.dirty || accountHolderAddress.touched || isSubmitted)">
+                <p [hidden]="!accountHolderAddress.errors['required']" style="color: red" translate>
+                  <span translate>Please enter account holder address</span>!
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Account Holder Pincode or Postal Code</label> (*)
+              <input type="text" name="accountHolderPostalCode" #accountHolderPostalCode="ngModel"
+                class="form-control" placeholder="{{'Enter pincode or postal code' | translate}}"
+                [(ngModel)]="account.accountHolderPostalCode" required />
+              <div
+                *ngIf="accountHolderPostalCode.errors && (accountHolderPostalCode.dirty || accountHolderPostalCode.touched || isSubmitted)">
+                <p [hidden]="!accountHolderPostalCode.errors['required']" style="color: red" translate>
+                  <span translate>Please enter account holder pincode or postal code</span>!
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>Bank Name</label>
+              <label translate>Bank Name</label> (*)
               <input type="text" name="bankName" #bankName="ngModel" class="form-control"
                 placeholder="{{'Enter bank name' | translate}}" [(ngModel)]="account.bankName" required />
               <div *ngIf="bankName.errors && (bankName.dirty || bankName.touched || isSubmitted)">
@@ -73,84 +195,177 @@
           </div>
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>Bank Address</label>
+              <label translate>Bank Address</label> (*)
               <input type="text" name="bankAddress" #bankAddress="ngModel" class="form-control"
                 placeholder="{{'Enter bank address' | translate}}" [(ngModel)]="account.bankAddress" required />
               <div *ngIf="bankAddress.errors && (bankAddress.dirty || bankAddress.touched || isSubmitted)">
-                <p [hidden]="!bankAddress.errors['required']" style="color: red" translate>Please enter bank address!
-                </p>
+                <p [hidden]="!bankAddress.errors['required']" style="color: red" translate>Please enter bank address!</p>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
+
+        <!-- UK bank account fields -->
+        <div class="row" *ngIf="account.bankAccountRegion === 'uk'">
+          <div class="col-md-12"><h6 class="text-muted" translate>UK bank details</h6></div>
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>International Bank Account Number</label>
-              <input type="number" name="iban" #iban="ngModel" class="form-control"
-                placeholder="{{'Enter number' |translate}}" [(ngModel)]="account.iban" />
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label translate>Worldwide Interbank Financial Telecommunication</label>
-              <input type="text" name="swiftCode" #swiftCode="ngModel" [minlength]="8" [maxlength]="11"
-                class="form-control" placeholder="{{'Enter code' | translate}}" [(ngModel)]="account.swiftCode" />
-              <div *ngIf="swiftCode.errors && (swiftCode.dirty || swiftCode.touched || isSubmitted)">
-                <p [hidden]="!swiftCode.errors['minlength']" class="error" translate>
-                  SWIFT Code must be 8 or 11 characters
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label translate>UK Bank Code</label>
+              <label translate>UK Bank Code (SORT Code)</label> (*)
               <input type="text" name="sortCode" #sortCode="ngModel" [minlength]="6" [maxlength]="6"
-                class="form-control" placeholder="{{'Enter code' | translate}}" [(ngModel)]="account.sortCode" />
+                class="form-control" placeholder="{{'6 digits, e.g. 12-34-56' | translate}}" [(ngModel)]="account.sortCode" required />
               <div *ngIf="sortCode.errors && (sortCode.dirty || sortCode.touched || isSubmitted)">
-                <p [hidden]="!sortCode.errors['minlength']" class="error" translate>UK Bank Code must be 6 characters
-                </p>
+                <p [hidden]="!sortCode.errors['minlength']" class="error" translate>UK Bank Code must be 6 characters</p>
+                <p [hidden]="!sortCode.errors['required']" style="color: red" translate>Please enter UK Bank Code (SORT Code)</p>
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>American Banker Association Number</label>
-              <input type="number" name="routingNumber" #routingNumber="ngModel" [minlength]="9" [maxlength]="9"
-                class="form-control" placeholder="{{'Enter number' |translate}}" [(ngModel)]="account.routingNumber" />
-              <div *ngIf="routingNumber.errors && (routingNumber.dirty || routingNumber.touched || isSubmitted)">
-                <p [hidden]="!routingNumber.errors['minlength']" class="error" translate>
-                  American Bankers Association Number must be 9 characters
-                </p>
+              <label translate>SWIFT / BIC Code</label>
+              <input type="text" name="swiftCode" #swiftCode="ngModel" [minlength]="8" [maxlength]="11"
+                class="form-control" placeholder="{{'8 or 11 characters' | translate}}" [(ngModel)]="account.swiftCode" />
+              <div *ngIf="swiftCode.errors && (swiftCode.dirty || swiftCode.touched || isSubmitted)">
+                <p [hidden]="!swiftCode.errors['minlength']" class="error" translate>SWIFT Code must be 8 or 11 characters</p>
               </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>IBAN (International Bank Account Number)</label>
+              <input type="text" name="iban" #iban="ngModel" class="form-control"
+                placeholder="{{'Enter IBAN' | translate}}" [(ngModel)]="account.iban" />
+            </div>
+          </div>
+        </div>
+
+        <!-- India bank account fields -->
+        <div class="row" *ngIf="account.bankAccountRegion === 'india'">
+          <div class="col-md-12"><h6 class="text-muted" translate>India bank details</h6></div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>IFSC Code (Indian Financial System Code)</label> (*)
+              <input type="text" name="ifscCode" #ifscCode="ngModel" [minlength]="11" [maxlength]="11"
+                class="form-control" placeholder="{{'11 characters, e.g. ICIC0001245' | translate}}" [(ngModel)]="account.ifscCode" required />
+              <div *ngIf="ifscCode.errors && (ifscCode.dirty || ifscCode.touched || isSubmitted)">
+                <p [hidden]="!ifscCode.errors['minlength']" class="error" translate>IFSC Code must be 11 characters</p>
+                <p [hidden]="!ifscCode.errors['required']" style="color: red" translate>Please enter IFSC Code</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>SWIFT / BIC Code</label>
+              <input type="text" name="swiftCodeIndia" #swiftCodeIndia="ngModel" [minlength]="8" [maxlength]="11"
+                class="form-control" placeholder="{{'8 or 11 characters' | translate}}" [(ngModel)]="account.swiftCode" />
+              <div *ngIf="swiftCodeIndia.errors && (swiftCodeIndia.dirty || swiftCodeIndia.touched || isSubmitted)">
+                <p [hidden]="!swiftCodeIndia.errors['minlength']" class="error" translate>SWIFT Code must be 8 or 11 characters</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- US bank account fields -->
+        <div class="row" *ngIf="account.bankAccountRegion === 'us'">
+          <div class="col-md-12"><h6 class="text-muted" translate>US bank details</h6></div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>ABA Routing Number</label> (*)
+              <input type="text" name="routingNumber" #routingNumber="ngModel" [minlength]="9" [maxlength]="9"
+                class="form-control" placeholder="{{'9 digits' | translate}}" [(ngModel)]="account.routingNumber" required />
+              <div *ngIf="routingNumber.errors && (routingNumber.dirty || routingNumber.touched || isSubmitted)">
+                <p [hidden]="!routingNumber.errors['minlength']" class="error" translate>ABA Routing Number must be 9 digits</p>
+                <p [hidden]="!routingNumber.errors['required']" style="color: red" translate>Please enter ABA Routing Number</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>SWIFT / BIC Code</label>
+              <input type="text" name="swiftCodeUs" #swiftCodeUs="ngModel" [minlength]="8" [maxlength]="11"
+                class="form-control" placeholder="{{'8 or 11 characters' | translate}}" [(ngModel)]="account.swiftCode" />
+              <div *ngIf="swiftCodeUs.errors && (swiftCodeUs.dirty || swiftCodeUs.touched || isSubmitted)">
+                <p [hidden]="!swiftCodeUs.errors['minlength']" class="error" translate>SWIFT Code must be 8 or 11 characters</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other countries bank account fields -->
+        <div class="row" *ngIf="account.bankAccountRegion === 'other'">
+          <div class="col-md-12"><h6 class="text-muted" translate>Other countries – bank details</h6></div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Receiver Bank SWIFT / BIC Code</label>
+              <input type="text" name="swiftCodeOther" #swiftCodeOther="ngModel" maxlength="11"
+                class="form-control" placeholder="{{'8 or 11 characters (optional)' | translate}}" [(ngModel)]="account.swiftCode" />
+              <small class="text-muted" translate>Optional. If provided, use 8 or 11 characters.</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Receiver Bank IBAN (For Other Countries)</label>
+              <input type="text" name="ibanOther" #ibanOther="ngModel" class="form-control"
+                placeholder="{{'Enter IBAN' | translate}}" [(ngModel)]="account.iban" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Any other local bank code</label>
+              <input type="text" name="routingCode" #routingCode="ngModel" class="form-control"
+                placeholder="{{'BSB, branch code, etc.' | translate}}" [(ngModel)]="account.routingCode" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Account title (Personal Account): Yes / No</label>
+              <select class="form-control" name="isPersonalAccount" #isPersonalAccount="ngModel"
+                [(ngModel)]="account.isPersonalAccount">
+                <option [ngValue]="true" translate>Yes</option>
+                <option [ngValue]="false" translate>No</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Tax Identification Number (TIN) or Unique Identification Number</label>
+              <input type="text" name="taxIdNumber" #taxIdNumber="ngModel" class="form-control"
+                placeholder="{{'Enter Tax ID or Unique Identification Number' | translate}}"
+                [(ngModel)]="account.taxIdNumber" />
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
-              <label translate>Indian Financial System Code</label>
-              <input type="text" name="ifscCode" #ifscCode="ngModel" [minlength]="11" [maxlength]="11"
-                class="form-control" placeholder="{{'Enter code' |translate}}" [(ngModel)]="account.ifscCode" />
-              <div *ngIf="ifscCode.errors && (ifscCode.dirty || ifscCode.touched || isSubmitted)">
-                <p [hidden]="!ifscCode.errors['minlength']" class="error" translate>
-                  Indian Financial System Code must be 11 characters
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label translate>Any Other Local Bank Code</label>
-              <input type="text" name="routingCode" #routingCode="ngModel" class="form-control"
-                placeholder="{{'Enter code' |translate}}" [(ngModel)]="account.routingCode" />
+              <label translate>Unique Identification Number Type </label>
+              <input type="text" name="uniqueIdentificationNumberType" #uniqueIdentificationNumberType="ngModel"
+                class="form-control" placeholder="{{'Enter identification type' | translate}}"
+                [(ngModel)]="account.uniqueIdentificationNumberType" />
             </div>
           </div>
         </div>
       </ng-template>
+
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <p class="small text-muted">
+            <span translate>
+               In case you do not have a Tax ID Number, then please provide any government issued identification number
+              that indicates that you are a legal resident of the country where the funds are transferred.
+            </span>
+          </p>
+         
+          <p class="small text-muted">
+            <span translate>
+              Experts are responsible to share their correct details. Expert Bridge team is not responsible
+              for any wrong details.
+            </span>
+          </p>
+        </div>
+      </div>
 
       <button class="btn btn-default mt-4" type="submit" translate>Save</button>
       <button class="btn btn-light mt-4 ms-3" [routerLink]="['/users/payout/account']" translate>Cancel</button>

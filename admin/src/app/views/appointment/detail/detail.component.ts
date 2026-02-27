@@ -62,6 +62,7 @@ export class DetailComponent implements OnInit {
           'paid',
           'webinar',
           'targetType',
+          'documents',
         ]);
       },
       error: () => {

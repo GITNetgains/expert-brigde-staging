@@ -74,7 +74,34 @@ exports.createOrderByRazorpay = async options => {
     priceForPayment = transaction.discountPrice;
   }
 
-  transaction.price = Math.max(0, priceForPayment);
+  // Base amount that the tutor should receive (after any coupon/discount)
+  const basePriceForTutor = Math.max(0, priceForPayment);
+
+  // Calculate commission rate (global or tutor-specific)
+  let commissionRate = process.env.COMMISSION_RATE;
+  const config = await DB.Config.findOne({ key: 'commissionRate' });
+  if (config) commissionRate = config.value;
+  if (commissionRate > 1) commissionRate /= 100;
+
+  let tutorCommissionRate = null;
+  if (options.tutorId) {
+    const tutor = await DB.User.findOne({ _id: options.tutorId });
+    if (tutor && typeof tutor.commissionRate === 'number') {
+      tutorCommissionRate = tutor.commissionRate;
+    }
+  }
+
+  const effectiveCommissionRate =
+    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
+
+  // Commission is calculated on the tutor's base price
+  const commission =
+    basePriceForTutor > 0 ? basePriceForTutor * effectiveCommissionRate : 0;
+
+  // Student pays tutor price + commission; tutor later receives full base price
+  transaction.price = basePriceForTutor + commission;
+  transaction.commission = commission;
+  transaction.balance = basePriceForTutor;
 
   await transaction.save();
 
@@ -133,14 +160,26 @@ exports.updatePaymentMutilple = async transactionId => {
   const config = await DB.Config.findOne({ key: 'commissionRate' });
   if (config) commissionRate = config.value;
   if (commissionRate > 1) commissionRate /= 100;
+  const tutorCommissionRate =
+    tutor && typeof tutor.commissionRate === 'number'
+      ? tutor.commissionRate
+      : null;
+  const effectiveCommissionRate =
+    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
   const children = await DB.Transaction.find({
     parentTransactionId: transaction._id
   });
   await Promise.all(
     children.map(async child => {
-      const price = child.price;
+      // Base amount that the tutor should receive for this child transaction
+      const basePriceForTutor =
+        child.usedCoupon && child.discountPrice
+          ? child.discountPrice
+          : child.originalPrice || child.price;
       const commission =
-        price * (tutor.commissionRate || commissionRate);
+        basePriceForTutor > 0
+          ? basePriceForTutor * effectiveCommissionRate
+          : 0;
       await DB.Transaction.update(
         { _id: child._id },
         {
@@ -148,7 +187,8 @@ exports.updatePaymentMutilple = async transactionId => {
             status: 'completed',
             paid: true,
             commission,
-            balance: price - commission
+            // Tutor receives the full base price they set
+            balance: basePriceForTutor
           }
         }
       );
@@ -196,16 +236,30 @@ exports.updatePayment = async transactionId => {
 
   if (commissionRate > 1) commissionRate /= 100;
 
-  const price = transaction.price;
+  const tutorCommissionRate =
+    tutor && typeof tutor.commissionRate === 'number'
+      ? tutor.commissionRate
+      : null;
+  const effectiveCommissionRate =
+    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
+
+  // Base amount that the tutor should receive (after discount, before commission on top)
+  const basePriceForTutor =
+    transaction.usedCoupon && transaction.discountPrice
+      ? transaction.discountPrice
+      : transaction.originalPrice || transaction.price;
   const commission =
-    price * (tutor.commissionRate || commissionRate);
+    basePriceForTutor > 0
+      ? basePriceForTutor * effectiveCommissionRate
+      : 0;
 
   await DB.Transaction.update(
     { _id: transaction._id },
     {
       $set: {
         commission,
-        balance: price - commission
+        // Tutor receives the full base price they set
+        balance: basePriceForTutor
       }
     }
   );

@@ -530,11 +530,20 @@ export class ProfileUpdateComponent implements OnInit {
         cv_file_url: this.cvWebhookUrl
       });
 
-      this.appService.toastSuccess('CV data sent successfully');
+      this.appService.toastSuccess(
+        'CV submitted successfully. Please allow up to 60 seconds for our system to create or update your expert profile, then click the refresh button on this page to check it.'
+      );
     } catch (err: any) {
       this.appService.toastError(err?.message || 'Failed to send CV data');
     } finally {
       this.sendCvWebhookLoading = false;
+    }
+  }
+
+  /** Small helper to refresh the expert profile page after background processing (e.g. CV import) */
+  refreshProfile() {
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   }
 
@@ -565,7 +574,6 @@ export class ProfileUpdateComponent implements OnInit {
     (this.skills || [])
       .filter((s: any) => idSet.has(String(s._id)))
       .forEach((s: any) => this.skillNames.push(s.name));
-    this.submit('', false);
   }
 
   onChangeIndustry(event: any) {
@@ -583,7 +591,6 @@ export class ProfileUpdateComponent implements OnInit {
     (this.industries || [])
       .filter((i: any) => idSet.has(i._id))
       .forEach((i: any) => this.industryNames.push(i.name));
-    this.submit('', false);
   }
 
   addSkillTag = async (name: string) => {

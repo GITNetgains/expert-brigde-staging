@@ -12,7 +12,7 @@ apiBaseUrl:'https://api.expertbridge.co/v1',
 razorpayKey:'rzp_test_S29C3LRyS1b61W',
 url:'https://expertbridge.co',
 socketUrl: 'https://api.expertbridge.co',
-  maximumFileSize: 1024,
+  maximumFileSize: 10,
    zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA',
   zoomSiteUrl: 'https://zoom.expertbridge.co/',
 

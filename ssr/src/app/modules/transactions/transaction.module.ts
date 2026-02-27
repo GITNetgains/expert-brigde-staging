@@ -21,6 +21,11 @@ const routes: Routes = [
     resolve: {}
   },
   {
+    path: ':id',
+    component: AppointmentDetailComponent,
+    resolve: {}
+  },
+  {
     path: ':id/view',
     component: AppointmentDetailComponent,
     resolve: {}
