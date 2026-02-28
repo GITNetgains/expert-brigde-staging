@@ -1,5 +1,23 @@
-<div class="container" style="padding: 30px 15px;">
-  <div class="alert alert-danger" role="alert">
-    <span translate>Payment cancel! will redirect in</span> <strong style="padding-left: 3px;">{{second}}s</strong>
+<div class="payment-result payment-result--cancel sm-padding">
+  <div class="container">
+    <div class="payment-result__card payment-result__card--cancel">
+      <div class="payment-result__icon-wrap">
+        <div class="payment-result__circle payment-result__circle--cancel">
+          <svg class="payment-result__cross" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+            <path class="payment-result__cross-path" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M16 16 L36 36 M36 16 L16 36" />
+          </svg>
+        </div>
+        <div class="payment-result__rings payment-result__rings--cancel" aria-hidden="true">
+          <span class="payment-result__ring"></span>
+          <span class="payment-result__ring"></span>
+        </div>
+      </div>
+      <h2 class="payment-result__title" translate>Payment cancelled</h2>
+      <p class="payment-result__message" translate>Your payment was not completed. Redirecting to your transactions...</p>
+      <div class="payment-result__countdown payment-result__countdown--cancel">
+        <span class="payment-result__countdown-label" translate>Redirecting in</span>
+        <span class="payment-result__countdown-value">{{ second }}s</span>
+      </div>
+    </div>
   </div>
 </div>

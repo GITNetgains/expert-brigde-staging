@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-payment-cancel',
-  templateUrl: './cancel.html'
+  templateUrl: './cancel.html',
+  styleUrls: ['./cancel.component.scss']
 })
 export class PaymentCancelComponent implements OnInit, OnDestroy {
   public second: any = 0;

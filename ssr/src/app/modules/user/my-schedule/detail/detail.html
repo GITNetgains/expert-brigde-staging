@@ -139,9 +139,9 @@
               </td>
             </tr>
             <tr
-              *ngIf="appointment?.status==='booked' || appointment?.status==='pending' || appointment?.status === 'progressing'"
+              *ngIf="appointment?.status==='booked' || appointment?.status==='pending'  || appointment?.status === 'progressing'"
             >
-              <td><span translate>Start class</span></td>
+              <td><span translate>Start session</span></td>
               <td>
                 <a
                   *ngIf="appointment?.zoomLinkActive !== false"
@@ -149,7 +149,7 @@
                   class="btn btn-default btn-pink"
                   (click)="startMeeting()"
                 >
-                  <span translate>Click to start class</span>
+                  <span translate>Click to start session</span>
                 </a>
               </td>
             </tr>

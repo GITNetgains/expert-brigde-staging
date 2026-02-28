@@ -297,7 +297,7 @@ enrollQ.process(async (job, done) => {
             });
             const notificationTutor = {
               title: `Booking`,
-              description: `You have a new session booking!`,
+              description: `You have a new confirmed engagement.`,
               itemId: appointment._id,
               notifyTo: tutor._id,
               type: 'booking'

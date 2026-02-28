@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-payment-success',
-  templateUrl: './success.html'
+  templateUrl: './success.html',
+  styleUrls: ['./success.component.scss']
 })
 export class PaymentSuccessComponent implements OnInit, OnDestroy {
   public second: any = 0;

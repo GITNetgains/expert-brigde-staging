@@ -19,18 +19,28 @@
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label><span translate>Title</span><span class="required">*</span></label>
-          <input type="text" name="title" class="form-control" placeholder="{{'Enter title'|translate}}"
+          <label>
+            <span>{{ (type === 'education' ? 'Qualification' : type === 'experience' ? 'Title/Job Role' : 'Title') | translate }}</span><span class="required">*</span>
+          </label>
+          <input type="text" name="title" class="form-control"
+            [placeholder]="type === 'education' ? ('Enter qualification'|translate) : type === 'experience' ? ('Enter title or job role'|translate) : ('Enter title'|translate)"
             [(ngModel)]="certificate.title" required #title="ngModel" />
           <div *ngIf="title.errors && (title.dirty || title.touched || submitted)">
             <p [hidden]="!title.errors.required" style="color: red" translate>Title is required!</p>
           </div>
         </div>
       </div>
+      <div class="col-md-12" *ngIf="type === 'education'">
+        <div class="form-group">
+          <label><span translate>Institution name</span></label>
+          <input type="text" name="organization" class="form-control" placeholder="{{'Enter institution name'|translate}}"
+            [(ngModel)]="certificate.organization" #organization="ngModel" />
+        </div>
+      </div>
       <div class="col-md-12" *ngIf="type === 'experience'">
         <div class="form-group">
-          <label><span translate>Organization</span></label>
-          <input type="text" name="organization" class="form-control" placeholder="{{'Enter organization or company'|translate}}"
+          <label><span translate>Institution name</span></label>
+          <input type="text" name="organization" class="form-control" placeholder="{{'Enter institution or company name'|translate}}"
             [(ngModel)]="certificate.organization" #organization="ngModel" />
         </div>
       </div>
@@ -40,6 +50,11 @@
           <textarea name="description" rows="3" class="form-control" placeholder="{{'Enter some text here'|translate}}"
             [(ngModel)]="certificate.description" #description="ngModel"></textarea>
         </div>
+      </div>
+      <div class="col-md-12" *ngIf="type === 'education' || type === 'experience'">
+        <label class="d-block mb-2">
+          <span>{{ (type === 'education' ? 'Years for Education' : 'Years for Work Experience') | translate }}</span>
+        </label>
       </div>
       <div class="col-md-6">
         <div class="form-group">

@@ -1,16 +1,22 @@
-<div class="sm-padding data-table">
+<div class="payment-result payment-result--success sm-padding">
   <div class="container">
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <img
-          src="assets/images/payment-sucess.svg"
-          alt="payment success"
-          class="payment-img"
-        />
-        <h6 class="color-green mt-3" translate>
-          <span translate>Payment success! Will redirect in</span>
-          <span style="padding-left: 3px">{{second}}s</span>
-        </h6>
+    <div class="payment-result__card payment-result__card--success">
+      <div class="payment-result__icon-wrap">
+        <div class="payment-result__circle payment-result__circle--success">
+          <svg class="payment-result__checkmark" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+            <path class="payment-result__checkmark-path" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M14 27 l8 8 16 -20" />
+          </svg>
+        </div>
+        <div class="payment-result__rings" aria-hidden="true">
+          <span class="payment-result__ring"></span>
+          <span class="payment-result__ring"></span>
+        </div>
+      </div>
+      <h2 class="payment-result__title" translate>Payment successful!</h2>
+      <p class="payment-result__message" translate>Thank you for your payment. Redirecting to your transactions...</p>
+      <div class="payment-result__countdown">
+        <span class="payment-result__countdown-label" translate>Redirecting in</span>
+        <span class="payment-result__countdown-value">{{ second }}s</span>
       </div>
     </div>
   </div>
