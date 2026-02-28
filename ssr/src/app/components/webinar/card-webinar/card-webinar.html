@@ -84,9 +84,9 @@
     <div class="right-card-footer text-end">
       <h5 class="color-light-red">
         <strong *ngIf="!webinar.price || webinar.isFree" translate>Free</strong>
-        <strong *ngIf="webinar.price && webinar.price > 0"
-          >{{ webinar.price | appCurrency}}</strong
-        >
+        <strong *ngIf="webinar.price && webinar.price > 0">
+          {{ displayPrice | appCurrency }}
+        </strong>
       </h5>
     </div>
   </div>

@@ -79,15 +79,15 @@ exports.create = async options => {
     }
     // do check for free booking
     if (options.isFree && !options.couponCode) {
-      // check if user can book more free trial class
+      // check if client can book more free trial sessions
       const canBookFree = await this.canBookFree(options.userId);
       if (!canBookFree) {
-        throw new Error('You have taken for the maximum number of free trial classes');
+        throw new Error('You have taken the maximum number of free trial sessions');
       }
-      // check if user have free booking with this tutor or not
+      // check if client has a free booking with this expert or not
       const canBookFreeWithTutor = await this.canBookFreeWithTutor(options);
       if (!canBookFreeWithTutor) {
-        throw new Error('You have taken a free trial class of this tutor before');
+        throw new Error('You have taken a free trial session with this expert before');
       }
     }
 

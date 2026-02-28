@@ -1,5 +1,5 @@
 import { Component, Input, EventEmitter, Output, OnInit } from '@angular/core';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

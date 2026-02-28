@@ -30,7 +30,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'payout'">
@@ -40,7 +40,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'refund'">
@@ -50,7 +50,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)"
@@ -61,18 +61,18 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)"
                     *ngIf="item.type === 'booking' && currentUser && currentUser?.type === 'student'">
                     <div class="notification-icon"><i class="fi fi-rr-graduation-cap"></i></div>
                     <div class="msg" (click)="read(item, i, '/users/lessons', item.itemId)">
-                        <!-- <span class="date-n-time"> {{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span> -->
+                        <!-- <span class="date-n-time"> {{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span> -->
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'course'">
@@ -82,7 +82,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'my-course'">
@@ -92,7 +92,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'webinar'">
@@ -102,7 +102,7 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
                 <a href="javascript:void(0)" *ngIf="item.type === 'message'">
@@ -112,7 +112,17 @@
                         <h5>{{ item.title }}</h5>
                         <p>{{ item.description }}</p>
 
-                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mma' }}</span>
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
+                    </div>
+                </a>
+                <a href="javascript:void(0)" *ngIf="item.type === 'ai-query'">
+                    <div class="notification-icon"><i class="fi fi-rr-users"></i></div>
+                    <div class="msg" (click)="read(item, i, '/users/ai-queries', '')">
+
+                        <h5>{{ item.title }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <span class="date-n-time">{{ item.updatedAt | date: 'dd/MM/yyyy, HH:mm' }}</span>
                     </div>
                 </a>
             </li>

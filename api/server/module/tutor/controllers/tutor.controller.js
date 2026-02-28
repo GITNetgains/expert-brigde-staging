@@ -95,7 +95,7 @@ exports.findOne = async (req, res, next) => {
         certificationDocument: 0,
         resumeDocument: 0,
         issueDocument: 0,
-        commissionRate: 0,
+        // Keep commissionRate so frontend can calculate final price consistently
         address: 0,
         email: 0,
         phoneNumber: 0

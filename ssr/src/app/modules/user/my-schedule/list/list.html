@@ -97,9 +97,9 @@
                     'webinar' ? 'Paid Group session' : 'Paid Lesson'}}</span>
                 </td> -->
                 <td>
-                  {{(item?.displayStartTime? item?.displayStartTime : item?.startTime ) | date:'dd/MM/yyyy,HH:mma'}}
+                  {{(item?.displayStartTime? item?.displayStartTime : item?.startTime ) | date:'dd/MM/yyyy,HH:mm'}}
                 </td>
-                <td>{{(item?.displayToTime? item?.displayToTime: item?.toTime) | date:'dd/MM/yyyy, HH:mma'}}</td>
+                <td>{{(item?.displayToTime? item?.displayToTime: item?.toTime) | date:'dd/MM/yyyy, HH:mm'}}</td>
                 <td>
                   <span>{{item?.createdAt | date}}</span>
                 </td>

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal, NgbDate, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import * as moment from 'moment';
+import moment from 'moment';
 import { AppService, CalendarService } from 'src/app/services';
 
 interface IRecurring {
@@ -23,7 +23,9 @@ export class RecurringFormComponent implements OnInit {
   @Input() isFree = false;
   @Input() slotDuration = 40;
   public recurring: IRecurring;
-  public dayOfWeek = [
+
+  // Master list of all days in the week
+  private allDaysOfWeek = [
     {
       name: 'Monday',
       index: 1
@@ -53,6 +55,8 @@ export class RecurringFormComponent implements OnInit {
       index: 0
     }
   ];
+  // Days available based on the selected date range
+  public dayOfWeek = [...this.allDaysOfWeek];
   timeStart = { hour: 0, minute: 0 };
   timeEnd = { hour: 0, minute: 0 };
   public range = {
@@ -94,7 +98,8 @@ export class RecurringFormComponent implements OnInit {
   constructor(
     private appService: AppService,
     public activeModal: NgbActiveModal,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -159,6 +164,7 @@ export class RecurringFormComponent implements OnInit {
     ) {
       this.validTime[field] = true;
       this.dateErrorMessages[field] = 'End date must be after the start date.';
+      this.updateAvailableDaysOfWeek(); // reset to all days when range is invalid
       return;
     }
     this.validTime[field] = false;
@@ -175,6 +181,43 @@ export class RecurringFormComponent implements OnInit {
     if (this.recurring.range.end) {
       this.recurring.range.end = moment(this.recurring.range.end).set('hour', 23).set('minute', 59).set('second', 59).toDate();
     }
+
+    // When we have a valid date range, update which days of week are selectable
+    if (this.recurring.range.start && this.recurring.range.end) {
+      this.updateAvailableDaysOfWeek();
+    }
+  }
+
+  /**
+   * Limit the list of selectable days of week to only those
+   * that actually occur between the selected start and end dates.
+   * Uses moment's .day(): 0 = Sunday, 1 = Monday, ..., 6 = Saturday (matches our index).
+   */
+  private updateAvailableDaysOfWeek() {
+    const start = this.recurring.range.start ? moment(this.recurring.range.start).clone().startOf('day') : null;
+    const end = this.recurring.range.end ? moment(this.recurring.range.end).clone().startOf('day') : null;
+    if (!start || !end || start.isAfter(end, 'day')) {
+      this.dayOfWeek = this.allDaysOfWeek.slice();
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const availableDayIndexes = new Set<number>();
+    const cursor = start.clone();
+    const last = end.clone();
+
+    while (cursor.isSameOrBefore(last, 'day')) {
+      availableDayIndexes.add(cursor.day()); // 0 (Sun) - 6 (Sat)
+      cursor.add(1, 'day');
+    }
+
+    this.dayOfWeek = this.allDaysOfWeek.filter((d) => availableDayIndexes.has(d.index));
+
+    // Remove any selected days that are no longer within the range
+    if (Array.isArray(this.recurring.dayOfWeek) && this.recurring.dayOfWeek.length) {
+      this.recurring.dayOfWeek = this.recurring.dayOfWeek.filter((idx) => availableDayIndexes.has(idx));
+    }
+    this.cdr.markForCheck();
   }
 
   submit(frm: any) {

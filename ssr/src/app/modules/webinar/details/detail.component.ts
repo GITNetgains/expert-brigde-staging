@@ -51,6 +51,7 @@ export class DetailWebinarComponent implements OnInit {
   };
   public config: any;
   public showBooking = false;
+  public webinarEffectiveCommissionRate = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -92,6 +93,26 @@ export class DetailWebinarComponent implements OnInit {
       }
     ]);
     this.populateDependent();
+
+    // Compute commission rate for group sessions to mirror Payment.js
+    let commissionRate: any =
+      this.config && typeof this.config.commissionRate !== 'undefined'
+        ? this.config.commissionRate
+        : 0;
+    if (typeof commissionRate === 'string') {
+      commissionRate = parseFloat(commissionRate);
+    }
+    const tutorRate =
+      this.webinar &&
+      this.webinar.tutor &&
+      typeof (this.webinar.tutor as any).commissionRate === 'number'
+        ? (this.webinar.tutor as any).commissionRate
+        : null;
+    const effective =
+      tutorRate != null && typeof tutorRate === 'number'
+        ? tutorRate
+        : (typeof commissionRate === 'number' ? commissionRate : 0);
+    this.webinarEffectiveCommissionRate = effective || 0;
   }
 
   async ngOnInit() {

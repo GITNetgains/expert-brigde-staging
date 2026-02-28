@@ -40,6 +40,8 @@ export interface IUser {
   completedByLearner: number;
   categories: ICategory[];
   industries?: any[];
+  // Tutor-specific commission rate (0–1, e.g. 0.2 = 20%)
+  commissionRate?: number;
   city: string;
   state: string;
   countryCode: string;

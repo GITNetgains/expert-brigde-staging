@@ -1094,6 +1094,7 @@ exports.assignTutorToAiQuery = async (req, res) => {
 exports.notifyUserAboutAiQuery = async (req, res, next) => {
   try {
     const { userId, queryId } = req.params;
+    const userWebUrl = (nconf.get('userWebUrl') || '').replace(/\/?$/, '/');
 
     const user = await DB.User.findById(userId);
     if (!user) {
@@ -1105,6 +1106,90 @@ exports.notifyUserAboutAiQuery = async (req, res, next) => {
       return res.status(404).json({ message: 'Query not found' });
     }
 
+    // Helper: ensure ObjectId for notifyTo/itemId (list API filters by notifyTo)
+    const toObjId = (id) => {
+      const raw = id && typeof id === 'object' && id._id !== undefined ? id._id : id;
+      if (raw == null) return null;
+      const str = typeof raw === 'string' ? raw : (raw.toString && raw.toString());
+      return str && mongoose.Types.ObjectId.isValid(str) ? new mongoose.Types.ObjectId(str) : null;
+    };
+
+    // 1. Dashboard notifications first (so they exist even if email fails)
+    const studentNotifyTo = toObjId(user._id);
+    const queryItemId = toObjId(query._id);
+
+    async function createNotificationDoc(payload) {
+      const NotificationModel = DB.Notification || (typeof mongoose.model === 'function' ? mongoose.model('Notification') : null);
+      if (NotificationModel) {
+        try {
+          const doc = new NotificationModel(payload);
+          await doc.save();
+          return doc;
+        } catch (e) {
+          console.error('[notifyUserAboutAiQuery] Notification.save error:', e.message || e);
+        }
+      }
+      // Fallback: insert directly into notifications collection
+      try {
+        const coll = mongoose.connection && mongoose.connection.db ? mongoose.connection.db.collection('notifications') : null;
+        if (coll) {
+          const raw = {
+            title: payload.title || '',
+            description: payload.description || '',
+            notifyTo: payload.notifyTo,
+            itemId: payload.itemId || null,
+            type: payload.type || 'ai-query',
+            unreadNotification: payload.unreadNotification != null ? payload.unreadNotification : 1,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          await coll.insertOne(raw);
+          return raw;
+        }
+      } catch (e) {
+        console.error('[notifyUserAboutAiQuery] notifications.insertOne error:', e.message || e);
+      }
+      return null;
+    }
+
+    let notificationsCreated = 0;
+    if (studentNotifyTo) {
+      const created = await createNotificationDoc({
+        title: 'Experts assigned',
+        description: 'Our admin has assigned experts to your query. Check your dashboard for details.',
+        notifyTo: studentNotifyTo,
+        itemId: queryItemId,
+        type: 'ai-query',
+        unreadNotification: 1
+      });
+      if (created) notificationsCreated += 1;
+    }
+
+    const assignedTutorIds = (query.assignedTutors || []).map(t => (t && t._id) ? t._id : t).filter(Boolean);
+    if (assignedTutorIds.length > 0) {
+      const tutors = await DB.User.find({ _id: { $in: assignedTutorIds } }).select('email name').lean();
+      for (const tutor of tutors) {
+        const tutorNotifyTo = toObjId(tutor._id);
+        if (tutorNotifyTo) {
+          const created = await createNotificationDoc({
+            title: 'Assigned as expert to a client',
+            description: 'You have been assigned as expert to a client. Set your categories and availability so they can book you for consultation.',
+            notifyTo: tutorNotifyTo,
+            itemId: queryItemId,
+            type: 'ai-query',
+            unreadNotification: 1
+          });
+          if (created) notificationsCreated += 1;
+        }
+      }
+    }
+    if (notificationsCreated > 0) {
+      console.log('[notifyUserAboutAiQuery] Created', notificationsCreated, 'dashboard notification(s) for client + experts');
+    } else {
+      console.warn('[notifyUserAboutAiQuery] No dashboard notifications were created (check Notification model / DB)');
+    }
+
+    // 2. Email to client: experts assigned
     const emailHtml = baseEmailTemplate({
       title: 'You have been assigned Experts ',
       subtitle: 'Experts Assigned',
@@ -1115,7 +1200,7 @@ exports.notifyUserAboutAiQuery = async (req, res, next) => {
           ${query.query}
         </p>
         <p>Our admin team has assigned experts to assist you. Kindly Login and  check your dashboard for more details.</p>
-        <a href="${nconf.get('userWebUrl')}users/ai-queries"
+        <a href="${userWebUrl}users/ai-queries"
           style="
             display:inline-block;
             margin-top:20px;
@@ -1136,6 +1221,49 @@ exports.notifyUserAboutAiQuery = async (req, res, next) => {
       'Update on Your AI Query - ExpertBridge',
       emailHtml
     );
+
+    // 3. Email each assigned tutor
+    if (assignedTutorIds.length > 0) {
+      const tutorsForEmail = await DB.User.find({ _id: { $in: assignedTutorIds } }).select('email name').lean();
+      const myCategoriesUrl = `${userWebUrl}users/my-categories`;
+      const scheduleUrl = `${userWebUrl}users/1on1sessions`;
+
+      for (const tutor of tutorsForEmail) {
+        if (!tutor.email) continue;
+        const tutorEmailHtml = baseEmailTemplate({
+          title: 'You have been assigned as expert to a client',
+          subtitle: 'Expert Assignment',
+          body: `
+            <p>Hello ${tutor.name || 'Expert'},</p>
+            <p>Our admin has assigned you as an expert to a client based on their query. So clients can see your profile and book you for consultation, please complete these steps:</p>
+            <ol style="margin:16px 0;padding-left:20px;line-height:1.8;">
+              <li><strong>Set your availability</strong> so clients can see when you are free: <a href="${scheduleUrl}">${scheduleUrl}</a></li>
+            </ol>
+            <p>Once your  availability are set, the client will be able to see your profile and book a consultation with you.</p>
+            
+            <span style="margin-left:12px;"></span>
+            <a href="${scheduleUrl}"
+              style="
+                display:inline-block;
+                margin-top:20px;
+                background:${BRAND.dark};
+                color:#fff;
+                padding:12px 20px;
+                border-radius:8px;
+                text-decoration:none;
+                font-weight:600;
+              ">
+              Set availability
+            </a>
+          `
+        });
+        await Service.Mailer.sendRawNow(
+          tutor.email,
+          'You have been assigned as expert to a client - ExpertBridge',
+          tutorEmailHtml
+        );
+      }
+    }
 
     res.locals.notifyUser = { message: 'Email sent successfully' };
     return next();

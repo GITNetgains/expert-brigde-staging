@@ -66,15 +66,27 @@ exports.create = async (req, res, next) => {
         })
       );
     }
+
+    // When expert (tutor) submits: reportTo = client. When client submits: reportTo = tutor.
+    const isExpertReporter = req.user._id.toString() === target.tutorId.toString();
+    let reportToUserId = target.tutorId;
+    let reportToName = tutor.name;
+    if (isExpertReporter) {
+      reportToUserId = target.userId;
+      const client = await DB.User.findOne({ _id: target.userId });
+      reportToName = client ? client.name : '';
+    }
+
     const report = new DB.Report({
       ...validate.value,
       transactionId: target.transactionId || null,
       reportByUserId: req.user._id,
+      reportToUserId,
       targetCode: target.code,
       transactionCode: transaction.code,
       meta: {
         reportBy: req.user.name,
-        reportTo: tutor.name
+        reportTo: reportToName
       }
     });
     await report.save();

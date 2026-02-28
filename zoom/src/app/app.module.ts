@@ -1,11 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { registerLocaleData } from '@angular/common';
+import localeEnGb from '@angular/common/locales/en-GB';
 
 import { AppComponent } from './app.component';
 import { AuthService } from './shared/auth.service';
 import { RouterModule } from '@angular/router';
 import { AppService } from './app.service';
+
+registerLocaleData(localeEnGb, 'en-GB');
 
 export interface IEnvironment {
   production: boolean;
@@ -32,6 +36,10 @@ export function init_app(appService: AppService) {
       useFactory: init_app,
       deps: [AppService],
       multi: true
+    },
+    {
+      provide: LOCALE_ID,
+      useValue: 'en-GB'
     }
   ],
   bootstrap: [AppComponent]

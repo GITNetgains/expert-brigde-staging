@@ -60,3 +60,35 @@
   will-change: height;
 }
 
+/* AI Result page: full-width layout (body class set by AiResultComponent) */
+body.ai-result-page-full-width app-root {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body.ai-result-page-full-width app-ai-result,
+body.ai-result-page-full-width app-ai-result .ai-result-wrapper {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+body.ai-result-page-full-width app-ai-result .ai-result-wrapper {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+body.ai-result-page-full-width app-ai-result .editor-card,
+body.ai-result-page-full-width app-ai-result .content-container,
+body.ai-result-page-full-width app-ai-result .heading {
+  max-width: none !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Ensure no min-width constraint on component */
+body.ai-result-page-full-width app-ai-result {
+  min-width: 0 !important;
+}
+

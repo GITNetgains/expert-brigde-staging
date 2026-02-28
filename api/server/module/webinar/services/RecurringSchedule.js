@@ -1,4 +1,5 @@
 const moment = require('moment');
+const momentTimeZone = require('moment-timezone');
 const date = require('../../date');
 const availableTimeTutorQ = require('../../tutor/available-time-queue');
 
@@ -19,8 +20,8 @@ const getDayOfRange = async (range, dayOfWeeks, timezone) => {
       return [];
     }
     let daysArray = [];
-    let currentDate = timezone ? moment(range.start).tz(timezone) : moment(range.start);
-    const endDate = timezone ? moment(range.end).tz(timezone) : moment(range.end);
+    let currentDate = timezone ? momentTimeZone(range.start).tz(timezone) : moment(range.start);
+    const endDate = timezone ? momentTimeZone(range.end).tz(timezone) : moment(range.end);
     while (moment(currentDate).isBefore(endDate)) {
       if (dayOfWeeks.includes(currentDate.get('day'))) {
         daysArray.push(currentDate.toDate());
@@ -49,7 +50,7 @@ exports.createRecurringSlots = async recurring => {
     const endMinute = moment(end, 'HH:mm').toDate().getMinutes();
     // let toHour = endHour === 0 ? endHour + 24 : endHour;
     for (let day of dayGetFromRange) {
-      const startDay = moment(day).tz(tutor.timezone).toDate();
+      const startDay = tutor.timezone ? momentTimeZone(day).tz(tutor.timezone).toDate() : moment(day).toDate();
       const startTime = moment(startDay).add(startHour, 'hours').add(startMinute, 'minutes').toDate();
       const toTime = moment(startDay).add(endHour, 'hours').add(endMinute, 'minutes').toDate();
       // const isDTS = date.isDTS(startTime, tutor.timezone);

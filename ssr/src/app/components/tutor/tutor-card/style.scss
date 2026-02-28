@@ -87,6 +87,8 @@
   overflow: hidden;
 }
 
+
+
 .bio.bio-expanded {
   display: block;
   -webkit-line-clamp: unset;
@@ -217,6 +219,9 @@
 
 .avatar-link.avatar-wrap .avatar-placeholder,
 .avatar-wrap .avatar-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100px;
   height: 100px;
   min-width: 100px;

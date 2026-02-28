@@ -3,13 +3,19 @@ const _ = require('lodash');
 
 const validateSchema = Joi.object().keys({
   type: Joi.string().allow(['paypal', 'bank-account']).required(),
+  bankAccountRegion: Joi.string().allow(['uk', 'india', 'us', 'other', null, '']),
   paypalAccount: Joi.string().allow([null, '']).when('type', {
     is: 'paypal',
     then: Joi.required(),
     otherwise: Joi.optional()
   }),
   accountHolderName: Joi.string().allow([null, '']),
+  accountHolderAddress: Joi.string().allow([null, '']),
+  accountHolderPostalCode: Joi.string().allow([null, '']),
   accountNumber: Joi.number().allow([null, '']),
+  isPersonalAccount: Joi.boolean(),
+  taxIdNumber: Joi.string().allow([null, '']),
+  uniqueIdentificationNumberType: Joi.string().allow([null, '']),
   iban: Joi.number().allow([null, '']),
   bankName: Joi.string().allow([null, '']),
   bankAddress: Joi.string().allow([null, '']),

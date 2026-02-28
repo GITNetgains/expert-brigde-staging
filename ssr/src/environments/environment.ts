@@ -16,5 +16,5 @@ razorpayKey:'rzp_test_S29C3LRyS1b61W',
 zoomSDK: 'UiUnCrJQSv6E75Gqc6HgA', // Zoom sdk client ID
  zoomDomain: 'localhost',
  zoomSiteUrl: 'http://localhost:1338',
-   maximumFileSize: 1024,
+   maximumFileSize: 10,
  };

@@ -32,8 +32,8 @@
           <td translate colspan="9">There are no lessons</td>
         </tr>
         <tr *ngFor="let item of appointments, let i = index">
-          <td>{{item?.startTime | date:'dd/MM/yyyy, HH:mma'}}</td>
-          <td>{{item?.toTime | date:'dd/MM/yyyy, HH:mma'}}</td>
+          <td>{{item?.startTime | date:'dd/MM/yyyy, HH:mm'}}</td>
+          <td>{{item?.toTime | date:'dd/MM/yyyy, HH:mm'}}</td>
           <td>
             <app-appointment-status [status]="item?.status || ''"></app-appointment-status>
           </td>
