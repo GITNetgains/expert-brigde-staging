@@ -96,9 +96,8 @@
   height: 200px;
   min-height: 200px;
   border-radius: 10px;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: #e8e8e8;
+
+
 
   img {
     position: absolute;
@@ -108,6 +107,7 @@
     object-fit: cover;
     object-position: center;
     display: block;
+    border-radius: 10px;
   }
 }
 
@@ -164,4 +164,10 @@
   .blogs-header .title { font-size: 32px; }
   .custom-nav-btn { display: none; } /* Hide arrows on mobile */
   .swiper-navigation-wrapper { gap: 0; }
+  .blog-card {
+ 
+    height: 300px;
+    min-height: 300px;
+   
+  }
 }
