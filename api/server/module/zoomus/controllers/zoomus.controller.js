@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { forwardZoomMeetingEnded } = require('../../creditService/forwarder'); // Credit Service forwarding (March 4, 2026)
 
 exports.hook = async (req, res, next) => {
   try {
@@ -17,10 +18,10 @@ exports.hook = async (req, res, next) => {
 
     if (req.headers['x-zm-signature'] === signature) {
       const { event, payload } = req.body;
-      
+
       console.log('Signature verified successfully');
       console.log('Processing event:', event);
-      
+
       switch (event) {
         case 'endpoint.url_validation':
           const hashForValidate = crypto.createHmac('sha256', secretToken).update(payload.plainToken).digest('hex');
@@ -29,23 +30,29 @@ exports.hook = async (req, res, next) => {
             encryptedToken: hashForValidate
           });
           return; // Important: return here to prevent calling next()
-          
+
         case 'meeting.started':
           console.log('Meeting started event received for meeting ID:', payload.object.id);
           await Service.Appointment.startMeeting(payload.object);
           console.log('Meeting started processing completed');
           break;
-          
+
         case 'meeting.ended':
           console.log('Meeting ended event received for meeting ID:', payload.object.id);
           await Service.Appointment.endMeeting(payload.object);
+          // === CREDIT SERVICE FORWARDING (Added March 4, 2026) ===
+          // Forward to Credit Service for billing/settlement processing (non-blocking)
+          forwardZoomMeetingEnded(req.body).catch(function(err) {
+            console.error('[CreditService] Zoom async forward error:', err.message);
+          });
+          // === END CREDIT SERVICE FORWARDING ===
           break;
-          
+
         case 'recording.completed':
           console.log('Recording completed event received');
           await Service.Appointment.getRecording(payload.object.id, payload.object);
           break;
-          
+
         default:
           console.log('Unhandled event type:', event);
           break;

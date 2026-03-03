@@ -5,6 +5,7 @@
 const Joi = require('joi');
 const crypto = require('crypto');
 const Razorpay = require('razorpay');
+const { forwardRazorpayPayment } = require('../../creditService/forwarder'); // Credit Service forwarding (March 4, 2026)
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -92,6 +93,13 @@ exports.hook = async (req, res, next) => {
     }
 
     console.log('🎉 Payment fully processed');
+
+    // === CREDIT SERVICE FORWARDING (Added March 4, 2026) ===
+    // Forward to Credit Service for double-entry ledger processing (non-blocking)
+    forwardRazorpayPayment(event).catch(function(err) {
+      console.error('[CreditService] Async forward error:', err.message);
+    });
+    // === END CREDIT SERVICE FORWARDING ===
 
     return res.status(200).send('OK');
   } catch (err) {
