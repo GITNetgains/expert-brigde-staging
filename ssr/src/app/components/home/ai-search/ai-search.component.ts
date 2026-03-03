@@ -90,6 +90,7 @@ export class AiSearchComponent implements OnInit, AfterViewChecked {
       const isTutor = current && current.type === 'tutor';
       if (isTutor) {
         this.app.toastError('Experts cannot post queries.');
+        this.query = '';
         return;
       }
     }

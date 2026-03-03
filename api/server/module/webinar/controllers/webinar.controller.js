@@ -450,7 +450,7 @@ exports.changeStatus = async (req, res, next) => {
     if (req.webinar.disabled) {
       const tutor = await DB.User.findOne({ _id: req.webinar.tutorId });
       await Service.Mailer.send('admin-disable-groupclass', tutor.email, {
-        subject: `Admin disabled your groupclass`,
+        subject: `Admin disabled your group session`,
         tutor: tutor.toObject(),
         appName: process.env.APP_NAME,
         adminEmail: process.env.ADMIN_EMAIL,

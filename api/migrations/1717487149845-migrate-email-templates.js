@@ -28,14 +28,14 @@ const templates = {
   'appointment-cancel-to-tutor': {
     name: 'Appointment has been canceled',
     subject: 'Cancellation Request',
-    description: 'Email to tutor when appointment has been canceled',
+    description: 'Email to expert when appointment has been canceled',
     path: 'appointment/cancel-tutor.html',
     group: 'appointment'
   },
   'appointment-cancel-to-user': {
     name: 'Appointment has been canceled',
     subject: 'Cancellation Request',
-    description: 'Email to user when appointment has been canceled',
+    description: 'Email to client when appointment has been canceled',
     path: 'appointment/cancel-user.html',
     group: 'appointment'
   },
@@ -47,14 +47,14 @@ const templates = {
     group: 'appointment'
   },
   'appointment-tutor-cancel-success': {
-    name: 'Appointment has been canceled by tutor',
+    name: 'Appointment has been canceled by expert',
     subject: 'You have successfully cancelled your session',
-    description: 'Email to tutor when appointment has been canceled',
+    description: 'Email to expert when appointment has been canceled',
     path: 'appointment/tutor-cancel-success.html',
     group: 'appointment'
   },
   'appointment-student-cancel-success': {
-    name: 'Appointment has been canceled by student',
+    name: 'Appointment has been canceled by client',
     subject: 'You have successfully cancelled your session',
     description: 'Email to client when appointment has been canceled',
     path: 'appointment/student-cancel-success.html',
@@ -101,7 +101,7 @@ const templates = {
   'appointment-notify-review-to-user': {
     name: 'New review',
     subject: 'Appointment #appointmentCode has been completed',
-    description: 'Email to user new review',
+    description: 'Email to client new review',
     path: 'review/notify-review.html',
     group: 'review',
     subject_replace_fields: ['appointmentCode']
@@ -109,7 +109,7 @@ const templates = {
   'appointment-group-class-notify-review-to-tutor': {
     name: 'New review',
     subject: 'Appointment #groupClassName has been completed',
-    description: 'Email to tutor for new review',
+    description: 'Email to expert for new review',
     path: 'review/notify-review-tutor.html',
     group: 'review',
     subject_replace_fields: ['groupClassName']
@@ -117,23 +117,23 @@ const templates = {
   'appointment-notify-meeting-start': {
     name: 'Meeting started',
     subject: '[Notification] Appointment #appointmentCode has been started',
-    description: 'Email to user when meeting started',
+    description: 'Email to client when meeting started',
     path: 'appointment/notify-meeting-start.html',
     group: 'appointment',
     subject_replace_fields: ['appointmentCode']
   },
   'confirm-book-free-tutor': {
-    name: 'User booked a slot free',
-    subject: 'User #userName booked a slot free!',
-    description: 'Email to tutor when user booked a slot free',
+    name: 'Client booked a slot free',
+    subject: 'Client #userName booked a slot free!',
+    description: 'Email to expert when client booked a slot free',
     path: 'appointment/confirm-book-free-tutor.html',
     group: 'appointment',
     subject_replace_fields: ['userName']
   },
   'confirm-book-free-user': {
-    name: 'User booked a slot free',
+    name: 'Client booked a slot free',
     subject: 'Successfully booked 1 free session with expert #tutorName',
-    description: 'Email to user when booked a slot free',
+    description: 'Email to client when booked a slot free',
     path: 'appointment/confirm-book-free-user.html',
     group: 'appointment',
     subject_replace_fields: ['tutorName']
@@ -155,35 +155,35 @@ const templates = {
   'reject-course': {
     name: 'Admin reject a course',
     subject: 'Your course has been rejected!',
-    description: 'Email to tutor when course has been rejected',
+    description: 'Email to expert when course has been rejected',
     path: 'course/reject.html',
     group: 'course'
   },
   'approve-course': {
     name: 'Admin approve a course',
     subject: 'Your course has been approved!',
-    description: 'Email to tutor when course has been approved',
+    description: 'Email to expert when course has been approved',
     path: 'course/approve.html',
     group: 'course'
   },
   'disable-course': {
     name: 'Admin disable a course',
     subject: 'Disable course temporarily.',
-    description: 'Email to tutor when course has been disabled',
+    description: 'Email to expert when course has been disabled',
     path: 'course/disable.html',
     group: 'course'
   },
   'enable-course': {
     name: 'Admin enable a course',
     subject: 'Your course has been enabled!',
-    description: 'Email to tutor when course has been enabled',
+    description: 'Email to expert when course has been enabled',
     path: 'course/enable.html',
     group: 'course'
   },
   'new-message': {
     name: 'New message',
     subject: 'New Message',
-    description: 'Email to user when received new message',
+    description: 'Email to client when received new message',
     path: 'message/new-message.html',
     group: 'other'
   },
@@ -211,15 +211,15 @@ const templates = {
   },
   'notify-tutor-new-booking-webinar': {
     name: 'New booking webinar',
-    subject: 'New user booking with you!',
-    description: 'Email to tutor when user booked webinar',
+    subject: 'New client booking with you!',
+    description: 'Email to expert when client booked webinar',
     path: 'appointment/notify-tutor-new-booking-webinar.html',
     group: 'payment'
   },
   'payment-success': {
     name: 'Payment successfully',
     subject: 'Payment successfully made for the reservation #transactionCode',
-    description: 'Email to tutor when user booked successfully',
+    description: 'Email to expert when client booked successfully',
     path: 'payment/book-appointment-success.html',
     group: 'payment',
     subject_replace_fields: ['transactionCode']
@@ -235,7 +235,7 @@ const templates = {
   'payout-request-to-admin': {
     name: 'Payout request',
     subject: 'Payment request from #tutorName',
-    description: 'Email to admin when tutor created payout request',
+    description: 'Email to admin when expert created payout request',
     path: 'payout/request-to-admin.html',
     group: 'payout',
     subject_replace_fields: ['tutorName']
@@ -243,7 +243,7 @@ const templates = {
   'payout-approve-notify-to-tutor': {
     name: 'Admin approved payout request',
     subject: 'Payout request #payoutRequestCode has been approved',
-    description: 'Email to tutor when admin approved payout request',
+    description: 'Email to expert when admin approved payout request',
     path: 'payout/approve-notify-to-tutor.html',
     group: 'payout',
     subject_replace_fields: ['payoutRequestCode']
@@ -251,7 +251,7 @@ const templates = {
   'payout-reject-notify-to-tutor': {
     name: 'Admin rejected payout request',
     subject: 'Payout request #payoutRequestCode was rejected',
-    description: 'Email to tutor when admin rejected payout request',
+    description: 'Email to expert when admin rejected payout request',
     path: 'payout/reject-notify-to-tutor.html',
     group: 'payout',
     subject_replace_fields: ['payoutRequestCode']
@@ -259,7 +259,7 @@ const templates = {
   'refund-request-to-admin': {
     name: 'Refund request',
     subject: 'Refund request from #userName',
-    description: 'Email to admin when user created refund request',
+    description: 'Email to admin when client created refund request',
     path: 'refund/request-notify-to-tutor.html',
     group: 'refund',
     subject_replace_fields: ['userName']
@@ -267,7 +267,7 @@ const templates = {
   'refund-approve-notify-to-user': {
     name: 'Admin approved refund request',
     subject: 'Refund request #refundRequestCode has been approved',
-    description: 'Email to user when admin aprroved refund request',
+    description: 'Email to client when admin approved refund request',
     path: 'refund/approve-notify-to-user.html',
     group: 'refund',
     subject_replace_fields: ['refundRequestCode']
@@ -275,7 +275,7 @@ const templates = {
   'refund-approve-notify-to-tutor': {
     name: 'Admin approved refund request',
     subject: 'Approved a refund request #refundRequestCode',
-    description: 'Email to expert when admin aprroved refund request',
+    description: 'Email to expert when admin approved refund request',
     path: 'refund/approve-notify-to-tutor.html',
     group: 'refund',
     subject_replace_fields: ['refundRequestCode']
@@ -283,15 +283,15 @@ const templates = {
   'refund-reject-notify-to-user': {
     name: 'Admin rejected refund request',
     subject: 'Refund request #refundRequestCode has been rejected',
-    description: 'Email to user when admin rejected refund request',
+    description: 'Email to client when admin rejected refund request',
     path: 'refund/reject-notify-to-user.html',
     group: 'refund',
     subject_replace_fields: ['refundRequestCode']
   },
   'refund-refund-notify-to-user': {
-    name: 'Admin refund to user',
+    name: 'Admin refund to client',
     subject: 'Refund #refundRequestCode to you',
-    description: 'Email to user when admin refund to user',
+    description: 'Email to client when admin refund to client',
     path: 'refund/refund-notify-to-user.html',
     group: 'refund',
     subject_replace_fields: ['refundRequestCode']
@@ -306,7 +306,7 @@ const templates = {
   'new-review-tutor': {
     name: 'Notify new review',
     subject: '#userName rated your meeting #appointmentCode',
-    description: 'Notify new review to tutor',
+    description: 'Notify new review to expert',
     path: 'review/new-review-tutor.html',
     group: 'review',
     subject_replace_fields: ['userName', 'appointmentCode']
@@ -314,7 +314,7 @@ const templates = {
   'new-review-user': {
     name: 'Notify new review',
     subject: '#userName rated your meeting #appointmentCode',
-    description: 'Notify new review to user',
+    description: 'Notify new review to client',
     path: 'review/new-review-user.html',
     group: 'review',
     subject_replace_fields: ['userName', 'appointmentCode']
@@ -328,9 +328,9 @@ const templates = {
     subject_replace_fields: ['userName']
   },
   'tutor-new-account-register': {
-    name: 'New Registered Teacher',
-    subject: 'New Registered Teacher',
-    description: 'Notify to admin registered teacher',
+    name: 'New Registered Expert',
+    subject: 'New Registered Expert',
+    description: 'Notify to admin registered expert',
     path: 'tutor/new-account-register.html',
     group: 'tutor'
   },
@@ -349,23 +349,23 @@ const templates = {
     group: 'user'
   },
   'tutor-reject': {
-    name: 'Reject tutor',
+    name: 'Reject expert',
     subject: 'Your profile has been rejected!',
-    description: 'Notify when admin rejected tutor',
+    description: 'Notify when admin rejected expert',
     path: 'tutor/reject.html',
     group: 'tutor'
   },
   'tutor-approve': {
-    name: 'Approve tutor',
+    name: 'Approve expert',
     subject: 'Your profile has been approved!',
-    description: 'Notify when admin approved tutor',
+    description: 'Notify when admin approved expert',
     path: 'tutor/approve.html',
     group: 'tutor'
   },
   'tutor-deleted-on-zoom': {
-    name: 'Delete tutor on zoom',
-    subject: "Temporarily suspending the tutor's activities!",
-    description: 'Notify when tutor has been deleted on zoom',
+    name: 'Delete expert on zoom',
+    subject: "Temporarily suspending the expert's activities!",
+    description: 'Notify when expert has been deleted on zoom',
     path: 'tutor/deleted-on-zoom.html',
     group: 'tutor'
   },
@@ -378,22 +378,22 @@ const templates = {
   },
   'appointment-notify-tutor-new-booking': {
     name: 'Appointment has been canceled',
-    subject: 'New user booking with you!',
-    description: 'Email to tutor when new user booking',
+    subject: 'New client booking with you!',
+    description: 'Email to expert when new client booking',
     path: 'appointment/notify-tutor-new-booking.html',
     group: 'appointment'
   },
   'appointment-notification-reschedule-tutor': {
-    name: 'Reschedule class',
-    subject: 'Reschedule class notification!',
-    description: 'Email to tutor when user reschedule class',
+    name: 'Reschedule session',
+    subject: 'Reschedule session notification!',
+    description: 'Email to expert when client reschedules session',
     path: 'appointment/notification-reschedule-tutor.html',
     group: 'appointment'
   },
   'appointment-notification-reschedule-user': {
-    name: 'Reschedule class',
-    subject: 'Reschedule class successfully!',
-    description: 'Email to user when reschedule class successfully',
+    name: 'Reschedule session',
+    subject: 'Reschedule session successfully!',
+    description: 'Email to client when reschedule session successfully',
     path: 'appointment/notification-reschedule-user.html',
     group: 'appointment'
   },
@@ -415,52 +415,52 @@ const templates = {
   'appointment-notification-tutor-groupclass': {
     name: 'Remind gift',
     subject: '[Notification] Appointment #groupClassName at #startTime',
-    description: 'Email to tutor for groupclass start time ',
+    description: 'Email to expert for group session start time',
     path: 'appointment/notification-tutor.html',
     group: 'appointment',
     subject_replace_fields: ['startTime', 'groupClassName']
   },
   'tutor-invite-to-join-zoom': {
-    name: 'Invite tutor to join zoom',
+    name: 'Invite expert to join zoom',
     subject: 'Welcome back to our system.!',
-    description: 'Email to tutor for join our zoom',
+    description: 'Email to expert for join our zoom',
     path: 'tutor/invite-to-join-zoom.html',
     group: 'tutor'
   },
   'admin-delete-course': {
     name: 'Admin deleted course',
     subject: 'Admin deleted your course',
-    description: 'Email to tutor when admin delete the course',
+    description: 'Email to expert when admin delete the course',
     group: 'course'
   },
   'admin-delete-student': {
-    name: 'Admin deleted student',
+    name: 'Admin deleted client',
     subject: 'Admin deleted your profile',
-    description: 'Email to student when admin delete student profile',
+    description: 'Email to client when admin delete client profile',
     group: 'user'
   },
   'admin-disable-groupclass': {
-    name: 'Admin disabled groupclass',
-    subject: 'Admin disabled your groupclass',
-    description: 'Email to tutor when admin disabled groupclass',
+    name: 'Admin disabled group session',
+    subject: 'Admin disabled your group session',
+    description: 'Email to expert when admin disabled group session',
     group: 'groupclass'
   },
   'admin-active-tutor': {
-    name: 'Admin active tutor',
+    name: 'Admin active expert',
     subject: 'Admin activated your profile',
-    description: 'Email to tutor when admin activated tutor',
+    description: 'Email to expert when admin activated expert',
     group: 'tutor'
   },
   'admin-inactive-tutor': {
-    name: 'Admin inactive tutor',
+    name: 'Admin inactive expert',
     subject: 'Admin inactivated your profile',
-    description: 'Email to tutor when admin inactivated tutor',
+    description: 'Email to expert when admin inactivated expert',
     group: 'tutor'
   },
   'material-groupclass-uploaded-to-user': {
-    name: 'New groupclass material uploaded for student',
+    name: 'New group session material uploaded for client',
     subject: 'New material uploaded',
-    description: 'Email to student when tutor upload new material in groupclass',
+    description: 'Email to client when expert upload new material in group session',
     group: 'material'
   },
   'new-review-course': {

@@ -55,6 +55,20 @@
   opacity: 0.7;
 }
 
+/* LinkedIn icon: brand primary (same as X icon), same size as Twitter icon */
+.social-icons a i.fa-linkedin-in {
+  color: #E4543C;
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.social-icons a:hover i.fa-linkedin-in {
+  opacity: 0.7;
+}
+
 /* Columns */
 .footer-columns {
   display: flex;

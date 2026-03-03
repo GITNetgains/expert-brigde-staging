@@ -50,7 +50,7 @@ exports.register = async data => {
     });
 
     await Service.Mailer.send('tutor-new-account-register', process.env.ADMIN_EMAIL, {
-      subject: 'New Registered Teacher',
+      subject: 'New Registered Expert',
       tutor: user.toObject(),
       adminUrl: process.env.adminURL
     });
@@ -160,7 +160,7 @@ exports.zoomAccountDeleted = async zoomInfo => {
     tutor.isZoomAccount = false;
     await tutor.save();
     await Service.Mailer.send('tutor-deleted-on-zoom', tutor.email, {
-      subject: `Temporarily suspending the tutor's activities!`,
+      subject: `Temporarily suspending the expert's activities!`,
       tutor: tutor.toObject(),
       appName: process.env.APP_NAME,
       adminEmail: process.env.ADMIN_EMAIL
@@ -180,7 +180,7 @@ exports.zoomAccountChangeStatus = async (zoomInfo, status) => {
     tutor.isZoomAccount = status === 'user.activated' ? true : false;
     await tutor.save();
     await Service.Mailer.send('tutor-deleted-on-zoom', tutor.email, {
-      subject: `Temporarily suspending the tutor's activities!`,
+      subject: `Temporarily suspending the expert's activities!`,
       tutor: tutor.toObject(),
       appName: process.env.APP_NAME,
       adminEmail: process.env.ADMIN_EMAIL
