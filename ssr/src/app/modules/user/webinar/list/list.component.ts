@@ -14,7 +14,8 @@ declare let $: any;
 
 @Component({
   selector: 'app-webinar-listing',
-  templateUrl: './list.html'
+  templateUrl: './list.html',
+  styleUrls: ['./list.component.scss']
 })
 export class WebinarListingComponent implements OnInit {
   public total = 0;

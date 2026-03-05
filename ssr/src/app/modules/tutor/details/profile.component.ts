@@ -106,7 +106,7 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
     pageSize: 6,
     sortOption: {
       sortBy: 'createdAt',
-      sortType: 'asc'
+      sortType: 'desc'
     },
     count: 0
   } as any;
@@ -188,6 +188,12 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
         introVideo.originalPath ||
         introVideo.filePath;
     }
+  }
+
+  changeWebinarSort(order: 'newest' | 'oldest') {
+    this.webinarOptions.sortOption.sortType = order === 'newest' ? 'desc' : 'asc';
+    this.webinarOptions.currentPage = 1;
+    this.queryWebinar();
   }
 
   queryWebinar() {

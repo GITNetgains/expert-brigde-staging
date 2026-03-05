@@ -16,19 +16,22 @@
         init="false"
       >
         <swiper-slide *ngFor="let ind of industries">
-          <div class="card">
-            <div class="thumb-placeholder">
-              <img [src]="getImage(ind)" [alt]="ind.title" />
-            </div>
-            <h3 class="card-title">{{ ind.title }}</h3>
-            <div class="card-list">
-              {{ getDescription(ind) }}
-            </div>
-            <a class="learn-more" [routerLink]="['/industries', ind?.alias || ind?._id]">
-              Learn More
-              <img src="assets/images/homepage/arrowicon.svg" alt="arrow" class="arrow-icon" />
-            </a>
-          </div>
+         <div class="card">
+  <img class="card-img" [src]="getImage(ind)" [alt]="ind.title" />
+
+  <div class="card-body">
+    <h3 class="card-title">{{ ind.title }}</h3>
+
+    <div class="card-list">
+      {{ getDescription(ind) }}
+    </div>
+
+    <a class="learn-more" [routerLink]="['/industries', ind?.alias || ind?._id]">
+      Learn More
+      <img src="assets/images/homepage/arrowicon.svg" class="arrow-icon" />
+    </a>
+  </div>
+</div>
         </swiper-slide>
       </swiper-container>
 

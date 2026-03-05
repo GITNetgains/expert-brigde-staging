@@ -5,11 +5,13 @@ import categoriesResolver from 'src/app/services/resolvers/category.resolver';
 import { TutorProfileComponent } from './details/profile.component';
 import tutorDetailResolver from 'src/app/services/resolvers/tutor-detail.resolver';
 import { BookingComponent } from './booking/booking.component';
+import { StudentGuard } from 'src/app/services/guard/student.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: TutorListComponent,
+    canActivate: [StudentGuard],
     resolve: {
       // search: TutorSearchResolver,
       categories: categoriesResolver
@@ -18,6 +20,7 @@ const routes: Routes = [
   {
     path: ':username',
     component: TutorProfileComponent,
+    canActivate: [StudentGuard],
     resolve: {
       tutor: tutorDetailResolver
     }
@@ -25,6 +28,7 @@ const routes: Routes = [
   {
     path: ':username/booking',
     component: BookingComponent,
+    canActivate: [StudentGuard],
     resolve: {
       tutor: tutorDetailResolver
     }

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ICategory, ISubject, IWebinar } from 'src/app/interface';
 import {
   AppService,
-  AppointmentService,
   AuthService,
   SeoService,
   StateService,
@@ -35,7 +34,6 @@ export class BrowseGroupSessionsComponent implements OnInit {
 
   constructor(
     private webinarService: WebinarService,
-    private appointmentService: AppointmentService,
     private appService: AppService,
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -63,38 +61,26 @@ export class BrowseGroupSessionsComponent implements OnInit {
       this.router.navigate(['/auth/login']);
       return;
     }
-    this.loadAssignedTutorIds();
-  }
-
-  loadAssignedTutorIds() {
-    this.loadingTutors = true;
-    this.appointmentService
-      .search({
-        take: 500,
-        sort: 'createdAt',
-        sortType: 'desc',
-        targetType: 'webinar'
-      })
-      .then((resp) => {
-        const items = resp?.data?.items || [];
-        const ids = new Set<string>();
-        items.forEach((a: any) => {
-          if (a.tutorId && a.tutorId._id) ids.add(a.tutorId._id);
-          else if (a.tutorId) ids.add(String(a.tutorId));
-        });
-        this.assignedTutorIds = Array.from(ids);
-        this.loadingTutors = false;
+    this.authService
+      .getCurrentUser()
+      .then((user: any) => {
+        const isStudent = user?.role === 'user';
+        if (isStudent && user?.assignedTutors?.length) {
+          this.assignedTutorIds = (user.assignedTutors || []).map((t: any) =>
+            typeof t === 'string' ? t : (t._id || t)
+          );
+        } else {
+          this.assignedTutorIds = [];
+        }
         this.query();
       })
       .catch(() => {
-        this.loadingTutors = false;
         this.assignedTutorIds = [];
         this.query();
       });
   }
 
   query() {
-    if (this.loadingTutors) return;
     if (this.assignedTutorIds.length === 0) {
       this.items = [];
       this.totalWebinars = 0;

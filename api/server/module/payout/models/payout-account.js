@@ -62,6 +62,10 @@ const schema = new Schema({
   ifscCode: String,
   // Any other local Bank Code - eg BSB number in Australia and New Zealand (6 digits)
   routingCode: String,
+  // Free-text additional information about this payout account
+  additionalDetails: {
+    type: String
+  },
   createdAt: {
     type: Date
   },

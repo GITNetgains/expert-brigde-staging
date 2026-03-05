@@ -2,8 +2,42 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-12 text-center">
-        <span class="display-1 d-block">{{code}}</span>
-        <div class="mb-4 lead" translate>Something went wrong. Please try again.</div>
+        <span
+          class="display-1 d-block"
+          *ngIf="code !== 'NOT_ASSIGNED_EXPERT' && code !== 'NO_ACCESS'"
+        >
+          {{ code }}
+        </span>
+
+        <h1
+          class="display-5 d-block mb-3"
+          *ngIf="code === 'NOT_ASSIGNED_EXPERT' || code === 'NO_ACCESS'"
+        >
+          Access restricted
+        </h1>
+
+        <div
+          class="mb-4 lead"
+          *ngIf="code === 'NOT_ASSIGNED_EXPERT'"
+        >
+          This expert is not in your assigned experts list.
+        </div>
+
+        <div
+          class="mb-4 lead"
+          *ngIf="code === 'NO_ACCESS'"
+        >
+          You do not have access to this page.
+        </div>
+
+        <div
+          class="mb-4 lead"
+          *ngIf="code !== 'NOT_ASSIGNED_EXPERT' && code !== 'NO_ACCESS'"
+          translate
+        >
+          Something went wrong. Please try again.
+        </div>
+
         <a [routerLink]="['/home']" class="btn btn-link" translate>Back to Home</a>
       </div>
     </div>
