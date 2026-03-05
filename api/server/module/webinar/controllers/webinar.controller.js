@@ -288,18 +288,23 @@ exports.create = async (req, res, next) => {
     if (!hashWebinar) {
       return next(PopulateResponse.error({ message: 'Please add schedule for webinar' }));
     }
+    // Ensure we don't persist an empty string for mainImageId, which would fail ObjectId casting
+    if (!validate.value.mainImageId) {
+      delete validate.value.mainImageId;
+    }
+
     let alias = req.body.alias ? Helper.String.createAlias(req.body.alias) : Helper.String.createAlias(req.body.name);
     const count = await DB.Webinar.count({ alias });
     if (count) {
       alias = `${alias}-${Helper.String.randomString(5)}`;
     }
-    const webinar = new DB.Webinar(
-      Object.assign(_.omit(validate.value, 'hashWebinar'), {
-        tutorId,
-        isOpen: true,
-        alias
-      })
-    );
+    const webinarData = Object.assign(_.omit(validate.value, 'hashWebinar'), {
+      tutorId,
+      isOpen: true,
+      alias
+    });
+
+    const webinar = new DB.Webinar(webinarData);
     const schedules = await DB.Schedule.find({ hashWebinar: hashWebinar }).sort({ startTime: -1 });
     if (!schedules.length) {
       return next(PopulateResponse.error({ message: 'Please add schedule for webinar' }));
@@ -348,6 +353,11 @@ exports.update = async (req, res, next) => {
         })
       );
     }
+    // Ensure we don't persist an empty string for mainImageId, which would fail ObjectId casting
+    if (!validate.value.mainImageId) {
+      delete validate.value.mainImageId;
+    }
+
     let alias = validate.value.alias ? Helper.String.createAlias(validate.value.alias) : Helper.String.createAlias(validate.value.name);
     const count = await DB.Webinar.count({
       alias,
