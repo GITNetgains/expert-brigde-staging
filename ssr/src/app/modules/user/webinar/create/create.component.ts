@@ -84,6 +84,7 @@ export class WebinarCreateComponent implements OnInit, OnDestroy {
           this.webinar.mainImageId = data._id || data.id;
           this.mainImageUrl = data.thumbUrl || data.fileUrl || data.mediumUrl || data.url || '';
           this.imageSelected = [];
+          this.appService.toastSuccess('Main image uploaded successfully!');
         }
       },
       onError: (err: any) => {
