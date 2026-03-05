@@ -88,6 +88,13 @@
               <label cLabel>
                 <strong>Cover Image</strong>
               </label>
+              <div class="text-muted" style="font-size: 80%; margin-bottom: 4px;">
+                {{ post.type === 'blog'
+                  ? 'Recommended size: landscape 4:3 (e.g. 800x600px) for blog cards'
+                  : (post.type === 'industry'
+                    ? 'Recommended size: landscape 4:3 (e.g. 800x600px) for industry cards'
+                    : 'Recommended size: landscape image that fits 4:3 ratio') }}
+              </div>
               <div class="mb-2" *ngIf="post.meta?.imageUrl">
                 <img [src]="post.meta.imageUrl" alt="cover" style="max-width: 100%; height: auto; border-radius: 8px;" />
               </div>
