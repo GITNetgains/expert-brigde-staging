@@ -320,9 +320,24 @@
           <div class="col-md-6">
             <div class="form-group">
               <label translate>Tax Identification Number (TIN) or Unique Identification Number</label>
-              <input type="text" name="taxIdNumber" #taxIdNumber="ngModel" class="form-control"
+              <input
+                type="text"
+                name="taxIdNumber"
+                #taxIdNumber="ngModel"
+                class="form-control"
+                [required]="account.bankAccountRegion === 'india'"
                 placeholder="{{'Enter Tax ID or Unique Identification Number' | translate}}"
-                [(ngModel)]="account.taxIdNumber" />
+                [(ngModel)]="account.taxIdNumber"
+              />
+              <div *ngIf="taxIdNumber.errors && (taxIdNumber.dirty || taxIdNumber.touched || isSubmitted)">
+                <p
+                  [hidden]="!taxIdNumber.errors['required']"
+                  style="color: red"
+                  translate
+                >
+                  For India bank accounts, Tax Identification Number (TIN) or PAN is required.
+                </p>
+              </div>
             </div>
           </div>
         </div>

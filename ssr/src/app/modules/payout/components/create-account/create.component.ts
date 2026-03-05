@@ -73,6 +73,11 @@ export class AccountCreateComponent implements OnInit {
       if (r === 'us' && !this.account.routingNumber?.trim()) {
         return this.appService.toastError('Please enter ABA Routing Number for US.');
       }
+      if (r === 'india' && !this.account.taxIdNumber?.trim()) {
+        return this.appService.toastError(
+          'For India bank accounts, Tax Identification Number (TIN) or PAN is required.'
+        );
+      }
     }
 
     // IBAN numeric validation (frontend-friendly message)

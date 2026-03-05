@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ModalDeleteComponent } from '@components/common/modal-delete/modal-delete.component';
 import { SortComponent } from '@components/common/sort/sort.component';
+import { AppPaginationComponent } from 'src/components/common/pagination/pagination.component';
 import { EllipsisPipe } from '../ellipsis.pipe';
 import {
   BorderDirective,
@@ -48,7 +49,8 @@ import { ISortOption } from 'src/interfaces';
     FormsModule,
     CommonModule,
     ModalDeleteComponent,
-    EllipsisPipe
+    AppPaginationComponent,
+    EllipsisPipe,
   ],
 })
 export class ListComponent implements OnInit {
@@ -69,6 +71,21 @@ export class ListComponent implements OnInit {
 
   ngOnInit(): void {
     this.query();
+  }
+
+  onPageChange(event: any): void {
+    const page =
+      typeof event === 'number'
+        ? event
+        : parseInt(
+            (event?.target?.value || event?.target?.innerText || this.currentPage).toString(),
+            10
+          );
+
+    if (!isNaN(page) && page > 0 && page !== this.currentPage) {
+      this.currentPage = page;
+      this.query();
+    }
   }
 
   query(): void {
