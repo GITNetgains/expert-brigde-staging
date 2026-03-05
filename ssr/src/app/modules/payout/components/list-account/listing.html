@@ -78,6 +78,10 @@
                     <span (click)="sortBy('routingCode', 'desc')" translate>Other Code</span>
                     <app-sort [sortOption]="sortOption" [sortBy]="'routingCode'" (onSort)="onSort($event)"></app-sort>
                   </th>
+              <th>
+                <span (click)="sortBy('additionalDetails', 'desc')" translate>Additional Details</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'additionalDetails'" (onSort)="onSort($event)"></app-sort>
+              </th>
                   <th>
                     <span (click)="sortBy('createdAt', 'desc')" translate>Created On</span>
                     <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
@@ -113,6 +117,7 @@
                   <td>{{item?.routingNumber}}</td>
                   <td>{{item?.ifscCode}}</td>
                   <td>{{item?.routingCode}}</td>
+                  <td>{{item?.additionalDetails}}</td>
                   <td>{{item.createdAt | date:'short'}}</td>
                   <td>
                     <a class="btn btn-outline-dark btn-action" [routerLink]="['update', item._id ]">

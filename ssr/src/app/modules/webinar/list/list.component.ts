@@ -12,7 +12,8 @@ import {
   StateService,
   SubjectService,
   TopicService,
-  WebinarService
+  WebinarService,
+  AppointmentService
 } from 'src/app/services';
 
 import * as jQuery from 'jquery';
@@ -62,7 +63,8 @@ export class WebinarListingComponent implements OnInit {
     private topicService: TopicService,
     public stateService: StateService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private appointmentService: AppointmentService
   ) {
     this.seoService.setMetaTitle('List Sessions');
     this.config = this.stateService.getState(STATE.CONFIG);
@@ -95,22 +97,71 @@ export class WebinarListingComponent implements OnInit {
       return;
     }
 
-    this.authService.getCurrentUser().then((user: any) => {
-      this.currentUser = user;
-      this.loadingUser = false;
-      if (user?.role === 'user' && user?.assignedTutors?.length) {
-        this.assignedTutorIds = (user.assignedTutors || []).map((t: any) =>
-          typeof t === 'string' ? t : (t._id || t)
-        );
-      } else if (user?.type === 'tutor' && user?._id) {
-        this.assignedTutorIds = [user._id];
-      }
-      this.query();
-    }).catch(() => {
-      this.loadingUser = false;
-      this.assignedTutorIds = [];
-      this.query();
-    });
+    this.authService
+      .getCurrentUser()
+      .then((user: any) => {
+        this.currentUser = user;
+        this.loadingUser = false;
+
+        // Tutors should not access the student group sessions listing
+        if (user?.type === 'tutor') {
+          this.router.navigate(['/pages/error/NO_ACCESS']);
+          return;
+        }
+
+        const isStudent = user?.role === 'user';
+
+        // 1) Student with explicit assignedTutors list → use that
+        if (isStudent && user?.assignedTutors?.length) {
+          this.assignedTutorIds = (user.assignedTutors || []).map((t: any) =>
+            typeof t === 'string' ? t : (t._id || t)
+          );
+          this.query();
+          return;
+        }
+
+        // 2) Student without assignedTutors → derive assigned tutors from their webinar appointments
+        if (isStudent) {
+          this.loadAssignedTutorsFromAppointments();
+          return;
+        }
+
+        // 3) Admin or other roles → no restriction
+        this.query();
+      })
+      .catch(() => {
+        this.loadingUser = false;
+        this.assignedTutorIds = [];
+        this.query();
+      });
+  }
+
+  private loadAssignedTutorsFromAppointments() {
+    this.appointmentService
+      .search({
+        take: 500,
+        sort: 'createdAt',
+        sortType: 'desc',
+        targetType: 'webinar'
+      })
+      .then((resp) => {
+        const items = resp?.data?.items || [];
+        const ids = new Set<string>();
+        items.forEach((a: any) => {
+          if (a?.tutorId && a.tutorId._id) {
+            ids.add(a.tutorId._id);
+          } else if (a?.tutorId) {
+            ids.add(String(a.tutorId));
+          }
+        });
+        this.assignedTutorIds = Array.from(ids);
+      })
+      .catch(() => {
+        this.assignedTutorIds = [];
+      })
+      .finally(() => {
+        this.query();
+      });
   }
 
   query() {

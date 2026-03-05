@@ -24,6 +24,7 @@ import { ListScheduleComponent } from './my-schedule/list/list.component';
 import { LessonSpaceComponent } from './lesson-space/lesson-space.component';
 import { AiQueryListComponent } from './ai-queries/list/list.component';
 import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
+import { StudentGuard } from 'src/app/services/guard/student.guard';
 
 const routes: Routes = [
   {
@@ -34,7 +35,8 @@ const routes: Routes = [
   {
     path: 'ai-queries',
     component: AiQueryListComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'dashboard',
@@ -61,12 +63,14 @@ const routes: Routes = [
     component: ListMyCourseComponent,
     resolve: {
       categories: categoriesResolver
-    }
+    },
+    canActivate: [StudentGuard]
   },
   {
     path: 'my-courses/:id',
     component: MyCourseDetailComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'coupons',
@@ -102,7 +106,8 @@ const routes: Routes = [
     component: BrowseGroupSessionsComponent,
     resolve: {
       categories: categoriesResolver
-    }
+    },
+    canActivate: [StudentGuard]
   },
   { path: 'groupclass', redirectTo: 'groupsession', pathMatch: 'full' },
   { path: 'groupclass/create', redirectTo: 'groupsession/create', pathMatch: 'full' },
@@ -110,39 +115,47 @@ const routes: Routes = [
   { path: '1on1classes', redirectTo: '1on1sessions', pathMatch: 'full' },
   {
     path: 'groupsession',
-    component: WebinarListingComponent
+    component: WebinarListingComponent,
+    canActivate: [StudentGuard]
   },
   {
     path: 'groupsession/create',
-    component: WebinarCreateComponent
+    component: WebinarCreateComponent,
+    canActivate: [StudentGuard]
   },
   {
     path: 'groupsession/:id',
-    component: WebinarUpdateComponent
+    component: WebinarUpdateComponent,
+    canActivate: [StudentGuard]
   },
   {
     path: 'favorites/:type',
-    component: FavoriteComponent
+    component: FavoriteComponent,
+    canActivate: [StudentGuard]
   },
   {
     path: 'appointments',
     component: ListScheduleComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'appointments/:id',
     component: ScheduleDetailComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'lessons',
     component: ListLessonComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'lessons/:id',
     component: LessonDetailComponent,
-    resolve: {}
+    resolve: {},
+    canActivate: [StudentGuard]
   },
   {
     path: 'lesson-space',
@@ -150,7 +163,8 @@ const routes: Routes = [
     resolve: {},
     data: {
       noShowMenu: true
-    }
+    },
+    canActivate: [StudentGuard]
   }
 ];
 

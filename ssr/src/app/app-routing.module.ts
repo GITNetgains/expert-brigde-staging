@@ -11,6 +11,7 @@ import { CustomPreLoadingStrategyService } from './pre-loading-strategy.service'
 import { DashboardLayoutComponent } from './layouts/dashboard/dashboard.component';
 import subjectsResolver from './services/resolvers/subject.resolver';
 import { AuthGuard } from './services/guard/auth.guard';
+import { StudentGuard } from './services/guard/student.guard';
 
 const routes: Routes = [
   {
@@ -40,7 +41,7 @@ const routes: Routes = [
     path: 'experts',
     component: FullComponent,
     data: { preload: true, loadAfter: 0 },
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, StudentGuard],
     loadChildren: () =>
       import('./modules/tutor/tutor.module').then((mod) => mod.TutorModule),
     resolve: { categories: categoriesResolver }
@@ -57,7 +58,7 @@ const routes: Routes = [
   {
     path: 'groupsession',
     component: FullComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, StudentGuard],
     data: { preload: true, loadAfter: 0 },
     loadChildren: () =>
       import('./modules/webinar/webinar.module').then(

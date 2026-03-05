@@ -18,80 +18,68 @@
       </div>
     </div>
     <div id="table_id_wrapper" class="card">
-      <table id="table_id" class="table tble-responsive table-user dataTable no-footer" role="grid"
-        aria-describedby="table_id_info">
-        <thead>
-          <tr role="row">
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1" aria-sort="ascending"
-              aria-label="Main Image: activate to sort column descending" translate>
-              Main Image
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Name: activate to sort column ascending">
-              <span (click)="sortBy('name', 'asc')" translate>Name</span>
-              <app-sort [sortOption]="sortOption" [sortBy]="'name'" (onSort)="onSort($event)"></app-sort>
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Maximum Strength: activate to sort column ascending">
-              <span (click)="sortBy('maximumStrength', 'asc')" translate>Maximum participants</span>
-              <app-sort [sortOption]="sortOption" [sortBy]="'maximumStrength'" (onSort)="onSort($event)"></app-sort>
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Category: activate to sort column ascending" translate>
-              Category
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Last Time: activate to sort column ascending" style="width: 61px">
-              <span (click)="sortBy('lastDate', 'asc')" translate>Last Time</span>
-              <app-sort [sortOption]="sortOption" [sortBy]="'lastDate'" (onSort)="onSort($event)"></app-sort>
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1" aria-label="" style="width: 61px"
-              class="text-center">
-              <span (click)="sortBy('disabled', 'asc')" translate>Active</span>
-              <app-sort [sortOption]="sortOption" [sortBy]="'disabled'" (onSort)="onSort($event)"></app-sort>
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Created At: activate to sort column ascending">
-              <span (click)="sortBy('createdAt', 'asc')" translate>Created On</span>
-              <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
-            </th>
-            <th tabindex="0" aria-controls="table_id" rowspan="1" colspan="1"
-              aria-label="Action: activate to sort column ascending" translate>
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr role="row" class="odd" *ngFor="let item of items, let i = index">
-            <td class="sorting_1" style="width: 100px;">
-              <img src="{{item?.mainImage?.thumbUrl || '/assets/images/no-image.jpg'}}" alt="" class="table-img"
-                onerror="this.src='/assets/images/no-image.jpg'" />
-            </td>
-            <td>
-              <a href="javascript:void(0)" (click)="showParticipants(item)">{{item?.name}}</a>
-            </td>
-            <td>{{item?.maximumStrength}}</td>
-            <td>
-              <span *ngFor="let cat of item.categories; let i = index">{{ cat.name }}<span
-                  *ngIf="i < item.categories.length - 1">, </span></span>
-            </td>
-            <td>{{item?.lastDate | date}}</td>
-            <td class="text-center">
-              <a class="btn btn-hvr-primary btn-sm btn-icon-padding" href="javascript:void(0)"
-                [ngClass]="{'btn-light-danger': item.disabled, 'btn-light-primary btn-hvr-primary': !item.disabled }">
-                <i class="fi fi-ss-badge-check" *ngIf="!item.disabled"></i>
-                <i class="fi fi-rr-cross" *ngIf="item.disabled"></i>
-              </a>
-            </td>
-            <td>{{item.createdAt | date}}</td>
-            <td>
-              <a class="btn btn-outline-dark" [routerLink]="['/users/groupsession', item._id]">
-                <i class="fi fi-rs-pencil"></i>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table id="table_id" class="table table-user dataTable no-footer webinar-list-table" role="grid"
+          aria-describedby="table_id_info">
+          <thead>
+            <tr role="row">
+              <th class="col-image" aria-label="Main Image" translate>Main Image</th>
+              <th class="col-name">
+                <span (click)="sortBy('name', 'asc')" translate>Name</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'name'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-num">
+                <span (click)="sortBy('maximumStrength', 'asc')" translate>Maximum participants</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'maximumStrength'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-num">
+                <span (click)="sortBy('numberParticipants', 'asc')" translate>Participants Enrolled</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'numberParticipants'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-date">
+                <span (click)="sortBy('lastDate', 'asc')" translate>Last Booked</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'lastDate'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-active text-center">
+                <span (click)="sortBy('disabled', 'asc')" translate>Active</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'disabled'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-date">
+                <span (click)="sortBy('createdAt', 'asc')" translate>Created On</span>
+                <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
+              </th>
+              <th class="col-action" translate>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row" *ngFor="let item of items; let i = index">
+              <td class="col-image">
+                <img src="{{item?.mainImage?.thumbUrl || '/assets/images/no-image.jpg'}}" alt="" class="table-img"
+                  onerror="this.src='/assets/images/no-image.jpg'" />
+              </td>
+              <td class="col-name">
+                <a href="javascript:void(0)" (click)="showParticipants(item)">{{item?.name}}</a>
+              </td>
+              <td class="col-num">{{ item?.maximumStrength ?? '—' }}</td>
+              <td class="col-num">{{ item?.numberParticipants ?? 0 }}</td>
+              <td class="col-date">{{item?.lastDate | date}}</td>
+              <td class="col-active text-center">
+                <a class="btn btn-hvr-primary btn-sm btn-icon-padding" href="javascript:void(0)"
+                  [ngClass]="{'btn-light-danger': item.disabled, 'btn-light-primary btn-hvr-primary': !item.disabled }">
+                  <i class="fi fi-ss-badge-check" *ngIf="!item.disabled"></i>
+                  <i class="fi fi-rr-cross" *ngIf="item.disabled"></i>
+                </a>
+              </td>
+              <td class="col-date">{{item.createdAt | date}}</td>
+              <td class="col-action">
+                <a class="btn btn-outline-dark" [routerLink]="['/users/groupsession', item._id]">
+                  <i class="fi fi-rs-pencil"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="bottom-table">
         <div class="showing-table" id="table_id_info" role="status" aria-live="polite" translate>
           <span translate>Showing</span> <span> {{ fromItem }} </span> <span translate>to</span>

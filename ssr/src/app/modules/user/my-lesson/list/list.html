@@ -60,12 +60,12 @@
                       <app-sort [sortOption]="sortOption" [sortBy]="'webinarId'" (doSort)="onSort($event)"></app-sort>
                     </div>
                   </th>
-                  <th>
+                  <!-- <th>
                     <div class="th-content" (click)="sortBy('paid', 'desc')">
                       <span translate>Paid</span>
                       <app-sort [sortOption]="sortOption" [sortBy]="'paid'" (doSort)="onSort($event)"></app-sort>
                     </div>
-                  </th>
+                  </th> -->
                   <th><span translate>Time Window</span></th>
                   <th><span translate>Status</span></th>
                   <th class="text-end"><span translate>Action</span></th>
@@ -85,11 +85,11 @@
                     </div>
                   </td>
                   <td>{{(item?.webinar?.name || item?.subject?.name || '') | ellipsis:50}}</td>
-                  <td>
+                  <!-- <td>
                     <span class="badge" [ngClass]="item?.paid ? 'badge-soft-success' : 'badge-soft-danger'">
                       {{ item?.paid ? 'Paid' : 'Unpaid' }}
                     </span>
-                  </td>
+                  </td> -->
                   <td>
                     <div class="time-slot-container">
                       <div class="small text-muted">{{item?.startTime | date:'dd MMM, HH:mm'}}</div>

@@ -1,9 +1,9 @@
-
 import {
   Component,
   OnInit,
   HostListener
-} from '@angular/core';import { ActivatedRoute, Router } from '@angular/router';
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
@@ -22,6 +22,7 @@ import {
   IndustryService
 } from 'src/app/services';
 import { TutorService } from 'src/app/services/tutor.service';
+import { AuthService } from 'src/app/services/auth.service';
 const time_format = 'HH:mm:ss';
 declare let $: any;
 import { AiQueryBarComponent } from '../../page/components/ai-query-bar/ai-query-bar.component';
@@ -130,7 +131,8 @@ toggleFilter(key: keyof typeof this.openFilter) {
     private translate: TranslateService,
     private calendarService: CalendarService,
     public stateService: StateService,
-    private appService: AppService
+    private appService: AppService,
+    private authService: AuthService
   ) {
     this.seoService.setMetaTitle('List Expert');
 
@@ -196,6 +198,14 @@ toggleFilter(key: keyof typeof this.openFilter) {
   }
 
   ngOnInit(): void {
+    // Prevent tutors from accessing the public experts listing page
+    this.authService.getCurrentUser().then((user: any) => {
+      if (user?.type === 'tutor') {
+        this.router.navigate(['/pages/error/NO_ACCESS']);
+        return;
+      }
+    }).catch(() => {});
+
     this.countries = this.countryService.getCountry();
     this.updateStatesFilter();
     this.gradeService

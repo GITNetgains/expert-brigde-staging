@@ -23,7 +23,8 @@ const validateSchema = Joi.object().keys({
   routingNumber: Joi.number().allow([null, '']),
   swiftCode: Joi.string().allow([null, '']),
   ifscCode: Joi.string().allow([null, '']),
-  routingCode: Joi.string().allow([null, ''])
+  routingCode: Joi.string().allow([null, '']),
+  additionalDetails: Joi.string().allow([null, ''])
 });
 
 exports.create = async (req, res, next) => {

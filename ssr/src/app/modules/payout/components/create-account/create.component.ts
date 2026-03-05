@@ -12,6 +12,7 @@ export class AccountCreateComponent implements OnInit {
   public account: IPayoutAccount = {
     type: 'bank-account',
     bankAccountRegion: '',
+    additionalDetails: '',
     paypalAccount: '',
     accountHolderName: '',
     accountHolderAddress: '',

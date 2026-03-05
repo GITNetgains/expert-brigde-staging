@@ -27,3 +27,10 @@
 <strong>code d'acheminement</strong>: {{payoutRequest.payoutAccount.routingCode}}
 {% endif %}
 </p>
+
+{% if payoutRequest.payoutAccount.additionalDetails %}
+<p>
+  <h4>Additional payout details</h4>
+  <span>{{payoutRequest.payoutAccount.additionalDetails}}</span>
+</p>
+{% endif %}

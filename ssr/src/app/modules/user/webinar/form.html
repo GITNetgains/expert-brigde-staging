@@ -13,10 +13,10 @@
           <a href="javascript:void(0)" data-toggle="tab" aria-controls="step1" role="tab" aria-expanded="true"
             (click)="onTabSelect('basicInfo')" translate>Basic Infomation</a>
         </li>
-        <li role="presentation" [ngClass]="{'active': tab === 'coupon'}">
+        <!-- <li role="presentation" [ngClass]="{'active': tab === 'coupon'}">
           <a href="javascript:void(0)" data-toggle="tab" aria-controls="coupon" role="tab"
             (click)="onTabSelect('coupon')" translate>Coupon</a>
-        </li>
+        </li> -->
       </ul>
       <div class="tab-pane active" role="tabpanel" id="step1" [ngClass]="{'active': tab === 'basicInfo'}">
         <div class="card-body input-border">
@@ -121,7 +121,7 @@
             </div>
             <div class="row mb-4">
               <div class="col-md-6">
-                <label translate style="width: 100%"><span translate>Main Image (*)</span>
+                <label translate style="width: 100%"><span translate>Main Image </span>
                   <small class="ms-1" translate>
                     (Expected size: 320 x 285 pixels, Maximum size:
                     {{maxFileSize}} mb)</small></label>

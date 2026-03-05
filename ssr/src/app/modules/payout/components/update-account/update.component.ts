@@ -72,6 +72,7 @@ export class AccountUpdateComponent implements OnInit {
         .update(this.account._id, {
           type: this.account.type,
           bankAccountRegion: this.account.bankAccountRegion,
+          additionalDetails: this.account.additionalDetails,
           paypalAccount: this.account.paypalAccount,
           accountHolderName: this.account.accountHolderName,
           accountHolderAddress: this.account.accountHolderAddress,

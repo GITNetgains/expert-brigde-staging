@@ -2399,7 +2399,8 @@ input:checked + .slider {
   .profile-card {
     position: relative;
     margin-bottom: 5px;
-    margin-top: -35px;
+    /* Keep avatar and name below the main image so they don't cover it */
+    margin-top: 10px;
 
     .profile {
       > a {

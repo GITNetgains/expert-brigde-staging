@@ -138,3 +138,34 @@
     color: #1e40af;
     font-weight: 600;
   }
+
+  /* Bottom pricing note – bold, full width, visible background */
+  .pricing-note {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.5;
+    padding: 0.85rem 1.75rem;
+    background: #e2e8f0;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    text-align: center;
+
+    p {
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      font-weight: 800;
+      color: #0f172a;
+    }
+  }

@@ -1,0 +1,56 @@
+/* Group Sessions list table layout */
+.webinar-list-table {
+  width: 100%;
+  table-layout: auto;
+
+  thead th {
+    white-space: nowrap;
+    padding: 0.75rem;
+    vertical-align: middle;
+  }
+
+  tbody td {
+    padding: 0.75rem;
+    vertical-align: middle;
+  }
+
+  .col-image {
+    width: 90px;
+    min-width: 90px;
+  }
+
+  .col-name {
+    min-width: 120px;
+  }
+
+  .col-num {
+    min-width: 100px;
+    text-align: center;
+  }
+
+  .col-date {
+    min-width: 100px;
+    white-space: nowrap;
+  }
+
+  .col-active {
+    min-width: 80px;
+  }
+
+  .col-action {
+    min-width: 90px;
+    text-align: center;
+  }
+
+  .table-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

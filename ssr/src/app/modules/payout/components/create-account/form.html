@@ -93,18 +93,7 @@
               [(ngModel)]="account.uniqueIdentificationNumberType" />
           </div>
         </div>
-        <p class="small text-muted">
-          <span translate>
-             In case you do not have a Tax ID Number, then please provide any government issued identification number
-            that indicates that you are a legal resident of the country where the funds are transferred.
-          </span>
-        </p>
-        <p class="small text-muted">
-          <span translate>
-            Experts are responsible to share their correct details. Expert Bridge team is not responsible
-            for any wrong details.
-          </span>
-        </p>
+       
       </div>
       <ng-template #bankAccount>
         <div class="row mb-3">
@@ -349,20 +338,40 @@
         </div>
       </ng-template>
 
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label translate>Additional payout details (optional)</label>
+            <textarea
+              class="form-control"
+              name="additionalDetails"
+              #additionalDetails="ngModel"
+              placeholder="{{'Any other notes related to this payout account (visible to admin when processing payouts)' | translate}}"
+              [(ngModel)]="account.additionalDetails"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
       <div class="row mt-3">
         <div class="col-md-12">
           <p class="small text-muted">
-            <span translate>
-               In case you do not have a Tax ID Number, then please provide any government issued identification number
-              that indicates that you are a legal resident of the country where the funds are transferred.
-            </span>
+            <em>* 
+              <span translate>
+                In case you do not have a Tax ID Number, then please provide any government issued identification number
+                that indicates that you are a legal resident of the country where the funds are transferred.
+              </span>
+            </em>
           </p>
-         
+          
           <p class="small text-muted">
-            <span translate>
-              Experts are responsible to share their correct details. Expert Bridge team is not responsible
-              for any wrong details.
-            </span>
+            <em>*
+              <span translate>
+                Experts are responsible to share their correct details. Expert Bridge team is not responsible
+                for any wrong details.
+              </span>
+            </em>
           </p>
         </div>
       </div>

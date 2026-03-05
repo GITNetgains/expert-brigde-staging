@@ -16,7 +16,10 @@
                 <td>
                   <a
                     class="color-light-red"
-                    [routerLink]="['/experts', appointment.tutor.username]"
+                    [routerLink]="[
+                      '/experts',
+                      appointment?.tutor?.username || appointment?.tutor?._id
+                    ]"
                     *ngIf="appointment && appointment.tutor"
                   >
                     {{ appointment?.tutor?.showPublicIdOnly === true ? appointment?.tutor?.userId : appointment?.tutor?.name }}
@@ -39,7 +42,7 @@
                 </td>
               </tr>
               <tr *ngIf="appointment?.category">
-                <td><span translate>Class Category</span></td>
+                <td><span translate> Category</span></td>
                 <td>{{appointment?.category?.name}}</td>
               </tr>
               <tr *ngIf="appointment?.topic">
