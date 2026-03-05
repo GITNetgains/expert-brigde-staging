@@ -62,8 +62,17 @@
 <c-row>
   <c-col>
     <c-card>
-      <c-card-header>
+      <c-card-header class="d-flex flex-wrap justify-content-between">
         <h4>Total Pages: {{ count }}</h4>
+        @if(count !== 0){
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="count"
+          [maxSize]="3"
+          (pageChanged)="onPageChange($event)"
+        ></app-pagination>
+        }
       </c-card-header>
       @if(count !== 0){
       <c-card-body>
