@@ -51,8 +51,7 @@ export class GoogleCallbackComponent implements OnInit {
         this.appService.toastSuccess('Complete your profile to finish signing up.');
         this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
       } catch (err: any) {
-        const msg = err?.error?.message || err?.message || 'Google signup failed';
-        this.appService.toastError(msg);
+        this.appService.toastError(err);
         this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
       }
       return;

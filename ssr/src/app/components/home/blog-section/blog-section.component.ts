@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { StaticPageService } from 'src/app/services';
 import { isPlatformBrowser } from '@angular/common';
 import { register } from 'swiper/element/bundle';
@@ -11,6 +11,7 @@ import { register } from 'swiper/element/bundle';
 export class BlogSectionComponent implements OnInit {
   posts: any[] = [];
   isBrowser = false;
+  showNavigation = false;
 
   @ViewChild('blogSwiper', { static: false }) blogSwiper!: ElementRef;
 
@@ -28,9 +29,34 @@ export class BlogSectionComponent implements OnInit {
       .then((resp) => {
         this.posts = resp?.data?.items || [];
         if (this.isBrowser && this.posts.length) {
+          this.updateNavigationVisibility();
           setTimeout(() => this.initSwiper(), 100);
+        } else {
+          this.showNavigation = false;
         }
       });
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    if (this.isBrowser && this.posts.length) {
+      this.updateNavigationVisibility();
+    }
+  }
+
+  private getSlidesPerViewForWidth(width: number): number {
+    if (width >= 1200) return 3;
+    if (width >= 992) return 2;
+    return 1;
+  }
+
+  private updateNavigationVisibility() {
+    if (!this.isBrowser) {
+      this.showNavigation = false;
+      return;
+    }
+    const perView = this.getSlidesPerViewForWidth(window.innerWidth);
+    this.showNavigation = this.posts.length > perView;
   }
 
   initSwiper() {

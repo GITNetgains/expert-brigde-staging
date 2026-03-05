@@ -69,8 +69,7 @@ export class LinkedinCallbackComponent implements OnInit {
           this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
         })
         .catch((err: any) => {
-          const msg = err?.error?.message || err?.message || 'LinkedIn signup failed';
-          this.appService.toastError(msg);
+          this.appService.toastError(err);
           this.router.navigate(['/auth/sign-up'], { queryParams: { type: 'expert' } });
         });
       return;

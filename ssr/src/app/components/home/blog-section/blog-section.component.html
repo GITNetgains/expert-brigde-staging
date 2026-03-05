@@ -7,7 +7,7 @@
     </div>
 
     <div class="swiper-navigation-wrapper">
-      <button class="custom-nav-btn prev" (click)="onPrev()" aria-label="Previous slide">
+      <button *ngIf="showNavigation" class="custom-nav-btn prev" (click)="onPrev()" aria-label="Previous slide">
         <i class="fa fa-chevron-left"></i>
       </button>
 
@@ -42,7 +42,7 @@
         </swiper-slide>
       </swiper-container>
 
-      <button class="custom-nav-btn next" (click)="onNext()" aria-label="Next slide">
+      <button *ngIf="showNavigation" class="custom-nav-btn next" (click)="onNext()" aria-label="Next slide">
         <i class="fa fa-chevron-right"></i>
       </button>
     </div>
