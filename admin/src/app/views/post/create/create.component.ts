@@ -62,11 +62,31 @@ export class PostCreateComponent {
   private postService = inject(PostService);
   private toasty = inject(UtilService);
 
+  private readonly BLOG_ASPECT_RATIO = 4 / 3;
+  private readonly INDUSTRY_ASPECT_RATIO = 4 / 3;
+
+  private validateImageAspectRatio(url: string, expectedRatio: number, tolerance = 0.05): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve(false);
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        const ratio = img.naturalWidth / img.naturalHeight;
+        resolve(Math.abs(ratio - expectedRatio) <= tolerance);
+      };
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
   onImageSelected(url: string) {
     this.post.meta.imageUrl = url;
   }
 
-  submit(form: NgForm) {
+  async submit(form: NgForm) {
     this.customStylesValidated = true;
 
     if (!form.valid) {
@@ -77,9 +97,37 @@ export class PostCreateComponent {
       return;
     }
 
-    this.submitted = true;
+    // Validate cover image dimensions for blog and industry posts
+    if (this.post.type === 'blog' || this.post.type === 'industry') {
+      if (!this.post.meta?.imageUrl) {
+        this.toasty.toastError({
+          title: 'Invalid image',
+          message: 'Please select a cover image for this post.',
+        });
+        return;
+      }
 
-    console.log("SUBMIT DATA →", this.post);
+      const expectedRatio =
+        this.post.type === 'blog'
+          ? this.BLOG_ASPECT_RATIO
+          : this.INDUSTRY_ASPECT_RATIO;
+
+      const isValid = await this.validateImageAspectRatio(
+        this.post.meta.imageUrl,
+        expectedRatio
+      );
+
+      if (!isValid) {
+        this.toasty.toastError({
+          title: 'Invalid image size',
+          message:
+            'Please upload an image with a landscape 4:3 ratio (for example 800x600px) so it matches the frontend layout.',
+        });
+        return;
+      }
+    }
+
+    this.submitted = true;
 
     this.postService.create(this.post).subscribe({
       next: () => {
