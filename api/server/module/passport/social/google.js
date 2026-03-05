@@ -100,20 +100,9 @@ exports.login = async (req, res, next) => {
     // 3️⃣ Find existing user by email
     let user = await DB.User.findOne({ email });
 
-    // 4️⃣ Create a FULL user if not found
+    // 4 Reject if no account exists
     if (!user) {
-      user = new DB.User({
-        email,
-        name,
-        provider: 'google',
-        role: 'user',
-        type: 'tutor',              // default user type
-        timezone: 'Asia/Kolkata',      // you wanted static timezone
-        isActive: true,                // allow login
-        emailVerified: true            // because Google verified
-      });
-
-      await user.save();
+      return res.status(404).json({ success: false, message: "No account found with this email. Please sign up first." });
     }
 
     // 5️⃣ Save social login info

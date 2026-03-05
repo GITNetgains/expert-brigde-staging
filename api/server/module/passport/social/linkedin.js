@@ -136,24 +136,11 @@ exports.login = async (req, res, next) => {
 
     console.log("LinkedIn profile fetched:", { linkedinId, fullName, email });
 
-    // 4️⃣ Find or create user
+    // 4 Reject if no account exists
     let user = await DB.User.findOne({ email });
-    
+
     if (!user) {
-      console.log("Creating new user for:", email);
-      user = new DB.User({
-        email,
-        name: fullName,
-        provider: "linkedin",
-        role: "user",
-        type: "tutor",
-        timezone: "Asia/Kolkata",
-        isActive: true,
-        emailVerified: true
-      });
-      await user.save();
-    } else {
-      console.log("Existing user found:", user._id);
+      return res.status(404).json({ success: false, message: "No account found with this email. Please sign up first." });
     }
 
     // 5️⃣ Save or update social info
