@@ -7,8 +7,7 @@ import {
   ViewChild,
   ElementRef,
   Inject,
-  PLATFORM_ID,
-  HostListener
+  PLATFORM_ID
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -27,7 +26,6 @@ import { StaticPageService } from 'src/app/services';
 export class IndustriesCarouselComponent implements OnInit {
   industries: any[] = [];
   isBrowser = false;
-  showNavigation = false;
 
   @ViewChild('swiperRef') swiperRef!: ElementRef;
 
@@ -46,37 +44,11 @@ export class IndustriesCarouselComponent implements OnInit {
       .then((resp) => {
         this.industries = resp?.data?.items || [];
         if (this.isBrowser && this.industries.length) {
-          this.updateNavigationVisibility();
           this.cdr.detectChanges();
           setTimeout(() => this.initSwiper(), 0);
-        } else {
-          this.showNavigation = false;
         }
       })
       .catch(() => {});
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    if (this.isBrowser && this.industries.length) {
-      this.updateNavigationVisibility();
-    }
-  }
-
-  private getSlidesPerViewForWidth(width: number): number {
-    if (width >= 1200) return 4;
-    if (width >= 992) return 3;
-    if (width >= 768) return 2;
-    return 1;
-  }
-
-  private updateNavigationVisibility() {
-    if (!this.isBrowser) {
-      this.showNavigation = false;
-      return;
-    }
-    const perView = this.getSlidesPerViewForWidth(window.innerWidth);
-    this.showNavigation = this.industries.length > perView;
   }
 
   initSwiper() {
