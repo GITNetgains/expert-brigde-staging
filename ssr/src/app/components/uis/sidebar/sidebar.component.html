@@ -112,7 +112,20 @@
               <span translate>Bank Account</span>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/payout/tax-compliance']" routerLinkActive="active">
+              <i class="fi fi-rr-file-invoice-dollar"></i>
+              <span translate>Tax & Compliance</span>
+            </a>
+          </li>
         </ng-container>
+
+        <li class="nav-item" *ngIf="currentUser?.type === 'student'">
+          <a class="nav-link" [routerLink]="['/users/billing-details']" routerLinkActive="active">
+            <i class="fi fi-rr-file-invoice"></i>
+            <span translate>Billing Details</span>
+          </a>
+        </li>
 
         <li class="nav-item" *ngIf="currentUser?.type === 'student'">
           <a class="nav-link" [routerLink]="['/users/refund/request']" routerLinkActive="active">
