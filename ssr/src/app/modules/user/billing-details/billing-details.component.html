@@ -1,0 +1,135 @@
+<section class="sm-padding">
+  <div class="container">
+    <h4 class="color-light-black mb-3"><span translate>Billing Details</span></h4>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="card-horizontal input-border p-4">
+      <p class="text-muted">Loading billing details...</p>
+    </div>
+
+    <!-- Service Unavailable -->
+    <div *ngIf="!loading && serviceUnavailable" class="card-horizontal input-border p-4">
+      <div class="alert alert-warning mb-0">
+        <strong>Billing service temporarily unavailable.</strong>
+        <p class="mb-0 mt-1">Your profile is not affected. Billing details will be available shortly.</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!loading && !serviceUnavailable" class="card-horizontal input-border">
+
+      <p class="text-muted mb-3" style="font-size: 0.9rem;">
+        Optional &mdash; fill this if you need GST invoices with your GSTIN for Input Tax Credit.
+      </p>
+
+      <!-- Existing GSTIN Badge -->
+      <div class="row mb-3" *ngIf="existingGstinMasked">
+        <div class="col-md-8">
+          <div class="form-group">
+            <label><strong>GSTIN on file</strong></label>
+            <div class="mt-1">
+              <span class="badge bg-success text-white p-2">{{ existingGstinMasked }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form (submit)="saveBilling()" ngNativeValidate>
+
+        <!-- Company Name -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Company / Billing Name</label>
+              <input type="text" class="form-control" [(ngModel)]="billingName" name="billingName"
+                placeholder="Enter company or billing name" maxlength="255" />
+            </div>
+          </div>
+        </div>
+
+        <!-- GSTIN -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>GSTIN</label>
+              <input type="text" class="form-control" [ngModel]="gstin" (ngModelChange)="gstin=$event; onGstinInput()" name="gstin"
+                placeholder="e.g., 07AABCU9603R1ZM" maxlength="15" autocomplete="off"
+                [class.is-valid]="gstinValid === true"
+                [class.is-invalid]="gstinValid === false" />
+              <div *ngIf="gstinValid === true" class="valid-feedback">
+                Valid GSTIN format
+              </div>
+              <div *ngIf="gstinValid === false" class="invalid-feedback">
+                {{ gstinError }}
+              </div>
+              <small class="form-text text-muted" *ngIf="gstinValid === null && gstin.length === 0">
+                15-character GST Identification Number (e.g., 07AABCU9603R1ZM)
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- State Dropdown -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>State</label>
+              <select class="form-control" [(ngModel)]="stateCode" name="stateCode" (change)="onStateChange()">
+                <option value="" translate>Select your state</option>
+                <option *ngFor="let sc of stateCodes" [value]="sc.state_code">
+                  {{ sc.state_name }} ({{ sc.state_code }})
+                </option>
+              </select>
+              <small class="form-text text-muted">
+                This determines CGST+SGST vs IGST on your invoices
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- City -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>City</label>
+              <input type="text" class="form-control" [(ngModel)]="city" name="city"
+                placeholder="Enter city" maxlength="100" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Billing Address -->
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <div class="form-group">
+              <label translate>Billing Address</label>
+              <textarea class="form-control" [(ngModel)]="billingAddress" name="billingAddress"
+                placeholder="Enter full billing address" rows="3" maxlength="500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-primary" [disabled]="saving || (gstin.length > 0 && gstinValid === false)">
+              <span *ngIf="!saving" translate>Save Billing Details</span>
+              <span *ngIf="saving">Saving...</span>
+            </button>
+            <a routerLink="/users/profile" class="btn btn-outline-secondary ms-2" translate>Back to Profile</a>
+          </div>
+        </div>
+
+        <!-- Save feedback -->
+        <div class="row" *ngIf="saveMessage">
+          <div class="col-md-8">
+            <div [class]="saveSuccess ? 'alert alert-success' : 'alert alert-danger'">
+              {{ saveMessage }}
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</section>

@@ -8,6 +8,7 @@ import {
   CreateRequestPayoutComponent
 } from './components';
 import { AccountResolver } from 'src/app/services/resolvers/account.resolver';
+import { TaxComplianceComponent } from './components/tax-compliance/tax-compliance.component';
 
 const routes: Routes = [
   {
@@ -33,7 +34,8 @@ const routes: Routes = [
       account: AccountResolver
     }
   },
-  { path: 'account/update/:id', component: AccountUpdateComponent }
+  { path: 'account/update/:id', component: AccountUpdateComponent },
+  { path: 'tax-compliance', component: TaxComplianceComponent }
 ];
 
 @NgModule({

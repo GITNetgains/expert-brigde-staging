@@ -15,6 +15,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { RequestPayoutModalComponent } from './components/modal-request/modal-request.component';
+import { TaxComplianceComponent } from './components/tax-compliance/tax-compliance.component';
 import { SharedModule } from 'src/app/shared.module';
 import { SortComponent } from 'src/app/components/uis/sort/sort.component';
 import { StatusComponent } from 'src/app/components/uis/status.component';
@@ -38,7 +39,8 @@ import { StatusComponent } from 'src/app/components/uis/status.component';
     CreateRequestPayoutComponent,
     AccountCreateComponent,
     PayoutMenuComponent,
-    RequestPayoutModalComponent
+    RequestPayoutModalComponent,
+    TaxComplianceComponent
   ],
   exports: []
 })

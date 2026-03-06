@@ -63,6 +63,7 @@ import { LoadingComponent } from 'src/app/components/uis/loading.component';
 import { UserAvailableTimeComponent } from 'src/app/components/calendar/tutor-available-time/tutor-available-time.component';
 import { AiQueryListComponent } from './ai-queries/list/list.component';
 import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
+import { BillingDetailsComponent } from './billing-details/billing-details.component';
 
 @NgModule({
   imports: [
@@ -138,7 +139,8 @@ import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-gro
     ModalAppointmentComponent,
     ReportFormComponent,
     AiQueryListComponent,
-    BrowseGroupSessionsComponent
+    BrowseGroupSessionsComponent,
+    BillingDetailsComponent
   ],
   exports: []
 })

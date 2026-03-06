@@ -110,8 +110,36 @@ async function forwardZoomMeetingEnded(payload) {
   }
 }
 
+/**
+ * Forward expert PAN/tax data to Credit Service when payout account is saved.
+ * Called by creditProxy or directly by payout controllers.
+ */
+async function forwardExpertCompliance(expertMongoId, taxIdNumber, countryCode) {
+  try {
+    if (!expertMongoId) return null;
+
+    var payload = {
+      expert_mongo_id: expertMongoId,
+      pan_number: taxIdNumber || null,
+      residency_country: countryCode || null
+    };
+
+    var response = await axios.post(
+      CREDIT_SERVICE_URL + '/api/v1/experts/compliance-profile',
+      payload,
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('[CreditService] Expert compliance forwarded:', response.data && response.data.success || 'ok');
+    return response.data;
+  } catch (error) {
+    console.error('[CreditService] Expert compliance forward failed (non-blocking):', error.message);
+    return null;
+  }
+}
+
 module.exports = {
   forwardRazorpayPayment,
   forwardZoomMeetingEnded,
+  forwardExpertCompliance,
   CREDIT_SERVICE_URL
 };
