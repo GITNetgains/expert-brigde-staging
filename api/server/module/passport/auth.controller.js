@@ -1306,6 +1306,26 @@ exports.completeTutorSignup = async (req, res, next) => {
       pm2Error('[completeTutorSignup] Admin notification email failed', adminMailErr && adminMailErr.message ? adminMailErr.message : adminMailErr);
     }
 
+    // Auto-trigger DocuSeal Terms of Work (non-blocking, added 2026-03-06)
+    try {
+      const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
+      const ADMIN_KEY = process.env.ADMIN_API_KEY || 'ppnNRXHCNGj6iNDL1uy_nWX7M82epFhYEFy3W9sY8pU';
+      fetch(ORCHESTRATOR_URL + '/api/docuseal/send-by-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': ADMIN_KEY
+        },
+        body: JSON.stringify({ email: user.email, name: user.name || '' })
+      }).then(function(r) {
+        console.log('[DocuSeal] Auto-sent agreement to new expert: ' + user.email + ' status=' + r.status);
+      }).catch(function(err) {
+        console.log('[DocuSeal] Auto-send failed for ' + user.email + ' (non-blocking): ' + (err.message || err));
+      });
+    } catch (dsErr) {
+      console.log('[DocuSeal] Trigger setup failed (non-blocking): ' + (dsErr.message || dsErr));
+    }
+
     res.locals.completeTutorSignup = PopulateResponse.success(
       { message: 'Profile completed. You can now log in.' },
       'TUTOR_SIGNUP_COMPLETE'
