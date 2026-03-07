@@ -46,7 +46,7 @@ async function _getClientEnrichment(payload) {
       return {};
     }
 
-    const client = await DB.User.findById(clientId, 'state countryCode city').lean();
+    const client = await DB.User.findById(clientId, 'state countryCode city email name').lean();
     if (!client) {
       return {};
     }
@@ -54,7 +54,9 @@ async function _getClientEnrichment(payload) {
     const enrichment = {
       client_state: client.state || '',
       client_country: client.countryCode || 'IN',
-      client_city: client.city || ''
+      client_city: client.city || '',
+      client_email: client.email || '',
+      client_name: client.name || ''
     };
 
     console.log('[CreditService] Client enrichment:', clientId, '->', enrichment.client_state || '(no state)', enrichment.client_country);
@@ -74,9 +76,45 @@ async function forwardRazorpayPayment(payload) {
     // Enrich with client location data for GST determination
     const clientEnrichment = await _getClientEnrichment(payload);
 
+    // Look up expert email/name from MongoDB
+    let expertEnrichment = {};
+    try {
+      const notes = (payload && payload.payload && payload.payload.payment &&
+                     payload.payload.payment.entity && payload.payload.payment.entity.notes) || {};
+      const expertId = notes.tutorId || notes.expert_id || notes.tutor_id;
+      if (expertId && typeof DB !== 'undefined' && DB.User) {
+        const expert = await DB.User.findById(expertId, 'email name').lean();
+        if (expert) {
+          expertEnrichment = {
+            expert_email: expert.email || '',
+            expert_name: expert.name || ''
+          };
+          console.log('[CreditService] Expert enrichment:', expertId, '->', expert.email || '(no email)');
+        }
+      }
+      // Also try via appointment/booking lookup if no tutorId in notes
+      if (!expertEnrichment.expert_email && notes.booking_id && DB.Appointment) {
+        try {
+          const appt = await DB.Appointment.findById(notes.booking_id, 'tutorId').lean();
+          if (appt && appt.tutorId) {
+            const expert = await DB.User.findById(appt.tutorId, 'email name').lean();
+            if (expert) {
+              expertEnrichment = { expert_email: expert.email || '', expert_name: expert.name || '' };
+              console.log('[CreditService] Expert enrichment (via appointment):', appt.tutorId, '->', expert.email);
+            }
+          }
+        } catch (apptErr) {
+          console.warn('[CreditService] Appointment expert lookup failed:', apptErr.message);
+        }
+      }
+    } catch (expErr) {
+      console.warn('[CreditService] Expert enrichment failed (non-blocking):', expErr.message);
+    }
+
     // Namespaced to avoid conflicts with Razorpay payload fields
     const enrichedPayload = Object.assign({}, payload, {
-      _clientEnrichment: clientEnrichment
+      _clientEnrichment: clientEnrichment,
+      _expertEnrichment: expertEnrichment
     });
 
     const response = await axios.post(
