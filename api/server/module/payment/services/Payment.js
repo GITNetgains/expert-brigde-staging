@@ -91,8 +91,11 @@ exports.createOrderByRazorpay = async options => {
     }
   }
 
-  const effectiveCommissionRate =
+  var rawCommissionRate =
     tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
+
+  // Enforce minimum commission floor (25%)
+  var effectiveCommissionRate = Math.max(parseFloat(rawCommissionRate) || 0, 0.25);
 
   // Commission is calculated on the tutor's base price
   const commission =
@@ -164,8 +167,9 @@ exports.updatePaymentMutilple = async transactionId => {
     tutor && typeof tutor.commissionRate === 'number'
       ? tutor.commissionRate
       : null;
-  const effectiveCommissionRate =
+  const rawCommRate2 =
     tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
+  const effectiveCommissionRate = Math.max(parseFloat(rawCommRate2) || 0, 0.25);
   const children = await DB.Transaction.find({
     parentTransactionId: transaction._id
   });
@@ -240,8 +244,9 @@ exports.updatePayment = async transactionId => {
     tutor && typeof tutor.commissionRate === 'number'
       ? tutor.commissionRate
       : null;
-  const effectiveCommissionRate =
+  const rawCommRate3 =
     tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
+  const effectiveCommissionRate = Math.max(parseFloat(rawCommRate3) || 0, 0.25);
 
   // Base amount that the tutor should receive (after discount, before commission on top)
   const basePriceForTutor =

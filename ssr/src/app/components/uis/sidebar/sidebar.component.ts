@@ -23,6 +23,7 @@ export class SidebarComponent {
   cartCount = 0;
   showBooking = false;
   opportunitiesUrl = 'https://opportunities.expertbridge.co/opportunities';
+  expertFinanceUrl = 'https://expert.expertbridge.co';
   unreadNotificationCount = 0;
   constructor(
     private authService: AuthService,
@@ -39,6 +40,7 @@ export class SidebarComponent {
       this.notificationService.countUnread().then(resp => (this.unreadNotificationCount = resp.data.count || 0));
     }
     this._buildOpportunitiesUrl();
+    this._buildExpertFinanceUrl();
 
     this.authService.userLoaded$.subscribe(() => {
       this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
@@ -49,6 +51,7 @@ export class SidebarComponent {
           .catch(() => (this.unreadNotificationCount = 0));
       }
       this._buildOpportunitiesUrl();
+      this._buildExpertFinanceUrl();
     });
 
     this.config = this.stateService.getState(STATE.CONFIG);
@@ -67,6 +70,16 @@ export class SidebarComponent {
       this.opportunitiesUrl = token ? base + '?token=' + token : base;
     } catch {
       this.opportunitiesUrl = base;
+    }
+  }
+
+  private _buildExpertFinanceUrl() {
+    const base = 'https://expert.expertbridge.co';
+    try {
+      const token = this.cookieService.get('accessToken');
+      this.expertFinanceUrl = token ? base + '?token=' + token : base;
+    } catch {
+      this.expertFinanceUrl = base;
     }
   }
 

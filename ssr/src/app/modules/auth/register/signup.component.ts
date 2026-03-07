@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GoogleAuthService } from 'src/app/services/google-auth.service';
 import { LinkedinAuthService } from 'src/app/services/linkedin-auth.service';
@@ -96,6 +97,11 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
   public introUploadUrl = '';
   public uploadProgress: any = {};
 
+  /* DocuSeal inline signing (Fix 12) */
+  public showDocusealModal = false;
+  public docusealEmbedUrl: string | null = null;
+  public docusealSafeUrl: SafeResourceUrl | null = null;
+
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -106,7 +112,8 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private googleAuth: GoogleAuthService,
     private linkedinAuth: LinkedinAuthService,
     private countryService: CountryService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private sanitizer: DomSanitizer
   ) {
     const config: any = this.stateService.getState(STATE.CONFIG);
     if (config?.siteName) {
@@ -218,6 +225,7 @@ if (mappedType) {
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     const input = document.getElementById('email-input') as any;
     if (input) {
       input.addEventListener('paste', (e: any) => {
@@ -508,12 +516,46 @@ if (this.newPassword !== this.confirmPassword) {
         education: this.tutorProfile.education,
         experience: this.tutorProfile.experience
       };
-      await this.auth.completeTutorSignup(payload);
+      const resp = await this.auth.completeTutorSignup(payload);
       this.clearPendingSignup();
-      this.appService.toastSuccess('Expert profile submitted. You can now log in.');
-      this.router.navigate(['/auth/login']);
+
+      // Check if DocuSeal embed URL is available for inline signing
+      const embedUrl = resp?.data?.data?.docuseal_embed_url || resp?.data?.docuseal_embed_url;
+      if (embedUrl && isPlatformBrowser(this.platformId)) {
+        this.docusealEmbedUrl = embedUrl;
+        this.docusealSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+        this.showDocusealModal = true;
+        this.appService.toastSuccess('Expert profile submitted! Please sign the Terms of Work below.');
+        // Listen for DocuSeal completion via postMessage
+        window.addEventListener('message', this.onDocusealMessage.bind(this));
+      } else {
+        this.appService.toastSuccess('Expert profile submitted. You can now log in.');
+        this.router.navigate(['/auth/login']);
+      }
     } finally {
       this.loading = false;
+    }
+  }
+
+  /* =========================
+   * DOCUSEAL MODAL (Fix 12)
+   * ========================= */
+  skipDocuseal() {
+    this.showDocusealModal = false;
+    window.removeEventListener('message', this.onDocusealMessage.bind(this));
+    this.appService.toastSuccess('You can sign the Terms of Work later via email.');
+    this.router.navigate(['/auth/login']);
+  }
+
+  private onDocusealMessage(event: MessageEvent) {
+    if (event.origin === 'https://sign.expertbridge.co') {
+      const data = event.data;
+      if (data === 'completed' || data?.type === 'completed' || data?.status === 'completed') {
+        this.showDocusealModal = false;
+        window.removeEventListener('message', this.onDocusealMessage.bind(this));
+        this.appService.toastSuccess('Terms of Work signed successfully! You can now log in.');
+        this.router.navigate(['/auth/login']);
+      }
     }
   }
 

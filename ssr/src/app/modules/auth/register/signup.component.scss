@@ -215,3 +215,76 @@ a.disabled {
     }
   }
 }
+
+/* DocuSeal Signing Modal (Fix 12) */
+.docuseal-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.docuseal-modal-container {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.docuseal-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+  }
+}
+
+.docuseal-iframe {
+  flex: 1;
+  min-height: 500px;
+  width: 100%;
+  border: none;
+}
+
+.docuseal-modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #eee;
+  text-align: right;
+}
+
+.btn-skip {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  font-size: 13px;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #999;
+    color: #333;
+  }
+}

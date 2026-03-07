@@ -164,3 +164,58 @@
 .payment-result__countdown-value {
   min-width: 1.5em;
 }
+
+
+/* Billing prompt after successful payment */
+.payment-result__billing-prompt {
+  margin-top: 24px;
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+.billing-prompt-card {
+  background: #fff8e1;
+  border: 1px solid #ffcc02;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+
+  .billing-prompt-icon {
+    font-size: 28px;
+    color: #f9a825;
+    margin-bottom: 8px;
+  }
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  p {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .btn-primary {
+    margin-right: 8px;
+  }
+
+  .btn-link {
+    color: #999;
+    font-size: 12px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,6 +1,53 @@
 // const HttpStatus = require('http-status-codes');
 const { StatusCodes } = require('http-status-codes');
 const { PLATFORM_ONLINE } = require('..');
+const axios = require('axios');
+
+var CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+
+/**
+ * Sync Zoom meeting ID to PostgreSQL booking (non-blocking).
+ * Called after Zoom meeting creation so Credit Service can match
+ * the meeting.ended webhook to the correct booking.
+ */
+async function _syncZoomToBooking(appointment, zoomData) {
+  try {
+    if (!zoomData || !zoomData.id) return;
+    var payload = {
+      mongo_appointment_id: appointment._id.toString(),
+      zoom_meeting_id: String(zoomData.id),
+      zoom_join_url: zoomData.join_url || null,
+      zoom_start_url: zoomData.start_url || null,
+      scheduled_start: appointment.startTime ? appointment.startTime.toISOString() : null,
+      scheduled_end: appointment.toTime ? appointment.toTime.toISOString() : null,
+      booked_minutes: appointment.toTime && appointment.startTime
+        ? Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / 60000)
+        : 60,
+      mongo_expert_id: appointment.tutorId ? appointment.tutorId.toString() : null,
+    };
+    // Look up expert and client emails
+    if (typeof DB !== 'undefined' && DB.User) {
+      var expert = await DB.User.findById(appointment.tutorId, 'email name').lean();
+      if (expert) {
+        payload.expert_email = expert.email || '';
+        payload.expert_name = expert.name || '';
+      }
+      if (appointment.userId) {
+        var client = await DB.User.findById(appointment.userId, 'email name').lean();
+        if (client) {
+          payload.client_email = client.email || '';
+          payload.client_name = client.name || '';
+        }
+      }
+    }
+    await axios.post(CREDIT_SERVICE_URL + '/api/v1/admin/bookings/sync-zoom', payload, {
+      timeout: 5000, headers: { 'Content-Type': 'application/json' }
+    });
+    console.log('[CreditService] Zoom sync: meeting', zoomData.id, 'synced to PG for appointment', appointment._id.toString());
+  } catch (err) {
+    console.error('[CreditService] Zoom sync failed (non-blocking):', err.message);
+  }
+}
 
 exports.startMeeting = async (req, res, next) => {
   try {
@@ -70,6 +117,8 @@ exports.startMeeting = async (req, res, next) => {
           appointment.meetingStart = true;
           appointment.meetingStartAt = new Date();
           await appointment.save();
+          // Sync zoom_meeting_id to PostgreSQL booking (non-blocking)
+          _syncZoomToBooking(appointment, zoomData).catch(function() {});
           data.zoomus.url = zoomData.start_url;
           data.zoomus.signature = await Service.ZoomUs.generateSignature({
             meetingNumber: appointment.meetingId,
@@ -123,6 +172,8 @@ exports.startMeeting = async (req, res, next) => {
             appointment.meetingStart = true;
             appointment.meetingStartAt = new Date();
             await appointment.save();
+            // Sync zoom_meeting_id to PostgreSQL booking (non-blocking)
+            _syncZoomToBooking(appointment, zoomData).catch(function() {});
             data.zoomus.url = zoomData.start_url;
             data.zoomus.signature = await Service.ZoomUs.generateSignature({
               meetingNumber: appointment.meetingId,

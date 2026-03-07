@@ -1245,29 +1245,9 @@ exports.completeTutorSignup = async (req, res, next) => {
 
     await DB.SignupSession.deleteOne({ _id: session._id });
 
-    // Invite tutor to Zoom (same flow as zoomus.controller.inviteUser)
-    try {
-      let zoomUser;
-      try {
-        zoomUser = await Service.ZoomUs.getUser(user.email);
-      } catch (_) {
-        zoomUser = null;
-      }
-      if (zoomUser && zoomUser.id && zoomUser.status === 'active') {
-        await DB.User.updateOne(
-          { _id: user._id },
-          { $set: { isZoomAccount: true, zoomAccountInfo: zoomUser } }
-        );
-      } else {
-        await Service.ZoomUs.createUser({
-          email: user.email,
-          firstName: (user.name || '').split(' ')[0] || '',
-          lastName: (user.name || '').split(' ').slice(1).join(' ') || ''
-        });
-      }
-    } catch (zoomErr) {
-      pm2Error('[completeTutorSignup] Zoom invite failed (signup still succeeded)', zoomErr && zoomErr.message ? zoomErr.message : zoomErr);
-    }
+    // Zoom user creation removed (Fix 14, 2026-03-07)
+    // Zoom accounts should not be created during expert registration.
+    // Zoom meetings are created on-demand when sessions are booked.
 
     const loginUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/auth/login');
 
@@ -1306,28 +1286,42 @@ exports.completeTutorSignup = async (req, res, next) => {
       pm2Error('[completeTutorSignup] Admin notification email failed', adminMailErr && adminMailErr.message ? adminMailErr.message : adminMailErr);
     }
 
-    // Auto-trigger DocuSeal Terms of Work (non-blocking, added 2026-03-06)
+    // DocuSeal Terms of Work — create submission for inline embed (Fix 12, 2026-03-07)
+    let docusealEmbedUrl = null;
     try {
       const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
       const ADMIN_KEY = process.env.ADMIN_API_KEY || 'ppnNRXHCNGj6iNDL1uy_nWX7M82epFhYEFy3W9sY8pU';
-      fetch(ORCHESTRATOR_URL + '/api/docuseal/send-by-email', {
+      const dsResp = await fetch(ORCHESTRATOR_URL + '/api/docuseal/create-submission', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-admin-key': ADMIN_KEY
         },
-        body: JSON.stringify({ email: user.email, name: user.name || '' })
-      }).then(function(r) {
-        console.log('[DocuSeal] Auto-sent agreement to new expert: ' + user.email + ' status=' + r.status);
-      }).catch(function(err) {
-        console.log('[DocuSeal] Auto-send failed for ' + user.email + ' (non-blocking): ' + (err.message || err));
+        body: JSON.stringify({ expert_email: user.email, expert_name: user.name || '' })
       });
+      const dsData = await dsResp.json();
+      if (dsData.success && dsData.embed_url) {
+        docusealEmbedUrl = dsData.embed_url;
+        console.log('[DocuSeal] Created embed submission for ' + user.email + ': ' + docusealEmbedUrl);
+      } else {
+        console.log('[DocuSeal] create-submission returned no embed_url, will fallback to email');
+      }
     } catch (dsErr) {
-      console.log('[DocuSeal] Trigger setup failed (non-blocking): ' + (dsErr.message || dsErr));
+      console.error('[DocuSeal] create-submission failed, sending email fallback:', dsErr.message || dsErr);
+      // Fallback: fire-and-forget email
+      try {
+        const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
+        const ADMIN_KEY = process.env.ADMIN_API_KEY || 'ppnNRXHCNGj6iNDL1uy_nWX7M82epFhYEFy3W9sY8pU';
+        fetch(ORCHESTRATOR_URL + '/api/docuseal/send-by-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+          body: JSON.stringify({ email: user.email, name: user.name || '' })
+        }).catch(function() {});
+      } catch(e2) {}
     }
 
     res.locals.completeTutorSignup = PopulateResponse.success(
-      { message: 'Profile completed. You can now log in.' },
+      { message: 'Profile completed. You can now log in.', docuseal_embed_url: docusealEmbedUrl },
       'TUTOR_SIGNUP_COMPLETE'
     );
     next();

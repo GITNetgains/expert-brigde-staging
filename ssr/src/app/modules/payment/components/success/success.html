@@ -18,6 +18,22 @@
         <span class="payment-result__countdown-label" translate>Redirecting in</span>
         <span class="payment-result__countdown-value">{{ second }}s</span>
       </div>
+
+      <div class="payment-result__billing-prompt" *ngIf="showBillingPrompt">
+        <div class="billing-prompt-card">
+          <div class="billing-prompt-icon">
+            <i class="fa fa-file-text-o"></i>
+          </div>
+          <h4>Complete Your Billing Details</h4>
+          <p>Add your GSTIN and billing address to receive proper GST invoices for this and future bookings.</p>
+          <a routerLink="/users/billing-details" class="btn btn-primary btn-sm">
+            Add Billing Details
+          </a>
+          <button class="btn btn-link btn-sm" (click)="dismissBillingPrompt()">
+            Skip for now
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

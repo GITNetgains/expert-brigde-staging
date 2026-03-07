@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -15,6 +17,8 @@ import { environment } from 'src/environments/environment';
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
+    RouterModule,
     NgbModule,
     PaymentRoutingModule,
     NgSelectModule,

@@ -373,4 +373,19 @@ router.post(
      */
 
     router.put('/v1/users/:id/change-email', Middleware.isAuthenticated, userController.changeEmail, Middleware.Response.success('changeEmail'));
+
+    // Auth/me — returns current user info for external apps (Expert Finance, etc.)
+    router.get('/v1/auth/me', Middleware.isAuthenticated, async (req, res) => {
+      try {
+        return res.json({
+          email: req.user.email,
+          name: req.user.name,
+          userId: req.user.userId,
+          role: req.user.role,
+          type: req.user.type
+        });
+      } catch (e) {
+        return res.status(500).json({ error: e.message });
+      }
+    });
   };

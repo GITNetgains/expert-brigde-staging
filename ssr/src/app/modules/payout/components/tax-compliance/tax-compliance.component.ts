@@ -103,6 +103,11 @@ export class TaxComplianceComponent implements OnInit {
 
   async savePan() {
     if (!this.panNumber || !this.panValid) return;
+    if (!this.userMongoId) {
+      this.saveSuccess = false;
+      this.saveMessage = 'User session not found. Please log out and log back in.';
+      return;
+    }
 
     this.saving = true;
     this.saveMessage = '';
@@ -112,7 +117,7 @@ export class TaxComplianceComponent implements OnInit {
       var payload = {
         expert_mongo_id: this.userMongoId,
         pan_number: this.panNumber,
-        residency_country: this.countryCode || 'IN'
+        residency_country: 'IN'  // PAN is India-specific; country code comes from PAN context
       };
       var resp: any = await this.http.post(url, payload).toPromise();
       this.saveSuccess = true;
@@ -124,9 +129,18 @@ export class TaxComplianceComponent implements OnInit {
     } catch (err: any) {
       this.saveSuccess = false;
       if (err && err.error && err.error.detail) {
-        this.saveMessage = err.error.detail;
+        var detail = err.error.detail;
+        if (typeof detail === 'string') {
+          this.saveMessage = detail;
+        } else if (Array.isArray(detail)) {
+          this.saveMessage = detail.map((d: any) => d.msg || d.message || '').filter((m: string) => m).join('; ') || 'Validation error. Please check your input.';
+        } else if (typeof detail === 'object') {
+          this.saveMessage = detail.msg || detail.message || 'An error occurred.';
+        } else {
+          this.saveMessage = String(detail);
+        }
       } else {
-        this.saveMessage = 'Failed to save. Please try again.';
+        this.saveMessage = err?.error?.message || err?.message || 'Failed to save. Please try again.';
       }
     }
     this.saving = false;

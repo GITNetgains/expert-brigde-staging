@@ -175,9 +175,46 @@ async function forwardExpertCompliance(expertMongoId, taxIdNumber, countryCode) 
   }
 }
 
+
+/**
+ * Forward Zoom participant_joined / participant_left to Credit Service.
+ * Fire-and-forget - errors are logged but never block the main flow.
+ * Added: March 7, 2026
+ */
+async function forwardParticipantEvent(payload, eventType) {
+  try {
+    var meetingId = payload && payload.object && payload.object.id;
+    var participant = payload && payload.object && payload.object.participant;
+    if (!meetingId || !participant) return null;
+
+    var participantData = {
+      zoom_meeting_id: String(meetingId),
+      event_type: eventType,
+      participant_user_id: participant.user_id || null,
+      participant_email: participant.email || null,
+      participant_name: participant.user_name || null,
+      join_time: participant.join_time || null,
+      leave_time: participant.leave_time || null,
+      event_timestamp: new Date().toISOString()
+    };
+
+    var response = await axios.post(
+      CREDIT_SERVICE_URL + '/api/v1/webhook/zoom/participant-event',
+      participantData,
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('[CreditService] Participant', eventType, 'forwarded:', response.data && response.data.success || 'ok');
+    return response.data;
+  } catch (error) {
+    console.error('[CreditService] Participant event forward failed (non-blocking):', error.message);
+    return null;
+  }
+}
+
 module.exports = {
   forwardRazorpayPayment,
   forwardZoomMeetingEnded,
   forwardExpertCompliance,
+  forwardParticipantEvent,
   CREDIT_SERVICE_URL
 };

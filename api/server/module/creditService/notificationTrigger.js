@@ -191,3 +191,96 @@ exports.sendPayoutEmail = async function(req, res) {
     return res.status(500).json({ error: err.message });
   }
 };
+
+
+/**
+ * Sync expert earnings from Credit Service settlement to MongoDB.
+ * Creates a Transaction record so the payout page shows correct balance.
+ * Called by Credit Service after settlement — non-blocking, fire-and-forget.
+ * Added: March 7, 2026
+ */
+exports.syncExpertEarnings = async function(req, res) {
+  try {
+    var data = req.body || {};
+    var expertEmail = data.expert_email;
+    var bookingId = data.booking_id;
+    var grossMinor = data.gross_amount_minor || 0;
+    var commissionMinor = data.commission_minor || 0;
+    var netPayoutMinor = data.net_payout_minor || 0;
+    var mongoAppointmentId = data.mongo_appointment_id;
+
+    if (!expertEmail) {
+      return res.status(400).json({ success: false, reason: 'missing expert_email' });
+    }
+
+    // Find expert in MongoDB
+    var expert = await DB.User.findOne({ email: expertEmail });
+    if (!expert) {
+      return res.status(404).json({ success: false, reason: 'expert not found for ' + expertEmail });
+    }
+
+    // Find the appointment if we have a mongo ID
+    var appointment = null;
+    if (mongoAppointmentId) {
+      appointment = await DB.Appointment.findById(mongoAppointmentId);
+    }
+
+    // Check if a Transaction already exists for this Credit Service booking
+    // (idempotency — prevent duplicate earnings records)
+    var existingTxn = await DB.Transaction.findOne({
+      description: 'credit_service:' + bookingId
+    });
+    if (existingTxn) {
+      console.log('[EarningsSync] Already synced for booking', bookingId);
+      return res.json({ success: true, status: 'already_synced', transactionId: existingTxn._id });
+    }
+
+    // Create a Transaction record matching the payout system expectations
+    var grossRupees = grossMinor / 100;
+    var commissionRupees = commissionMinor / 100;
+    var netRupees = netPayoutMinor / 100;
+
+    var transaction = new DB.Transaction({
+      tutorId: expert._id,
+      userId: appointment ? appointment.userId : null,
+      targetType: 'subject',
+      type: 'booking',
+      paid: true,
+      status: 'completed',
+      price: grossRupees,
+      originalPrice: grossRupees,
+      commission: commissionRupees,
+      balance: netRupees,
+      completePayout: false,
+      isRefund: false,
+      paymentGateway: 'razorpay',
+      description: 'credit_service:' + bookingId,
+      appointmentId: appointment ? appointment._id : null
+    });
+    await transaction.save();
+
+    // Also create an Earning record for the earnings collection
+    var earning = new DB.Earning({
+      userId: expert._id,
+      appointmentId: appointment ? appointment._id : null,
+      balance: netRupees,
+      earn: commissionRupees,
+      fee: grossRupees - commissionRupees - netRupees,
+      commission: commissionRupees / grossRupees || 0,
+      isActive: true
+    });
+    await earning.save();
+
+    console.log('[EarningsSync] Created transaction', transaction._id, 'for expert', expertEmail, 'balance:', netRupees);
+
+    return res.json({
+      success: true,
+      transactionId: transaction._id,
+      earningId: earning._id,
+      balance: netRupees
+    });
+  } catch (err) {
+    console.error('[EarningsSync] Error:', err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};

@@ -12,6 +12,7 @@ import { FileUploadComponent } from 'src/app/components/media/file-upload/file-u
 import { ForgotComponent } from './forgot/forgot.component';
 import { GoogleCallbackComponent } from './google-callback/google-callback.component';
 import { LinkedinCallbackComponent } from './linkedin-callback/linkedin-callback.component';
+import { SafeUrlPipe } from 'src/app/pipes/safe-url.pipe';
 
 @NgModule({
   imports: [
@@ -25,7 +26,7 @@ import { LinkedinCallbackComponent } from './linkedin-callback/linkedin-callback
     forwardRef(() => FileUploadComponent)
   ],
   exports: [LoginComponent, SignupComponent],
-  declarations: [LoginComponent, SignupComponent, ForgotComponent, GoogleCallbackComponent, LinkedinCallbackComponent],
+  declarations: [LoginComponent, SignupComponent, ForgotComponent, GoogleCallbackComponent, LinkedinCallbackComponent, SafeUrlPipe],
   providers: []
 })
 export class AuthModule { }

@@ -386,7 +386,7 @@
           </div>
 
           <label class="ms-2">
-            By signing in, you agree to our Terms and Conditions </label>
+            By signing in, you agree to our <a href="https://www.expertbridge.co/pages/terms-of-services" target="_blank" rel="noopener">Terms of Services</a> and <a href="https://www.expertbridge.co/pages/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> </label>
         </div>
         <div class="text-center mt-2">
           Already have an account? <a routerLink="/auth/login">Sign In</a>
@@ -398,6 +398,27 @@
         </div>
 
       </form>
+    </div>
+  </div>
+</div>
+<!-- DocuSeal Signing Modal (Fix 12) — shown after registration completes -->
+<div *ngIf="showDocusealModal" class="docuseal-modal-overlay">
+  <div class="docuseal-modal-container">
+    <div class="docuseal-modal-header">
+      <h3>Please sign your Terms of Work to complete registration</h3>
+      <p>You can also sign later — the agreement will be emailed to you.</p>
+    </div>
+    <iframe
+      *ngIf="docusealSafeUrl"
+      [src]="docusealSafeUrl"
+      class="docuseal-iframe"
+      frameborder="0"
+      allow="camera; microphone">
+    </iframe>
+    <div class="docuseal-modal-footer">
+      <button (click)="skipDocuseal()" class="btn-skip" type="button">
+        Sign later via email
+      </button>
     </div>
   </div>
 </div>

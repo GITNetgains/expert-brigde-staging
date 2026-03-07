@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { forwardZoomMeetingEnded } = require('../../creditService/forwarder'); // Credit Service forwarding (March 4, 2026)
+const { forwardZoomMeetingEnded, forwardParticipantEvent } = require('../../creditService/forwarder'); // Credit Service forwarding (March 4, 2026)
 
 exports.hook = async (req, res, next) => {
   try {
@@ -51,6 +51,21 @@ exports.hook = async (req, res, next) => {
         case 'recording.completed':
           console.log('Recording completed event received');
           await Service.Appointment.getRecording(payload.object.id, payload.object);
+          break;
+
+
+        case 'meeting.participant_joined':
+          console.log('Participant joined meeting:', payload.object.id, '-', (payload.object.participant || {}).user_name);
+          forwardParticipantEvent(payload, 'joined').catch(function(err) {
+            console.error('[CreditService] participant joined forward error:', err.message);
+          });
+          break;
+
+        case 'meeting.participant_left':
+          console.log('Participant left meeting:', payload.object.id, '-', (payload.object.participant || {}).user_name);
+          forwardParticipantEvent(payload, 'left').catch(function(err) {
+            console.error('[CreditService] participant left forward error:', err.message);
+          });
           break;
 
         default:
