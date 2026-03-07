@@ -1290,7 +1290,7 @@ exports.completeTutorSignup = async (req, res, next) => {
     let docusealEmbedUrl = null;
     try {
       const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
-      const ADMIN_KEY = process.env.ADMIN_API_KEY || 'ppnNRXHCNGj6iNDL1uy_nWX7M82epFhYEFy3W9sY8pU';
+      const ADMIN_KEY = process.env.ADMIN_API_KEY;
       const dsResp = await fetch(ORCHESTRATOR_URL + '/api/docuseal/create-submission', {
         method: 'POST',
         headers: {
@@ -1311,7 +1311,7 @@ exports.completeTutorSignup = async (req, res, next) => {
       // Fallback: fire-and-forget email
       try {
         const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
-        const ADMIN_KEY = process.env.ADMIN_API_KEY || 'ppnNRXHCNGj6iNDL1uy_nWX7M82epFhYEFy3W9sY8pU';
+        const ADMIN_KEY = process.env.ADMIN_API_KEY;
         fetch(ORCHESTRATOR_URL + '/api/docuseal/send-by-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },

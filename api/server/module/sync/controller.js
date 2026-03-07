@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const API_KEY = 'expertbridge-sync-mongo-x9k2m5';
+const API_KEY = process.env.SYNC_API_KEY || 'expertbridge-sync-mongo-x9k2m5';
 
 // Normalize a string for matching: lowercase, strip punctuation, collapse whitespace
 function normalize(s) {
