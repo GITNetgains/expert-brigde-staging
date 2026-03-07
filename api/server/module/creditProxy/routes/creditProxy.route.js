@@ -11,6 +11,7 @@
 
 module.exports = function(router) {
   var controller = require('../proxy.controller');
+  var notificationTrigger = require('../../creditService/notificationTrigger');
 
   // Client Billing
   router.post('/v1/credit/client-billing', controller.upsertClientBilling);
@@ -22,4 +23,8 @@ module.exports = function(router) {
 
   // Reference Data
   router.get('/v1/credit/state-codes', controller.getStateCodesList);
+
+  // Credit Service Notification Triggers (called by Credit Service after settlement/payout)
+  router.post('/v1/credit/notify/invoice', notificationTrigger.sendInvoiceEmail);
+  router.post('/v1/credit/notify/payout', notificationTrigger.sendPayoutEmail);
 };
