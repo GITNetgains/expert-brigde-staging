@@ -31,6 +31,22 @@ function validateCreditServiceCaller(req, res, next) {
   return res.status(403).json({ error: 'Forbidden — internal route' });
 }
 
+/**
+ * Allows Finance Hub requests (via Nginx reverse proxy with internal header)
+ * to bypass JWT auth. Finance Hub is already protected by Basic Auth in Nginx.
+ * Nginx proxy_set_header always overwrites client-provided X-Finance-Hub,
+ * so external requests cannot forge this header.
+ */
+function adminOrFinanceHub(req, res, next) {
+  if (req.headers['x-finance-hub'] === 'internal') {
+    return next();
+  }
+  // Otherwise require JWT admin
+  return Middleware.hasRole('admin')(req, res, next);
+}
+
+
+
 module.exports = function(router) {
   var controller = require('../proxy.controller');
   var notificationTrigger = require('../../creditService/notificationTrigger');
@@ -56,7 +72,7 @@ module.exports = function(router) {
   router.patch('/v1/credit/invoices/:bookingId/refresh-buyer', Middleware.isAuthenticated, controller.refreshInvoiceBuyer);
 
   // Expert Search (admin only)
-  router.get('/v1/credit/expert-search', Middleware.hasRole('admin'), controller.searchExpert);
+  router.get('/v1/credit/expert-search', adminOrFinanceHub, controller.searchExpert);
 
   // Expert Finance endpoints — proxy to Credit Service (requires logged-in user)
   router.get('/v1/credit/expert/summary', Middleware.isAuthenticated, controller.proxyExpertSummary);

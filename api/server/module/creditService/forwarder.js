@@ -12,6 +12,7 @@ const axios = require('axios');
 
 const CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
 const FORWARD_TIMEOUT_MS = 5000;
+const CREDIT_API_KEY = process.env.CREDIT_SERVICE_API_KEY || '';
 
 /**
  * Look up client state/country from MongoDB for GST determination.
@@ -120,7 +121,7 @@ async function forwardRazorpayPayment(payload) {
     const response = await axios.post(
       `${CREDIT_SERVICE_URL}/webhook/razorpay/payment-captured`,
       enrichedPayload,
-      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } }
     );
     console.log('[CreditService] Razorpay forwarded:', response.data && response.data.status || 'ok');
     return response.data;
@@ -138,7 +139,7 @@ async function forwardZoomMeetingEnded(payload) {
     const response = await axios.post(
       `${CREDIT_SERVICE_URL}/webhook/zoom/meeting-ended`,
       payload,
-      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } }
     );
     console.log('[CreditService] Zoom meeting.ended forwarded:', response.data && response.data.status || 'ok');
     return response.data;
@@ -165,7 +166,7 @@ async function forwardExpertCompliance(expertMongoId, taxIdNumber, countryCode) 
     var response = await axios.post(
       CREDIT_SERVICE_URL + '/api/v1/experts/compliance-profile',
       payload,
-      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } }
     );
     console.log('[CreditService] Expert compliance forwarded:', response.data && response.data.success || 'ok');
     return response.data;
@@ -201,7 +202,7 @@ async function forwardParticipantEvent(payload, eventType) {
     var response = await axios.post(
       CREDIT_SERVICE_URL + '/api/v1/webhook/zoom/participant-event',
       participantData,
-      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json' } }
+      { timeout: FORWARD_TIMEOUT_MS, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } }
     );
     console.log('[CreditService] Participant', eventType, 'forwarded:', response.data && response.data.success || 'ok');
     return response.data;

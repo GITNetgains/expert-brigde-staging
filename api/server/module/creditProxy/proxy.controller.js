@@ -14,6 +14,7 @@ var axios = require('axios');
 
 var CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
 var TIMEOUT = 10000;
+var CREDIT_API_KEY = process.env.CREDIT_SERVICE_API_KEY || '';
 
 /**
  * Generic proxy — forwards request to Credit Service and returns response
@@ -25,7 +26,7 @@ async function proxyToCredit(req, res, method, path, data) {
       method: method,
       url: url,
       timeout: TIMEOUT,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY }
     };
 
     if (data) {
@@ -121,7 +122,7 @@ exports.searchExpert = async function(req, res) {
     var mongoId = user._id.toString();
     // Fetch compliance profile, then merge MongoDB user fields
     var url = CREDIT_SERVICE_URL + '/api/v1/experts/compliance-profile-by-mongo/' + mongoId;
-    var response = await axios({ method: 'GET', url: url, timeout: TIMEOUT, headers: { 'Content-Type': 'application/json' } });
+    var response = await axios({ method: 'GET', url: url, timeout: TIMEOUT, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } });
     var profile = response.data;
     profile.expert_email = user.email || null;
     profile.expert_name = user.name || null;
