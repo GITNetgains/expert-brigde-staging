@@ -106,130 +106,24 @@ const otpEmailTemplate = ({ otp, purpose = 'verification' }) =>
     `
   });
 
-const tutorSignupSuccessEmailTemplate = ({ tutorName, loginUrl }) => {
-  const firstName = (tutorName || 'there').split(' ')[0];
-  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  return `<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7;">
-<tr><td align="center" style="padding:32px 16px;">
+const tutorSignupSuccessEmailTemplate = ({ tutorName, loginUrl }) =>
+  baseEmailTemplate({
+    title: 'Welcome to ExpertBridge',
+    subtitle: 'Your account is ready',
+    body: `
+      <p>Hello ${tutorName || 'there'},</p>
 
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <p>Congratulations! You have successfully signed up on ExpertBridge.</p>
 
-<!-- Header -->
-<tr>
-<td style="background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);padding:28px 32px;text-align:center;">
-<img src="https://admin.expertbridge.co/assets/images/whitelogo.png" height="36" alt="ExpertBridge" style="display:inline-block;" />
-<p style="margin:8px 0 0;color:#a0aec0;font-size:11px;letter-spacing:2px;text-transform:uppercase;">ENGAGE BRILLIANCE, GET IT DONE.</p>
-</td>
-</tr>
+      <p>You can now <a href="${loginUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">log in</a> to your account and start setting up your profile, calendar, and availability.</p>
 
-<!-- Body -->
-<tr>
-<td style="padding:32px 36px;color:#4a5568;font-size:15px;line-height:1.7;">
+      <p>We have also sent you a <strong>Zoom invitation link</strong> to join our team. Once you accept the invitation, you will be able to deliver sessions smoothly through Zoom. Please check your inbox (and spam folder) for the Zoom email and complete the signup to activate your account.</p>
 
-<p style="margin:0 0 16px;color:#1a1a2e;font-size:18px;font-weight:600;">Hi ${firstName},</p>
+      <p>If you have any questions, please contact us at <a href="mailto:support@expertbridge.co">support@expertbridge.co</a>.</p>
 
-<p style="margin:0 0 14px;">Welcome aboard! I'm Daniel, and I'll be your point of contact as you get started on ExpertBridge.</p>
-
-<p style="margin:0 0 20px;">You've just joined a curated network of industry professionals who deliver high-impact consulting sessions to clients worldwide. Our AI matches you with opportunities that fit your expertise — no searching, no bidding, no competing.</p>
-
-<!-- Profile Card -->
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-<tr>
-<td style="background:#f8fafc;border-left:4px solid #0f3460;padding:16px 20px;border-radius:0 6px 6px 0;">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="color:#718096;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;">Name</td></tr>
-<tr><td style="color:#2d3748;font-size:14px;font-weight:600;padding-bottom:12px;">${tutorName || '—'}</td></tr>
-<tr><td style="color:#718096;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;">Registered</td></tr>
-<tr><td style="color:#2d3748;font-size:14px;font-weight:600;">${today}</td></tr>
-</table>
-</td>
-</tr>
-</table>
-
-<!-- What Happens Next -->
-<p style="margin:0 0 16px;color:#1a1a2e;font-size:16px;font-weight:600;">What Happens Next</p>
-
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">1</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Complete your profile</strong><br/>Our AI, Atlas, has created a summary profile based on the details shared by you. Review this profile carefully and ensure it is fully representative as this is what the clients see before deciding which expert to engage.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">2</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Set your availability</strong><br/>Block out times when you're available for consultations. Session slots are 60 minutes or more, with a minimum billable duration of 30 minutes.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">3</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Get matched</strong><br/>Our AI continuously scans incoming client requirements against your profile. When there's a strong match, you'll receive an invitation directly.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">4</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Deliver & earn</strong><br/>Conduct sessions via Zoom, and earnings are credited to your account automatically.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 0 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">5</div>
-</td>
-<td style="color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Meet with Atlas</strong><br/>Our proprietary AI Assessment companion helps us understand your profile better and enables us to reach out to you for the most relevant opportunities.
-</td>
-</tr>
-</table>
-
-<p style="margin:20px 0 24px;color:#4a5568;">That's it — no hustle, no outreach. We bring the opportunities to you.</p>
-
-<!-- CTA Button -->
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td align="center" style="padding:0 0 24px;">
-<a href="${loginUrl || 'https://www.expertbridge.co/auth/login'}" style="display:inline-block;background:#0f3460;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:6px;font-size:15px;font-weight:600;">Log In to Your Account</a>
-</td></tr>
-</table>
-
-<p style="margin:0 0 20px;color:#4a5568;font-size:14px;">If you have questions, just reply to this email or reach out at <a href="mailto:support@expertbridge.co" style="color:#0f3460;">support@expertbridge.co</a>.</p>
-
-<p style="margin:0;color:#4a5568;font-size:14px;">Best,<br/><strong style="color:#2d3748;">Daniel S</strong> — ExpertBridge Team</p>
-
-</td>
-</tr>
-
-<!-- Footer -->
-<tr>
-<td style="background:#f8fafc;padding:20px 36px;text-align:center;border-top:1px solid #e2e8f0;">
-<p style="margin:0;color:#a0aec0;font-size:12px;">© ${new Date().getFullYear()} ExpertBridge · Elevatexcel Consulting Private Limited</p>
-<p style="margin:6px 0 0;color:#a0aec0;font-size:12px;">
-<a href="https://www.expertbridge.co" style="color:#718096;text-decoration:none;">expertbridge.co</a> &nbsp;·&nbsp;
-<a href="mailto:support@expertbridge.co" style="color:#718096;text-decoration:none;">support@expertbridge.co</a>
-</p>
-</td>
-</tr>
-
-</table>
-
-</td></tr>
-</table>
-</body>
-</html>`;
-};
-
+      <p>Best regards,<br /><strong>The ExpertBridge Team</strong></p>
+    `
+  });
 
 const studentSignupSuccessEmailTemplate = ({ studentName, loginUrl, homeUrl }) =>
   baseEmailTemplate({
@@ -1092,7 +986,7 @@ exports.completeStudentSignup = async (req, res, next) => {
       });
       await Service.Mailer.sendRawNow(
         user.email,
-        'Welcome to ExpertBridge — You\'re In!',
+        'Welcome to ExpertBridge – You can now log in',
         studentWelcomeHtml
       );
     } catch (mailErr) {
@@ -1357,9 +1251,20 @@ exports.completeTutorSignup = async (req, res, next) => {
 
     const loginUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/auth/login');
 
-    // Expert welcome email is now sent by the n8n CV Ingestion workflow
-    // (Send Confirmation Email node) after AI profile extraction completes.
-    // Removed inline email to avoid duplicate sends.
+    // Email to tutor: signup success + Zoom link sent
+    try {
+      const tutorWelcomeHtml = tutorSignupSuccessEmailTemplate({
+        tutorName: user.name,
+        loginUrl
+      });
+      await Service.Mailer.sendRawNow(
+        user.email,
+        'Welcome to ExpertBridge – You can now log in',
+        tutorWelcomeHtml
+      );
+    } catch (mailErr) {
+      pm2Error('[completeTutorSignup] Tutor welcome email failed', mailErr && mailErr.message ? mailErr.message : mailErr);
+    }
 
     // Notify admin: new expert signed up (raw email so admin always receives it)
     try {
