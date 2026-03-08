@@ -1357,20 +1357,9 @@ exports.completeTutorSignup = async (req, res, next) => {
 
     const loginUrl = url.resolve(nconf.get('userWebUrl') || nconf.get('baseUrl') || '', '/auth/login');
 
-    // Email to tutor: signup success + Zoom link sent
-    try {
-      const tutorWelcomeHtml = tutorSignupSuccessEmailTemplate({
-        tutorName: user.name,
-        loginUrl
-      });
-      await Service.Mailer.sendRawNow(
-        user.email,
-        'Welcome to ExpertBridge — You\'re In!',
-        tutorWelcomeHtml
-      );
-    } catch (mailErr) {
-      pm2Error('[completeTutorSignup] Tutor welcome email failed', mailErr && mailErr.message ? mailErr.message : mailErr);
-    }
+    // Expert welcome email is now sent by the n8n CV Ingestion workflow
+    // (Send Confirmation Email node) after AI profile extraction completes.
+    // Removed inline email to avoid duplicate sends.
 
     // Notify admin: new expert signed up (raw email so admin always receives it)
     try {
