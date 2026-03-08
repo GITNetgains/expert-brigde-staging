@@ -548,14 +548,15 @@ if (this.newPassword !== this.confirmPassword) {
   }
 
   private onDocusealMessage(event: MessageEvent) {
-    if (event.origin === 'https://sign.expertbridge.co') {
-      const data = event.data;
-      if (data === 'completed' || data?.type === 'completed' || data?.status === 'completed') {
-        this.showDocusealModal = false;
-        window.removeEventListener('message', this.onDocusealMessage.bind(this));
-        this.appService.toastSuccess('Terms of Work signed successfully! You can now log in.');
-        this.router.navigate(['/auth/login']);
-      }
+    // Accept messages from DocuSeal or our own callback page
+    const trustedOrigins = ['https://sign.expertbridge.co', 'https://expertbridge.co', 'https://www.expertbridge.co'];
+    if (!trustedOrigins.includes(event.origin)) return;
+    const data = event.data;
+    if (data === 'completed' || data?.type === 'completed' || data?.type === 'docuseal-completed' || data?.status === 'completed') {
+      this.showDocusealModal = false;
+      window.removeEventListener('message', this.onDocusealMessage.bind(this));
+      this.appService.toastSuccess('Terms of Work signed successfully! You can now log in.');
+      this.router.navigate(['/auth/login']);
     }
   }
 

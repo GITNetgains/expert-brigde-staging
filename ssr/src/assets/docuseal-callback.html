@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signing Complete</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f8f9fa; }
+  .msg { text-align: center; color: #28a745; font-size: 1.2em; }
+</style>
+</head>
+<body>
+<div class="msg">
+  <p>&#10004; Document signed successfully!</p>
+  <p style="font-size:0.8em;color:#666;">Redirecting...</p>
+</div>
+<script>
+  // Notify parent window that signing is complete
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "docuseal-completed" }, "https://expertbridge.co");
+    window.parent.postMessage({ type: "docuseal-completed" }, "https://www.expertbridge.co");
+    // Fallback for origin mismatch
+    setTimeout(function() {
+      window.parent.postMessage({ type: "docuseal-completed" }, "*");
+    }, 500);
+  }
+</script>
+</body>
+</html>
