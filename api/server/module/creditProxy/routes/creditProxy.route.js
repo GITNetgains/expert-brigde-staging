@@ -77,5 +77,35 @@ module.exports = function(router) {
   // Expert Finance endpoints — proxy to Credit Service (requires logged-in user)
   router.get('/v1/credit/expert/summary', Middleware.isAuthenticated, controller.proxyExpertSummary);
   router.get('/v1/credit/expert/earnings', Middleware.isAuthenticated, controller.proxyExpertEarnings);
+  // DocuSeal "sign later" email trigger — sends Terms of Work via email
+  // Called by Angular skipDocuseal() when expert clicks "Sign Later"
+  // No JWT required — expert has just completed signup but hasn't logged in yet.
+  // Validated by: email is required, and the orchestrator only sends to valid DocuSeal templates.
+  router.post('/v1/docuseal/send-signing-email', async function(req, res) {
+    var email = (req.body.expert_email || '').trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Valid email required' });
+    }
+    try {
+      var ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://172.31.8.118:8006';
+      var ADMIN_KEY = process.env.ADMIN_API_KEY;
+      var response = await fetch(ORCHESTRATOR_URL + '/api/docuseal/send-by-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': ADMIN_KEY
+        },
+        body: JSON.stringify({
+          email: email,
+          name: req.body.expert_name || ''
+        })
+      });
+      var data = await response.json();
+      res.json(data);
+    } catch(e) {
+      console.error('[DocuSeal] send-signing-email proxy failed:', e.message || e);
+      res.status(200).json({ success: false, error: 'DocuSeal unavailable' });
+    }
+  });
 
 };

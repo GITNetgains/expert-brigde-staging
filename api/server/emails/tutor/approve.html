@@ -1,45 +1,124 @@
-<p style="margin:0 0 16px;color:#1a1a2e;font-size:24px;font-weight:600;">Your Account is Ready</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to ExpertBridge — Your Account is Ready</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding:32px 40px; text-align:center;">
+              <img src="https://admin.expertbridge.co/assets/images/whitelogo.png" alt="ExpertBridge" style="height:48px; margin-bottom:8px;" />
+              <div style="color:#ffffff; font-size:11px; letter-spacing:2px; opacity:0.8; text-transform:uppercase; margin-top:8px;">Engage Brilliance, Get it Done.</div>
+            </td>
+          </tr>
 
-<p style="margin:0 0 16px;color:#1a1a2e;font-size:18px;font-weight:600;">Hi {{tutor.name}},</p>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              
+              <h1 style="color:#1a1a2e; font-size:24px; margin:0 0 8px 0; font-weight:600;">Your Account is Ready</h1>
+              <p style="color:#718096; font-size:14px; margin:0 0 24px 0;">Welcome to the ExpertBridge network</p>
+              
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 20px 0;">
+                Hi {{tutor.name}},
+              </p>
+              
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 28px 0;">
+                Great news — your ExpertBridge account is now active! You can log in and get started.
+              </p>
 
-<p style="margin:0 0 14px;color:#4a5568;font-size:15px;line-height:1.7;">Great news — your ExpertBridge account is now active! You can log in and get started.</p>
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px auto;">
+                <tr>
+                  <td style="background-color:#0f3460; border-radius:6px; text-align:center;">
+                    <a href="https://www.expertbridge.co/auth/login" style="display:inline-block; padding:14px 40px; color:#ffffff; text-decoration:none; font-size:15px; font-weight:600; letter-spacing:0.3px;">Log In to ExpertBridge</a>
+                  </td>
+                </tr>
+              </table>
 
-<!-- CTA Button -->
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td align="center" style="padding:16px 0 24px;">
-<a href="{{appConfig.userWebUrl}}/auth/login" style="display:inline-block;background:#0f3460;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:6px;font-size:15px;font-weight:600;">Log In to ExpertBridge</a>
-</td></tr>
-</table>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 20px 0;">
+                As a quick reminder, here's what to do next:
+              </p>
 
-<p style="margin:0 0 16px;color:#4a5568;font-size:15px;line-height:1.7;">As a quick reminder, here’s what to do next:</p>
+              <!-- Step 1 -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:16px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">1</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;">
+                      <strong>Review your Atlas profile</strong><br>
+                      <span style="color:#4a5568;">Our AI, Atlas, has already built a summary profile for you. Make sure it accurately represents your expertise — this is what clients see before deciding which expert to engage.</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">1</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Review your Atlas profile</strong><br/>Our AI, Atlas, has already built a summary profile for you. Make sure it accurately represents your expertise — this is what clients see.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 16px 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">2</div>
-</td>
-<td style="padding-bottom:16px;color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Set your availability</strong><br/>Open your calendar and block out times for consultations. Session slots are 60 minutes or more, with a minimum billable duration of 30 minutes.
-</td>
-</tr>
-<tr>
-<td width="36" valign="top" style="padding:0 12px 0 0;">
-<div style="width:24px;height:24px;background:#0f3460;color:#ffffff;border-radius:50%;text-align:center;line-height:24px;font-size:13px;font-weight:700;">3</div>
-</td>
-<td style="color:#4a5568;font-size:14px;line-height:1.6;">
-<strong style="color:#2d3748;">Wait for matches</strong><br/>Atlas continuously scans client requirements against your profile. When there’s a fit, you’ll hear from us directly.
-</td>
-</tr>
-</table>
+              <!-- Step 2 -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:16px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">2</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;">
+                      <strong>Set your availability</strong><br>
+                      <span style="color:#4a5568;">Open your calendar and block out times for consultations. Session slots are 60 minutes or more, with a minimum billable duration of 30 minutes.</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-<p style="margin:20px 0 16px;color:#4a5568;font-size:14px;line-height:1.7;">We’re glad to have you on board. If you need anything, reply to this email or write to <a href="mailto:support@expertbridge.co" style="color:#0f3460;">support@expertbridge.co</a>.</p>
+              <!-- Step 3 -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:24px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">3</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;">
+                      <strong>Wait for matches</strong><br>
+                      <span style="color:#4a5568;">Atlas continuously scans client requirements against your profile. When there's a fit, you'll hear from us directly.</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-<p style="margin:0;color:#4a5568;font-size:14px;">Best,<br/><strong style="color:#2d3748;">Daniel S</strong> — ExpertBridge Team</p>
+              <!-- Closing -->
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 24px 0;">
+                We're glad to have you on board. If you need anything, reply to this email or write to <a href="mailto:support@expertbridge.co" style="color:#0f3460; text-decoration:none;">support@expertbridge.co</a>.
+              </p>
+
+              <!-- Signature -->
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0;">
+                Best,<br>
+                <strong style="color:#1a1a2e;">Team ExpertBridge</strong>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafc; padding:24px 40px; border-top:1px solid #e2e8f0; text-align:center;">
+              <p style="color:#a0aec0; font-size:12px; margin:0;">&copy; 2026 ExpertBridge &middot; Elevatexcel Consulting Private Limited</p>
+              <p style="color:#a0aec0; font-size:12px; margin:4px 0 0 0;">
+                <a href="https://www.expertbridge.co" style="color:#718096; text-decoration:none;">expertbridge.co</a> &middot;
+                <a href="mailto:support@expertbridge.co" style="color:#718096; text-decoration:none;">support@expertbridge.co</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

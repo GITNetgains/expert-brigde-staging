@@ -544,6 +544,16 @@ if (this.newPassword !== this.confirmPassword) {
     this.showDocusealModal = false;
     window.removeEventListener('message', this.onDocusealMessage.bind(this));
     this.appService.toastSuccess('You can sign the Terms of Work later via email.');
+
+    // Trigger DocuSeal to send Terms of Work via email (fire-and-forget)
+    // Uses auth.post() which prepends environment.apiBaseUrl (localhost:9000/v1)
+    if (isPlatformBrowser(this.platformId)) {
+      this.auth.post('/docuseal/send-signing-email', {
+        expert_email: this.account.email,
+        expert_name: this.tutorProfile.name || ''
+      }).catch((err: any) => console.error('[DocuSeal] send-signing-email failed:', err));
+    }
+
     this.router.navigate(['/auth/login']);
   }
 
