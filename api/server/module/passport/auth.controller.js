@@ -106,24 +106,86 @@ const otpEmailTemplate = ({ otp, purpose = 'verification' }) =>
     `
   });
 
-const tutorSignupSuccessEmailTemplate = ({ tutorName, loginUrl }) =>
-  baseEmailTemplate({
-    title: 'Welcome to ExpertBridge',
-    subtitle: 'Your account is ready',
-    body: `
-      <p>Hello ${tutorName || 'there'},</p>
-
-      <p>Congratulations! You have successfully signed up on ExpertBridge.</p>
-
-      <p>You can now <a href="${loginUrl || '#'}" style="color:${BRAND.primary};font-weight:bold;">log in</a> to your account and start setting up your profile, calendar, and availability.</p>
-
-      <p>We have also sent you a <strong>Zoom invitation link</strong> to join our team. Once you accept the invitation, you will be able to deliver sessions smoothly through Zoom. Please check your inbox (and spam folder) for the Zoom email and complete the signup to activate your account.</p>
-
-      <p>If you have any questions, please contact us at <a href="mailto:support@expertbridge.co">support@expertbridge.co</a>.</p>
-
-      <p>Best regards,<br /><strong>The ExpertBridge Team</strong></p>
-    `
-  });
+const tutorSignupSuccessEmailTemplate = ({ tutorName, loginUrl }) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to ExpertBridge</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding:32px 40px; text-align:center;">
+              <img src="https://admin.expertbridge.co/assets/images/whitelogo.png" alt="ExpertBridge" style="height:48px; margin-bottom:8px;" />
+              <div style="color:#ffffff; font-size:11px; letter-spacing:2px; opacity:0.8; text-transform:uppercase; margin-top:8px;">Engage Brilliance, Get it Done.</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px;">
+              <h1 style="color:#1a1a2e; font-size:24px; margin:0 0 8px 0; font-weight:600;">Your Account is Ready</h1>
+              <p style="color:#718096; font-size:14px; margin:0 0 24px 0;">Welcome to the ExpertBridge network</p>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 20px 0;">Hi ${tutorName || 'there'},</p>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 28px 0;">Great news &#8212; your ExpertBridge account is now active! You can log in and get started.</p>
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px auto;">
+                <tr>
+                  <td style="background-color:#0f3460; border-radius:6px; text-align:center;">
+                    <a href="${loginUrl || 'https://www.expertbridge.co/auth/login'}" style="display:inline-block; padding:14px 40px; color:#ffffff; text-decoration:none; font-size:15px; font-weight:600; letter-spacing:0.3px;">Log In to ExpertBridge</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 20px 0;">As a quick reminder, here&#8217;s what to do next:</p>
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:16px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">1</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;"><strong>Review your Atlas profile</strong><br><span style="color:#4a5568;">Our AI, Atlas, has already built a summary profile for you. Make sure it accurately represents your expertise &#8212; this is what clients see before deciding which expert to engage.</span></p>
+                  </td>
+                </tr>
+              </table>
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:16px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">2</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;"><strong>Set your availability</strong><br><span style="color:#4a5568;">Open your calendar and block out times for consultations. Session slots are 60 minutes or more, with a minimum billable duration of 30 minutes.</span></p>
+                  </td>
+                </tr>
+              </table>
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:24px; width:100%;">
+                <tr>
+                  <td style="vertical-align:top; padding-right:14px; width:32px;">
+                    <div style="background-color:#0f3460; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-size:13px; font-weight:700;">3</div>
+                  </td>
+                  <td style="vertical-align:top;">
+                    <p style="color:#2d3748; font-size:14px; line-height:1.6; margin:0;"><strong>Wait for matches</strong><br><span style="color:#4a5568;">Atlas continuously scans client requirements against your profile. When there&#8217;s a fit, you&#8217;ll hear from us directly.</span></p>
+                  </td>
+                </tr>
+              </table>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0 0 24px 0;">We&#8217;re glad to have you on board. If you need anything, reply to this email or write to <a href="mailto:support@expertbridge.co" style="color:#0f3460; text-decoration:none;">support@expertbridge.co</a>.</p>
+              <p style="color:#4a5568; font-size:15px; line-height:1.6; margin:0;">Best,<br><strong style="color:#1a1a2e;">Team ExpertBridge</strong></p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f8fafc; padding:24px 40px; border-top:1px solid #e2e8f0; text-align:center;">
+              <p style="color:#a0aec0; font-size:12px; margin:0;">&copy; 2026 ExpertBridge &middot; Elevatexcel Consulting Private Limited</p>
+              <p style="color:#a0aec0; font-size:12px; margin:4px 0 0 0;"><a href="https://www.expertbridge.co" style="color:#718096; text-decoration:none;">expertbridge.co</a> &middot; <a href="mailto:support@expertbridge.co" style="color:#718096; text-decoration:none;">support@expertbridge.co</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
 
 const studentSignupSuccessEmailTemplate = ({ studentName, loginUrl, homeUrl }) =>
   baseEmailTemplate({
