@@ -153,13 +153,15 @@ async function forwardZoomMeetingEnded(payload) {
  * Forward expert PAN/tax data to Credit Service when payout account is saved.
  * Called by creditProxy or directly by payout controllers.
  */
-async function forwardExpertCompliance(expertMongoId, taxIdNumber, countryCode) {
+async function forwardExpertCompliance(expertMongoId, taxIdNumber, countryCode, gstin) {
   try {
     if (!expertMongoId) return null;
 
     var payload = {
       expert_mongo_id: expertMongoId,
-      pan_number: taxIdNumber || null,
+      pan_number: taxIdNumber,
+      gstin: gstin || null,
+      is_gst_registered: !!gstin || null,
       residency_country: countryCode || null
     };
 

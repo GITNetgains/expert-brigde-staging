@@ -35,9 +35,9 @@
 
 <p>Please allow 2-3 business days for the amount to reflect in your account.</p>
 
-<p *ngIf="!payout.hasPan" style="background:#fff3cd;padding:12px;border-radius:6px;border:1px solid #ffc107;color:#856404;">
+<p style="background:#fff3cd;padding:12px;border-radius:6px;border:1px solid #ffc107;color:#856404;display:{{payout.panWarningDisplay}};">
   <strong>Reduce your TDS:</strong> Submit your PAN on the
-  <a href="https://www.expertbridge.co/users/payout/tax-compliance" style="color:#664d03;font-weight:bold;">Tax & Compliance</a>
+  <a href="https://www.expertbridge.co/users/payout/tax-compliance" style="color:#664d03;font-weight:bold;">Tax &amp; Compliance</a>
   page to reduce TDS from 20% to 10% (Section 194J).
 </p>
 

@@ -8,9 +8,11 @@
  * MongoDB is NOT involved — this is the PostgreSQL-first architecture.
  *
  * Added: 2026-03-06
+ * Updated: 2026-03-10 — Expert invoice upload (multipart proxy)
  */
 
 var axios = require('axios');
+var FormDataLib = require('form-data');
 
 var CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
 var TIMEOUT = 10000;
@@ -160,4 +162,51 @@ exports.proxyExpertSummary = async function(req, res) {
 
 exports.proxyExpertEarnings = async function(req, res) {
   return proxyToCredit(req, res, 'GET', '/api/v1/expert/earnings?expert_email=' + encodeURIComponent(req.query.expert_email || ''));
+};
+
+
+// === Expert Payout Invoice Upload (multipart) ===
+
+exports.uploadExpertInvoice = async function(req, res) {
+  try {
+    var formData = new FormDataLib();
+    if (req.file) {
+      formData.append('file', req.file.buffer, {
+        filename: req.file.originalname,
+        contentType: req.file.mimetype
+      });
+    }
+    if (req.body.expert_mongo_id) formData.append('expert_mongo_id', req.body.expert_mongo_id);
+    if (req.body.booking_id) formData.append('booking_id', req.body.booking_id);
+    if (req.body.invoice_number) formData.append('invoice_number', req.body.invoice_number);
+    if (req.body.invoice_date) formData.append('invoice_date', req.body.invoice_date);
+    if (req.body.invoice_amount) formData.append('invoice_amount', req.body.invoice_amount);
+
+    var resp = await axios.post(
+      CREDIT_SERVICE_URL + '/api/v1/experts/payout-invoice/upload',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          'X-API-Key': CREDIT_API_KEY
+        },
+        timeout: 30000
+      }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error('[CreditProxy] uploadExpertInvoice error:', err.message);
+    var status = err.response ? err.response.status : 500;
+    return res.status(status).json(err.response ? err.response.data : { error: 'Invoice upload failed' });
+  }
+};
+
+exports.getExpertInvoices = async function(req, res) {
+  var expertId = req.params.expertMongoId;
+  return proxyToCredit(req, res, 'GET', '/api/v1/experts/payout-invoice/by-expert/' + expertId);
+};
+
+exports.getInvoiceByBooking = async function(req, res) {
+  var bookingId = req.params.bookingId;
+  return proxyToCredit(req, res, 'GET', '/api/v1/experts/payout-invoice/by-booking/' + bookingId);
 };

@@ -23,8 +23,15 @@ export class TaxComplianceComponent implements OnInit {
   public userType = '';
   public countryCode = 'IN';
 
+  // GSTIN fields
+  public gstin = '';
+  public gstinValid: boolean | null = null;
+  public gstinError = '';
+  public isGstRegistered = false;
+
   private apiBase = '';
   private panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+  private gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
 
   constructor(
     private http: HttpClient,
@@ -64,6 +71,12 @@ export class TaxComplianceComponent implements OnInit {
       } else {
         this.panStatus = 'not_provided';
       }
+      // Load GSTIN
+      if (resp && resp.gstin) {
+        this.gstin = resp.gstin;
+        this.isGstRegistered = true;
+        this.gstinValid = true;
+      }
     } catch (err: any) {
       if (err && err.status === 404) {
         this.panStatus = 'not_provided';
@@ -101,6 +114,46 @@ export class TaxComplianceComponent implements OnInit {
     }
   }
 
+  onGstinInput() {
+    this.gstin = this.gstin.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 15);
+    this.validateGstin();
+  }
+
+  validateGstin() {
+    this.saveMessage = '';
+    if (!this.gstin || this.gstin.length === 0) {
+      this.gstinValid = null;
+      this.gstinError = '';
+      this.isGstRegistered = false;
+      return;
+    }
+    if (this.gstin.length < 15) {
+      this.gstinValid = null;
+      this.gstinError = '';
+      return;
+    }
+    if (!this.gstinRegex.test(this.gstin)) {
+      this.gstinValid = false;
+      this.gstinError = 'Invalid GSTIN format';
+      return;
+    }
+    // Cross-check with PAN (characters 3-12 of GSTIN should match PAN)
+    if (this.panMasked || this.panNumber) {
+      var panToCheck = this.panNumber || '';
+      if (panToCheck) {
+        var embeddedPan = this.gstin.substring(2, 12);
+        if (embeddedPan !== panToCheck.toUpperCase()) {
+          this.gstinValid = false;
+          this.gstinError = 'GSTIN does not match your PAN';
+          return;
+        }
+      }
+    }
+    this.gstinValid = true;
+    this.gstinError = '';
+    this.isGstRegistered = true;
+  }
+
   async savePan() {
     if (!this.panNumber || !this.panValid) return;
     if (!this.userMongoId) {
@@ -114,14 +167,22 @@ export class TaxComplianceComponent implements OnInit {
 
     try {
       var url = this.apiBase.replace(/\/v1$/, '') + '/v1/credit/expert-compliance';
-      var payload = {
+      var payload: any = {
         expert_mongo_id: this.userMongoId,
         pan_number: this.panNumber,
         residency_country: 'IN'  // PAN is India-specific; country code comes from PAN context
       };
+      // Include GSTIN if provided
+      if (this.gstin && this.gstinValid) {
+        payload.gstin = this.gstin;
+        payload.is_gst_registered = true;
+      }
       var resp: any = await this.http.post(url, payload).toPromise();
       this.saveSuccess = true;
-      this.saveMessage = 'PAN saved successfully';
+      this.saveMessage = this.gstin ? 'PAN and GSTIN saved successfully' : 'PAN saved successfully';
+      if (resp.gstin) {
+        this.isGstRegistered = true;
+      }
       this.panMasked = resp.pan_number_masked || this.panNumber.substring(0, 3) + '****' + this.panNumber.substring(9);
       this.panStatus = 'verified';
       this.panNumber = '';

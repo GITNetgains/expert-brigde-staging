@@ -131,6 +131,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Invoice Upload Section (GST experts only) -->
+    <app-invoice-upload
+      [expertId]="expertMongoId"
+      [isGstRegistered]="isGstRegistered"
+    ></app-invoice-upload>
+
   </div>
 </div>
 

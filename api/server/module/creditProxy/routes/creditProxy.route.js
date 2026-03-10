@@ -8,7 +8,11 @@
  *
  * Added: 2026-03-06
  * Updated: 2026-03-08 — Added authentication to all routes
+ * Updated: 2026-03-10 — Expert payout invoice upload (multipart)
  */
+
+var multer = require('multer');
+var upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 var CREDIT_SERVICE_NOTIFY_SECRET = process.env.CREDIT_SERVICE_NOTIFY_SECRET || 'eb-credit-notify-2026-internal';
 
@@ -77,6 +81,12 @@ module.exports = function(router) {
   // Expert Finance endpoints — proxy to Credit Service (requires logged-in user)
   router.get('/v1/credit/expert/summary', Middleware.isAuthenticated, controller.proxyExpertSummary);
   router.get('/v1/credit/expert/earnings', Middleware.isAuthenticated, controller.proxyExpertEarnings);
+
+  // Expert Payout Invoice Upload (multipart, requires logged-in user)
+  router.post('/v1/credit/experts/payout-invoice/upload', Middleware.isAuthenticated, upload.single('file'), controller.uploadExpertInvoice);
+  router.get('/v1/credit/experts/payout-invoice/by-expert/:expertMongoId', Middleware.isAuthenticated, controller.getExpertInvoices);
+  router.get('/v1/credit/experts/payout-invoice/by-booking/:bookingId', Middleware.isAuthenticated, controller.getInvoiceByBooking);
+
   // DocuSeal "sign later" email trigger — sends Terms of Work via email
   // Called by Angular skipDocuseal() when expert clicks "Sign Later"
   // No JWT required — expert has just completed signup but hasn't logged in yet.

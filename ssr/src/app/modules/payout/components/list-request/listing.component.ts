@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 declare let $: any;
 import { IPayoutAccount, IPayoutRequest } from '../interface';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +15,7 @@ import {
 } from 'src/app/services';
 import { IUser } from 'src/app/interface';
 import { Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-request-payout-listing',
@@ -59,7 +61,15 @@ export class ListingRequestComponent
   modalRef: NgbModalRef;
   tab = 'earning';
   currentUser: IUser;
+
+  // Invoice upload support
+  isGstRegistered: boolean = false;
+  expertMongoId: string = '';
+
+  private apiBase = '';
+
   constructor(
+    private http: HttpClient,
     private payoutService: RequestPayoutService,
     private appService: AppService,
     private seoService: SeoService,
@@ -70,6 +80,7 @@ export class ListingRequestComponent
   ) {
     this.seoService.setMetaTitle('Payout Request Manager');
     this.accounts = this.route.snapshot.data['account'];
+    this.apiBase = (environment as any).apiBaseUrl || '/v1';
   }
 
   ngOnInit() {
@@ -77,10 +88,25 @@ export class ListingRequestComponent
     this.currentUser = this.stateService.getState(STATE.CURRENT_USER);
     if (this.currentUser && this.currentUser._id) {
       this.tutorId = this.currentUser._id;
+      this.expertMongoId = this.currentUser._id;
       this.queryStats();
       this.queryBalance({ tutorId: this.tutorId });
       this.query();
+      this.loadGstStatus();
     }
+  }
+
+  loadGstStatus(): void {
+    if (!this.expertMongoId) return;
+    var url = this.apiBase.replace(/\/v1$/, '') + '/v1/credit/expert-compliance/' + this.expertMongoId;
+    this.http.get(url).subscribe({
+      next: (res: any) => {
+        this.isGstRegistered = !!(res && res.is_gst_registered);
+      },
+      error: () => {
+        this.isGstRegistered = false;
+      }
+    });
   }
 
   query() {

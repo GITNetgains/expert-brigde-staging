@@ -172,7 +172,8 @@ exports.sendPayoutEmail = async function(req, res) {
         tdsAmount: body.tdsAmount || '0',
         netAmount: body.netAmount || '-',
         bankLast4: body.bankLast4 || '****',
-        hasPan: body.hasPan || false
+        hasPan: body.hasPan || false,
+        panWarningDisplay: body.hasPan ? 'none' : 'block'
       },
       appConfig: {
         currencySymbol: body.currencySymbol || 'Rs.'

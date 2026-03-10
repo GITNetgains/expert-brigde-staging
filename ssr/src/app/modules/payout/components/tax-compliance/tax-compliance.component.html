@@ -77,6 +77,58 @@
           </div>
         </div>
 
+        <!-- GSTIN Section (shown only for India) -->
+        <div class="row mb-3" *ngIf="countryCode === 'IN' || countryCode === ''">
+          <div class="col-md-8">
+            <hr class="my-3">
+            <h5 class="mb-2">GSTIN (Optional)</h5>
+            <p class="text-muted small mb-2">If you are GST-registered, enter your GSTIN. This helps with invoice processing.</p>
+          </div>
+        </div>
+
+        <div class="row mb-3" *ngIf="countryCode === 'IN' || countryCode === ''">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>GSTIN Number</label>
+              <input type="text" class="form-control" [ngModel]="gstin" (ngModelChange)="gstin=$event; onGstinInput()" name="gstin"
+                placeholder="e.g., 22AAAAA0000A1Z5" maxlength="15" autocomplete="off"
+                [class.is-valid]="gstinValid === true"
+                [class.is-invalid]="gstinValid === false" />
+              <div *ngIf="gstinValid === true" class="valid-feedback">
+                Valid GSTIN format
+              </div>
+              <div *ngIf="gstinValid === false" class="invalid-feedback">
+                {{ gstinError }}
+              </div>
+              <small class="form-text text-muted" *ngIf="gstinValid === null && gstin.length === 0">
+                Format: 2 digits + PAN + entity code + Z + check digit (e.g., 22AAAAA0000A1Z5)
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- GSTIN Disclaimers -->
+        <div class="row mb-3" *ngIf="gstin && gstinValid">
+          <div class="col-md-8">
+            <div class="alert alert-warning mb-0" style="font-size: 0.9rem;">
+              <strong>Important for GST-registered experts:</strong>
+              <ol class="mb-0 pl-3 mt-1">
+                <li>Your consultation rate must be <strong>inclusive of GST</strong> (18%). No separate GST will be added by the platform.</li>
+                <li>Your bank account must be in the name of the GST-registered entity.</li>
+                <li>You will need to upload your GST invoice for each payout from the Payout section.</li>
+              </ol>
+              <small class="text-muted mt-1 d-block">Example: If your base rate is &#8377;2,000/hr, set your rate as &#8377;2,360/hr (&#8377;2,000 + 18% GST).</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- GSTIN on file badge -->
+        <div class="row mb-3" *ngIf="isGstRegistered && !gstin">
+          <div class="col-md-8">
+            <span class="badge bg-info text-white p-2">GST Registered</span>
+          </div>
+        </div>
+
         <!-- Save feedback -->
         <div class="row" *ngIf="saveMessage">
           <div class="col-md-8">
