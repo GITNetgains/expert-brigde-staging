@@ -44,7 +44,7 @@ export class PaymentSuccessComponent implements OnInit, OnDestroy {
       var url = environment.url + '/v1/credit/client-billing/' + user._id;
       this.http.get(url).subscribe(
         (res: any) => {
-          if (res && res.gstin) {
+          if (res && (res.billing_name || res.client_mongo_id || res.gstin)) {
             this.showBillingPrompt = false;
           } else {
             this.showBillingPrompt = true;

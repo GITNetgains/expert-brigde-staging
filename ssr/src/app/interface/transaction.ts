@@ -26,4 +26,5 @@ export interface ITransaction {
   tutorSubject?: IMySubject;
   userId?: string;
   originalPrice?: number;
+  vat?: number;
 }

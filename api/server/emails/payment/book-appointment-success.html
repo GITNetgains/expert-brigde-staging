@@ -8,5 +8,10 @@
 <br />
 <p>
   <strong>Your transaction code</strong>: #{{transaction.code}} <br />
+  {% if transaction.totalCharged %}
+  <strong>Amount</strong>: {{appConfig.currencySymbol}}{{transaction.totalCharged}} <br />
+  <small>(Base: {{appConfig.currencySymbol}}{{transaction.price}} + GST @18%: {{appConfig.currencySymbol}}{{transaction.vat}})</small> <br />
+  {% else %}
   <strong>Amount</strong>: {{appConfig.currencySymbol}}{{transaction.price}} <br />
+  {% endif %}
 </p>

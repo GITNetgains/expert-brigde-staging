@@ -103,23 +103,27 @@
               </tr>
               <tr>
                 <td>
-                  <span translate class="payment-detail-text"
-                    >Original price</span
-                  >
+                  <span translate class="payment-detail-text">Amount</span>
                 </td>
                 <td>
-                  <span
-                    >{{(transaction.originalPrice || transaction.price)
-                    |appCurrency}}</span
-                  >
+                  <span *ngIf="transaction?.vat && (transaction?.vat ?? 0) > 0">{{((transaction?.price || 0) + (transaction?.vat || 0)) | appCurrency}}</span>
+                  <span *ngIf="!transaction?.vat || (transaction?.vat ?? 0) <= 0">{{transaction?.price | appCurrency}}</span>
                 </td>
               </tr>
-              <tr>
+              <tr *ngIf="transaction?.vat && (transaction?.vat ?? 0) > 0">
                 <td>
-                  <span translate class="payment-detail-text">Price</span>
+                  <span class="payment-detail-text">GST (18%)</span>
                 </td>
                 <td>
-                  <span>{{transaction.price |appCurrency}}</span>
+                  <span>{{transaction?.vat | appCurrency}}</span>
+                </td>
+              </tr>
+              <tr *ngIf="transaction?.originalPrice && transaction?.originalPrice !== transaction?.price">
+                <td>
+                  <span translate class="payment-detail-text">Original price</span>
+                </td>
+                <td>
+                  <span>{{transaction?.originalPrice | appCurrency}}</span>
                 </td>
               </tr>
               <tr *ngIf="transaction.usedCoupon">

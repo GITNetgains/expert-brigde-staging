@@ -95,10 +95,26 @@ exports.hook = async (req, res, next) => {
     console.log('🎉 Payment fully processed');
 
     // === CREDIT SERVICE FORWARDING (Added March 4, 2026) ===
-    // Forward to Credit Service for double-entry ledger processing (non-blocking)
-    forwardRazorpayPayment(event).catch(function(err) {
-      console.error('[CreditService] Async forward error:', err.message);
-    });
+    // Enrich with appointment ID and Zoom meeting ID for Credit Service booking linkage
+    (async function() {
+      try {
+        var appt = await DB.Appointment.findOne({ transactionId: transaction._id }, '_id meetingId').lean();
+        if (appt) {
+          event._appointmentEnrichment = {
+            appointment_id: String(appt._id),
+            zoom_meeting_id: appt.meetingId ? String(appt.meetingId) : null
+          };
+          console.log('[CreditService] Appointment enrichment:', appt._id, 'zoom:', appt.meetingId || '(none)');
+        } else {
+          console.warn('[CreditService] No appointment found for transaction:', transaction._id);
+        }
+      } catch (enrichErr) {
+        console.warn('[CreditService] Appointment enrichment failed (non-blocking):', enrichErr.message);
+      }
+      forwardRazorpayPayment(event).catch(function(err) {
+        console.error('[CreditService] Async forward error:', err.message);
+      });
+    })();
     // === END CREDIT SERVICE FORWARDING ===
 
     return res.status(200).send('OK');
@@ -125,11 +141,22 @@ exports.createOrder = async (req, res, next) => {
       return next(PopulateResponse.validationError(error));
     }
 
+    // Add GST (18%) on top of base amount for domestic orders
+    var gstRate = 0.18;
+    var baseAmountPaise = Math.round(value.amount * 100);
+    var gstAmountPaise = Math.round(baseAmountPaise * gstRate);
+    var totalAmountPaise = baseAmountPaise + gstAmountPaise;
+
+    console.log('[Razorpay] Order: base=%d GST=%d total=%d paise', baseAmountPaise, gstAmountPaise, totalAmountPaise);
+
     const order = await razorpay.orders.create({
-      amount: Math.round(value.amount * 100),
+      amount: totalAmountPaise,
       currency: 'INR',
       notes: {
-        transactionId: value.transactionId
+        transactionId: value.transactionId,
+        baseAmount: baseAmountPaise,
+        gstAmount: gstAmountPaise,
+        gstRate: '18'
       }
     });
 

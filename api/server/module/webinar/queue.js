@@ -94,10 +94,14 @@ enrollQ.process(async (job, done) => {
         };
         await Service.Notification.create(notificationTutor);
 
+        var _txnWebinar = Object.assign({}, data);
+        if (_txnWebinar.vat > 0) {
+          _txnWebinar.totalCharged = _txnWebinar.price + _txnWebinar.vat;
+        }
         await Service.Mailer.send('payment-success', user.email, {
           subject: `Payment successfully made for the reservation #${data.code}`,
           user: user.getPublicProfile(),
-          transaction: data,
+          transaction: _txnWebinar,
           webinar: webinar.toObject(),
           subject_replace_fields: {
             transactionCode: data.code
@@ -306,10 +310,14 @@ enrollQ.process(async (job, done) => {
             await Service.Notification.create(notificationTutor);
 
             if (!isMultipleBooking) {
+              var _txnSolo = transaction.toObject();
+              if (_txnSolo.vat > 0) {
+                _txnSolo.totalCharged = _txnSolo.price + _txnSolo.vat;
+              }
               await Service.Mailer.send('payment-success', user.email, {
                 subject: `Payment successfully made for the reservation #${transaction.code}`,
                 user: user.getPublicProfile(),
-                transaction: transaction.toObject(),
+                transaction: _txnSolo,
                 subject: subject.toObject(),
                 subject_replace_fields: {
                   transactionCode: transaction.code
@@ -417,10 +425,14 @@ enrollQ.process(async (job, done) => {
         });
         await myCourse.save();
 
+        var _txnCourse = Object.assign({}, data);
+        if (_txnCourse.vat > 0) {
+          _txnCourse.totalCharged = _txnCourse.price + _txnCourse.vat;
+        }
         await Service.Mailer.send('payment-success', user.email, {
           subject: `Payment successfully made for the reservation #${data.code}`,
           user: user.getPublicProfile(),
-          transaction: data,
+          transaction: _txnCourse,
           course: course.toObject(),
           subject_replace_fields: {
             transactionCode: data.code

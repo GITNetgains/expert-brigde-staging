@@ -4,6 +4,7 @@ const { PLATFORM_ONLINE } = require('..');
 const axios = require('axios');
 
 var CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+var CREDIT_SERVICE_API_KEY = process.env.CREDIT_SERVICE_API_KEY || '';
 
 /**
  * Sync Zoom meeting ID to PostgreSQL booking (non-blocking).
@@ -41,7 +42,7 @@ async function _syncZoomToBooking(appointment, zoomData) {
       }
     }
     await axios.post(CREDIT_SERVICE_URL + '/api/v1/admin/bookings/sync-zoom', payload, {
-      timeout: 5000, headers: { 'Content-Type': 'application/json' }
+      timeout: 5000, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_SERVICE_API_KEY }
     });
     console.log('[CreditService] Zoom sync: meeting', zoomData.id, 'synced to PG for appointment', appointment._id.toString());
   } catch (err) {

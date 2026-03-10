@@ -123,22 +123,38 @@ exports.createOrderByRazorpay = async options => {
     return this.updatePayment(transaction);
   }
 
-  // 💳 Razorpay Order
+  // 💳 Razorpay Order — Add GST (18%) on top of base amount
+  var gstRate = 0.18;
+  var baseAmountPaise = Math.round(transaction.price * 100);
+  var gstAmountPaise = Math.round(baseAmountPaise * gstRate);
+  var totalAmountPaise = baseAmountPaise + gstAmountPaise;
+
+  console.log('[Razorpay] Order: base=%d GST=%d total=%d paise (Rs %s + Rs %s GST = Rs %s)',
+    baseAmountPaise, gstAmountPaise, totalAmountPaise,
+    (baseAmountPaise / 100).toFixed(2), (gstAmountPaise / 100).toFixed(2), (totalAmountPaise / 100).toFixed(2));
+
   const order = await razorpay.orders.create({
-    amount: Math.round(transaction.price * 100),
+    amount: totalAmountPaise,
     currency: 'INR',
     notes: {
-      transactionId: transaction._id.toString()
+      transactionId: transaction._id.toString(),
+      tutorId: options.tutorId ? options.tutorId.toString() : '',
+      baseAmount: String(baseAmountPaise),
+      gstAmount: String(gstAmountPaise),
+      gstRate: '18'
     }
   });
 
   transaction.razorpayOrderId = order.id;
+  transaction.vat = gstAmountPaise / 100;  // GST amount in rupees
   await transaction.save();
 
   return {
     transactionId: transaction._id,
     razorpayOrderId: order.id,
-    amount: transaction.price,
+    amount: totalAmountPaise / 100,
+    baseAmount: transaction.price,
+    gstAmount: gstAmountPaise / 100,
     currency: 'INR',
     razorpayKey: process.env.RAZORPAY_KEY_ID
   };
