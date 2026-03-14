@@ -44,8 +44,7 @@
         <span class="fee-amount">
           {{
             $any(tutor).price1On1Class != null
-              ? (($any(tutor).price1On1Class *
-                  (1 + ($any(tutor).commissionRate || (config?.commissionRate || 0)))) | appCurrency)
+              ? (($any(tutor).price1On1Class * (1 + effectiveCommissionRate) * (1 + gstRate)) | appCurrency)
               : ('—')
           }}/hr
         </span>

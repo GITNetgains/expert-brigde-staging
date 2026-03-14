@@ -10,6 +10,7 @@ import {
   STATE,
   StateService
 } from 'src/app/services';
+import { PlatformConfigService } from 'src/app/services/platform-config.service';
 @Component({
   selector: 'app-tutor-card-favorite',
   templateUrl: './tutor-card-favotite.html',
@@ -21,6 +22,8 @@ export class TutorCardFavoriteComponent implements OnInit {
   public isLoggedin: boolean;
   @Input() currentUser: IUser;
   avatarOptions: any = {};
+  public effectiveCommissionRate = 0;
+  public gstRate = 0;
 
   constructor(
     private authService: AuthService,
@@ -28,6 +31,7 @@ export class TutorCardFavoriteComponent implements OnInit {
     public languageService: LanguageService,
     public router: Router,
     private stateService: StateService,
+    private platformConfig: PlatformConfigService,
     private appService: AppService,
     private conversationService: ConversationService
   ) {}
@@ -38,6 +42,10 @@ export class TutorCardFavoriteComponent implements OnInit {
       this.isLoggedin = true;
     }
     this.isLoggedin = this.authService.isLoggedin();
+    // Compute effective commission with MIN floor + GST
+    const rawCommission = (this.tutor as any)?.commissionRate ?? this.config?.commissionRate ?? 0;
+    this.effectiveCommissionRate = Math.max(typeof rawCommission === "number" ? rawCommission : parseFloat(rawCommission) || 0, this.platformConfig.getMinCommission());
+    this.gstRate = this.platformConfig.getGstRate();
   }
 
   favorite() {

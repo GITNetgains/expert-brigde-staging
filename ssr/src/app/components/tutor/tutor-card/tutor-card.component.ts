@@ -20,6 +20,7 @@ import {
   ConversationService
 } from 'src/app/services';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PlatformConfigService } from 'src/app/services/platform-config.service';
 @Component({
   selector: 'app-tutor-card',
   templateUrl: './tutor-card.html',
@@ -35,6 +36,8 @@ export class TutorCardComponent implements OnInit {
   public videoUrl: any;
   /** When true, full bio is shown in the card (no navigation). */
   public bioExpanded = false;
+  public effectiveCommissionRate = 0;
+  public gstRate = 0;
 
   @Output() hover = new EventEmitter();
   constructor(
@@ -46,6 +49,7 @@ export class TutorCardComponent implements OnInit {
     private elementRef: ElementRef,
     private conversationService: ConversationService,
     private sanitizer: DomSanitizer,
+    private platformConfig: PlatformConfigService,
     private modalService: NgbModal
   ) {}
 
@@ -75,6 +79,10 @@ export class TutorCardComponent implements OnInit {
 
   ngOnInit() {
     this.isLoggedin = this.authService.isLoggedin();
+    // Compute effective commission with MIN floor + GST
+    const rawCommission = (this.tutor as any)?.commissionRate ?? this.config?.commissionRate ?? 0;
+    this.effectiveCommissionRate = Math.max(typeof rawCommission === "number" ? rawCommission : parseFloat(rawCommission) || 0, this.platformConfig.getMinCommission());
+    this.gstRate = this.platformConfig.getGstRate();
     const id = (this.tutor as any).introYoutubeId || (this.tutor as any).idYoutube;
     if (id) {
       this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${id}`);

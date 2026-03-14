@@ -285,7 +285,7 @@
                   <h5 class="color-light-red">
                     <strong *ngIf="!webinar.price" translate>Free</strong>
                     <strong *ngIf="webinar.price && webinar.price > 0"
-                      >{{ (webinar.price * (1 + (tutor?.commissionRate || config?.commissionRate || 0))) | appCurrency}}</strong
+                      >{{ (webinar.price * (1 + effectiveCommissionRate) * (1 + gstRate)) | appCurrency}}</strong
                     >
                   </h5>
                 </div>

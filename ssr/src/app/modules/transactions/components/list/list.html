@@ -223,7 +223,7 @@
                 > -->
               </td>
               <td>{{item?.code}}</td>
-              <td>{{item?.price | appCurrency}}</td>
+              <td>{{((item?.vat && (item?.vat ?? 0) > 0) ? ((item?.price || 0) + (item?.vat || 0)) : item?.price) | appCurrency}}</td>
               <td>
                 <span *ngIf="item?.transaction"
                   >{{item?.transaction?.createdAt | date}}</span

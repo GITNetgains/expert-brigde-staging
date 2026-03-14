@@ -20,6 +20,7 @@ import {
   WebinarService
 } from 'src/app/services';
 import { environment } from 'src/environments/environment';
+import { PlatformConfigService } from 'src/app/services/platform-config.service';
 import * as jQuery from 'jquery';
 import { isPlatformBrowser } from '@angular/common';
 @Component({
@@ -85,6 +86,8 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
   };
 
   public config: any;
+  public effectiveCommissionRate = 0;
+  public gstRate = 0;
 
   public statsReview: IStatsReview = {
     ratingAvg: 0,
@@ -132,6 +135,7 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
     private courseService: CourseService,
     private router: Router,
     public stateService: StateService,
+    private platformConfig: PlatformConfigService,
     @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.tutor = this.route.snapshot.data['tutor'];
@@ -158,6 +162,10 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
     this.languages = this.languageService.getLang();
     this.objectLanguage = this.languageService.languages;
     this.isLoggedin = this.authService.isLoggedin();
+    // Compute effective commission with MIN floor + GST
+    const rawCommission = (this.tutor as any)?.commissionRate ?? this.config?.commissionRate ?? 0;
+    this.effectiveCommissionRate = Math.max(typeof rawCommission === "number" ? rawCommission : parseFloat(rawCommission) || 0, this.platformConfig.getMinCommission());
+    this.gstRate = this.platformConfig.getGstRate();
     this.optionsReview.rateTo = this.tutor._id;
     this.statsReview = {
       ...this.statsReview,

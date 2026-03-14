@@ -32,6 +32,7 @@ import {
 } from 'src/app/services';
 import { environment } from 'src/environments/environment';
 import { ConfirmModalComponent } from 'src/app/components/booking/confirm/confirm.component';
+import { PlatformConfigService } from 'src/app/services/platform-config.service';
 
 @Component({
   templateUrl: './booking.html'
@@ -98,6 +99,7 @@ export class BookingComponent implements OnInit {
   };
   public config: any;
   public effectiveCommissionRate = 0; // decimal (0.1 = 10%)
+  public gstRate = 0;
 
   public myCategories: IMyCategory[] = [];
   public mySubjects: IMySubject[] = [];
@@ -162,6 +164,7 @@ export class BookingComponent implements OnInit {
     private appService: AppService,
     public stateService: StateService,
     private cartService: CartService,
+    private platformConfig: PlatformConfigService,
     private seo: SeoService
   ) {
     this.tutor = this.route.snapshot.data['tutor'];
@@ -210,7 +213,8 @@ export class BookingComponent implements OnInit {
         ? tutorRate
         : (typeof commissionRate === 'number' ? commissionRate : 0);
 
-    this.effectiveCommissionRate = effective || 0;
+    this.effectiveCommissionRate = Math.max(effective || 0, this.platformConfig.getMinCommission());
+    this.gstRate = this.platformConfig.getGstRate();
     this.booking.tutorId = this.tutor._id;
     this.isLoggedin = this.authService.isLoggedin();
     this.setIntroVideoUrl();
