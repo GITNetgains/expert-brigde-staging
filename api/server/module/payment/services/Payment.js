@@ -7,6 +7,55 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
+// Commission settings cache -- source of truth is PostgreSQL via Credit Service API
+let _commissionCache = null;
+let _commissionCacheExpiry = 0;
+const COMMISSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Hardcoded fallback -- used ONLY if Credit Service unreachable
+// These MUST match PostgreSQL compliance_config -- update if Finance Hub settings change
+const COMMISSION_FALLBACK = {
+  MIN_COMMISSION_PERCENT: 0.30,
+  DEFAULT_COMMISSION_PERCENT: 0.50,
+  GST_DOMESTIC_RATE: 0.18
+};
+
+async function getCommissionSettings() {
+  if (_commissionCache && Date.now() < _commissionCacheExpiry) {
+    return _commissionCache;
+  }
+  try {
+    const apiKey = process.env.CREDIT_SERVICE_API_KEY;
+    const baseUrl = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+    const [minRes, defaultRes, gstRes] = await Promise.all([
+      fetch(baseUrl + '/api/v1/compliance/config/MIN_COMMISSION_PERCENT', {
+        headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+      }),
+      fetch(baseUrl + '/api/v1/compliance/config/DEFAULT_COMMISSION_PERCENT', {
+        headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+      }),
+      fetch(baseUrl + '/api/v1/compliance/config/GST_DOMESTIC_RATE', {
+        headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+      })
+    ]);
+    if (!minRes.ok || !defaultRes.ok || !gstRes.ok) throw new Error('Non-200 from Credit Service');
+    const [minData, defaultData, gstData] = await Promise.all([
+      minRes.json(), defaultRes.json(), gstRes.json()
+    ]);
+    _commissionCache = {
+      MIN_COMMISSION_PERCENT: minData.value.rate,
+      DEFAULT_COMMISSION_PERCENT: defaultData.value.rate,
+      GST_DOMESTIC_RATE: gstData.value.rate
+    };
+    _commissionCacheExpiry = Date.now() + COMMISSION_CACHE_TTL;
+    console.log('[Payment.js] Commission settings loaded from Credit Service:', JSON.stringify(_commissionCache));
+    return _commissionCache;
+  } catch (err) {
+    console.warn('[Payment.js] Credit Service unreachable -- using fallback commission values:', err.message);
+    return COMMISSION_FALLBACK;
+  }
+}
+
 /**
  * ==============================
  * CREATE RAZORPAY ORDER
@@ -77,11 +126,8 @@ exports.createOrderByRazorpay = async options => {
   // Base amount that the tutor should receive (after any coupon/discount)
   const basePriceForTutor = Math.max(0, priceForPayment);
 
-  // Calculate commission rate (global or tutor-specific)
-  let commissionRate = process.env.COMMISSION_RATE;
-  const config = await DB.Config.findOne({ key: 'commissionRate' });
-  if (config) commissionRate = config.value;
-  if (commissionRate > 1) commissionRate /= 100;
+  // Commission rates from Credit Service (PostgreSQL compliance_config)
+  const settings = await getCommissionSettings();
 
   let tutorCommissionRate = null;
   if (options.tutorId) {
@@ -91,11 +137,13 @@ exports.createOrderByRazorpay = async options => {
     }
   }
 
-  var rawCommissionRate =
-    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
-
-  // Enforce minimum commission floor (25%)
-  var effectiveCommissionRate = Math.max(parseFloat(rawCommissionRate) || 0, 0.25);
+  // If expert has no commission set, use DEFAULT (50%); otherwise enforce MIN floor (30%)
+  var effectiveCommissionRate;
+  if (tutorCommissionRate == null) {
+    effectiveCommissionRate = settings.DEFAULT_COMMISSION_PERCENT;
+  } else {
+    effectiveCommissionRate = Math.max(parseFloat(tutorCommissionRate) || 0, settings.MIN_COMMISSION_PERCENT);
+  }
 
   // Commission is calculated on the tutor's base price
   const commission =
@@ -124,7 +172,7 @@ exports.createOrderByRazorpay = async options => {
   }
 
   // 💳 Razorpay Order — Add GST (18%) on top of base amount
-  var gstRate = 0.18;
+  var gstRate = settings.GST_DOMESTIC_RATE;
   var baseAmountPaise = Math.round(transaction.price * 100);
   var gstAmountPaise = Math.round(baseAmountPaise * gstRate);
   var totalAmountPaise = baseAmountPaise + gstAmountPaise;
@@ -175,17 +223,16 @@ exports.updatePaymentMutilple = async transactionId => {
   if (!isSuccess) return transaction;
   const user = await DB.User.findOne({ _id: transaction.userId });
   const tutor = await DB.User.findOne({ _id: transaction.tutorId });
-  let commissionRate = process.env.COMMISSION_RATE;
-  const config = await DB.Config.findOne({ key: 'commissionRate' });
-  if (config) commissionRate = config.value;
-  if (commissionRate > 1) commissionRate /= 100;
+  // Commission rates from Credit Service (PostgreSQL compliance_config)
+  const settings = await getCommissionSettings();
   const tutorCommissionRate =
     tutor && typeof tutor.commissionRate === 'number'
       ? tutor.commissionRate
       : null;
-  const rawCommRate2 =
-    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
-  const effectiveCommissionRate = Math.max(parseFloat(rawCommRate2) || 0, 0.25);
+  // If expert has no commission set, use DEFAULT (50%); otherwise enforce MIN floor (30%)
+  const effectiveCommissionRate = tutorCommissionRate == null
+    ? settings.DEFAULT_COMMISSION_PERCENT
+    : Math.max(parseFloat(tutorCommissionRate) || 0, settings.MIN_COMMISSION_PERCENT);
   const children = await DB.Transaction.find({
     parentTransactionId: transaction._id
   });
@@ -250,19 +297,16 @@ exports.updatePayment = async transactionId => {
   const user = await DB.User.findOne({ _id: transaction.userId });
   const tutor = await DB.User.findOne({ _id: transaction.tutorId });
 
-  let commissionRate = process.env.COMMISSION_RATE;
-  const config = await DB.Config.findOne({ key: 'commissionRate' });
-  if (config) commissionRate = config.value;
-
-  if (commissionRate > 1) commissionRate /= 100;
-
+  // Commission rates from Credit Service (PostgreSQL compliance_config)
+  const settings = await getCommissionSettings();
   const tutorCommissionRate =
     tutor && typeof tutor.commissionRate === 'number'
       ? tutor.commissionRate
       : null;
-  const rawCommRate3 =
-    tutorCommissionRate != null ? tutorCommissionRate : commissionRate;
-  const effectiveCommissionRate = Math.max(parseFloat(rawCommRate3) || 0, 0.25);
+  // If expert has no commission set, use DEFAULT (50%); otherwise enforce MIN floor (30%)
+  const effectiveCommissionRate = tutorCommissionRate == null
+    ? settings.DEFAULT_COMMISSION_PERCENT
+    : Math.max(parseFloat(tutorCommissionRate) || 0, settings.MIN_COMMISSION_PERCENT);
 
   // Base amount that the tutor should receive (after discount, before commission on top)
   const basePriceForTutor =

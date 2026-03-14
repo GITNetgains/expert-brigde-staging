@@ -7,6 +7,7 @@
 </p>
 <br />
 <p><strong>Transaction code: </strong>#{{transaction.code}}</p>
-<p><strong>Amount: </strong>{{appConfig.currencySymbol}}{{transaction.price}}</p>
+<!-- Expert earnings only -- never show client price or commission. Blind interview rule. -->
+<p><strong>Amount: </strong>{{appConfig.currencySymbol}}{{transaction.balance}}</p>
 <p><strong>Time: </strong>{{startTime}} - {{toTime}}</p>
 <p><strong>Duration: </strong>{{duration}}</p>

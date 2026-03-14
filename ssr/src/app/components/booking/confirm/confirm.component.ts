@@ -20,7 +20,10 @@ export class ConfirmModalComponent {
 
   // Commission & Tax rates — must match Finance Hub PostgreSQL settings
   // TODO: Read these from config service instead of hardcoding
-  private readonly MIN_COMMISSION_PERCENT = 0.25;  // 25% minimum platform commission
+  // TODO: Fetch MIN_COMMISSION_PERCENT from a public API endpoint when
+  // frontend config service is implemented. Must always match PostgreSQL
+  // compliance_config via Credit Service.
+  private readonly MIN_COMMISSION_PERCENT = 0.30;  // 30% minimum platform commission
   private readonly GST_RATE = 0.18;                // 18% GST for Indian clients
 
   constructor(
