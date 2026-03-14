@@ -51,6 +51,11 @@ function adminOrFinanceHub(req, res, next) {
 
 
 
+// Commission config cache -- public endpoint, 5-minute TTL
+var _commissionConfigCache = null;
+var _commissionConfigExpiry = 0;
+var COMMISSION_CONFIG_TTL = 5 * 60 * 1000; // 5 minutes
+
 module.exports = function(router) {
   var controller = require('../proxy.controller');
   var notificationTrigger = require('../../creditService/notificationTrigger');
@@ -63,8 +68,49 @@ module.exports = function(router) {
   router.post('/v1/credit/expert-compliance', Middleware.isAuthenticated, controller.upsertExpertCompliance);
   router.get('/v1/credit/expert-compliance/:mongoId', Middleware.isAuthenticated, controller.getExpertCompliance);
 
-  // Reference Data (public — state codes are not sensitive)
+  // Reference Data (public -- state codes are not sensitive)
   router.get('/v1/credit/state-codes', controller.getStateCodesList);
+
+  // Commission config (public -- needed by booking modal before login)
+  // Cached for 5 minutes to avoid hammering Credit Service
+  router.get('/v1/public/config/commission', async function(req, res) {
+    if (_commissionConfigCache && Date.now() < _commissionConfigExpiry) {
+      return res.json(_commissionConfigCache);
+    }
+    try {
+      var CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+      var apiKey = process.env.CREDIT_SERVICE_API_KEY;
+      var [minRes, defaultRes, gstRes] = await Promise.all([
+        fetch(CREDIT_SERVICE_URL + '/api/v1/compliance/config/MIN_COMMISSION_PERCENT', {
+          headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+        }),
+        fetch(CREDIT_SERVICE_URL + '/api/v1/compliance/config/DEFAULT_COMMISSION_PERCENT', {
+          headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+        }),
+        fetch(CREDIT_SERVICE_URL + '/api/v1/compliance/config/GST_DOMESTIC_RATE', {
+          headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(3000)
+        })
+      ]);
+      if (!minRes.ok || !defaultRes.ok || !gstRes.ok) throw new Error('Non-200 from Credit Service');
+      var [minData, defaultData, gstData] = await Promise.all([
+        minRes.json(), defaultRes.json(), gstRes.json()
+      ]);
+      _commissionConfigCache = {
+        minCommissionPercent: minData.value.rate,
+        defaultCommissionPercent: defaultData.value.rate,
+        gstDomesticRate: gstData.value.rate
+      };
+      _commissionConfigExpiry = Date.now() + COMMISSION_CONFIG_TTL;
+      return res.json(_commissionConfigCache);
+    } catch (err) {
+      console.warn('[PublicConfig] Credit Service unreachable:', err.message);
+      return res.json({
+        minCommissionPercent: 0.30,
+        defaultCommissionPercent: 0.50,
+        gstDomesticRate: 0.18
+      });
+    }
+  });
 
   // Credit Service Notification Triggers — INTERNAL ONLY (Credit Service on OLD EC2)
   router.post('/v1/credit/notify/invoice', validateCreditServiceCaller, notificationTrigger.sendInvoiceEmail);
