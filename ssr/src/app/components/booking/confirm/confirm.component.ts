@@ -18,6 +18,11 @@ export class ConfirmModalComponent {
   // Computed totals (student sees only total)
   public totalPrice = 0;
 
+  // Commission & Tax rates — must match Finance Hub PostgreSQL settings
+  // TODO: Read these from config service instead of hardcoding
+  private readonly MIN_COMMISSION_PERCENT = 0.25;  // 25% minimum platform commission
+  private readonly GST_RATE = 0.18;                // 18% GST for Indian clients
+
   constructor(
     public activeModal: NgbActiveModal,
     private toasty: ToastrService,
@@ -40,15 +45,24 @@ export class ConfirmModalComponent {
         ? (this.tutor as any).commissionRate
         : null;
 
-    const effectiveCommissionRate =
+    const rawCommission =
       tutorRate != null && typeof tutorRate === 'number'
         ? tutorRate
         : (typeof commissionRate === 'number' ? commissionRate : 0);
 
-    this.totalPrice =
-      this.price > 0
-        ? Math.round(this.price * (1 + effectiveCommissionRate) * 100) / 100
-        : this.price;
+    // Apply MIN_COMMISSION floor — matches backend Payment.js logic
+    const effectiveCommissionRate = Math.max(rawCommission, this.MIN_COMMISSION_PERCENT);
+
+    if (this.price > 0) {
+      const clientBase = this.price * (1 + effectiveCommissionRate);
+      // Apply GST for Indian clients
+      // TODO: Replace isIndianClient=true with this.client?.billingCountry === 'IN'
+      // when international payments go live. Currently all clients are Indian (Razorpay only).
+      const isIndianClient = true;
+      this.totalPrice = Math.round((isIndianClient ? clientBase * (1 + this.GST_RATE) : clientBase) * 100) / 100;
+    } else {
+      this.totalPrice = this.price;
+    }
   }
 
   confirm() {

@@ -12,7 +12,7 @@ export class AppCurrencyPipe implements PipeTransform {
     digitsInfo?: string,
     locale?: string
   ): string {
-    const currencySymbol = localStorage.getItem('currencySymbol') || '$';
+    const currencySymbol = localStorage.getItem('currencySymbol') || '₹'  // Default INR — multi-currency coming later;
 
     if (value != null) {
       const formattedValue = this.currencyPipe.transform(
