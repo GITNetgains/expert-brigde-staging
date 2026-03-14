@@ -251,10 +251,19 @@ async function init() {
       render: Mailer.prototype.render,
       renderFromString: Mailer.prototype.renderFromString,
 
-      send: async ({ to, from, subject, html }) => {
+      send: async ({ to, from, subject, html, attachments }) => {
         try {
           const toAddresses = Array.isArray(to) ? to : [to];
           const source = (from && from.trim()) ? from.trim() : sesFromEmail;
+
+          // If attachments, use sendRawEmail via nodemailer MailComposer
+          if (attachments && attachments.length > 0) {
+            var MailComposer = require('nodemailer/lib/mail-composer');
+            var mail = new MailComposer({ from: source, to: toAddresses, subject, html, attachments });
+            var message = await mail.compile().build();
+            return await ses.sendRawEmail({ RawMessage: { Data: message } }).promise();
+          }
+
           return await ses.sendEmail({
             Source: source,
             Destination: { ToAddresses: toAddresses },
@@ -390,7 +399,7 @@ emailQ.process(async (job, done) => {
   }
 });
 // Add raw send function (bypasses queue + template lookup)
-async function sendRawNow(to, subject, html) {
+async function sendRawNow(to, subject, html, attachments) {
   await init(); // ensures mailer is fully initialized
 
   // SES: always use From_Email (verified sender). Never use mailFrom for SES.
@@ -405,7 +414,8 @@ async function sendRawNow(to, subject, html) {
     to,
     from,
     subject,
-    html
+    html,
+    attachments
   });
 }
 

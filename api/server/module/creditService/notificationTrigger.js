@@ -119,7 +119,17 @@ exports.sendInvoiceEmail = async function(req, res) {
     html = renderTemplate(html, data);
     var fullHtml = wrapInLayout(html);
 
-    await mailer.sendRawNow(clientEmail, 'Your ExpertBridge Invoice ' + invoiceNumber, fullHtml);
+    // Attach PDF if provided by Credit Service
+    var attachments = [];
+    if (body.pdfBase64) {
+      attachments.push({
+        filename: body.pdfFilename || 'ExpertBridge_Invoice.pdf',
+        content: Buffer.from(body.pdfBase64, 'base64'),
+        contentType: 'application/pdf'
+      });
+    }
+
+    await mailer.sendRawNow(clientEmail, 'Your ExpertBridge Invoice ' + invoiceNumber, fullHtml, attachments);
 
     console.log('[CreditNotify] Invoice email sent to ' + clientEmail + ' for ' + invoiceNumber);
     return res.json({ success: true, message: 'Invoice email sent', to: clientEmail });
