@@ -3,6 +3,7 @@ const url = require('url');
 const momentTimeZone = require('moment-timezone');
 const date = require('../../date');
 const { PLATFORM_ONLINE } = require('../../meeting');
+const axios = require('axios');
 
 exports.cancel = async (appointmentId, reason, cancelBy) => {
   try {
@@ -496,6 +497,38 @@ exports.sendNotify = async appointmentId => {
               appointment.meetingId = zoomData.id;
               appointment.platform = PLATFORM_ONLINE.ZOOM_US;
               await appointment.save();
+
+              // Sync zoom_meeting_id to PostgreSQL (non-blocking)
+              const CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+              const CREDIT_SERVICE_API_KEY = process.env.CREDIT_SERVICE_API_KEY || '';
+              axios.post(
+                CREDIT_SERVICE_URL + '/api/v1/admin/bookings/sync-zoom',
+                {
+                  mongo_appointment_id: appointment._id.toString(),
+                  zoom_meeting_id: String(zoomData.id),
+                  zoom_join_url: zoomData.join_url || null,
+                  zoom_start_url: zoomData.start_url || null,
+                  scheduled_start: appointment.startTime ? appointment.startTime.toISOString() : null,
+                  scheduled_end: appointment.toTime ? appointment.toTime.toISOString() : null,
+                  booked_minutes: Math.ceil(
+                    (new Date(appointment.toTime) - new Date(appointment.startTime)) / 60000
+                  ),
+                  mongo_expert_id: appointment.tutorId ? appointment.tutorId.toString() : null,
+                },
+                {
+                  timeout: 5000,
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': CREDIT_SERVICE_API_KEY
+                  }
+                }
+              ).then(() => {
+                console.log('[CreditService] Zoom sync from sendNotify: meeting',
+                  zoomData.id, 'synced for appointment', appointment._id.toString());
+              }).catch(err => {
+                console.error('[CreditService] Zoom sync from sendNotify failed (non-blocking):',
+                  err.message);
+              });
             }
           }
         } catch (zoomError) {
