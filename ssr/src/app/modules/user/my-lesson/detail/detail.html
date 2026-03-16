@@ -34,9 +34,9 @@
                   >
                   <a
                     class="color-light-red"
-                    [routerLink]="['/groupsession', appointment.webinar.alias]"
+                    [routerLink]="['/groupsession', appointment?.webinar?.alias]"
                     *ngIf="appointment.targetType === 'webinar'"
-                    >{{appointment.webinar && appointment.targetType ===
+                    >{{appointment?.webinar && appointment?.targetType ===
                     'webinar' ? appointment?.webinar?.name : ''}}</a
                   >
                 </td>
