@@ -476,6 +476,34 @@ exports.sendNotify = async appointmentId => {
     } else if (appointment.targetType === 'subject') {
       appointment.status = 'pending';
       await appointment.save();
+
+      // Pre-create Zoom meeting at booking confirmation time
+      if (!appointment.zoomData) {
+        try {
+          const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
+          if (isZoomPlatform) {
+            const durationMinutes = Math.ceil(
+              (new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60)
+            );
+            const zoomData = await Service.ZoomUs.createMeeting({
+              appointmentId: appointment._id,
+              startTime: appointment.startTime.toISOString(),
+              duration: durationMinutes,
+              timezone: 'Asia/Calcutta'
+            });
+            if (zoomData && zoomData.join_url) {
+              appointment.zoomData = zoomData;
+              appointment.meetingId = zoomData.id;
+              appointment.platform = PLATFORM_ONLINE.ZOOM_US;
+              await appointment.save();
+            }
+          }
+        } catch (zoomError) {
+          console.error('Zoom pre-creation failed in sendNotify:', zoomError.message);
+          // Continue - emails will still be sent with platform link as fallback
+        }
+      }
+
       const startTimeTutor = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
       const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
 

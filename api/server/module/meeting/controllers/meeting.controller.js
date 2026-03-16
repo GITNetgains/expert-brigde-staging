@@ -334,18 +334,18 @@ exports.joinMeeting = async (req, res, next) => {
     };
 
     if (isZoomPlatform) {
-      if (!appointment.zoomData || !appointment.zoomData.start_url) {
+      if (!appointment.zoomData || !appointment.zoomData.join_url) {
         return next(
           PopulateResponse.error({
-            message: "The expert hasn't started meeting yet."
+            message: 'Meeting link is being generated. If you cannot join within 60 seconds, please contact support at support@expertbridge.co.in'
           })
         );
       }
       const zoomData = await Service.ZoomUs.getDetailMeeting(appointment.zoomData.id);
-      if (!zoomData || !zoomData.start_url) {
+      if (!zoomData || !zoomData.join_url) {
         return next(
           PopulateResponse.error({
-            message: 'The session has ended or there is a problem, please wait for the expert to start and try again later'
+            message: 'The session has ended or there is a problem. Please contact support at support@expertbridge.co.in'
           })
         );
       }
