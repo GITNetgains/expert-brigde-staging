@@ -1,11 +1,49 @@
 const _ = require('lodash');
 const { Parser } = require('json2csv');
 const excel = require('exceljs');
+const axios = require('axios');
+
+const CREDIT_SERVICE_URL = process.env.CREDIT_SERVICE_URL || 'http://172.31.3.181:8010';
+const CREDIT_API_KEY = process.env.CREDIT_SERVICE_API_KEY || '';
+
 exports.balance = async (req, res, next) => {
   try {
     const tutorId = req.params.tutorId || req.user._id;
-    const data = await Service.PayoutRequest.calculateCurrentBalance(tutorId);
-    res.locals.balance = _.omit(data, ['transactionIds']);
+    const expertEmail = req.user.email;
+
+    // Try Credit Service first (PostgreSQL — source of truth for new bookings)
+    let creditBalance = null;
+    if (expertEmail) {
+      try {
+        const csResp = await axios.get(CREDIT_SERVICE_URL + '/api/v1/expert/summary', {
+          params: { expert_email: expertEmail },
+          headers: { 'X-API-Key': CREDIT_API_KEY },
+          timeout: 5000
+        });
+        if (csResp.data && (csResp.data.pending_payout_minor > 0 || csResp.data.total_net_minor > 0)) {
+          creditBalance = {
+            balance: csResp.data.pending_payout_minor / 100,
+            total: csResp.data.total_gross_minor / 100,
+            commission: csResp.data.total_commission_minor / 100
+          };
+        }
+      } catch (_csErr) {
+        // Credit Service unavailable — fall through to MongoDB
+      }
+    }
+
+    // MongoDB balance (legacy bookings)
+    const mongoData = await Service.PayoutRequest.calculateCurrentBalance(tutorId);
+    const mongoBalance = _.omit(mongoData, ['transactionIds']);
+
+    // Merge: add Credit Service amounts on top of MongoDB amounts
+    if (creditBalance) {
+      mongoBalance.balance = (mongoBalance.balance || 0) + creditBalance.balance;
+      mongoBalance.total = (mongoBalance.total || 0) + creditBalance.total;
+      mongoBalance.commission = (mongoBalance.commission || 0) + creditBalance.commission;
+    }
+
+    res.locals.balance = mongoBalance;
     next();
   } catch (e) {
     next(e);
