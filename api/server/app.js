@@ -60,6 +60,7 @@ async function bootstrap() {
   kernel.loadModule(require('./module/sync'));
   // Credit Service proxy — routes billing/compliance requests to PostgreSQL (added 2026-03-06)
   kernel.loadModule(require('./module/creditProxy'));
+  kernel.loadModule(require('./module/atlasProxy'));
 
   kernel.compose();
   return kernel;

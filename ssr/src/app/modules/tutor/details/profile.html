@@ -162,6 +162,51 @@
             </div>
           </div>
         </div>
+
+        <!-- AI Skill Assessment (Phase 5) — only shown if assessed -->
+        <div class="card card-border mb-3" *ngIf="assessmentSummary?.hasAssessment">
+          <div class="card-header d-flex align-items-center">
+            <span class="me-2" style="font-size:1.2rem;">&#127941;</span>
+            <h4 class="mb-0 color-light-black">AI Skill Assessment</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-6 mb-3 mb-sm-0">
+                <table class="table table-sm table-borderless mb-0">
+                  <tr>
+                    <td class="text-muted" style="width:100px;">Tier:</td>
+                    <td>
+                      <strong>{{ assessmentSummary.tier }}</strong>
+                      <span class="text-muted ms-1">({{ getTierLabel(assessmentSummary.tier) }})</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="assessmentSummary.completedAt">
+                    <td class="text-muted">Assessed:</td>
+                    <td>{{ assessmentSummary.completedAt | date:'mediumDate' }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-sm-6" *ngIf="assessmentSummary.topStrengths?.length">
+                <div class="mb-1 text-muted" style="font-size:0.85rem;">Top Strengths:</div>
+                <ul class="mb-0 ps-3" style="font-size:0.9rem;">
+                  <li *ngFor="let strength of assessmentSummary.topStrengths">{{ strength }}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="mt-3" *ngIf="assessmentSummary.reportAvailable">
+              <button
+                class="btn btn-outline-primary btn-sm"
+                (click)="downloadReport()"
+                [disabled]="reportDownloading">
+                <span *ngIf="!reportDownloading">View Full Report</span>
+                <span *ngIf="reportDownloading">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Loading...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="card card-border mb-3">
           
           <!-- <div class="card-body">

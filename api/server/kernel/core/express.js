@@ -50,7 +50,8 @@ exports.core = kernel => {
     'https://admin.expertbridge.co',
     'https://api.expertbridge.co',
     'https://expert.expertbridge.co',
-    'https://opportunities.expertbridge.co'
+    'https://opportunities.expertbridge.co',
+    'https://interview.expertbridge.co'
   ];
 
   const whitelistPublic = [

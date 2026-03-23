@@ -32,6 +32,7 @@ export class TutorCardComponent implements OnInit {
   public isLoggedin: boolean;
   @Input() currentUser: IUser;
   @Input() isBorder: boolean;
+  @Input() isAssessed: boolean = false;
   @ViewChild('introVideoTpl') introVideoTpl: TemplateRef<any>;
   public videoUrl: any;
   /** When true, full bio is shown in the card (no navigation). */

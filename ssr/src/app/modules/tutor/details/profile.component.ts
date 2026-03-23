@@ -23,6 +23,7 @@ import { environment } from 'src/environments/environment';
 import { PlatformConfigService } from 'src/app/services/platform-config.service';
 import * as jQuery from 'jquery';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 @Component({
   templateUrl: './profile.html'
 })
@@ -101,6 +102,10 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
   public type: any;
 
   public introVideoUrl: string | null = null;
+
+  /** AI Skill Assessment (Phase 5) */
+  public assessmentSummary: any = null;
+  public reportDownloading = false;
   // tslint:disable-next-line:max-line-length
   public moreTag = '';
   public webinarOptions = {
@@ -136,7 +141,8 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
     private router: Router,
     public stateService: StateService,
     private platformConfig: PlatformConfigService,
-    @Inject(PLATFORM_ID) private platformId: object
+    @Inject(PLATFORM_ID) private platformId: object,
+    private http: HttpClient
   ) {
     this.tutor = this.route.snapshot.data['tutor'];
     this.seoService.setMetaTitle(this.tutor.showPublicIdOnly === true ? String(this.tutor.userId) : this.tutor.name);
@@ -195,6 +201,11 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
         introVideo.thumbUrl ||
         introVideo.originalPath ||
         introVideo.filePath;
+    }
+
+    // Load assessment summary for client view (Phase 5)
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadAssessmentSummary();
     }
   }
 
@@ -341,5 +352,45 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
       categories = categories.slice(0, -2);
     }
     return categories;
+  }
+
+  // ============================================
+  // AI SKILL ASSESSMENT (Phase 5)
+  // ============================================
+
+  loadAssessmentSummary(): void {
+    if (!this.tutor?._id) return;
+
+    this.http.get<any>(environment.apiBaseUrl + '/atlas/summary/' + this.tutor._id)
+      .subscribe({
+        next: (resp: any) => {
+          if (resp?.hasAssessment && resp?.tier !== 'F') {
+            this.assessmentSummary = resp;
+          }
+        },
+        error: (err: any) => {
+          console.error('Assessment summary load failed:', err);
+        }
+      });
+  }
+
+  getTierLabel(tier: string): string {
+    const labels: { [key: string]: string } = {
+      'A': 'Top Expert',
+      'B': 'Verified Expert',
+      'C': 'Qualified Expert',
+      'D': 'Developing Expert'
+    };
+    return labels[tier] || tier;
+  }
+
+  downloadReport(): void {
+    if (!this.tutor?._id) return;
+    this.reportDownloading = true;
+    window.open(
+      environment.apiBaseUrl + '/atlas/report/' + this.tutor._id,
+      '_blank'
+    );
+    setTimeout(() => { this.reportDownloading = false; }, 2000);
   }
 }

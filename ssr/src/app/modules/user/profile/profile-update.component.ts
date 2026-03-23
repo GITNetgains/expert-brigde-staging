@@ -3,8 +3,11 @@ import {
   OnInit,
   ViewChild,
   Output,
-  EventEmitter
+  EventEmitter,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import * as _ from 'lodash';
@@ -107,6 +110,12 @@ export class ProfileUpdateComponent implements OnInit {
   /** Media ID of uploaded CV so we can also save it as resumeDocument for the tutor */
   public cvWebhookMediaId = '';
   public sendCvWebhookLoading = false;
+
+  /** AI Skill Assessment (Phase 2) */
+  public assessmentStatus: any = null;
+  public assessmentLoading = false;
+  public assessmentError = false;
+  public assessmentStarting = false;
   public get yearsExperienceProxy(): number {
     return (this.info as any)?.yearsExperience ?? 0;
   }
@@ -135,7 +144,8 @@ export class ProfileUpdateComponent implements OnInit {
     private mySubjectService: MySubjectService,
     private myCourseService: MyCourseService,
     private appService: AppService,
-    private stateService: StateService
+    private stateService: StateService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.subjects = this.route.snapshot.data['subjects'];
     this.seoService.setMetaTitle('Profile');
@@ -189,6 +199,9 @@ export class ProfileUpdateComponent implements OnInit {
 
       if (this.info.type === 'tutor') {
         this.introVideoType = 'upload';
+        if (isPlatformBrowser(this.platformId)) {
+          this.loadAssessmentStatus();
+        }
       }
 
       if (this.info.introVideo) {
@@ -716,5 +729,40 @@ export class ProfileUpdateComponent implements OnInit {
         .catch((err: any) => {
           this.appService.toastError(err);
         });
+  }
+
+  // ============================================
+  // AI SKILL ASSESSMENT (Phase 2)
+  // ============================================
+
+  async loadAssessmentStatus() {
+    if (!this.info || this.info.type !== 'tutor') return;
+    this.assessmentLoading = true;
+    this.assessmentError = false;
+    try {
+      const resp: any = await this.userService.get('/atlas/status/' + this.info._id);
+      this.assessmentStatus = resp;
+    } catch (err) {
+      console.error('Failed to load assessment status:', err);
+      this.assessmentError = true;
+    } finally {
+      this.assessmentLoading = false;
+    }
+  }
+
+  async startAssessment() {
+    this.assessmentStarting = true;
+    try {
+      const resp: any = await this.userService.post('/atlas/generate-token', {});
+      if (resp && resp.interviewUrl && isPlatformBrowser(this.platformId)) {
+        window.location.href = resp.interviewUrl;
+      } else {
+        throw new Error('No interview URL returned');
+      }
+    } catch (err) {
+      console.error('Failed to start assessment:', err);
+      this.appService.toastError('Unable to start assessment. Please try again.');
+      this.assessmentStarting = false;
+    }
   }
 }

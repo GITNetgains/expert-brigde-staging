@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -71,6 +71,7 @@ import { EditorComponent } from 'src/components/common/editor/editor.component';
     GutterDirective,
     TimezoneComponent,
   FileUploadComponent,
+  DatePipe,
   ],
 })
 export class CreateComponent implements OnInit {
@@ -116,6 +117,12 @@ export class CreateComponent implements OnInit {
   public introVideoUrl: string = '';
   public uploadingIntroVideo = false;
   public maxFileSize: number = 1024;
+
+  /** AI Skill Assessment stubs (shared template, not used in create) */
+  public assessmentStatus: any = null;
+  public assessmentLoading = false;
+  public assessmentError = false;
+  loadAssessmentStatus() {}
 
   private router = inject(Router);
   private tutorService = inject(TutorService);

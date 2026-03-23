@@ -5,7 +5,10 @@
     <div class="expert-meta">
       <div class="name-fee-row">
         <div class="name-location">
-          <h3 class="name">{{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}</h3>
+          <h3 class="name">
+            {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}
+            <span *ngIf="isAssessed" class="ai-verified-badge" title="AI Skill Verified">&#9989;</span>
+          </h3>
           <p class="location">
             {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}
           </p>

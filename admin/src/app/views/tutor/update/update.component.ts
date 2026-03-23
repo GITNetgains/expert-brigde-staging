@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import {
   TutorService,
   UtilService,
@@ -71,6 +72,7 @@ import { IUser } from 'src/interfaces';
     GutterDirective,
     TimezoneComponent,
   FileUploadComponent,
+  DatePipe,
   ],
 })
 export class UpdateComponent implements OnInit {
@@ -91,6 +93,12 @@ export class UpdateComponent implements OnInit {
   public uploadingIntroVideo = false;
   public maxFileSize: number = 1024;
 
+  /** AI Skill Assessment (Phase 3) */
+  public assessmentStatus: any = null;
+  public assessmentLoading = false;
+  public assessmentError = false;
+
+  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private tutorService = inject(TutorService);
@@ -153,6 +161,7 @@ export class UpdateComponent implements OnInit {
         }
 
         this.loading = false;
+        this.loadAssessmentStatus();
       },
       error: (err) => {
         this.loading = false;
@@ -425,5 +434,27 @@ export class UpdateComponent implements OnInit {
 
   onTimezoneValidationChange(isValid: boolean) {
     this.isTimezoneValid = isValid;
+  }
+
+  // ============================================
+  // AI SKILL ASSESSMENT (Phase 3)
+  // ============================================
+
+  loadAssessmentStatus() {
+    if (!this.info?._id) return;
+    this.assessmentLoading = true;
+    this.assessmentError = false;
+
+    this.http.get(`${environment.apiUrl}/atlas/summary/${this.info._id}`).subscribe({
+      next: (resp: any) => {
+        this.assessmentStatus = resp;
+        this.assessmentLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Assessment status error:', err);
+        this.assessmentError = true;
+        this.assessmentLoading = false;
+      }
+    });
   }
 }

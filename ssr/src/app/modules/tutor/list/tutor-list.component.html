@@ -236,6 +236,7 @@
             [config]="config"
             [isBorder]="item._id === activeTutor?._id"
             [currentUser]="currentUser"
+            [isAssessed]="!!assessmentStatuses[item._id]?.hasAssessment"
             (hover)="onHoverTutor($event)">
           </app-tutor-card>
         </div>

@@ -1,9 +1,12 @@
 import {
   Component,
   OnInit,
-  HostListener
+  HostListener,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
@@ -25,6 +28,8 @@ import { TutorService } from 'src/app/services/tutor.service';
 import { AuthService } from 'src/app/services/auth.service';
 const time_format = 'HH:mm:ss';
 declare let $: any;
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 import { AiQueryBarComponent } from '../../page/components/ai-query-bar/ai-query-bar.component';
 
 @Component({
@@ -115,6 +120,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
 
 
   public isHoverTutor: boolean;
+  public assessmentStatuses: { [id: string]: { hasAssessment: boolean; tier: string | null } } = {};
   public states: string[] = [];
 
   constructor(
@@ -132,7 +138,9 @@ toggleFilter(key: keyof typeof this.openFilter) {
     private calendarService: CalendarService,
     public stateService: StateService,
     private appService: AppService,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.seoService.setMetaTitle('List Expert');
 
@@ -262,6 +270,7 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
         .then((resp) => {
           this.total = resp.data.count;
           this.tutors = resp.data.items;
+          this.loadAssessmentStatuses();
           if (this.tutors.length) {
             this.activeTutor = this.tutors[0];
             this.loadingSchedule = true;
@@ -449,6 +458,26 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
     this.updateStatesFilter();
     this.page = 1;
     this.query();
+  }
+
+  /** Fetch batch assessment status for all tutors on the page */
+  loadAssessmentStatuses(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!this.tutors?.length) return;
+
+    const ids = this.tutors.map(t => t._id).filter(Boolean).join(',');
+    if (!ids) return;
+
+    this.http.get<any>(environment.apiBaseUrl + '/atlas/batch-status?ids=' + ids)
+      .subscribe({
+        next: (resp: any) => {
+          this.assessmentStatuses = resp?.statuses || {};
+        },
+        error: (err: any) => {
+          console.error('Assessment badge fetch failed:', err);
+          this.assessmentStatuses = {};
+        }
+      });
   }
 
   mappingDataInTime(items: any) {
