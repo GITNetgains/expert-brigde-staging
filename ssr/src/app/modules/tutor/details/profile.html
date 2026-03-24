@@ -193,13 +193,22 @@
                 </ul>
               </div>
             </div>
-            <div class="mt-3" *ngIf="assessmentSummary.reportAvailable">
-              <button
+            <div class="mt-3 d-flex gap-2 flex-wrap">
+              <button *ngIf="assessmentSummary.reportAvailable"
                 class="btn btn-outline-primary btn-sm"
                 (click)="downloadReport()"
                 [disabled]="reportDownloading">
                 <span *ngIf="!reportDownloading">View Full Report</span>
                 <span *ngIf="reportDownloading">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Loading...
+                </span>
+              </button>
+              <button
+                class="btn btn-outline-secondary btn-sm"
+                (click)="loadTranscript()"
+                [disabled]="transcriptLoading">
+                <span *ngIf="!transcriptLoading">View Assessment Details</span>
+                <span *ngIf="transcriptLoading">
                   <span class="spinner-border spinner-border-sm me-1"></span>Loading...
                 </span>
               </button>
@@ -464,4 +473,80 @@
       </div>
     </div>
   </div>
+
+<!-- Transcript Viewer Modal -->
+<div class="transcript-overlay" *ngIf="showTranscript" (click)="closeTranscript()">
+  <div class="transcript-modal" (click)="$event.stopPropagation()">
+    <div class="transcript-hdr">
+      <h5 class="mb-0">Assessment Details</h5>
+      <button type="button" class="btn-close" (click)="closeTranscript()"></button>
+    </div>
+    <div class="transcript-body" *ngIf="transcriptData?.hasTranscript">
+
+      <div class="tr-overview mb-3">
+        <div class="row text-center">
+          <div class="col-4">
+            <div class="text-muted" style="font-size:0.8rem;">Tier</div>
+            <span class="tr-tier tr-tier-{{ transcriptData.tier?.toLowerCase() }}">{{ transcriptData.tier }}</span>
+          </div>
+          <div class="col-4">
+            <div class="text-muted" style="font-size:0.8rem;">Score</div>
+            <strong>{{ transcriptData.overallScore | number:'1.1-1' }} / 5.0</strong>
+          </div>
+          <div class="col-4">
+            <div class="text-muted" style="font-size:0.8rem;">Completed</div>
+            <span>{{ transcriptData.completedAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="transcriptData.competencies?.length" class="mb-3">
+        <h6 class="tr-section-title">Competency Breakdown</h6>
+        <div class="tr-comp" *ngFor="let comp of transcriptData.competencies">
+          <div class="d-flex justify-content-between mb-1">
+            <strong>{{ comp.name }}</strong>
+            <span class="text-muted">{{ comp.score }}/{{ comp.maxScore }}</span>
+          </div>
+          <div class="progress mb-1" style="height:6px;">
+            <div class="progress-bar" [ngClass]="getLevelClass(comp.level)"
+                 [style.width.%]="getCompetencyBarWidth(comp.score, comp.maxScore)"></div>
+          </div>
+          <div class="d-flex gap-2 mb-1">
+            <span class="badge" [ngClass]="getLevelClass(comp.level)" style="font-size:0.7rem;">{{ comp.level }}</span>
+            <span class="text-muted" style="font-size:0.75rem;">Weight: {{ (comp.weight * 100) | number:'1.0-0' }}%</span>
+          </div>
+          <div *ngIf="comp.supportingQuote" class="tr-quote">
+            <em>"{{ comp.supportingQuote }}"</em>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="transcriptData.strengths?.length" class="mb-3">
+        <h6 class="tr-section-title">Key Strengths</h6>
+        <div class="tr-strength" *ngFor="let s of transcriptData.strengths">
+          <strong>{{ s.name }}</strong>
+          <p *ngIf="s.evidence" class="text-muted mb-0" style="font-size:0.85rem;">{{ s.evidence }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="transcriptData.transcript?.length" class="mb-3">
+        <h6 class="tr-section-title">Interview Transcript</h6>
+        <div class="tr-qa" *ngFor="let item of transcriptData.transcript">
+          <div class="mb-1"><span class="badge bg-primary">Q{{ item.questionNumber }}</span></div>
+          <div class="mb-2"><strong>Question:</strong><p class="mb-1" style="white-space:pre-wrap;">{{ item.question }}</p></div>
+          <div class="tr-answer"><strong>Response:</strong><p class="mb-0" style="white-space:pre-wrap;">{{ item.answer }}</p></div>
+        </div>
+      </div>
+
+      <div *ngIf="!transcriptData.transcript?.length && !transcriptData.competencies?.length" class="text-muted text-center py-3">
+        No detailed data available for this assessment.
+      </div>
+
+    </div>
+    <div class="transcript-body" *ngIf="!transcriptData?.hasTranscript">
+      <div class="alert alert-info mb-0">Assessment details not available.</div>
+    </div>
+  </div>
+</div>
+
 </section>

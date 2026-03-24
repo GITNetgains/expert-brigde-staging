@@ -206,14 +206,6 @@ toggleFilter(key: keyof typeof this.openFilter) {
   }
 
   ngOnInit(): void {
-    // Prevent tutors from accessing the public experts listing page
-    this.authService.getCurrentUser().then((user: any) => {
-      if (user?.type === 'tutor') {
-        this.router.navigate(['/pages/error/NO_ACCESS']);
-        return;
-      }
-    }).catch(() => {});
-
     this.countries = this.countryService.getCountry();
     this.updateStatesFilter();
     this.gradeService

@@ -363,3 +363,35 @@ exports.getAssessmentReport = async function(req, res) {
     return res.status(500).json({ error: 'Failed to fetch assessment report' });
   }
 };
+
+exports.getAssessmentTranscript = async function(req, res) {
+  try {
+    var mongoUserId = req.params.mongoUserId;
+    var email = await getExpertEmailById(mongoUserId);
+    if (!email) {
+      return res.status(404).json({ error: 'Expert not found' });
+    }
+
+    var url = ATLAS_URL + '/api/v1/interview/transcript/' + encodeURIComponent(email);
+    var response = await fetch(url, {
+      headers: { 'X-API-KEY': ATLAS_KEY },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (!response.ok) {
+      var errText = await response.text();
+      console.error('[getAssessmentTranscript] Atlas error:', response.status, errText);
+      return res.status(response.status).json({ error: 'Failed to fetch transcript' });
+    }
+
+    var data = await response.json();
+    return res.json(data);
+  } catch (err) {
+    console.error('[getAssessmentTranscript] Error:', err.message);
+    if (err.name === 'TimeoutError') {
+      return res.status(503).json({ error: 'Atlas API timeout' });
+    }
+    return res.status(500).json({ error: 'Failed to fetch transcript' });
+  }
+};
+

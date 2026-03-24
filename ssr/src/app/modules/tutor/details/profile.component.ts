@@ -106,6 +106,11 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
   /** AI Skill Assessment (Phase 5) */
   public assessmentSummary: any = null;
   public reportDownloading = false;
+
+  /** Transcript Viewer */
+  public transcriptData: any = null;
+  public transcriptLoading = false;
+  public showTranscript = false;
   // tslint:disable-next-line:max-line-length
   public moreTag = '';
   public webinarOptions = {
@@ -392,5 +397,48 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
       '_blank'
     );
     setTimeout(() => { this.reportDownloading = false; }, 2000);
+  }
+
+  // ============================================
+  // TRANSCRIPT VIEWER
+  // ============================================
+
+  loadTranscript(): void {
+    if (typeof window === 'undefined') return;
+    if (this.transcriptData) {
+      this.showTranscript = true;
+      return;
+    }
+    this.transcriptLoading = true;
+    this.http.get<any>(environment.apiBaseUrl + '/atlas/transcript/' + this.tutor._id)
+      .subscribe({
+        next: (resp: any) => {
+          this.transcriptData = resp;
+          this.showTranscript = true;
+          this.transcriptLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Failed to load transcript:', err);
+          this.transcriptLoading = false;
+        }
+      });
+  }
+
+  closeTranscript(): void {
+    this.showTranscript = false;
+  }
+
+  getCompetencyBarWidth(score: number, maxScore: number = 5): number {
+    return Math.min(100, (score / maxScore) * 100);
+  }
+
+  getLevelClass(level: string): string {
+    const classes: { [key: string]: string } = {
+      'Expert': 'bg-success',
+      'Strong': 'bg-primary',
+      'Proficient': 'bg-info',
+      'Developing': 'bg-warning'
+    };
+    return classes[level] || 'bg-secondary';
   }
 }

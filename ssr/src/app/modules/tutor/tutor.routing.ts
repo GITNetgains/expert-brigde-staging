@@ -11,16 +11,13 @@ const routes: Routes = [
   {
     path: '',
     component: TutorListComponent,
-    canActivate: [StudentGuard],
     resolve: {
-      // search: TutorSearchResolver,
       categories: categoriesResolver
     }
   },
   {
     path: ':username',
     component: TutorProfileComponent,
-    canActivate: [StudentGuard],
     resolve: {
       tutor: tutorDetailResolver
     }

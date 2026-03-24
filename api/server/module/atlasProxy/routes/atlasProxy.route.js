@@ -29,4 +29,5 @@ module.exports = function(router) {
   router.get('/v1/atlas/batch-status', controller.getBatchStatus);  // Public — badge visibility
   router.get('/v1/atlas/summary/:mongoUserId', controller.getAssessmentSummary);  // Public — client profile viewing
   router.get('/v1/atlas/report/:mongoUserId', Middleware.isAuthenticated, controller.getAssessmentReport);
+  router.get('/v1/atlas/transcript/:mongoUserId', controller.getAssessmentTranscript);  // Public — client profile transcript viewing
 };
