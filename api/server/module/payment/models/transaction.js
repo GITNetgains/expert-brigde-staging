@@ -135,6 +135,10 @@ const schema = new Schema(
       type: Schema.Types.Mixed,
       default: {}
     },
+    walletCredit: {
+      type: Schema.Types.Mixed,
+      default: null
+    },
     createdAt: {
       type: Date
     },

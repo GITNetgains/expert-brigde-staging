@@ -64,6 +64,7 @@ import { UserAvailableTimeComponent } from 'src/app/components/calendar/tutor-av
 import { AiQueryListComponent } from './ai-queries/list/list.component';
 import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
 import { BillingDetailsComponent } from './billing-details/billing-details.component';
+import { WalletComponent } from './wallet/wallet.component';
 
 @NgModule({
   imports: [
@@ -140,7 +141,8 @@ import { BillingDetailsComponent } from './billing-details/billing-details.compo
     ReportFormComponent,
     AiQueryListComponent,
     BrowseGroupSessionsComponent,
-    BillingDetailsComponent
+    BillingDetailsComponent,
+    WalletComponent
   ],
   exports: []
 })

@@ -256,6 +256,17 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
 
     const slots: any[] = [];
     for (const win of windows) {
+      // Trim window start to now+5min so partially-past windows remain bookable
+      const nowPlus5 = moment().add(5, 'minute');
+      const effectiveStart = moment.max(win.start.clone(), nowPlus5);
+      // Snap effective start up to the next 10-minute boundary for clean slot times
+      const startMinute = effectiveStart.minute();
+      const remainder = startMinute % 10;
+      if (remainder !== 0) {
+        effectiveStart.add(10 - remainder, 'minutes').second(0).millisecond(0);
+      }
+      const effectiveMinutes = win.end.diff(effectiveStart, 'minutes');
+
       const minute = win.end.diff(win.start, 'minutes');
       const slot = {
         start: win.start.toDate(),
@@ -274,13 +285,14 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
         durationOptions: [] as any[]
       } as any;
 
-      if (moment().add(5, 'minute').isAfter(moment(slot.start)) || minute < 30) {
+      if (effectiveStart.isSameOrAfter(win.end) || effectiveMinutes < 30) {
         slot.backgroundColor = '#ddd';
         slot.isDisabled = true;
-        slot.title = minute < 30 ? 'Minimum 30 mins' : 'Not available';
+        slot.title = effectiveMinutes < 30 && minute >= 30 ? 'Not available' : (minute < 30 ? 'Minimum 30 mins' : 'Not available');
         slot.available = false;
       } else {
-        for (let d = 30; d <= minute; d += 30) {
+        // Use effective (trimmed) minutes for duration options
+        for (let d = 30; d <= effectiveMinutes; d += 30) {
           const h = Math.floor(d / 60);
           const m = d % 60;
           let label = '';
@@ -289,7 +301,8 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
           else { label = h + ' hr ' + m + ' min'; }
           slot.durationOptions.push({ value: d, label: label });
         }
-        let t = win.start.clone();
+        // Start time options from effective start (not original window start)
+        let t = effectiveStart.clone();
         while (t.clone().add(30, 'minutes').isSameOrBefore(win.end)) {
           slot.startTimeOptions.push({
             value: t.toISOString(),
@@ -303,6 +316,9 @@ export class UserAvailableTimeComponent implements OnInit, OnChanges {
         if (slot.durationOptions.length > 0) {
           slot.selectedDuration = slot.durationOptions[0].value;
         }
+        // Update display text to show effective available range
+        slot.text = effectiveStart.format('HH:mm') + ' - ' + win.end.format('HH:mm');
+        slot.durationMinutes = effectiveMinutes;
       }
 
       const existedInCart = this.cartItems.find(

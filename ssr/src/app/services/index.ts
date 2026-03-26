@@ -42,3 +42,4 @@ export * from './transaction.service';
 export * from './socket.service';
 export * from './payment.service';
 export * from './static-page.service';
+export { WalletService } from "./wallet.service";

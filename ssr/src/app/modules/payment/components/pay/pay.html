@@ -47,6 +47,34 @@
           </p>
         </div>
 
+        <!-- Wallet Credits Section -->
+        <div class="wallet-credit-section" *ngIf="walletBalance > 0 && type !== 'gift'">
+          <div class="wallet-card">
+            <div class="wallet-header">
+              <span class="wallet-icon">&#x1F4B3;</span>
+              <span class="wallet-title">Wallet Credits</span>
+              <span class="wallet-amount">{{ walletBalanceDisplay }}</span>
+            </div>
+            <div class="wallet-toggle">
+              <label class="wallet-switch">
+                <input type="checkbox"
+                       [checked]="useWalletCredits"
+                       (change)="toggleWalletCredits()">
+                <span class="slider"></span>
+              </label>
+              <span class="wallet-toggle-label">
+                Apply wallet credits to this payment
+              </span>
+            </div>
+            <div class="wallet-breakdown" *ngIf="useWalletCredits && walletCreditApplied > 0">
+              <div class="breakdown-row">
+                <span>Wallet Credit Applied</span>
+                <span class="text-success">- &#x20B9;{{ walletCreditApplied | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="payment-actions">
           <button
             type="submit"

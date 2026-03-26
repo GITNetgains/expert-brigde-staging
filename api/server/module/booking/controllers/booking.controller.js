@@ -11,7 +11,8 @@ exports.create = async (req, res, next) => {
       isFree: Joi.boolean().allow([null]).optional(),
       redirectSuccessUrl: Joi.string().optional(),
       cancelUrl: Joi.string().optional(),
-      couponCode: Joi.string().allow([null, '']).optional()
+      couponCode: Joi.string().allow([null, '']).optional(),
+      useWalletCredits: Joi.boolean().optional().default(false)
     });
     const validate = Joi.validate(req.body, validateSchema);
     if (validate.error) {
@@ -96,6 +97,7 @@ exports.checkout = async (req, res, next) => {
       tutorId: Joi.string().required(),
       redirectSuccessUrl: Joi.string().optional(),
       cancelUrl: Joi.string().optional(),
+      useWalletCredits: Joi.boolean().optional().default(false),
       times: Joi.array()
         .items(
           Joi.object().keys({

@@ -11,7 +11,8 @@ exports.enroll = async (req, res, next) => {
       cancelUrl: Joi.string().optional(),
       couponCode: Joi.string().allow([null, '']).optional(),
       type: Joi.string().optional().default('booking'),
-      emailRecipient: Joi.string().email().allow([null, '']).optional()
+      emailRecipient: Joi.string().email().allow([null, '']).optional(),
+      useWalletCredits: Joi.boolean().optional().default(false)
     });
     const validate = Joi.validate(req.body, validateSchema);
     if (validate.error) {

@@ -25,6 +25,7 @@ import { LessonSpaceComponent } from './lesson-space/lesson-space.component';
 import { AiQueryListComponent } from './ai-queries/list/list.component';
 import { BrowseGroupSessionsComponent } from './browse-group-sessions/browse-group-sessions.component';
 import { BillingDetailsComponent } from './billing-details/billing-details.component';
+import { WalletComponent } from './wallet/wallet.component';
 import { StudentGuard } from 'src/app/services/guard/student.guard';
 
 const routes: Routes = [
@@ -165,6 +166,11 @@ const routes: Routes = [
     data: {
       noShowMenu: true
     },
+    canActivate: [StudentGuard]
+  },
+  {
+    path: 'wallet',
+    component: WalletComponent,
     canActivate: [StudentGuard]
   },
   {

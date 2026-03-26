@@ -95,6 +95,16 @@ exports.hook = async (req, res, next) => {
     console.log('🎉 Payment fully processed');
 
     // === CREDIT SERVICE FORWARDING (Added March 4, 2026) ===
+    // Include wallet credit info if wallet was used at checkout
+    if (transaction.walletCredit && transaction.walletCredit.amount_minor > 0) {
+      event._walletCreditInfo = {
+        user_mongo_id: transaction.walletCredit.user_mongo_id,
+        amount_minor: transaction.walletCredit.amount_minor,
+        currency: transaction.walletCredit.currency || 'INR'
+      };
+      console.log('[CreditService] Wallet credit info:', transaction.walletCredit.amount_minor, 'paise for user', transaction.walletCredit.user_mongo_id);
+    }
+
     // Enrich with appointment ID and Zoom meeting ID for Credit Service booking linkage
     (async function() {
       try {

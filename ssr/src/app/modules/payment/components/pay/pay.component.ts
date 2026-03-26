@@ -10,7 +10,8 @@ import {
   AppointmentService,
   PaymentService,
   CartService,
-  AppService
+  AppService,
+  WalletService
 } from 'src/app/services';
 
 declare var Razorpay: any;
@@ -37,6 +38,13 @@ export class PayComponent implements OnInit {
 
   public currentUser!: IUser;
 
+  // Wallet credits
+  public walletBalance: number = 0;
+  public walletBalanceDisplay: string = '';
+  public useWalletCredits: boolean = false;
+  public walletCreditApplied: number = 0;
+  public walletLoading: boolean = false;
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -45,7 +53,8 @@ export class PayComponent implements OnInit {
     private appointmentService: AppointmentService,
     private paymentService: PaymentService,
     private cartService: CartService,
-    private appService: AppService
+    private appService: AppService,
+    private walletService: WalletService
   ) {
     if (this.auth.isLoggedin()) {
       this.auth.getCurrentUser().then(user => {
@@ -80,6 +89,9 @@ export class PayComponent implements OnInit {
       }
     }
 
+    // Fetch wallet balance
+    this.loadWalletBalance();
+
     const emailValidators = this.type === 'gift'
       ? [Validators.required, Validators.email]
       : [Validators.email];
@@ -87,6 +99,32 @@ export class PayComponent implements OnInit {
     this.paymentForm = this.fb.group({
       emailRecipient: ['', emailValidators]
     });
+  }
+
+  loadWalletBalance(): void {
+    if (!this.auth.isLoggedin()) return;
+    this.walletLoading = true;
+    this.walletService.getBalance()
+      .then((resp: any) => {
+        var data = resp?.data?.data || resp?.data || resp;
+        var balances = data?.balances || [];
+        var clientWallet = balances.find((b: any) => b.account_type === 'CLIENT_WALLET');
+        if (clientWallet) {
+          this.walletBalance = Math.abs(clientWallet.balance_minor || 0);
+          this.walletBalanceDisplay = this.walletService.formatAmount(this.walletBalance);
+          if (this.walletBalance > 0) {
+            this.useWalletCredits = true;
+          }
+        }
+        this.walletLoading = false;
+      })
+      .catch(() => {
+        this.walletLoading = false;
+      });
+  }
+
+  toggleWalletCredits(): void {
+    this.useWalletCredits = !this.useWalletCredits;
   }
 
   isPayDisabled(): boolean {
@@ -126,6 +164,7 @@ export class PayComponent implements OnInit {
       if (this.type === 'gift') {
         enrollParams.emailRecipient = this.paymentForm.get('emailRecipient')?.value?.trim();
       }
+      enrollParams.useWalletCredits = this.useWalletCredits;
       this.paymentService.enroll(enrollParams)
         .then(resp => {
           const payment = resp?.data?.enroll ?? resp?.data;
@@ -133,6 +172,7 @@ export class PayComponent implements OnInit {
             throw new Error('Payment init failed');
           }
           this.paymentIntent = payment;
+          this.walletCreditApplied = payment.walletCreditApplied || 0;
           this.loading = false;
           this.openRazorpay({
             transactionId: payment.transactionId,
@@ -151,6 +191,7 @@ export class PayComponent implements OnInit {
     }
 
     if (this.paymentParams?.times && this.paymentParams.times.length > 0) {
+      this.paymentParams.useWalletCredits = this.useWalletCredits;
       this.appointmentService.checkout(this.paymentParams)
         .then(resp => {
           const payment = resp?.data;
@@ -172,6 +213,7 @@ export class PayComponent implements OnInit {
           this.appService.toastError(err.message || err);
         });
     } else {
+      this.paymentParams.useWalletCredits = this.useWalletCredits;
       this.appointmentService.create(this.paymentParams)
         .then(resp => {
           const payment = resp?.data;

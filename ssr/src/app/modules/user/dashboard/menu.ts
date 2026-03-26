@@ -137,5 +137,12 @@ export const studentMenus = [
     description: 'Refund requests for the client will be displayed.',
     path: '/users/refund/request',
     key: 'menu-my-refund'
+  },
+  {
+    icon: 'fi fi-rs-coins',
+    title: 'Wallet Credits',
+    description: 'View your available credits from unused session time.',
+    path: '/users/wallet',
+    key: 'menu-my-wallet'
   }
 ];

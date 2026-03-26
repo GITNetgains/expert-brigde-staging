@@ -153,6 +153,7 @@
                 </a>
               </td>
             </tr>
+            <!-- HIDDEN: Meeting ID, Password, Direct Zoom Link removed to force SDK-only join (2026-03-26)
             <tr *ngIf="appointment?.zoomData && appointment?.zoomLinkActive !== false && appointment?.status !== 'completed'">
               <td><span translate>Meeting ID</span></td>
               <td><strong>{{appointment.zoomData?.id}}</strong></td>
@@ -165,6 +166,7 @@
               <td><span translate>Direct Zoom Link</span></td>
               <td><a [href]="appointment.zoomData?.start_url" target="_blank" class="btn btn-sm btn-outline-primary">Open in Zoom App</a></td>
             </tr>
+            END HIDDEN -->
             <tr
               *ngIf="(appointment?.status === 'booked' || appointment?.status === 'pending') && appointment?.targetType !== 'webinar'"
             >
