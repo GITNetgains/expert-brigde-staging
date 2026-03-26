@@ -128,6 +128,10 @@ module.exports = function(router) {
   router.get('/v1/credit/expert/summary', Middleware.isAuthenticated, controller.proxyExpertSummary);
   router.get('/v1/credit/expert/earnings', Middleware.isAuthenticated, controller.proxyExpertEarnings);
 
+  // Expert Payout History — proxy to Credit Service
+  router.get('/v1/credit/expert/payouts', Middleware.isAuthenticated, controller.proxyExpertPayouts);
+  router.get('/v1/credit/expert/payout-summary', Middleware.isAuthenticated, controller.proxyExpertPayoutSummary);
+
   // Expert Payout Invoice Upload (multipart, requires logged-in user)
   router.post('/v1/credit/experts/payout-invoice/upload', Middleware.isAuthenticated, upload.single('file'), controller.uploadExpertInvoice);
   router.get('/v1/credit/experts/payout-invoice/by-expert/:expertMongoId', Middleware.isAuthenticated, controller.getExpertInvoices);

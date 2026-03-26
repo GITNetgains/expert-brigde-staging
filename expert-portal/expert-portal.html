@@ -90,6 +90,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('earnings');
+  const [payouts, setPayouts] = useState([]);
+  const [payoutSummary, setPayoutSummary] = useState(null);
+  const [payoutsLoading, setPayoutsLoading] = useState(false);
 
   useEffect(function() {
     var params = new URLSearchParams(window.location.search);
@@ -145,6 +148,30 @@ function App() {
 
     init();
   }, []);
+
+  useEffect(function() {
+    if (tab === 'payouts' && payouts.length === 0 && user) {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('token');
+      if (token) fetchPayouts(token, user.email);
+    }
+  }, [tab, user]);
+
+  function fetchPayouts(token, email) {
+    setPayoutsLoading(true);
+    Promise.all([
+      fetch(STAGING_API + '/v1/credit/expert/payouts?expert_email=' + encodeURIComponent(email), {
+        headers: { Authorization: 'Bearer ' + token }
+      }),
+      fetch(STAGING_API + '/v1/credit/expert/payout-summary?expert_email=' + encodeURIComponent(email), {
+        headers: { Authorization: 'Bearer ' + token }
+      })
+    ]).then(function(results) {
+      if (results[0].ok) results[0].json().then(function(d) { setPayouts(d.payouts || []); });
+      if (results[1].ok) results[1].json().then(function(d) { setPayoutSummary(d); });
+    }).catch(function(e) { console.error('Payout fetch error:', e); })
+    .finally(function() { setPayoutsLoading(false); });
+  }
 
   if (loading) return (
     <div>
@@ -243,7 +270,65 @@ function App() {
         )}
 
         {tab === 'payouts' && (
-          <div className="empty">Payout history coming soon.</div>
+          <div>
+            {payoutSummary && (
+              <div className="summary-grid" style={{marginBottom: 20}}>
+                <div className="card">
+                  <div className="card-label">Total Paid Out</div>
+                  <div className="card-value green">{fmt(payoutSummary.total_paid_net_minor)}</div>
+                </div>
+                <div className="card">
+                  <div className="card-label">Payouts</div>
+                  <div className="card-value">{payoutSummary.paid_count || 0}</div>
+                </div>
+                <div className="card">
+                  <div className="card-label">Awaiting Payout</div>
+                  <div className="card-value orange">{fmt(payoutSummary.pending_payout_minor)}</div>
+                </div>
+                <div className="card">
+                  <div className="card-label">Pending Sessions</div>
+                  <div className="card-value">{payoutSummary.pending_count || 0}</div>
+                </div>
+              </div>
+            )}
+            <div className="section-title">Payout History</div>
+            {payoutsLoading ? (
+              <div className="loading">Loading payout history...</div>
+            ) : payouts.length === 0 ? (
+              <div className="empty">No payouts processed yet. Settled sessions will appear here after payout.</div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Payout Date</th>
+                    <th>Session Date</th>
+                    <th>Duration</th>
+                    <th>Gross</th>
+                    <th>TDS</th>
+                    <th>Net Paid</th>
+                    <th>Bank Account</th>
+                    <th>Reference</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payouts.map(function(p, i) {
+                    return (
+                      <tr key={i}>
+                        <td>{fmtDate(p.payout_date)}</td>
+                        <td>{fmtDate(p.session_date)}</td>
+                        <td>{fmtMins(p.booked_minutes)}</td>
+                        <td>{fmt(p.gross_payout_minor)}</td>
+                        <td style={{color:'#d97706'}}>{fmt(p.tds_minor)}</td>
+                        <td style={{fontWeight:600,color:'#059669'}}>{fmt(p.net_payout_minor)}</td>
+                        <td style={{fontSize:12,color:'#6b7280'}}>{p.bank_account || '\u2014'}</td>
+                        <td style={{fontSize:12,color:'#6b7280'}}>{p.reference || '\u2014'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -268,3 +268,11 @@ exports.getClientCreditNotes = async function(req, res, userId, email) {
   return proxyToCredit(req, res, 'GET', url);
 };
 
+exports.proxyExpertPayouts = async function(req, res) {
+  return proxyToCredit(req, res, 'GET', '/api/v1/payouts/by-expert?expert_email=' + encodeURIComponent(req.query.expert_email || ''));
+};
+
+exports.proxyExpertPayoutSummary = async function(req, res) {
+  return proxyToCredit(req, res, 'GET', '/api/v1/payouts/expert-summary?expert_email=' + encodeURIComponent(req.query.expert_email || ''));
+};
+
