@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExpertBridge - My Earnings</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: #f5f7fa; color: #1a1a2e; }
+    .header { background: #fff; border-bottom: 1px solid #e5e7eb;
+              padding: 16px 24px; display: flex; align-items: center;
+              justify-content: space-between; }
+    .logo { font-size: 18px; font-weight: 700; color: #4f46e5; }
+    .expert-badge { background: #ede9fe; color: #4f46e5; padding: 4px 10px;
+                    border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 24px 16px; }
+    .summary-grid { display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 16px; margin-bottom: 28px; }
+    .card { background: #fff; border-radius: 10px; padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card-label { font-size: 11px; color: #6b7280; font-weight: 600;
+                  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .card-value { font-size: 22px; font-weight: 700; color: #111827; }
+    .card-value.green { color: #059669; }
+    .card-value.orange { color: #d97706; }
+    .card-value.red { color: #dc2626; }
+    .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    table { width: 100%; background: #fff; border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-collapse: collapse; }
+    th { background: #f9fafb; padding: 12px 16px; text-align: left;
+         font-size: 11px; font-weight: 600; color: #6b7280;
+         text-transform: uppercase; letter-spacing: 0.05em;
+         border-bottom: 1px solid #e5e7eb; }
+    td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f3f4f6; }
+    tr:last-child td { border-bottom: none; }
+    .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-settled { background: #d1fae5; color: #065f46; }
+    .badge-paid_out { background: #dbeafe; color: #1e40af; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .error-box { background: #fee2e2; color: #991b1b; padding: 16px;
+                 border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+    .loading { text-align: center; padding: 60px; color: #6b7280; font-size: 15px; }
+    .nav-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: #fff;
+                border-radius: 8px; padding: 4px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.08); width: fit-content; }
+    .nav-tab { padding: 8px 20px; border-radius: 6px; font-size: 14px;
+               font-weight: 500; cursor: pointer; color: #6b7280;
+               border: none; background: none; }
+    .nav-tab.active { background: #4f46e5; color: white; }
+    .empty { background: #fff; border-radius: 10px; padding: 40px;
+             text-align: center; color: #6b7280; font-size: 14px; }
+    @media (max-width: 600px) {
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const STAGING_API = 'https://api.expertbridge.co';
+
+function fmt(minor) {
+  if (minor === null || minor === undefined) return '\u2014';
+  return '\u20b9' + (minor / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+}
+
+function fmtDate(ts) {
+  if (!ts) return '\u2014';
+  return new Date(ts).toLocaleDateString('en-IN',
+    { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function fmtMins(m) {
+  if (!m && m !== 0) return '\u2014';
+  return m + ' min';
+}
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [earnings, setEarnings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [tab, setTab] = useState('earnings');
+
+  useEffect(function() {
+    var params = new URLSearchParams(window.location.search);
+    var token = params.get('token');
+
+    if (!token) {
+      setError('No token found. Please access this page via the "My Earnings" link in your ExpertBridge sidebar.');
+      setLoading(false);
+      return;
+    }
+
+    async function init() {
+      try {
+        var meRes = await fetch(STAGING_API + '/v1/auth/me', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+
+        if (!meRes.ok) {
+          setError('Session expired. Please log in to expertbridge.co and try again.');
+          setLoading(false);
+          return;
+        }
+
+        var meJson = await meRes.json();
+        var me = meJson.data || meJson;
+
+        if (me.type !== 'tutor' && me.role !== 'tutor') {
+          setError('This page is for experts only.');
+          setLoading(false);
+          return;
+        }
+
+        setUser(me);
+
+        var headers = { 'Authorization': 'Bearer ' + token };
+        var results = await Promise.all([
+          fetch(STAGING_API + '/v1/credit/expert/summary?expert_email=' + encodeURIComponent(me.email), { headers: headers }),
+          fetch(STAGING_API + '/v1/credit/expert/earnings?expert_email=' + encodeURIComponent(me.email), { headers: headers })
+        ]);
+
+        if (results[0].ok) setSummary(await results[0].json());
+        if (results[1].ok) {
+          var data = await results[1].json();
+          setEarnings(data.earnings || []);
+        }
+      } catch(e) {
+        setError('Failed to load earnings. Please try again.');
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    init();
+  }, []);
+
+  if (loading) return (
+    <div>
+      <div className="header">
+        <div className="logo">ExpertBridge Finance</div>
+      </div>
+      <div className="loading">Loading your earnings...</div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="header">
+        <div className="logo">ExpertBridge Finance</div>
+        {user && (
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <span style={{fontSize:14,color:'#6b7280'}}>{user.name}</span>
+            <span className="expert-badge">Expert</span>
+          </div>
+        )}
+      </div>
+
+      <div className="container">
+        {error && <div className="error-box">{error}</div>}
+
+        {summary && (
+          <div className="summary-grid">
+            <div className="card">
+              <div className="card-label">Total Sessions</div>
+              <div className="card-value">{summary.total_sessions || 0}</div>
+            </div>
+
+
+            <div className="card">
+              <div className="card-label">TDS Deducted</div>
+              <div className="card-value orange">{fmt(summary.total_tds_minor)}</div>
+            </div>
+            <div className="card">
+              <div className="card-label">Net Payable</div>
+              <div className="card-value green">{fmt(summary.total_net_minor)}</div>
+            </div>
+            <div className="card">
+              <div className="card-label">Pending Payout</div>
+              <div className="card-value orange">{fmt(summary.pending_payout_minor)}</div>
+            </div>
+          </div>
+        )}
+
+        <div className="nav-tabs">
+          <button className={'nav-tab ' + (tab==='earnings'?'active':'')}
+                  onClick={function(){setTab('earnings')}}>Session Earnings</button>
+          <button className={'nav-tab ' + (tab==='payouts'?'active':'')}
+                  onClick={function(){setTab('payouts')}}>Payout History</button>
+        </div>
+
+        {tab === 'earnings' && (
+          <div>
+            <div className="section-title">Session Earnings</div>
+            {earnings.length === 0 ? (
+              <div className="empty">No completed sessions yet.</div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Duration Paid</th>
+
+                    <th>TDS</th>
+                    <th>Net to You</th>
+                    <th>Status</th>
+                    <th>Invoice</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {earnings.map(function(e, i) {
+                    return (
+                      <tr key={i}>
+                        <td>{fmtDate(e.scheduled_start)}</td>
+                        <td>{fmtMins(e.expert_paid_minutes)}</td>
+
+                        <td style={{color:'#d97706'}}>{fmt(e.tds_amount_minor)}</td>
+                        <td style={{fontWeight:600,color:'#059669'}}>{fmt(e.expert_payout_minor)}</td>
+                        <td>
+                          <span className={'badge badge-' + (e.settlement_status||'pending').toLowerCase()}>
+                            {e.settlement_status || 'PENDING'}
+                          </span>
+                        </td>
+                        <td style={{fontSize:12,color:'#6b7280'}}>{e.invoice_number || '\u2014'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+
+        {tab === 'payouts' && (
+          <div className="empty">Payout history coming soon.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
