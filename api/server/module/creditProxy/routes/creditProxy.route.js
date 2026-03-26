@@ -133,6 +133,14 @@ module.exports = function(router) {
   router.get('/v1/credit/experts/payout-invoice/by-expert/:expertMongoId', Middleware.isAuthenticated, controller.getExpertInvoices);
   router.get('/v1/credit/experts/payout-invoice/by-booking/:bookingId', Middleware.isAuthenticated, controller.getInvoiceByBooking);
 
+
+  // Client Credit Notes — credit notes for the logged-in client's bookings
+  router.get('/v1/credit/my-credit-notes', Middleware.isAuthenticated, async function(req, res) {
+    var userId = req.user._id.toString();
+    var email = req.user.email || '';
+    return controller.getClientCreditNotes(req, res, userId, email);
+  });
+
   // DocuSeal "sign later" email trigger — sends Terms of Work via email
   // Called by Angular skipDocuseal() when expert clicks "Sign Later"
   // No JWT required — expert has just completed signup but hasn't logged in yet.
@@ -163,5 +171,30 @@ module.exports = function(router) {
       res.status(200).json({ success: false, error: 'DocuSeal unavailable' });
     }
   });
+
+
+  // Client Wallet — balance, history, apply credits (requires logged-in user)
+  // Credit Service wallet_account.user_id is UUID5 from 'mongo:user:{mongoId}'
+  var crypto = require('crypto');
+  function _walletUuid(mongoId) {
+    // UUID5(NAMESPACE_URL, 'mongo:user:' + mongoId) — matches Python uuid.uuid5
+    var ns = Buffer.from('6ba7b8119dad11d180b400c04fd430c8', 'hex');
+    var hash = crypto.createHash('sha1').update(Buffer.concat([ns, Buffer.from('mongo:user:' + mongoId)])).digest();
+    hash[6] = (hash[6] & 0x0f) | 0x50;
+    hash[8] = (hash[8] & 0x3f) | 0x80;
+    var h = hash.toString('hex').substring(0, 32);
+    return h.substring(0,8)+'-'+h.substring(8,12)+'-'+h.substring(12,16)+'-'+h.substring(16,20)+'-'+h.substring(20,32);
+  }
+  router.get('/v1/credit/wallet/balance', Middleware.isAuthenticated, async function(req, res) {
+    var walletUserId = _walletUuid(req.user._id.toString());
+    req.params.userId = walletUserId;
+    return controller.getWalletBalance(req, res);
+  });
+  router.get('/v1/credit/wallet/history', Middleware.isAuthenticated, async function(req, res) {
+    var walletUserId = _walletUuid(req.user._id.toString());
+    req.params.userId = walletUserId;
+    return controller.getWalletHistory(req, res);
+  });
+  router.post('/v1/credit/wallet/apply', Middleware.isAuthenticated, controller.applyWalletCredit);
 
 };

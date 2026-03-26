@@ -10,16 +10,7 @@
   <div class="container">
     <div class="card card-body mb-3">
       <div class="row">
-        <div class="col-md-7 chart-container">
-          <div id="chart-container" #containerRef *ngIf="!loadingBalance && balance?.total && balance.total > 0">
-            <ngx-charts-pie-chart (window:resize)="onResize($event)" [view]="view" [scheme]="colorScheme"
-              *ngIf="!loadingBalance && balance?.total!==0" [results]="single" [gradient]="gradient"
-              [legend]="showLegend" [legendPosition]="legendPosition" [labels]="showLabels" [doughnut]="isDoughnut"
-              [legendTitle]="''" [trimLabels]="false" [tooltipText]="formatTooltipText">
-            </ngx-charts-pie-chart>
-          </div>
-        </div>
-        <div class="col-md-5">
+        <div class="col-md-12">
           <div class="right-chart">
             <table class="table tble-responsive">
               <tbody>

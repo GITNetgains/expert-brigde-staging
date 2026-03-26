@@ -85,6 +85,21 @@ exports.getStateCodesList = async function(req, res) {
 // === Expert Search Resolver ===
 // Resolves email or EB-XXXX to MongoDB _id, then fetches compliance profile
 
+// Generate UUID v5 (same algorithm as Python's uuid.uuid5)
+function generateUuid5(namespace, name) {
+  var crypto = require('crypto');
+  // Parse namespace UUID to bytes
+  var ns = namespace.replace(/-/g, '');
+  var nsBytes = Buffer.from(ns, 'hex');
+  var nameBytes = Buffer.from(name, 'utf8');
+  var hash = crypto.createHash('sha1').update(Buffer.concat([nsBytes, nameBytes])).digest();
+  // Set version (5) and variant bits
+  hash[6] = (hash[6] & 0x0f) | 0x50;
+  hash[8] = (hash[8] & 0x3f) | 0x80;
+  var hex = hash.toString('hex').substring(0, 32);
+  return hex.substring(0, 8) + '-' + hex.substring(8, 12) + '-' + hex.substring(12, 16) + '-' + hex.substring(16, 20) + '-' + hex.substring(20, 32);
+}
+
 exports.searchExpert = async function(req, res) {
   var q = (req.query.q || '').trim();
   if (!q) {
@@ -99,15 +114,15 @@ exports.searchExpert = async function(req, res) {
 
     // EB-XXXX format
     if (/^EB-\d{4,}$/i.test(q)) {
-      user = await User.findOne({ userId: q.toUpperCase() }, '_id email name userId').lean();
+      user = await User.findOne({ userId: q.toUpperCase() }, '_id email name userId role type').lean();
     }
     // Email format
     else if (q.includes('@')) {
-      user = await User.findOne({ email: q.toLowerCase() }, '_id email name userId').lean();
+      user = await User.findOne({ email: q.toLowerCase() }, '_id email name userId role type').lean();
     }
     // MongoDB ObjectId
     else if (/^[0-9a-f]{24}$/i.test(q)) {
-      user = await User.findById(q, '_id email name userId').lean();
+      user = await User.findById(q, '_id email name userId role type').lean();
     }
     // UUID — pass directly to credit service (no MongoDB user available)
     else if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q)) {
@@ -122,15 +137,32 @@ exports.searchExpert = async function(req, res) {
     }
 
     var mongoId = user._id.toString();
-    // Fetch compliance profile, then merge MongoDB user fields
-    var url = CREDIT_SERVICE_URL + '/api/v1/experts/compliance-profile-by-mongo/' + mongoId;
-    var response = await axios({ method: 'GET', url: url, timeout: TIMEOUT, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } });
-    var profile = response.data;
-    profile.expert_email = user.email || null;
-    profile.expert_name = user.name || null;
-    profile.mongo_id = mongoId;
-    profile.eb_id = user.userId || null;
-    return res.status(response.status).json(profile);
+    // Try compliance profile first (experts have this)
+    try {
+      var url = CREDIT_SERVICE_URL + '/api/v1/experts/compliance-profile-by-mongo/' + mongoId;
+      var response = await axios({ method: 'GET', url: url, timeout: TIMEOUT, headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_API_KEY } });
+      var profile = response.data;
+      profile.expert_email = user.email || null;
+      profile.expert_name = user.name || null;
+      profile.mongo_id = mongoId;
+      profile.eb_id = user.userId || null;
+      profile.user_type = 'expert';
+      return res.status(response.status).json(profile);
+    } catch (compErr) {
+      // Compliance profile not found — this user is likely a client.
+      // Generate the wallet user_id (UUID5 from mongo user ID, same as Credit Service uses)
+      var crypto = require('crypto');
+      var nsUrl = '6ba7b811-9dad-11d1-80b4-00c04fd430c8'; // UUID NAMESPACE_URL
+      var walletUserId = generateUuid5(nsUrl, 'mongo:user:' + mongoId);
+      return res.status(200).json({
+        expert_id: walletUserId,
+        expert_email: user.email || null,
+        expert_name: user.name || null,
+        mongo_id: mongoId,
+        eb_id: user.userId || null,
+        user_type: (user.role === 'tutor' || user.type === 'tutor') ? 'expert' : 'client'
+      });
+    }
   } catch (err) {
     if (err.response) {
       return res.status(err.response.status).json(err.response.data);
@@ -210,3 +242,29 @@ exports.getInvoiceByBooking = async function(req, res) {
   var bookingId = req.params.bookingId;
   return proxyToCredit(req, res, 'GET', '/api/v1/experts/payout-invoice/by-booking/' + bookingId);
 };
+
+
+// === Client Wallet ===
+
+exports.getWalletBalance = async function(req, res) {
+  var userId = req.params.userId;
+  return proxyToCredit(req, res, 'GET', '/api/v1/credits/balance/' + userId);
+};
+
+exports.getWalletHistory = async function(req, res) {
+  var userId = req.params.userId;
+  return proxyToCredit(req, res, 'GET', '/api/v1/credits/history/' + userId);
+};
+
+exports.applyWalletCredit = async function(req, res) {
+  return proxyToCredit(req, res, 'POST', '/api/v1/credits/apply', req.body);
+};
+
+// === Client Credit Notes ===
+
+exports.getClientCreditNotes = async function(req, res, userId, email) {
+  var url = '/api/v1/credit-notes/by-client/' + userId;
+  if (email) url += '?email=' + encodeURIComponent(email);
+  return proxyToCredit(req, res, 'GET', url);
+};
+
