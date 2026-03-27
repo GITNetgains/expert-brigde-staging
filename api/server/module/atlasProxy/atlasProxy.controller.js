@@ -395,3 +395,94 @@ exports.getAssessmentTranscript = async function(req, res) {
   }
 };
 
+
+// ============================================
+// VOICE-FIRST INTERVIEW ENDPOINTS
+// ============================================
+
+exports.nextQuestionFast = async function(req, res) {
+  await forwardToAtlas('POST', '/next-question-fast', req.body, res);
+};
+
+exports.questionAudio = async function(req, res) {
+  var assessmentId = req.params.assessmentId;
+  var url = ATLAS_URL + '/api/v1/interview/question-audio/' + assessmentId;
+  try {
+    var response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': ATLAS_KEY
+      },
+      signal: AbortSignal.timeout(30000)
+    });
+    var data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[AtlasProxy] question-audio failed:', err.message);
+    return res.status(502).json({ error: 'Atlas API unreachable' });
+  }
+};
+
+exports.uploadAudio = async function(req, res) {
+  // Forward multipart file to Atlas /audio endpoint
+  var FormData = require('form-data');
+  var https = require('https');
+  var http = require('http');
+
+  var form = new FormData();
+  if (req.file) {
+    form.append('file', req.file.buffer, {
+      filename: req.file.originalname || 'recording.webm',
+      contentType: req.file.mimetype || 'audio/webm'
+    });
+  } else {
+    return res.status(400).json({ error: 'No audio file provided' });
+  }
+  if (req.body.candidate_id) form.append('candidate_id', req.body.candidate_id);
+  if (req.body.assessment_id) form.append('assessment_id', req.body.assessment_id);
+
+  var parsed = new URL(ATLAS_URL + '/api/v1/interview/audio');
+  var proto = parsed.protocol === 'https:' ? https : http;
+
+  var options = {
+    hostname: parsed.hostname,
+    port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+    path: parsed.pathname,
+    method: 'POST',
+    headers: Object.assign({}, form.getHeaders(), { 'X-API-KEY': ATLAS_KEY }),
+    timeout: 30000
+  };
+
+  var atlasReq = proto.request(options, function(atlasRes) {
+    var chunks = [];
+    atlasRes.on('data', function(chunk) { chunks.push(chunk); });
+    atlasRes.on('end', function() {
+      var body = Buffer.concat(chunks).toString();
+      try {
+        var data = JSON.parse(body);
+        res.status(atlasRes.statusCode).json(data);
+      } catch (e) {
+        console.error('[AtlasProxy] audio: invalid response:', body.substring(0, 200));
+        res.status(502).json({ error: 'Invalid response from Atlas' });
+      }
+    });
+  });
+
+  atlasReq.on('error', function(err) {
+    console.error('[AtlasProxy] audio upload failed:', err.message);
+    res.status(502).json({ error: 'Audio upload failed' });
+  });
+
+  atlasReq.on('timeout', function() {
+    atlasReq.destroy();
+    res.status(504).json({ error: 'Audio upload timed out' });
+  });
+
+  form.pipe(atlasReq);
+};
+
+exports.submitAnswer = async function(req, res) {
+  await forwardToAtlas('POST', '/submit-answer', req.body, res);
+};
+
