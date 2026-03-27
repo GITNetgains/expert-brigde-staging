@@ -121,6 +121,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
 
   public isHoverTutor: boolean;
   public assessmentStatuses: { [id: string]: { hasAssessment: boolean; tier: string | null; verification_level?: string } } = {};
+  public verifiedOnly: boolean = false;
   public states: string[] = [];
 
   constructor(
@@ -452,6 +453,18 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
     this.query();
   }
 
+  toggleVerifiedFilter() {
+    this.verifiedOnly = !this.verifiedOnly;
+  }
+
+  get filteredTutors(): IUser[] {
+    if (!this.verifiedOnly) return this.tutors;
+    return this.tutors.filter(t => {
+      const info = this.assessmentStatuses[t._id];
+      return info && info.verification_level === 'verified';
+    });
+  }
+
   /** Fetch batch assessment status for all tutors on the page */
   loadAssessmentStatuses(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -464,6 +477,12 @@ if (!params.maxPrice1On1Class) delete params.maxPrice1On1Class;
       .subscribe({
         next: (resp: any) => {
           this.assessmentStatuses = resp?.statuses || {};
+          // Re-sort: verified experts first
+          this.tutors.sort((a, b) => {
+            const aVerified = this.assessmentStatuses[a._id]?.verification_level === 'verified' ? 1 : 0;
+            const bVerified = this.assessmentStatuses[b._id]?.verification_level === 'verified' ? 1 : 0;
+            return bVerified - aVerified;
+          });
         },
         error: (err: any) => {
           console.error('Assessment badge fetch failed:', err);
