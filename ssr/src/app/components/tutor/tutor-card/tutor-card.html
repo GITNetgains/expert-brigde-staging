@@ -8,6 +8,7 @@
           <h3 class="name">
             {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}
             <span *ngIf="assessmentInfo?.hasAssessment && getTierLabel()" class="ai-verified-badge" title="AI Skill Verified">&#9989; {{ getTierLabel() }}</span>
+            <span *ngIf="isVerified" class="verified-interview-check" title="Webcam Verified Interview">&#10003;</span>
           </h3>
           <p class="location">
             {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}

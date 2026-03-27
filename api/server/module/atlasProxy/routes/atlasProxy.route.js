@@ -32,6 +32,10 @@ module.exports = function(router) {
   // Knowledge probing routes
   router.post('/v1/atlas/check-probe', controller.checkProbe);
   router.post('/v1/atlas/submit-probe-response', controller.submitProbeResponse);
+
+  // Behavioral signal tracking routes
+  router.post('/v1/atlas/log-signal', controller.logSignal);
+  router.post('/v1/atlas/log-browser-info', controller.logBrowserInfo);
   router.get('/v1/atlas/verification-status/:assessmentId', controller.verificationStatus);
   router.get('/v1/atlas/verification-by-email/:email', controller.verificationByEmail);
   router.post('/v1/atlas/score-async', controller.scoreAsync);

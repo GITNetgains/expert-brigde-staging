@@ -120,7 +120,7 @@ toggleFilter(key: keyof typeof this.openFilter) {
 
 
   public isHoverTutor: boolean;
-  public assessmentStatuses: { [id: string]: { hasAssessment: boolean; tier: string | null } } = {};
+  public assessmentStatuses: { [id: string]: { hasAssessment: boolean; tier: string | null; verification_level?: string } } = {};
   public states: string[] = [];
 
   constructor(

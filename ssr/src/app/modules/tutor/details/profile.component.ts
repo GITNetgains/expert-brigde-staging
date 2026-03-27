@@ -105,6 +105,8 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
 
   /** AI Skill Assessment (Phase 5) */
   public assessmentSummary: any = null;
+  public isVerifiedInterview: boolean = false;
+  public confidenceLabel: string = '';
   public reportDownloading = false;
 
   /** Transcript Viewer */
@@ -371,10 +373,28 @@ export class TutorProfileComponent implements OnInit, AfterViewInit {
         next: (resp: any) => {
           if (resp?.hasAssessment && resp?.tier !== 'F') {
             this.assessmentSummary = resp;
+            // Fetch verification status if expert has email
+            if (this.tutor?.email) {
+              this.loadVerificationStatus(this.tutor.email);
+            }
           }
         },
         error: (err: any) => {
           console.error('Assessment summary load failed:', err);
+        }
+      });
+  }
+
+  loadVerificationStatus(email: string): void {
+    this.http.get<any>(environment.apiBaseUrl + '/atlas/verification-by-email/' + encodeURIComponent(email))
+      .subscribe({
+        next: (resp: any) => {
+          this.isVerifiedInterview = resp?.verification_level === 'verified';
+          this.confidenceLabel = resp?.confidence_label || (this.isVerifiedInterview ? 'High Confidence Assessment' : 'Standard Assessment');
+        },
+        error: () => {
+          this.isVerifiedInterview = false;
+          this.confidenceLabel = '';
         }
       });
   }

@@ -32,7 +32,7 @@ export class TutorCardComponent implements OnInit {
   public isLoggedin: boolean;
   @Input() currentUser: IUser;
   @Input() isBorder: boolean;
-  @Input() assessmentInfo: { hasAssessment: boolean; tier?: string | null } | null = null;
+  @Input() assessmentInfo: { hasAssessment: boolean; tier?: string | null; verification_level?: string } | null = null;
   @ViewChild('introVideoTpl') introVideoTpl: TemplateRef<any>;
   public videoUrl: any;
   /** When true, full bio is shown in the card (no navigation). */
@@ -88,6 +88,10 @@ export class TutorCardComponent implements OnInit {
     if (id) {
       this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${id}`);
     }
+  }
+
+  get isVerified(): boolean {
+    return this.assessmentInfo?.verification_level === 'verified';
   }
 
   getTierLabel(): string {

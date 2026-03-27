@@ -278,7 +278,8 @@ exports.getBatchStatus = async function(req, res) {
       if (mongoId) {
         statuses[mongoId] = {
           hasAssessment: results[email].hasAssessment,
-          tier: results[email].tier
+          tier: results[email].tier,
+          verification_level: results[email].verification_level || 'standard'
         };
       }
     });
@@ -540,5 +541,18 @@ exports.checkProbe = async function(req, res) {
 
 exports.submitProbeResponse = async function(req, res) {
   await forwardToAtlas('POST', '/submit-probe-response', req.body, res);
+};
+
+
+// ============================================
+// BEHAVIORAL SIGNAL TRACKING PROXY
+// ============================================
+
+exports.logSignal = async function(req, res) {
+  await forwardToAtlas('POST', '/log-signal', req.body, res);
+};
+
+exports.logBrowserInfo = async function(req, res) {
+  await forwardToAtlas('POST', '/log-browser-info', req.body, res);
 };
 

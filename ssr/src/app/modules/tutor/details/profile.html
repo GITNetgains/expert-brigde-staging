@@ -184,6 +184,17 @@
                     <td class="text-muted">Assessed:</td>
                     <td>{{ assessmentSummary.completedAt | date:'mediumDate' }}</td>
                   </tr>
+                  <tr *ngIf="isVerifiedInterview">
+                    <td class="text-muted">Verified:</td>
+                    <td>
+                      <span class="verified-interview-badge">&#10003; Verified Interview</span>
+                      <span class="confidence-label ms-2">{{ confidenceLabel }}</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="!isVerifiedInterview && assessmentSummary">
+                    <td class="text-muted">Status:</td>
+                    <td><span class="standard-assessment-label">Standard Assessment</span></td>
+                  </tr>
                 </table>
               </div>
               <div class="col-sm-6" *ngIf="assessmentSummary.topStrengths?.length">
