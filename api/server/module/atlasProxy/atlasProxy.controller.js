@@ -486,3 +486,46 @@ exports.submitAnswer = async function(req, res) {
   await forwardToAtlas('POST', '/submit-answer', req.body, res);
 };
 
+
+// ============================================
+// WEBCAM VERIFICATION PROXY
+// ============================================
+
+exports.webcamVerify = async function(req, res) {
+  await forwardToAtlas('POST', '/webcam-verify', req.body, res);
+};
+
+exports.verificationStatus = async function(req, res) {
+  var assessmentId = req.params.assessmentId;
+  var url = ATLAS_URL + '/api/v1/interview/verification-status/' + assessmentId;
+  try {
+    var response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': ATLAS_KEY },
+      signal: AbortSignal.timeout(5000)
+    });
+    var data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[AtlasProxy] verification-status failed:', err.message);
+    return res.status(502).json({ error: 'Atlas API unreachable' });
+  }
+};
+
+exports.verificationByEmail = async function(req, res) {
+  var email = req.params.email;
+  var url = ATLAS_URL + '/api/v1/interview/verification-by-email/' + encodeURIComponent(email);
+  try {
+    var response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': ATLAS_KEY },
+      signal: AbortSignal.timeout(5000)
+    });
+    var data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (err) {
+    console.error('[AtlasProxy] verification-by-email failed:', err.message);
+    return res.status(502).json({ error: 'Atlas API unreachable' });
+  }
+};
+
