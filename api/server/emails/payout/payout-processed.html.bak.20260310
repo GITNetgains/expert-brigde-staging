@@ -1,0 +1,44 @@
+<p>Hello {{expert.name}},</p>
+
+<p>Your payout has been processed for the following consultation:</p>
+
+<table style="width:100%;border-collapse:collapse;margin:16px 0;">
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;width:40%;">Booking Reference</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">{{booking.code}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;">Session Date</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">{{booking.date}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;">Gross Amount</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">{{appConfig.currencySymbol}} {{payout.grossAmount}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;">Platform Commission</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">- {{appConfig.currencySymbol}} {{payout.commission}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;">TDS Deducted ({{payout.tdsSection}})</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">- {{appConfig.currencySymbol}} {{payout.tdsAmount}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#0F172A;color:#fff;font-weight:700;">Net Amount Paid</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#0F172A;color:#fff;font-weight:700;">{{appConfig.currencySymbol}} {{payout.netAmount}}</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;background:#f8fafc;font-weight:600;">Bank Account</td>
+    <td style="padding:8px 12px;border:1px solid #e2e8f0;">****{{payout.bankLast4}}</td>
+  </tr>
+</table>
+
+<p>Please allow 2-3 business days for the amount to reflect in your account.</p>
+
+<p *ngIf="!payout.hasPan" style="background:#fff3cd;padding:12px;border-radius:6px;border:1px solid #ffc107;color:#856404;">
+  <strong>Reduce your TDS:</strong> Submit your PAN on the
+  <a href="https://www.expertbridge.co/users/payout/tax-compliance" style="color:#664d03;font-weight:bold;">Tax & Compliance</a>
+  page to reduce TDS from 20% to 10% (Section 194J).
+</p>
+
+<p>Thank you for consulting on ExpertBridge!</p>

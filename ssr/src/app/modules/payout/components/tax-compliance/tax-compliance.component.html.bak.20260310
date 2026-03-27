@@ -1,0 +1,92 @@
+<section class="sm-padding">
+  <div class="container">
+    <h4 class="color-light-black mb-3"><span translate>Tax &amp; Compliance Details</span></h4>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="card-horizontal input-border p-4">
+      <p class="text-muted">Loading compliance details...</p>
+    </div>
+
+    <!-- Service Unavailable -->
+    <div *ngIf="!loading && serviceUnavailable" class="card-horizontal input-border p-4">
+      <div class="alert alert-warning mb-0">
+        <strong>Billing service temporarily unavailable.</strong>
+        <p class="mb-0 mt-1">Your payout account is not affected. Tax compliance details will be available shortly.</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!loading && !serviceUnavailable" class="card-horizontal input-border">
+
+      <!-- Current PAN Status -->
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="form-group">
+            <label><strong translate>PAN Status</strong></label>
+            <div *ngIf="panStatus === 'verified'" class="mt-1">
+              <span class="badge bg-success text-white p-2">PAN on file: {{ panMasked }}</span>
+            </div>
+            <div *ngIf="panStatus === 'not_provided'" class="mt-1">
+              <span class="badge bg-warning text-dark p-2">PAN not provided</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TDS Info Box -->
+      <div class="row mb-3" *ngIf="countryCode === 'IN' || countryCode === ''">
+        <div class="col-md-10">
+          <div class="alert alert-info mb-0" style="font-size: 0.9rem;">
+            <strong>Important for Indian Experts:</strong>
+            PAN is required for 10% TDS (Tax Deducted at Source) on professional fees.
+            Without a valid PAN on file, 20% TDS applies as per Section 206AA of the Income Tax Act.
+          </div>
+        </div>
+      </div>
+
+      <!-- PAN Input Form -->
+      <form (submit)="savePan()" ngNativeValidate>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>PAN Number</label>
+              <input type="text" class="form-control" [ngModel]="panNumber" (ngModelChange)="panNumber=$event; onPanInput()" name="panNumber"
+                placeholder="e.g., ABCPD1234E" maxlength="10" autocomplete="off"
+                [class.is-valid]="panValid === true"
+                [class.is-invalid]="panValid === false" />
+              <div *ngIf="panValid === true" class="valid-feedback">
+                Valid PAN format
+              </div>
+              <div *ngIf="panValid === false" class="invalid-feedback">
+                {{ panError }}
+              </div>
+              <small class="form-text text-muted" *ngIf="panValid === null && panNumber.length === 0">
+                Format: 5 letters + 4 digits + 1 letter (e.g., ABCPD1234E)
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-primary" [disabled]="saving || !panValid">
+              <span *ngIf="!saving" translate>Save PAN</span>
+              <span *ngIf="saving">Saving...</span>
+            </button>
+            <a routerLink="/users/payout/account" class="btn btn-outline-secondary ms-2" translate>Back to Payout</a>
+          </div>
+        </div>
+
+        <!-- Save feedback -->
+        <div class="row" *ngIf="saveMessage">
+          <div class="col-md-8">
+            <div [class]="saveSuccess ? 'alert alert-success' : 'alert alert-danger'">
+              {{ saveMessage }}
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</section>

@@ -28,6 +28,10 @@ module.exports = function(router) {
 
   // Webcam verification routes
   router.post('/v1/atlas/webcam-verify', controller.webcamVerify);
+
+  // Knowledge probing routes
+  router.post('/v1/atlas/check-probe', controller.checkProbe);
+  router.post('/v1/atlas/submit-probe-response', controller.submitProbeResponse);
   router.get('/v1/atlas/verification-status/:assessmentId', controller.verificationStatus);
   router.get('/v1/atlas/verification-by-email/:email', controller.verificationByEmail);
   router.post('/v1/atlas/score-async', controller.scoreAsync);

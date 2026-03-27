@@ -99,6 +99,7 @@ exports.core = kernel => {
     if (
       whitelist.includes(origin) ||
       whitelist.includes(referrer) ||
+      (referrer && whitelist.some(w => { try { return new URL(referrer).origin === new URL(w).origin; } catch(e) { return false; } })) ||
       (requestHost && originHost && requestHost === originHost) ||
       (requestHost && referrerHost && requestHost === referrerHost) ||
       host === nconf.get('host') ||

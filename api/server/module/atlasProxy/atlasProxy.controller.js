@@ -529,3 +529,16 @@ exports.verificationByEmail = async function(req, res) {
   }
 };
 
+
+// ============================================
+// KNOWLEDGE PROBING PROXY
+// ============================================
+
+exports.checkProbe = async function(req, res) {
+  await forwardToAtlas('POST', '/check-probe', req.body, res);
+};
+
+exports.submitProbeResponse = async function(req, res) {
+  await forwardToAtlas('POST', '/submit-probe-response', req.body, res);
+};
+
