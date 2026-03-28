@@ -44,6 +44,12 @@ module.exports = function(router) {
   // Adaptive difficulty routes
   router.post('/v1/atlas/calculate-next-difficulty', controller.calculateNextDifficulty);
   router.get('/v1/atlas/difficulty-summary/:assessmentId', controller.difficultySummary);
+
+  // Practice mode routes
+  router.post('/v1/atlas/practice-start', controller.practiceStart);
+  router.post('/v1/atlas/practice-submit', controller.practiceSubmitAnswer);
+  router.post('/v1/atlas/practice-complete', controller.practiceComplete);
+  router.get('/v1/atlas/practice-history/:email', controller.practiceHistory);
   router.get('/v1/atlas/verification-status/:assessmentId', controller.verificationStatus);
   router.get('/v1/atlas/verification-by-email/:email', controller.verificationByEmail);
   router.post('/v1/atlas/score-async', controller.scoreAsync);

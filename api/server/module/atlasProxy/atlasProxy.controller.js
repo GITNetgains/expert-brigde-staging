@@ -582,3 +582,24 @@ exports.difficultySummary = async function(req, res) {
   await forwardToAtlas('GET', '/difficulty-summary/' + req.params.assessmentId, null, res);
 };
 
+
+// ============================================
+// PRACTICE MODE PROXY
+// ============================================
+
+exports.practiceStart = async function(req, res) {
+  await forwardToAtlas('POST', '/practice-start', req.body, res);
+};
+
+exports.practiceSubmitAnswer = async function(req, res) {
+  await forwardToAtlas('POST', '/practice-submit', req.body, res);
+};
+
+exports.practiceComplete = async function(req, res) {
+  await forwardToAtlas('POST', '/practice-complete', req.body, res);
+};
+
+exports.practiceHistory = async function(req, res) {
+  await forwardToAtlas('GET', '/practice-history/' + encodeURIComponent(req.params.email), null, res);
+};
+
