@@ -556,3 +556,16 @@ exports.logBrowserInfo = async function(req, res) {
   await forwardToAtlas('POST', '/log-browser-info', req.body, res);
 };
 
+
+// ============================================
+// EYE TRACKING / GAZE PROXY
+// ============================================
+
+exports.logGazeMetrics = async function(req, res) {
+  await forwardToAtlas('POST', '/log-gaze-metrics', req.body, res);
+};
+
+exports.gazeSummary = async function(req, res) {
+  await forwardToAtlas('GET', '/gaze-summary/' + req.params.assessmentId, null, res);
+};
+

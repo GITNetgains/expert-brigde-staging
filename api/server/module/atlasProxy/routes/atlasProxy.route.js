@@ -36,6 +36,10 @@ module.exports = function(router) {
   // Behavioral signal tracking routes
   router.post('/v1/atlas/log-signal', controller.logSignal);
   router.post('/v1/atlas/log-browser-info', controller.logBrowserInfo);
+
+  // Eye tracking / gaze routes
+  router.post('/v1/atlas/log-gaze-metrics', controller.logGazeMetrics);
+  router.get('/v1/atlas/gaze-summary/:assessmentId', controller.gazeSummary);
   router.get('/v1/atlas/verification-status/:assessmentId', controller.verificationStatus);
   router.get('/v1/atlas/verification-by-email/:email', controller.verificationByEmail);
   router.post('/v1/atlas/score-async', controller.scoreAsync);
