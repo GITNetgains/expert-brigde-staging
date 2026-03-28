@@ -40,6 +40,10 @@ module.exports = function(router) {
   // Eye tracking / gaze routes
   router.post('/v1/atlas/log-gaze-metrics', controller.logGazeMetrics);
   router.get('/v1/atlas/gaze-summary/:assessmentId', controller.gazeSummary);
+
+  // Adaptive difficulty routes
+  router.post('/v1/atlas/calculate-next-difficulty', controller.calculateNextDifficulty);
+  router.get('/v1/atlas/difficulty-summary/:assessmentId', controller.difficultySummary);
   router.get('/v1/atlas/verification-status/:assessmentId', controller.verificationStatus);
   router.get('/v1/atlas/verification-by-email/:email', controller.verificationByEmail);
   router.post('/v1/atlas/score-async', controller.scoreAsync);

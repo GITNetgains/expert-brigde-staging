@@ -569,3 +569,16 @@ exports.gazeSummary = async function(req, res) {
   await forwardToAtlas('GET', '/gaze-summary/' + req.params.assessmentId, null, res);
 };
 
+
+// ============================================
+// ADAPTIVE DIFFICULTY PROXY
+// ============================================
+
+exports.calculateNextDifficulty = async function(req, res) {
+  await forwardToAtlas('POST', '/calculate-next-difficulty', req.body, res);
+};
+
+exports.difficultySummary = async function(req, res) {
+  await forwardToAtlas('GET', '/difficulty-summary/' + req.params.assessmentId, null, res);
+};
+
