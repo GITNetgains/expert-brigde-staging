@@ -214,10 +214,61 @@ async function forwardParticipantEvent(payload, eventType) {
   }
 }
 
+
+const PIPELINE_URL = 'http://13.205.83.59:8002/sync/client-from-mongo';
+const REVERSE_SYNC_API_KEY = 'expertbridge-reverse-sync-m7n3p5';
+
+/**
+ * Sync client data to PostgreSQL via Pipeline Worker.
+ * Called on: client registration, profile update, admin delete.
+ * Fire-and-forget - failures are logged but do NOT block the main flow.
+ */
+async function forwardClientToPostgres(action, clientData) {
+  try {
+    if (!clientData || !clientData.email) {
+      console.warn('[ClientSync] No email provided, skipping sync');
+      return null;
+    }
+
+    const payload = {
+      action: action,
+      mongo_id: (clientData._id || clientData.id || '').toString(),
+      email: clientData.email,
+      full_name: clientData.name || clientData.fullName || '',
+      phone: clientData.phoneNumber || clientData.phoneNo || clientData.phone || '',
+      company_name: clientData.companyName || clientData.company_name || '',
+      company_size: clientData.companySize || clientData.company_size || '',
+      industry: clientData.industry || '',
+      designation: clientData.designation || '',
+      country: clientData.countryName || clientData.country || '',
+      state: clientData.state || '',
+      city: clientData.city || '',
+      address: clientData.address || '',
+      timezone: clientData.timezone || '',
+      email_verified: clientData.emailVerified || false
+    };
+
+    const response = await axios.post(PIPELINE_URL, payload, {
+      timeout: FORWARD_TIMEOUT_MS,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': REVERSE_SYNC_API_KEY
+      }
+    });
+
+    console.log('[ClientSync]', action, clientData.email, '->', response.data && response.data.status || 'ok');
+    return response.data;
+  } catch (error) {
+    console.error('[ClientSync] Failed (non-blocking):', error.message);
+    return null;
+  }
+}
+
 module.exports = {
   forwardRazorpayPayment,
   forwardZoomMeetingEnded,
   forwardExpertCompliance,
   forwardParticipantEvent,
+  forwardClientToPostgres,
   CREDIT_SERVICE_URL
 };

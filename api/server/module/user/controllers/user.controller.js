@@ -6,6 +6,7 @@ const Image = require('../../media/components/image');
 const url = require('url');
 const nconf = require('nconf');
 const mongoose = require('mongoose');
+const { forwardClientToPostgres } = require('../../creditService/forwarder');
 
 
 const BRAND = {
@@ -193,6 +194,11 @@ exports.update = async (req, res, next) => {
 
     if (fields.password) {
       await Service.User.newPassword(user, fields.password);
+    }
+
+    // Sync client to PostgreSQL on profile update (non-tutor only, fire-and-forget)
+    if (user.type !== 'tutor' && user.role !== 'tutor' && user.role !== 'admin') {
+      forwardClientToPostgres('UPSERT', user).catch(() => {});
     }
 
     res.locals.update = user;
@@ -654,6 +660,9 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
       user.emailVerified = true;
       await user.save();
     }
+
+    // Sync client to PostgreSQL (fire-and-forget)
+    forwardClientToPostgres('UPSERT', user).catch(() => {});
 
     await DB.User.updateOne(
       { _id: user._id },
@@ -1294,8 +1303,7 @@ exports.remove = async (req, res, next) => {
     });
     await user.remove();
 
-    // [DELETE-WEBHOOK] Notify PostgreSQL to archive the candidate record
-    // Only fire for tutor/expert deletions, not client or admin deletions
+    // [DELETE-WEBHOOK] Sync deletion to PostgreSQL
     if (user.type === 'tutor' || user.role === 'tutor') {
       try {
         const fetch = (await import('node-fetch')).default;
@@ -1322,6 +1330,13 @@ exports.remove = async (req, res, next) => {
       } catch (webhookErr) {
         pm2Error('[DELETE-WEBHOOK] Setup error (non-blocking):', webhookErr.message);
       }
+    }
+
+    // Archive client in PostgreSQL (non-tutor users)
+    if (user.type !== 'tutor' && user.role !== 'tutor' && user.role !== 'admin') {
+      forwardClientToPostgres('ARCHIVE', user).catch((err) => {
+        pm2Error('[ClientSync] Archive error (non-blocking):', err.message);
+      });
     }
 
     res.locals.remove = {
