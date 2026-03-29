@@ -198,7 +198,7 @@ exports.update = async (req, res, next) => {
 
     // Sync client to PostgreSQL on profile update (non-tutor only, fire-and-forget)
     if (user.type !== 'tutor' && user.role !== 'tutor' && user.role !== 'admin') {
-      forwardClientToPostgres('UPSERT', user).catch(() => {});
+      forwardClientToPostgres('UPSERT', user).catch((err) => console.error('[ClientSync] catch error:', err.message));
     }
 
     res.locals.update = user;
@@ -662,7 +662,7 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
     }
 
     // Sync client to PostgreSQL (fire-and-forget)
-    forwardClientToPostgres('UPSERT', user).catch(() => {});
+    forwardClientToPostgres('UPSERT', user).catch((err) => console.error('[ClientSync] catch error:', err.message));
 
     await DB.User.updateOne(
       { _id: user._id },
