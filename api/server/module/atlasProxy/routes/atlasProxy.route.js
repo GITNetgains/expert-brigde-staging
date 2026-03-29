@@ -65,4 +65,36 @@ module.exports = function(router) {
   router.get('/v1/atlas/summary/:mongoUserId', controller.getAssessmentSummary);  // Public — client profile viewing
   router.get('/v1/atlas/report/:mongoUserId', controller.getAssessmentReport);  // Public — client report viewing (window.open)
   router.get('/v1/atlas/transcript/:mongoUserId', controller.getAssessmentTranscript);  // Public — client profile transcript viewing
+
+  // Multilingual support routes (P21)
+  router.get('/v1/atlas/supported-languages', controller.supportedLanguages);
+  router.post('/v1/atlas/set-language', controller.setLanguage);
+
+
+  // Analytics dashboard routes (P22)
+  router.get('/v1/atlas/analytics/overview', controller.analyticsOverview);
+  router.get('/v1/atlas/analytics/by-expertise', controller.analyticsByExpertise);
+  router.get('/v1/atlas/analytics/cheat-detection', controller.analyticsCheatDetection);
+  router.get('/v1/atlas/analytics/time-analysis', controller.analyticsTimeAnalysis);
+  router.get('/v1/atlas/analytics/recent-assessments', controller.analyticsRecentAssessments);
+
+
+  // Benchmarking routes (P23)
+  router.post('/v1/atlas/benchmark/calculate', controller.benchmarkCalculate);
+  router.get('/v1/atlas/benchmark/expert/:assessmentId', controller.benchmarkExpert);
+  router.get('/v1/atlas/benchmark/distribution', controller.benchmarkDistribution);
+  router.get('/v1/atlas/benchmark/leaderboard', controller.benchmarkLeaderboard);
+  router.post('/v1/atlas/benchmark/recalculate-all', controller.benchmarkRecalculate);
+
+
+  // Direct PDF report by assessment ID (P24)
+  router.get('/v1/atlas/report/pdf/:assessmentId', controller.reportPdfById);
+
+
+  // Expert Portal routes (P25)
+  router.get('/v1/atlas/portal/my-assessments', controller.portalMyAssessments);
+  router.get('/v1/atlas/portal/assessment-detail/:assessmentId', controller.portalAssessmentDetail);
+  router.get('/v1/atlas/portal/can-retake', controller.portalCanRetake);
+  router.get('/v1/atlas/portal/progress-over-time', controller.portalProgress);
+
 };

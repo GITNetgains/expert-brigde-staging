@@ -340,25 +340,30 @@ exports.getAssessmentReport = async function(req, res) {
       return res.status(404).json({ error: 'Expert not found' });
     }
 
-    // Get summary to check if report exists
+    // Get summary to find assessment ID
     var summary = await forwardToAtlasQuick('GET', '/assessment-summary/' + encodeURIComponent(email), null);
 
-    if (!summary.hasAssessment || !summary.reportAvailable) {
+    if (!summary.hasAssessment) {
       return res.status(404).json({ error: 'Assessment report not available' });
     }
 
-    // Get PDF URL from Atlas admin API
-    var url = ATLAS_URL + '/api/v1/admin/assessments/' + summary.assessmentId + '/pdf';
+    // Proxy to PDF generation endpoint (P24)
+    var url = ATLAS_URL + '/api/v1/report/pdf/' + summary.assessmentId;
     var pdfRes = await fetch(url, {
       headers: { 'X-API-KEY': ATLAS_KEY },
-      signal: AbortSignal.timeout(ATLAS_TIMEOUT)
+      signal: AbortSignal.timeout(30000)
     });
-    var pdfData = await pdfRes.json();
 
-    if (pdfData.pdf_url) {
-      return res.redirect(302, pdfData.pdf_url);
+    if (!pdfRes.ok) {
+      var errData = await pdfRes.json().catch(function() { return {}; });
+      return res.status(pdfRes.status).json(errData);
     }
-    return res.status(404).json({ error: 'Report not found' });
+
+    var pdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=assessment_report_' + summary.assessmentId.slice(0, 8) + '.pdf');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.send(pdfBuffer);
   } catch (err) {
     console.error('[getAssessmentReport] Error:', err.message);
     return res.status(500).json({ error: 'Failed to fetch assessment report' });
@@ -601,5 +606,121 @@ exports.practiceComplete = async function(req, res) {
 
 exports.practiceHistory = async function(req, res) {
   await forwardToAtlas('GET', '/practice-history/' + encodeURIComponent(req.params.email), null, res);
+};
+
+// Multilingual support (P21)
+exports.supportedLanguages = async function(req, res) {
+  await forwardToAtlas('GET', '/supported-languages', null, res);
+};
+
+exports.setLanguage = async function(req, res) {
+  await forwardToAtlas('POST', '/set-language', req.body, res);
+};
+
+// Analytics dashboard (P22) — uses /api/v1/analytics (NOT /api/v1/interview)
+async function forwardToAtlasRaw(method, fullPath, body, res) {
+  var url = ATLAS_URL + fullPath;
+  var opts = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': ATLAS_KEY
+    },
+    signal: AbortSignal.timeout(120000)
+  };
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
+  try {
+    var r = await fetch(url, opts);
+    var data = await r.json();
+    res.status(r.status).json(data);
+  } catch (err) {
+    console.error('Atlas analytics proxy error:', err.message);
+    res.status(502).json({ error: 'Atlas service unavailable' });
+  }
+}
+
+exports.analyticsOverview = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/analytics/overview', null, res);
+};
+
+exports.analyticsByExpertise = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/analytics/by-expertise', null, res);
+};
+
+exports.analyticsCheatDetection = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/analytics/cheat-detection', null, res);
+};
+
+exports.analyticsTimeAnalysis = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/analytics/time-analysis', null, res);
+};
+
+exports.analyticsRecentAssessments = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/analytics/recent-assessments', null, res);
+};
+
+// Benchmarking (P23) — uses /api/v1/benchmark (NOT /api/v1/interview)
+exports.benchmarkCalculate = async function(req, res) {
+  await forwardToAtlasRaw('POST', '/api/v1/benchmark/calculate', req.body, res);
+};
+
+exports.benchmarkExpert = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/benchmark/expert/' + req.params.assessmentId, null, res);
+};
+
+exports.benchmarkDistribution = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/benchmark/distribution', null, res);
+};
+
+exports.benchmarkLeaderboard = async function(req, res) {
+  var limit = req.query.limit || 20;
+  await forwardToAtlasRaw('GET', '/api/v1/benchmark/leaderboard?limit=' + limit, null, res);
+};
+
+exports.benchmarkRecalculate = async function(req, res) {
+  await forwardToAtlasRaw('POST', '/api/v1/benchmark/recalculate-all', req.body, res);
+};
+
+// Direct PDF report by assessment ID (P24)
+exports.reportPdfById = async function(req, res) {
+  try {
+    var assessmentId = req.params.assessmentId;
+    var url = ATLAS_URL + '/api/v1/report/pdf/' + assessmentId;
+    var pdfRes = await fetch(url, {
+      headers: { 'X-API-KEY': ATLAS_KEY },
+      signal: AbortSignal.timeout(30000)
+    });
+
+    if (!pdfRes.ok) {
+      var errData = await pdfRes.json().catch(function() { return {}; });
+      return res.status(pdfRes.status).json(errData);
+    }
+
+    var pdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=assessment_report_' + assessmentId.slice(0, 8) + '.pdf');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.send(pdfBuffer);
+  } catch (err) {
+    console.error('[reportPdfById] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to generate report' });
+  }
+};
+
+// Expert Portal (P25)
+exports.portalMyAssessments = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/portal/my-assessments?email=' + encodeURIComponent(req.query.email || ''), null, res);
+};
+
+exports.portalAssessmentDetail = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/portal/assessment-detail/' + req.params.assessmentId + '?email=' + encodeURIComponent(req.query.email || ''), null, res);
+};
+
+exports.portalCanRetake = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/portal/can-retake?email=' + encodeURIComponent(req.query.email || ''), null, res);
+};
+
+exports.portalProgress = async function(req, res) {
+  await forwardToAtlasRaw('GET', '/api/v1/portal/progress-over-time?email=' + encodeURIComponent(req.query.email || ''), null, res);
 };
 
