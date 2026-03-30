@@ -737,6 +737,8 @@ exports.endMeeting = async zoomMeeting => {
             appointment.meetingEndAt = zoomMeeting.timestamp;
           }
           appointment.meetingEnd = true;
+          // Clear Zoom meeting data to invalidate join/start URLs after meeting ends
+          appointment.zoomData = null;
           await appointment.save();
           await DB.User.update(
             { _id: appointment.tutorId },
