@@ -121,6 +121,23 @@ exports.hook = async (req, res, next) => {
       } catch (enrichErr) {
         console.warn('[CreditService] Appointment enrichment failed (non-blocking):', enrichErr.message);
       }
+
+      // Enrich with commission breakdown from transaction for correct settlement
+      if (transaction.balance > 0) {
+        var commissionPct = transaction.commission > 0
+          ? Math.round((transaction.commission / transaction.balance) * 10000) / 100
+          : 0;
+        event._commissionEnrichment = {
+          commission_minor: Math.round(transaction.commission * 100),
+          commission_percent: commissionPct,
+          expert_base_minor: Math.round(transaction.balance * 100)
+        };
+        console.log('[CreditService] Commission enrichment: base=%d commission=%d pct=%s%%',
+          event._commissionEnrichment.expert_base_minor,
+          event._commissionEnrichment.commission_minor,
+          commissionPct);
+      }
+
       forwardRazorpayPayment(event).catch(function(err) {
         console.error('[CreditService] Async forward error:', err.message);
       });
