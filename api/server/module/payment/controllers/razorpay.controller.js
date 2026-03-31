@@ -264,6 +264,55 @@ exports.confirm = async (req, res, next) => {
       console.error('Confirm: downstream logic error for transaction', transaction._id, bizErr);
     }
 
+    // === CREDIT SERVICE FORWARDING (redundant path — webhook may not arrive) ===
+    (async function() {
+      try {
+        // Build synthetic Razorpay webhook event for the forwarder
+        var syntheticEvent = {
+          event: 'payment.captured',
+          payload: { payment: { entity: payment } }
+        };
+
+        // Appointment enrichment
+        var appt = await DB.Appointment.findOne({ transactionId: transaction._id }, '_id meetingId').lean();
+        if (appt) {
+          syntheticEvent._appointmentEnrichment = {
+            appointment_id: String(appt._id),
+            zoom_meeting_id: appt.meetingId ? String(appt.meetingId) : null
+          };
+        }
+
+        // Commission enrichment
+        if (transaction.balance > 0) {
+          var commPct = transaction.commission > 0
+            ? Math.round((transaction.commission / transaction.balance) * 10000) / 100
+            : 0;
+          syntheticEvent._commissionEnrichment = {
+            commission_minor: Math.round(transaction.commission * 100),
+            commission_percent: commPct,
+            expert_base_minor: Math.round(transaction.balance * 100)
+          };
+        }
+
+        // Wallet credit enrichment
+        if (transaction.walletCredit && transaction.walletCredit.amount_minor > 0) {
+          syntheticEvent._walletCreditInfo = {
+            user_mongo_id: transaction.walletCredit.user_mongo_id,
+            amount_minor: transaction.walletCredit.amount_minor,
+            currency: transaction.walletCredit.currency || 'INR'
+          };
+        }
+
+        forwardRazorpayPayment(syntheticEvent).catch(function(err) {
+          console.error('[CreditService] Confirm-path forward error:', err.message);
+        });
+        console.log('[CreditService] Confirm-path forward queued for txn:', transaction._id);
+      } catch (enrichErr) {
+        console.warn('[CreditService] Confirm-path enrichment failed:', enrichErr.message);
+      }
+    })();
+    // === END CREDIT SERVICE FORWARDING ===
+
     res.locals.confirm = { success: true };
     return next();
   } catch (err) {
