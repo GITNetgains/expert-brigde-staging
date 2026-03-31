@@ -33,6 +33,47 @@
     </a>
   </div>
 
+  <!-- AI Search Section for Student/User -->
+  <div class="ai-search-section" *ngIf="type === 'student' || type === 'user'">
+    <div class="search-wrap-container">
+      <form (submit)="onSearch($event)" class="dashboard-search-wrap">
+        <div class="dashboard-search-box">
+          <textarea
+            #searchTextarea
+            [(ngModel)]="query"
+            name="query"
+            class="dashboard-search-input"
+            placeholder="Provide a one line brief – our AI drafts your query - post in seconds"
+            rows="1"
+            (input)="resizeSearchInput()"
+            (keydown.enter)="onSearchKeydown($event)"
+            required
+          ></textarea>
+
+          <span class="recording-indicator" *ngIf="isRecording">
+            Listening...
+          </span>
+
+          <button type="button" class="mic-btn" (click)="toggleRecording()">
+            <img
+              *ngIf="!isRecording"
+              src="assets/images/homepage/mic.svg"
+              class="mic-img"
+              alt="mic"
+            />
+            <img
+              *ngIf="isRecording"
+              src="assets/images/homepage/mic.svg"
+              class="mic-img recording"
+              alt="recording"
+            />
+          </button>
+        </div>
+        <button type="submit" class="proceed-btn">Proceed</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Menu Grid for Student/Other -->
   <div class="dashboard-grid" *ngIf="type === 'student' || type === 'user'">
     <a [routerLink]="[menu.path]" class="menu-card" *ngFor="let menu of studentMenus; let i = index">

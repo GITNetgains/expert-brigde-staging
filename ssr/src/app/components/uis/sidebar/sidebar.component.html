@@ -1,5 +1,14 @@
-<div class="left-sidebar">
+<div class="left-sidebar" [class.mobile-open]="showMenu">
   <aside class="main-sidebar">
+    <button
+      type="button"
+      class="mobile-close-btn"
+      (click)="closeMobileMenu()"
+      aria-label="Close menu"
+    >
+      &times;
+    </button>
+
     <!-- Brand Logo -->
     <a class="brand-link" routerLink="/">
       <img src="/assets/images/logo.svg" alt="Logo" class="brand-image" onerror="this.src='/assets/images/logo.png'" />
@@ -7,7 +16,7 @@
 
     <!-- Sidebar Menu -->
     <div class="sidebar">
-      <ul class="nav">
+      <ul class="nav" (click)="onNavItemClick($event)">
         <!-- Dashboard -->
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/users/dashboard']" routerLinkActive="active"

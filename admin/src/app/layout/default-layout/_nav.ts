@@ -71,21 +71,21 @@ export const navItems: INavData[] = [
     url: '/filter',
     iconComponent: { name: 'cil-filter' },
     children: [
-      {
-        name: 'Grade',
-        url: '/grade',
-        icon: 'nav-icon-bullet',
-        children: [
-          {
-            name: 'All Grade',
-            url: '/grade/list',
-          },
-          {
-            name: 'Create new',
-            url: '/grade/create',
-          },
-        ],
-      },
+      // {
+      //   name: 'Grade',
+      //   url: '/grade',
+      //   icon: 'nav-icon-bullet',
+      //   children: [
+      //     {
+      //       name: 'All Grade',
+      //       url: '/grade/list',
+      //     },
+      //     {
+      //       name: 'Create new',
+      //       url: '/grade/create',
+      //     },
+      //   ],
+      // },
       {
         name: 'Category',
         url: '/category',
@@ -103,12 +103,12 @@ export const navItems: INavData[] = [
       },
 
       {
-        name: 'Subject',
+        name: 'SubCategory',
         url: '/subject',
         icon: 'nav-icon-bullet',
         children: [
           {
-            name: 'All Subject',
+            name: 'All SubCategory',
             url: '/subject/list',
           },
           {
@@ -117,35 +117,35 @@ export const navItems: INavData[] = [
           },
         ],
       },
-      {
-        name: 'Topic',
-        url: '/topic',
-        icon: 'nav-icon-bullet',
-        children: [
-          {
-            name: 'All Topic',
-            url: '/topic/list',
-          },
-          {
-            name: 'Create new',
-            url: '/topic/create',
-          },
-        ],
-      },
+      // {
+      //   name: 'Topic',
+      //   url: '/topic',
+      //   icon: 'nav-icon-bullet',
+      //   children: [
+      //     {
+      //       name: 'All Topic',
+      //       url: '/topic/list',
+      //     },
+      //     {
+      //       name: 'Create new',
+      //       url: '/topic/create',
+      //     },
+      //   ],
+      // },
     ],
   },
   {
-    name: 'Classes',
+    name: 'Group Sessions',
     url: '/classes',
     iconComponent: { name: 'cil-book' },
     children: [
       {
-        name: 'Group Classes',
+        name: 'Group Sessions',
         url: '/webinar',
         icon: 'nav-icon-bullet',
         children: [
           {
-            name: 'All Group Classes',
+            name: 'All Group Sessions',
             url: '/webinar/list',
           },
           {

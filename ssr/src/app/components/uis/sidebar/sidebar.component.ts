@@ -92,6 +92,27 @@ export class SidebarComponent {
     this.showMenuChange.emit(!this.showMenu);
   }
 
+  private _isMobile(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth <= 991;
+  }
+
+  closeMobileMenu() {
+    // Keep desktop behavior unchanged; only close automatically on mobile.
+    if (this._isMobile() && this.showMenu) {
+      this.showMenuChange.emit(false);
+    }
+  }
+
+  onNavItemClick(event: Event) {
+    if (!this._isMobile() || !this.showMenu) return;
+
+    const target = event.target as HTMLElement | null;
+    const link = target?.closest?.('a');
+    if (link && link.classList.contains('nav-link')) {
+      this.closeMobileMenu();
+    }
+  }
+
   changeLang(lang: any) {
     this.userLang = lang.key;
     this.systemService.setUserLang(this.userLang);

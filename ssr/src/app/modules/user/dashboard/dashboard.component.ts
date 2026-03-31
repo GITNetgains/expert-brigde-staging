@@ -1,18 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { studentMenus, tutorMenus } from './menu';
-import { STATE, SeoService, StateService } from 'src/app/services';
+import { STATE, SeoService, StateService, AuthService } from 'src/app/services';
+import { AppService } from 'src/app/services/app-service';
 import { IUser } from 'src/app/interface';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewChecked {
   public type: string = '';
   public studentMenus = studentMenus;
   public tutorMenus = tutorMenus;
   currentUser: IUser;
   isLoading: boolean = true;
+
+  // AI Search properties
+  @ViewChild('searchTextarea') searchTextareaRef: ElementRef<HTMLTextAreaElement> | null = null;
+  query: string = '';
+  isRecording: boolean = false;
+  recognition: any = null;
+  private queryChanged = false;
 
   // Premium color palette for icons
   private iconColors = [
@@ -24,7 +33,13 @@ export class DashboardComponent implements OnInit {
     'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
   ];
 
-  constructor(private seoService: SeoService, public stateService: StateService) {
+  constructor(
+    private seoService: SeoService, 
+    public stateService: StateService,
+    private router: Router,
+    private auth: AuthService,
+    private app: AppService
+  ) {
     this.seoService.setMetaTitle('Dashboard');
   }
 
@@ -34,15 +49,91 @@ export class DashboardComponent implements OnInit {
       this.type = this.currentUser.type;
       this.isLoading = false;
     } else {
-      // Handle case where user might be loaded asynchronously
-      // For now, we assume if it's not in state, we wait or it re-renders when state updates
-      // Just in case, set a timeout to disable loading if it's really stuck, or ideally subscribe to user changes
-      // However keeping it simple as per original logic, just adding a check.
       this.isLoading = false;
     }
+
+    this.initSpeechRecognition();
   }
 
   getIconBackground(index: number) {
     return this.iconColors[index % this.iconColors.length];
+  }
+
+  // AI Search Methods
+  initSpeechRecognition() {
+    if (!this.app.isBrowser) return;
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+
+    if (SpeechRecognition) {
+      this.recognition = new SpeechRecognition();
+      this.recognition.lang = 'en-US';
+      this.recognition.interimResults = false;
+
+      this.recognition.onstart = () => {
+        this.isRecording = true;
+      };
+
+      this.recognition.onresult = (event: any) => {
+        this.query = event.results[0][0].transcript;
+        this.queryChanged = true;
+      };
+
+      this.recognition.onend = () => {
+        this.isRecording = false;
+      };
+    }
+  }
+
+  onSearchKeydown(event: Event) {
+    const e = event as KeyboardEvent;
+    if (e.key !== 'Enter') return;
+    if (e.shiftKey) return;
+    event.preventDefault();
+    if (this.query.trim()) this.onSearch(event);
+  }
+
+  resizeSearchInput() {
+    if (!this.app.isBrowser) return;
+    const el = this.searchTextareaRef?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    const newHeight = Math.min(el.scrollHeight, 200);
+    el.style.height = newHeight + 'px';
+  }
+
+  ngAfterViewChecked() {
+    if (this.queryChanged && this.app.isBrowser) {
+      this.queryChanged = false;
+      setTimeout(() => this.resizeSearchInput(), 0);
+    }
+  }
+
+  toggleRecording() {
+    if (!this.recognition) {
+      alert('Voice recognition is not supported on this browser.');
+      return;
+    }
+
+    this.isRecording
+      ? this.recognition.stop()
+      : this.recognition.start();
+  }
+
+  async onSearch(event: Event) {
+    event.preventDefault();
+    if (!this.query.trim()) return;
+    if (this.auth.isLoggedin()) {
+      const current = await this.auth.getCurrentUser();
+      const isTutor = current && current.type === 'tutor';
+      if (isTutor) {
+        this.app.toastError('Experts cannot post queries.');
+        this.query = '';
+        return;
+      }
+    }
+    const queryParams = { q: this.query };
+    this.router.navigate(['/pages/ai-result'], { queryParams });
   }
 }

@@ -224,12 +224,6 @@ export class CreateWebinarComponent implements OnInit {
         message: 'Please fill all required fields and select an expert.',
       });
     }
-    if (!this.webinar.mainImageId) {
-      return this.utilService.toastError({
-        title: 'Validation Error',
-        message: 'Please upload a main image for the webinar.',
-      });
-    }
     if (this.webinar.price === null || this.webinar.price === undefined || this.webinar.price === '' || this.webinar.price === 0 || this.webinar.price < 0) {
       return this.utilService.toastError({
         title: 'Validation Error',

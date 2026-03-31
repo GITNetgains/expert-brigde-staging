@@ -125,13 +125,14 @@
               <h6><span translate>Your Expert ID</span></h6>
               <p class="text-secondary2 mb-0">{{ info.userId }}</p>
             </div>
-            <div class="d-flex align-items-center mt-2">
-              <h6 class="me-3 mb-0"><span translate>Show only my ID (hide personal info)</span></h6>
-              <label class="switch">
-                <input type="checkbox" [checked]="!!info.showPublicIdOnly" (change)="changeShowPublicIdOnly()" />
-                <span class="slider round"></span>
-              </label>
-            </div>
+        
+          </div>
+          <div class="d-flex align-items-center mt-2" *ngIf="info && info.type === 'tutor'">
+            <h6 class="me-3 mb-0"><span translate>Show only my ID (hide personal info)</span></h6>
+            <label class="switch">
+              <input type="checkbox" [checked]="!!info.showPublicIdOnly" (change)="changeShowPublicIdOnly()" />
+              <span class="slider round"></span>
+            </label>
           </div>
 
           <!-- Send CV to expert-registration webhook (profile dashboard): upload CV then submit -->
@@ -411,10 +412,6 @@
             </form>
           </div>
         </div>
-       
-      </div>
-
-      <div class="col-lg-7 col-md-12">
         <div *ngIf="info" class="card glass-card mt-4">
           <div class="card-header">
             <h4 translate>Update password</h4>
@@ -443,6 +440,10 @@
             </form>
           </div>
         </div>
+      </div>
+
+      <div class="col-lg-7 col-md-12">
+        
         <div class="card glass-card">
           <div class="card-header">
             <h4><span translate>Description</span></h4>

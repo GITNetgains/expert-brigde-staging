@@ -225,7 +225,7 @@ verifyOtp(payload: any) {
   return this.post('/auth/verifyOtp', payload);
 }
 
-completeStudentSignup(payload: { signupToken: string; password: string; name: string; phoneNumber?: string; address?: string }) {
+completeStudentSignup(payload: { signupToken: string; password: string; name: string; phoneNumber?: string; country: any }) {
   return this.post('/auth/complete-student-signup', payload);
 }
 

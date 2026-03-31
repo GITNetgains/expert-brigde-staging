@@ -14,6 +14,7 @@ import { StaticPageService } from 'src/app/services';
 import { StaticPageComponent } from './components/static-page/page.component';
 import { AiResultComponent } from './components/ai-result/ai-result.component';
 import { HomeModule } from '../home/home.module';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { FileUploadComponent } from 'src/app/components/media/file-upload/file-upload.component';
 import { AiQueryBarComponent } from './components/ai-query-bar/ai-query-bar.component';
 import { AboutComponent } from './components/about/about.component';
@@ -27,6 +28,7 @@ import { ExpertParticipationJourneyComponent } from './components/expert-partici
     NgbModule,
     PageRoutingModule,
     SlickCarouselModule,
+    NgSelectModule,
     TranslateModule.forChild(),
     forwardRef(() => SharedModule),
     forwardRef(() => FileUploadComponent)
