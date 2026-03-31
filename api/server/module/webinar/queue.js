@@ -87,7 +87,7 @@ enrollQ.process(async (job, done) => {
 
         const notificationTutor = {
           title: `Booking`,
-          description: webinar.isFree || data.price <= 0 ? 'You have a new free group class booking!' : 'You have a new group class booking!',
+          description: webinar.isFree || data.price <= 0 ? 'You have a new free group session booking!' : 'You have a new group session booking!',
           itemId: webinar._id,
           notifyTo: tutor._id,
           type: 'booking'

@@ -143,9 +143,19 @@
                 [(ngModel)]="studentProfile.phoneNumber" name="studentPhone" />
             </div>
             <div class="mb-3">
-              <label>Address</label>
-              <input type="text" class="form-control" placeholder="Enter your address (optional)"
-                [(ngModel)]="studentProfile.address" name="studentAddress" />
+              <label>Country *</label>
+              <ng-select
+                [items]="countries"
+                bindLabel="name"
+                [searchable]="true"
+                [searchFn]="countrySearchFn"
+                [(ngModel)]="studentProfile.country"
+                name="studentCountry"
+                (change)="onCountrySelectStudent($event?.code)"
+                placeholder="Select country"
+                [clearable]="true"
+                required
+              ></ng-select>
             </div>
           </div>
 

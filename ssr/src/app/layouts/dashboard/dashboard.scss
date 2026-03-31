@@ -164,6 +164,20 @@ $sidebar-menu-width: 280px;
   }
 }
 
+@media (max-width: 768px) {
+  /* On mobile, rely on the sidebar's translateX animation.
+     Disabling wrapper width/opacity transitions prevents slow opening. */
+  .wrapper-dashboard.menu-hidden {
+    .main-sidebar {
+      width: $sidebar-menu-width;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      overflow: hidden;
+    }
+  }
+}
+
 @media (min-width: 576px) {
   .wrapper-dashboard {
 
@@ -260,11 +274,12 @@ $sidebar-menu-width: 280px;
 
     .overlay {
       display: none;
-      position: absolute;
-      width: 100%;
-      height: 100%;
+      /* Use fixed + inset to guarantee full edge-to-edge coverage */
+      position: fixed;
+      inset: 0;
       background-color: #1a1a1a;
-      filter: blur(12px);
+      /* Avoid expensive blur on mobile for smoother sidebar animation */
+      filter: blur(0px);
       opacity: 0.3;
       z-index: 1000;
     }

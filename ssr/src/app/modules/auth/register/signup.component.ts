@@ -64,7 +64,7 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
   public studentProfile = {
     name: '',
     phoneNumber: '',
-    address: ''
+    country: null as any
   };
 
   public tutorProfile = {
@@ -431,7 +431,7 @@ if (this.newPassword !== this.confirmPassword) {
    * COMPLETE STUDENT PROFILE
    * ========================= */
   private async completeStudentProfile(): Promise<void> {
-    const { name, phoneNumber, address } = this.studentProfile;
+    const { name, phoneNumber, country } = this.studentProfile;
 
     if (!name.trim()) {
       this.appService.toastError('Please enter your name');
@@ -442,8 +442,8 @@ if (this.newPassword !== this.confirmPassword) {
       this.appService.toastError('Please enter valid phone number');
       return;
     }
-    if (address && address.length < 5) {
-      this.appService.toastError('Please enter valid address');
+    if (!country) {
+      this.appService.toastError('Please select your country');
       return;
     }
     if (!this.signupToken) {
@@ -459,8 +459,8 @@ if (this.newPassword !== this.confirmPassword) {
         signupToken: this.signupToken,
         password: this.newPassword,
         name: name.trim(),
-        phoneNumber: phoneNumber.trim(),
-        address: address.trim()
+        phoneNumber: phoneNumber ? phoneNumber.trim() : undefined,
+        country: country
       });
       this.clearPendingSignup();
       this.appService.toastSuccess('Account created successfully. Please login.');
@@ -639,6 +639,11 @@ if (this.newPassword !== this.confirmPassword) {
   onCountrySelect(code: string): void {
     const country = this.countries.find((x: any) => x.code === code);
     this.tutorProfile.country = country || null;
+  }
+
+  onCountrySelectStudent(code: string): void {
+    const countryObj = this.countries.find((x: any) => x.code === code);
+    this.studentProfile.country = countryObj || null;
   }
 
   /* =========================

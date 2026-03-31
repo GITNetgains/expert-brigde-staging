@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewChecked, PLATFORM_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { AiService } from 'src/app/services/ai.service';
-import { AppService, StateService, STATE, UserService, AuthService } from 'src/app/services';
+import { AppService, StateService, STATE, UserService, AuthService, CountryService } from 'src/app/services';
 import { environment } from 'src/environments/environment';
 import { isPlatformBrowser } from '@angular/common'; // Added isPlatformBrowser
 declare var grecaptcha: any;
@@ -19,6 +19,9 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
   answer = '';
   editableText = '';
   private queryValueChanged = false;
+
+  isRecording: boolean = false;
+  recognition: any = null;
 
   extractedRole = '';
   extractedIndustry = '';
@@ -44,6 +47,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
 }
 
   isClientUser = false;
+  public countries: any[] = [];
   private _uploadResolver: ((value: any) => void) | null = null;
 
   constructor(
@@ -54,12 +58,14 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
     private stateService: StateService,
     private router: Router,
     public auth: AuthService,
+    private countryService: CountryService,
     @Inject(PLATFORM_ID) private platformId: any
   ) {}
 
 
 
   ngOnInit() {
+    this.countries = this.countryService.getCountry();
   
     this.aiFileUploadOptions = {
       url: environment.apiBaseUrl + '/tutors/upload-document',
@@ -144,6 +150,36 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     });
 
+    // Voice recognition (SpeechRecognition / webkitSpeechRecognition)
+    if (isPlatformBrowser(this.platformId)) {
+      const SpeechRecognition =
+        (window as any).webkitSpeechRecognition ||
+        (window as any).SpeechRecognition;
+
+      if (SpeechRecognition) {
+        this.recognition = new SpeechRecognition();
+        this.recognition.lang = 'en-US';
+        this.recognition.interimResults = false;
+
+        this.recognition.onstart = () => {
+          this.isRecording = true;
+        };
+
+        this.recognition.onresult = (event: any) => {
+          const transcript = event?.results?.[0]?.[0]?.transcript;
+          if (transcript) {
+            this.query = transcript;
+            // trigger auto-grow resize after query changes
+            this.queryValueChanged = true;
+          }
+        };
+
+        this.recognition.onend = () => {
+          this.isRecording = false;
+        };
+      }
+    }
+
     this.routerSub = this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationStart) {
         if (this.countdownInterval) {
@@ -180,6 +216,27 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  toggleRecording() {
+    if (!this.recognition) {
+      this.appService.toastError(
+        'Voice recognition is not supported in this browser.'
+      );
+      return;
+    }
+
+    this.isRecording ? this.recognition.stop() : this.recognition.start();
+  }
+
+  /** Stop active SpeechRecognition session (prevents mic from running during AI generation). */
+  private stopRecognition() {
+    if (this.recognition && this.isRecording) {
+      try {
+        this.recognition.stop();
+      } catch {}
+    }
+    this.isRecording = false;
+  }
+
   extractKeywords(query: string) {
     const parts = query.split(' in ');
     this.extractedRole = parts[0] || '';
@@ -188,6 +245,8 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
 
  async fetch() {
   this.loading = true;
+  // Ensure voice recognition doesn't keep running while generating the result.
+  this.stopRecognition();
   try {
     
 
@@ -228,6 +287,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
   searchAgain() {
     const q = (this.query || '').trim();
     if (!q || this.loading) return;
+    this.stopRecognition();
     this.router.navigate(['/pages/ai-result'], { queryParams: { q } });
     // Route queryParams subscription will run and call fetch()
   }
@@ -235,6 +295,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
   /** Clear search and go to /pages/ai-result (fresh state) */
   clear() {
     if (this.loading) return;
+    this.stopRecognition();
     this.query = '';
     this.answer = '';
     this.editableText = '';
@@ -245,8 +306,14 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
 lead = {
   name: '',
   email: '',
-  phone: ''
+  phone: '',
+  country: null as any
 };
+
+onCountrySelect(code: string): void {
+  const countryObj = this.countries.find((x: any) => x.code === code);
+  this.lead.country = countryObj || null;
+}
 
 // Inside AiResultComponent class
 
@@ -358,6 +425,11 @@ async submit() {
     return;
   }
 
+  if (!this.lead.country) {
+    this.appService.toastError('Please select your country');
+    return;
+  }
+
   try {
     this.submitting = true;
 
@@ -378,7 +450,8 @@ async submit() {
       aiAttachmentIds: this.aiAttachmentIds,
       lead: {
         name: this.lead.name,
-        phone: this.lead.phone
+        phone: this.lead.phone,
+        country: this.lead.country
       },
       captchaToken
     });
@@ -438,7 +511,8 @@ async verifyOtp() {
   aiAttachmentIds: this.aiAttachmentIds,
   lead: {
     name: this.lead.name,
-    phone: this.lead.phone
+    phone: this.lead.phone,
+    country: this.lead.country
   },
   captchaToken
 });
@@ -499,6 +573,12 @@ isCompanyEmail(email: string): boolean {
 
   ngOnDestroy() {
    
+    if (this.recognition && this.isRecording) {
+      try {
+        this.recognition.stop();
+      } catch {}
+    }
+
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;

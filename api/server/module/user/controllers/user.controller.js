@@ -604,7 +604,8 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
       aiAttachmentIds: Joi.array().items(Joi.string()).optional(),
       lead: Joi.object({
         name: Joi.string().allow('', null),
-        phone: Joi.string().allow('', null)
+        phone: Joi.string().allow('', null),
+        country: Joi.object().allow(null).optional()
       }).optional()
     });
 
@@ -651,7 +652,9 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
         email,
         name: value.lead?.name || '',
         phoneNumber: value.lead?.phone || '',
+        country: value.lead?.country || null,
         type: 'student',
+
         role: 'user',
         emailVerified: true,
         aiQueries: []
@@ -886,7 +889,8 @@ exports.checkEmailAndSubmit = async (req, res, next) => {
       aiAttachmentIds: Joi.array().items(Joi.string()).optional(),
       lead: Joi.object({
         name: Joi.string().allow('', null),
-        phone: Joi.string().allow('', null)
+        phone: Joi.string().allow('', null),
+        country: Joi.object().allow(null).optional()
       }).optional()
     });
 

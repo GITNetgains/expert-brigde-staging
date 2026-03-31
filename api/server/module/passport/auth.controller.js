@@ -999,7 +999,7 @@ exports.completeStudentSignup = async (req, res, next) => {
         .required(),
       name: Joi.string().required(),
       phoneNumber: Joi.string().allow('', null).optional(),
-      address: Joi.string().allow('', null).optional()
+      country: Joi.object().required()
     });
     const { error, value } = schema.validate(req.body);
     if (error) return next(PopulateResponse.validationError(error));
@@ -1030,7 +1030,7 @@ exports.completeStudentSignup = async (req, res, next) => {
       emailVerified: true,
       name: value.name.trim(),
       phoneNumber: (value.phoneNumber || '').trim(),
-      address: (value.address || '').trim(),
+      country: value.country,
       password: value.password
     });
     await user.save();

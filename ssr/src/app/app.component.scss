@@ -70,3 +70,9 @@
 :host.no-padding {
   padding: 0;
 }
+
+@media (max-width: 768px) {
+  :host {
+    padding: 0;
+  }
+}

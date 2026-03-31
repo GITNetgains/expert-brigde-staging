@@ -84,6 +84,14 @@
                   </c-form-feedback>
                 </div>
               </c-col>
+
+              <!-- COUNTRY -->
+              <c-col md="6" *ngIf="info.country">
+                <div class="mb-3">
+                  <label cLabel>Country</label>
+                  <input cFormControl [ngModel]="info.country?.name || info.country" name="country" readonly placeholder="N/A" />
+                </div>
+              </c-col>
               <!-- BIO -->
               <c-col md="6">
                 <div class="mb-3">

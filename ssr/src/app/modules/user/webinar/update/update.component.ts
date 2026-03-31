@@ -171,11 +171,6 @@ export class WebinarUpdateComponent implements OnInit {
     }
     this.webinar.isFree = false;
 
-    if (!this.webinar.mainImageId)
-      return this.appService.toastError(
-        'Please upload main image for webinar!'
-      );
-
     if (
       this.webinar.maximumStrength > 10 &&
       this.config?.platformOnline === 'lessonspace'

@@ -23,6 +23,7 @@
   margin: 0 auto;
 }
 
+
 /* --- Typography --- */
 .heading {
   font-size: 38px; // Slightly adjusted to match image scale
@@ -184,6 +185,35 @@
       &::placeholder { color: #a0aec0; }
       &:focus { outline: none; border-color: #E4543C; }
     }
+
+    /* Style the ng-select to perfectly match the .form-control inputs */
+    .custom-ng-select {
+      font-size: 0.95rem;
+
+      ::ng-deep .ng-select-container {
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        background: #fff;
+        transition: border-color 0.2s;
+        box-shadow: none !important;
+        min-height: 46px; /* Match form-control height based on padding and text */
+        padding: 0 5px; /* Base padding, ng-select internals handle the rest */
+      }
+      
+      ::ng-deep.ng-select-focused .ng-select-container {
+        border-color: #E4543C;
+        outline: none;
+      }
+
+      ::ng-deep .ng-value-container {
+        padding-left: 10px !important; 
+      }
+
+      ::ng-deep .ng-value-container .ng-placeholder {
+        color: #a0aec0 !important;
+        font-weight: 400;
+      }
+    }
   }
 }
 
@@ -212,6 +242,12 @@
   min-height: 52px;
 }
 
+.ai-search-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .ai-search-bar-input {
   flex: 1;
   border: none;
@@ -229,9 +265,45 @@
   outline: none;
 }
 
-.ai-search-bar-send {
+.recording-indicator {
+  color: red;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mic-btn {
+  background: transparent;
+  border: none;
   width: 42px;
   height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mic-img {
+  width: 22px;
+  height: 22px;
+}
+
+.mic-img.recording {
+  animation: pulseMic 0.8s infinite alternate;
+}
+
+@keyframes pulseMic {
+  from {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+}
+
+.ai-search-bar-send {
   background: #E4543C;
   border-radius: 10px;
   display: flex;
@@ -240,6 +312,10 @@
   color: #fff;
   border: none;
   cursor: pointer;
+  padding: 0 18px;
+  height: 42px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .ai-search-bar-send:hover {
@@ -391,6 +467,10 @@
   color: #dc3545;
   font-size: 13px;
   margin-top: 4px;
+}
+.mic-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* --- Confirmation Section --- */

@@ -17,7 +17,9 @@ $active-bg: rgba(228, 84, 60, 0.08);
     z-index: 1038;
     background: #ffffff;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Mobile open/close uses translateX, so optimize animation for transform only. */
+    transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: transform;
     display: flex;
     flex-direction: column;
     border-right: 1px solid rgba(0, 0, 0, 0.03);
@@ -256,5 +258,30 @@ $active-bg: rgba(228, 84, 60, 0.08);
             transform: translateX(0);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
         }
+    }
+}
+
+.mobile-close-btn {
+    display: none;
+}
+
+@media (max-width: 991px) {
+    .mobile-close-btn {
+        display: inline-flex;
+        position: absolute;
+        top: 22px;
+        right: 4px;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: rgba(255, 255, 255, 0.95);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1040;
+        font-size: 22px;
+        line-height: 1;
+        color: #0f172a;
     }
 }

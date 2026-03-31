@@ -6,11 +6,14 @@
     background: #f8fafc; /* Lighter, cleaner background */
     min-height: 100vh;
   }
-  
-  /* Fix for the side-by-side layout spacing */
-  .my-category-layout {
-    padding-top: 2rem;
+  .page-title{
+    font-size:1.7rem;  
+  line-height: 0 !important;
   }
+  /* Fix for the side-by-side layout spacing */
+  // .my-category-layout {
+  //   padding-top: 2rem;
+  // }
   
   /* High-End Card Design */
   .custom-card {
@@ -34,6 +37,9 @@
     font-weight: 700;
     color: #0f172a;
     letter-spacing: -0.02em;
+  }
+  .row{
+    margin:0 !important;
   }
   
   /* Modernized Table */
@@ -148,8 +154,6 @@
     color: #0f172a;
     line-height: 1.5;
     padding: 0.85rem 1.75rem;
-    background: #e2e8f0;
-    border-radius: 12px;
     border: 1px solid #cbd5e1;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     text-align: center;
