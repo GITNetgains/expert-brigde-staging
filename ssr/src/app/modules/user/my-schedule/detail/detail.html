@@ -282,26 +282,70 @@
           </div>
           <!-- <label class="content-title" translate style="width: 100%">Update lesson materials </label> -->
           <div class="card-body">
-            <div *ngIf="documents.length">
+            <!-- Documents shared by current user -->
+            <div *ngIf="myDocuments.length" class="mb-4">
+              <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by you</h6>
               <div
-                class="d-flex justify-content-between mb-2"
-                *ngFor="let item of documents, let i = index"
+                class="d-flex justify-content-between mb-2 align-items-center"
+                *ngFor="let item of myDocuments; let i = index"
               >
                 <div>
-                  <i class="fa fa-file" aria-hidden="true"></i>
+                  <i class="fa fa-file me-2" aria-hidden="true"></i>
                   <span translate>Name</span>: <span>{{item?.name}}</span>
                 </div>
-
                 <div>
-                  <a target="_blank" [href]="item.fileUrl" download class="me-2"
+                  <a target="_blank" [href]="item.fileUrl" download class="me-2 text-primary"
                     ><i class="fi fi-rr-download"></i
                   ></a>
-                  <a (click)="removeMedia(i)"
+                  <!-- <a (click)="removeMedia(i)"
                     ><i class="fi fi-rr-trash text-danger"></i
+                  ></a> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents shared by the expert (if viewer is not the expert) -->
+            <div *ngIf="expertDocuments.length" class="mb-4">
+              <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by the Expert</h6>
+              <div
+                class="d-flex justify-content-between mb-2 align-items-center"
+                *ngFor="let item of expertDocuments; let i = index"
+              >
+                <div>
+                  <i class="fa fa-file me-2" aria-hidden="true"></i>
+                  <span translate>Name</span>: <span>{{item?.name}}</span>
+                </div>
+                <div>
+                  <a target="_blank" [href]="item.fileUrl" download class="me-2 text-primary"
+                    ><i class="fi fi-rr-download"></i
                   ></a>
                 </div>
               </div>
             </div>
+
+            <!-- Documents shared by the client (if viewer is not the client) -->
+            <div *ngIf="clientDocuments.length" class="mb-4">
+              <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by the Client</h6>
+              <div
+                class="d-flex justify-content-between mb-2 align-items-center"
+                *ngFor="let item of clientDocuments; let i = index"
+              >
+                <div>
+                  <i class="fa fa-file me-2" aria-hidden="true"></i>
+                  <span translate>Name</span>: <span>{{item?.name}}</span>
+                </div>
+                <div>
+                  <a target="_blank" [href]="item.fileUrl" download class="me-2 text-primary"
+                    ><i class="fi fi-rr-download"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="!documents?.length" class="text-center py-3 text-muted">
+              <p translate>No documents shared yet.</p>
+            </div>
+
             <small *ngIf="filesSelected.length"
               >{{filesSelected[0].file.name}} is selected</small
             >

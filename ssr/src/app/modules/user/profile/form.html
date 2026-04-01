@@ -1,6 +1,19 @@
 <div class="profile-settings-page" *ngIf="info">
   <section class="profile-hero bg-dashboard" [ngStyle]="{'background-image': banner}">
     <div class="container profile-hero-inner">
+      <div class="banner-top-right-actions" *ngIf="info && info.type === 'tutor'">
+        <div class="share-pill" (click)="shareProfile()" [ngClass]="{'copied': copied}">
+          <i class="fi" [ngClass]="copied ? 'fi-rr-check' : 'fi-rr-link'"></i>
+
+          <span translate>{{ copied ? 'Copied!' : 'Copy Profile Link' }}</span>
+        </div>
+        <a (click)="shareOnFacebook()" class="social-circle fb" title="Share on Facebook">
+          <i class="fi fi-brands-facebook"></i>
+        </a>
+        <a (click)="shareOnTwitter()" class="social-circle tw" title="Share on Twitter">
+          <i class="fi fi-brands-twitter"></i>
+        </a>
+      </div>
       <div class="row">
         <div class="col-12">
           <div class="profile-card-glass">
@@ -933,11 +946,10 @@
                 </button>
               </div>
             </form>
-            <div class="mt-3 share-me" *ngIf="info.type==='tutor' && info.username">
-              <h5 translate class="me-3">Share my profile</h5>
-              <share-button button="facebook" theme="circles-light"></share-button>
-              <share-button button="twitter" theme="circles-light"></share-button>
-            </div>
+           <div class="share-container" *ngIf="info.type==='tutor' && info.username">
+
+
+</div>
           </div>
         </div>
       </div>

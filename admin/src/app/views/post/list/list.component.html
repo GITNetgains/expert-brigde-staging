@@ -14,6 +14,7 @@
               (keypress)="keyPress($event)"
               [(ngModel)]="searchFields.title"
               placeholder="Enter title"
+              (ngModelChange)="doSearch()"
             />
           </c-col>
           <c-col sm="12" md="3">
@@ -24,6 +25,7 @@
               (keypress)="keyPress($event)"
               [(ngModel)]="searchFields.alias"
               placeholder="Enter alias"
+              (ngModelChange)="doSearch()"
             />
           </c-col>
           <c-col sm="12" md="3">
@@ -34,25 +36,16 @@
               (keypress)="keyPress($event)"
               [(ngModel)]="searchFields.content"
               placeholder="Enter content"
+              (ngModelChange)="doSearch()"
             />
           </c-col>
           <c-col sm="12" md="3">
-            <select cFormControl [(ngModel)]="searchFields.type" name="type">
+            <select cFormControl [(ngModel)]="searchFields.type" name="type" (ngModelChange)="doSearch()">
               <option [ngValue]="null">All</option>
               <option value="blog">Blog</option>
               <option value="page">Page</option>
               <option value="industry">Industry</option>
             </select>
-          </c-col>
-          <c-col sm="12" md="3">
-            <button
-              cButton
-              color="primary"
-              style="width: 100%"
-              (click)="query()"
-            >
-              Filter
-            </button>
           </c-col>
         </c-row>
       </c-card-body>

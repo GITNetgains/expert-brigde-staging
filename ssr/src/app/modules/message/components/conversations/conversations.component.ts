@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 // import { PusherService } from '../../services/pusher.service';
 import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ConversationService, MessageService, STATE, SeoService, SocketService, StateService, FavoriteService, TutorService } from 'src/app/services';
 
 @Component({
@@ -25,7 +26,8 @@ export class ConversationsComponent implements OnDestroy {
     private messageService: MessageService,
     private stateService: StateService,
     private favoriteService: FavoriteService,
-    private tutorService: TutorService
+    private tutorService: TutorService,
+    private sanitizer: DomSanitizer
   ) {
     this.seoService.setMetaTitle('Messages');
     this.socket.reconnect();
@@ -48,6 +50,9 @@ export class ConversationsComponent implements OnDestroy {
     if (!this.conversations || this.conversations.length === 0) {
       this.loadContacts();
     }
+  }
+  getSafeHtml(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html || '');
   }
 
   getMessage(msg: any) {

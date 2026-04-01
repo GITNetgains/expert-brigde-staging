@@ -18,7 +18,7 @@
                     class="color-light-red"
                     [routerLink]="[
                       '/experts',
-                      appointment?.tutor?.username || appointment?.tutor?._id
+                      appointment?.tutor?._id
                     ]"
                     *ngIf="appointment && appointment.tutor"
                   >
@@ -291,22 +291,69 @@
               </div>
             </div>
             <h5 translate>Documents</h5>
-            <div *ngIf="documents.length" class="mt-3">
-              <div
-                class="d-flex justify-content-between"
-                *ngFor="let item of documents, let i = index"
-              >
-                <div>
-                  <i class="fa fa-file" aria-hidden="true"></i>
-                  <span> {{item?.name}}</span>
-                </div>
-                <div class="col-md-1">
-                  <a target="_blank" [href]="item.fileUrl" download
-                    ><i class="fi fi-rr-download text-success font-sm"></i
-                  ></a>
+            <div class="card-body p-0 mt-3">
+              <!-- Documents shared by current user -->
+              <div *ngIf="myDocuments.length" class="mb-4">
+                <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by you</h6>
+                <div
+                  class="d-flex justify-content-between mb-2 align-items-center"
+                  *ngFor="let item of myDocuments; let i = index"
+                >
+                  <div>
+                    <i class="fa fa-file me-2" aria-hidden="true"></i>
+                    <span>{{item?.name}}</span>
+                  </div>
+                  <div>
+                    <a target="_blank" [href]="item.fileUrl" download class="text-primary"
+                      ><i class="fi fi-rr-download font-sm"></i
+                    ></a>
+                  </div>
                 </div>
               </div>
+
+              <!-- Documents shared by the expert (if viewer is not the expert) -->
+              <div *ngIf="expertDocuments.length" class="mb-4">
+                <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by the Expert</h6>
+                <div
+                  class="d-flex justify-content-between mb-2 align-items-center"
+                  *ngFor="let item of expertDocuments; let i = index"
+                >
+                  <div>
+                    <i class="fa fa-file me-2" aria-hidden="true"></i>
+                    <span>{{item?.name}}</span>
+                  </div>
+                  <div>
+                    <a target="_blank" [href]="item.fileUrl" download class="text-primary"
+                      ><i class="fi fi-rr-download font-sm"></i
+                    ></a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Documents shared by the client (if viewer is not the client) -->
+              <div *ngIf="clientDocuments.length" class="mb-4">
+                <h6 class="text-secondary border-bottom pb-2" translate>Documents shared by the Client</h6>
+                <div
+                  class="d-flex justify-content-between mb-2 align-items-center"
+                  *ngFor="let item of clientDocuments; let i = index"
+                >
+                  <div>
+                    <i class="fa fa-file me-2" aria-hidden="true"></i>
+                    <span>{{item?.name}}</span>
+                  </div>
+                  <div>
+                    <a target="_blank" [href]="item.fileUrl" download class="text-primary"
+                      ><i class="fi fi-rr-download font-sm"></i
+                    ></a>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!documents?.length" class="text-center py-3 text-muted">
+                <p translate>No documents shared yet.</p>
+              </div>
             </div>
+
             <label class="content-title mt-3" translate style="width: 100%"
               >Upload file
               <small translate>(Maximum size: {{maxFileSize}} MB)</small>

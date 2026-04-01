@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="profile">
-              <a [routerLink]="['/experts', webinar?.tutor?.username]">
+              <a [routerLink]="['/experts', webinar?.tutor?._id]">
                 <img src="{{webinar?.tutor?.avatarUrl  }}" onerror="this.src='/assets/images/default-avatar.jpg'"
                   class="float-left cate-profile-sm box-shadow-lg me-2" alt="" />
                 <h5 class="pt-2 font-sm">{{webinar?.tutor?.name}}</h5>
@@ -150,7 +150,7 @@
           </div>
           <div class="card-body">
             <div class="profile">
-              <a [routerLink]="['/experts', webinar?.tutor?.username]">
+              <a [routerLink]="['/experts', webinar?.tutor?._id]">
                 <img src="{{webinar?.tutor?.avatarUrl  }}" onerror="this.src='/assets/images/default-avatar.jpg'"
                   class="float-left profile-md box-shadow-lg" alt="" />
                 <div class="profile-content-sm pt-4">

@@ -117,18 +117,15 @@ const routes: Routes = [
   { path: '1on1classes', redirectTo: '1on1sessions', pathMatch: 'full' },
   {
     path: 'groupsession',
-    component: WebinarListingComponent,
-    canActivate: [StudentGuard]
+    component: WebinarListingComponent
   },
   {
     path: 'groupsession/create',
-    component: WebinarCreateComponent,
-    canActivate: [StudentGuard]
+    component: WebinarCreateComponent
   },
   {
     path: 'groupsession/:id',
-    component: WebinarUpdateComponent,
-    canActivate: [StudentGuard]
+    component: WebinarUpdateComponent
   },
   {
     path: 'favorites/:type',
@@ -138,36 +135,39 @@ const routes: Routes = [
   {
     path: 'appointments',
     component: ListScheduleComponent,
-    resolve: {},
-    canActivate: [StudentGuard]
+    resolve: {}
   },
   {
     path: 'appointments/:id',
     component: ScheduleDetailComponent,
-    resolve: {},
-    canActivate: [StudentGuard]
+    resolve: {}
   },
-  {
-    path: 'lessons',
-    component: ListLessonComponent,
-    resolve: {},
-    canActivate: [StudentGuard]
-  },
-  {
-    path: 'lessons/:id',
-    component: LessonDetailComponent,
-    resolve: {},
-    canActivate: [StudentGuard]
-  },
-  {
-    path: 'lesson-space',
-    component: LessonSpaceComponent,
-    resolve: {},
-    data: {
-      noShowMenu: true
-    },
-    canActivate: [StudentGuard]
-  },
+
+// NEW ROUTES (sessions)
+{
+  path: 'sessions',
+  component: ListLessonComponent,
+  resolve: {},
+  canActivate: [StudentGuard]
+},
+{
+  path: 'sessions/:id',
+  component: LessonDetailComponent,
+  resolve: {},
+  canActivate: [StudentGuard]
+},
+
+// REDIRECT (old → new)
+{
+  path: 'lessons',
+  redirectTo: 'sessions',
+  pathMatch: 'full'
+},
+{
+  path: 'lessons/:id',
+  redirectTo: 'sessions/:id',
+  pathMatch: 'full'
+},
   {
     path: 'wallet',
     component: WalletComponent,

@@ -605,7 +605,7 @@ exports.verifyAiOtpAndSubmit = async (req, res, next) => {
       lead: Joi.object({
         name: Joi.string().allow('', null),
         phone: Joi.string().allow('', null),
-        country: Joi.object().allow(null).optional()
+        country: Joi.object().unknown(true).allow(null).optional()
       }).optional()
     });
 

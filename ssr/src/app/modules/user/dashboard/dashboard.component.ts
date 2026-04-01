@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   public tutorMenus = tutorMenus;
   currentUser: IUser;
   isLoading: boolean = true;
+  showSearch: boolean = false; // Toggle search visibility
 
   // AI Search properties
   @ViewChild('searchTextarea') searchTextareaRef: ElementRef<HTMLTextAreaElement> | null = null;
@@ -34,7 +35,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   ];
 
   constructor(
-    private seoService: SeoService, 
+    private seoService: SeoService,
     public stateService: StateService,
     private router: Router,
     private auth: AuthService,
@@ -57,6 +58,22 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
 
   getIconBackground(index: number) {
     return this.iconColors[index % this.iconColors.length];
+  }
+isExternalLink(path: string | null): boolean {
+  return !!path && (path.startsWith('http://') || path.startsWith('https://'));
+}
+
+  handleMenuClick(menu: any) {
+    if (menu.key === 'menu-submit-new-project') {
+      this.showSearch = !this.showSearch;
+      if (this.showSearch) {
+        // Focus textarea if opening
+        setTimeout(() => {
+          this.searchTextareaRef?.nativeElement.focus();
+          this.resizeSearchInput();
+        }, 100);
+      }
+    }
   }
 
   // AI Search Methods

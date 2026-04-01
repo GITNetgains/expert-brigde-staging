@@ -138,6 +138,16 @@ export class ListComponent implements OnInit {
     });
   }
 
+  timeout: any;
+  doSearch() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.filter();
+    }, 500);
+  }
+
   onPageChange(event: any) {
     const page =
       typeof event === 'number'

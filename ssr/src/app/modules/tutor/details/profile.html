@@ -26,22 +26,29 @@
                 {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}
                 <i class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
               </h5>
-              <p class="text-secondary mb-2" *ngIf="tutor.showPublicIdOnly === true">
+              <!-- <p class="text-secondary mb-2" *ngIf="tutor.showPublicIdOnly === true">
                 ID: {{ tutor.userId }}
-              </p>
+              </p> -->
               <div class="rating-stars">
                 <ul id="stars">
                   <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
                   <span style="padding-left: 5px">{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
                 </ul>
               </div>
-              <div class="mt-3 mb-3">
-                <div class="img-flag-tutor">
-                  <img src="{{tutor?.country?.flag}}" alt="tutor country flag" class="image-sm"
-                    onerror="this.src='/assets/images/no-image.jpg'" />
-                </div>
-                <span class="ms-2 mt-3 mb-3 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
-              </div>
+            <div class="mt-3 mb-3" *ngIf="tutor?.country?.flag || tutor?.country?.name">
+  <div class="img-flag-tutor" *ngIf="tutor?.country?.flag">
+    <img 
+      [src]="tutor.country.flag"
+      alt="tutor country flag" 
+      class="image-sm"
+     onerror="this.src='/assets/images/no-image.jpg'"
+    />
+  </div>
+
+  <span *ngIf="tutor?.country?.name" class="ms-2 text-secondary">
+    {{ tutor.country.name }}
+  </span>
+</div>
               <!-- <p class="font-weight-bold text-start">
                 <img src="../assets/images/webinar/certified-img.svg" alt="tutor certificate" class="me-2 image-sm"
                   translate />

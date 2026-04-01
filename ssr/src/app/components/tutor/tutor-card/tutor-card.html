@@ -64,14 +64,14 @@
 
   <!-- ACTIONS -->
   <div class="card-actions">
-    <a [routerLink]="['/experts', tutor.username]">View</a>
-    <a [routerLink]="['/experts', tutor.username, 'booking']">Engage</a>
+    <a [routerLink]="['/experts', tutor._id]">View</a>
+    <a [routerLink]="['/experts', tutor._id, 'booking']">Engage</a>
     <a (click)="favorite()" *ngIf="!tutor.isFavorite">Shortlist</a>
     <a (click)="unFavorite()" *ngIf="tutor.isFavorite">Remove</a>
     <a>Response</a>
     <a (click)="chat()">Chat</a>
 
-    <a [routerLink]="['/experts', tutor.username]" class="open-icon-link"><i class="fi fi-rr-arrow-up-right open-icon"></i></a>
+    <a [routerLink]="['/experts', tutor._id]" class="open-icon-link"><i class="fi fi-rr-arrow-up-right open-icon"></i></a>
   </div>
 
 </div>

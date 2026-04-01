@@ -283,7 +283,23 @@ export class ProfileUpdateComponent implements OnInit {
 
     this.loading = false;
   }
+getShareProfileUrl(): string {
+  return `${this.webUrl}/experts/${this.info?._id}`;
+}
+copied: boolean = false;
 
+shareProfile() {
+  const url = this.getShareProfileUrl();
+
+  navigator.clipboard.writeText(url).then(() => {
+    this.copied = true;
+    this.appService.toastSuccess('Profile link copied!');
+
+    setTimeout(() => {
+      this.copied = false;
+    }, 2000);
+  });
+}
   mapGradeName(gradeKeys: any) {
     this.grades.forEach((key: any) => {
       if (gradeKeys.indexOf(key.id) > -1) {
@@ -346,6 +362,15 @@ export class ProfileUpdateComponent implements OnInit {
       }
     }
   }
+  shareOnFacebook() {
+  const url = encodeURIComponent(this.getShareProfileUrl());
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+shareOnTwitter() {
+  const url = encodeURIComponent(this.getShareProfileUrl());
+  window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
+}
 
   submit(frm: any, isSubmitForm = true) {
     if (isSubmitForm) {

@@ -170,6 +170,14 @@
               </div>
             </div>
           </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Mobile Number (Associated with bank)</label>
+              <input type="text" name="mobileNumber" #mobileNumber="ngModel"
+                class="form-control" placeholder="{{'Enter mobile number' | translate}}"
+                [(ngModel)]="account.mobileNumber" />
+            </div>
+          </div>
         </div>
         <div class="row">
           <div class="col-md-6">
@@ -184,12 +192,26 @@
           </div>
           <div class="col-md-6">
             <div class="form-group">
+              <label translate>Branch Name / City</label>
+              <input type="text" name="branchName" #branchName="ngModel" class="form-control"
+                placeholder="{{'Enter branch name or city' | translate}}" [(ngModel)]="account.branchName" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
               <label translate>Bank Address</label> (*)
               <input type="text" name="bankAddress" #bankAddress="ngModel" class="form-control"
                 placeholder="{{'Enter bank address' | translate}}" [(ngModel)]="account.bankAddress" required />
               <div *ngIf="bankAddress.errors && (bankAddress.dirty || bankAddress.touched || isSubmitted)">
                 <p [hidden]="!bankAddress.errors['required']" style="color: red" translate>Please enter bank address!</p>
               </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label translate>Bank country (Full name)</label>
+              <input type="text" name="country" #country="ngModel" class="form-control"
+                placeholder="{{'e.g. India, UAE, etc.' | translate}}" [(ngModel)]="account.country" />
             </div>
           </div>
         </div>

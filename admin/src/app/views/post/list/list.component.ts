@@ -111,9 +111,20 @@ export class ListComponent implements OnInit {
     });
   }
 
+  timeout: any;
+  doSearch() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.currentPage = 1;
+      this.query();
+    }, 500);
+  }
+
   keyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      this.query();
+      this.doSearch();
     }
   }
 

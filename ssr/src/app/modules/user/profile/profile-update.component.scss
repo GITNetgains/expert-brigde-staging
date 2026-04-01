@@ -51,7 +51,134 @@ $radius-sm: 12px;
     align-items: center;
     gap: 1.25rem;
   }
+/* Ensure the parent can contain absolute elements */
+.profile-card-glass {
+  position: relative; /* CRITICAL */
+  padding: 30px; /* Adjust based on your current padding */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
+/* Positioning the container to the top right of the hero container */
+.banner-top-right-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 100;
+}
+
+/* Updated Share Pill for the top right */
+.share-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: $radius;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 1.1rem;
+    transition: transform 0.3s;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  &.copied {
+    background: #2ecc71; /* A nice success green */
+    border-color: #2ecc71;
+    transform: translateY(-2px);
+    
+    i {
+      animation: check-scale 0.3s ease-out;
+    }
+  }
+}
+
+@keyframes check-scale {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* Social Circles */
+.social-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px; /* Matching the card radius style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+
+  &:hover {
+    background: white;
+    transform: translateY(-3px) rotate(8deg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  &.fb:hover {
+    color: #1877f2;
+    border-color: #1877f2;
+  }
+
+  &.tw:hover {
+    color: #000;
+    border-color: #000;
+  }
+}
+
+/* Tablet / Mobile tweaks */
+@media (max-width: 991px) {
+  .banner-top-right-actions {
+    position: static;
+    margin-bottom: 2rem;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .share-pill span {
+    display: none; /* Icon only on small mobile to save space */
+  }
+  .share-pill {
+    padding: 10px;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+}
   .profile-avatar-wrap {
     position: relative;
     flex-shrink: 0;

@@ -15,6 +15,9 @@ export interface IPayoutAccount {
   accountHolderAddress?: string;
   accountHolderPostalCode?: string;
     accountNumber?: string;
+    branchName?: string;
+    country?: string;
+    mobileNumber?: string;
   isPersonalAccount?: boolean;
   taxIdNumber?: string;
   uniqueIdentificationNumberType?: string;

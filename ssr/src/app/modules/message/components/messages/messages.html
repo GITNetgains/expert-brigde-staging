@@ -1,13 +1,10 @@
 <div class="mesgs">
   <div class="top-mesgs">
     <i class="fi fi-rs-angle-left" (click)="goBack()"></i>
-    <img
-      *ngIf="receiver?.showPublicIdOnly !== true"
-      [src]="receiver?.avatarUrl"
-      onerror="this.src='/assets/images/default-avatar.jpg'"
-      alt="sunil"
-    />
-    <span *ngIf="receiver?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
+    <img *ngIf="receiver?.showPublicIdOnly !== true" [src]="receiver?.avatarUrl"
+      onerror="this.src='/assets/images/default-avatar.jpg'" alt="sunil" />
+    <span *ngIf="receiver?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i
+        class="fi fi-rr-user"></i></span>
     <h4 *ngIf="receiver">{{ receiver?.showPublicIdOnly === true ? receiver?.userId : receiver?.name }}</h4>
   </div>
   <div class="msg_history" #commentEl [scrollTop]="scrolltop">
@@ -22,11 +19,7 @@
     <div *ngFor="let item of items" #item>
       <div class="incoming_msg" *ngIf="item.senderId !== currentUser._id">
         <div class="incoming_msg_img">
-          <img
-            [src]="item.sender?.avatarUrl"
-            onerror="this.src='/assets/images/default-avatar.jpg'"
-            alt="sunil"
-          />
+          <img [src]="item.sender?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="sunil" />
         </div>
         <div class="received_msg">
           <div class="received_withd_msg">
@@ -45,14 +38,8 @@
   </div>
   <div class="type_msg">
     <div class="input_msg_write">
-      <input
-        type="text"
-        class="write_msg"
-        placeholder="{{'Type a message' | translate}}"
-        [(ngModel)]="newText"
-        name="newmessage"
-        (keypress)="enterToSend($event)"
-      />
+      <input type="text" class="write_msg" placeholder="{{'Type a message' | translate}}" [(ngModel)]="newText"
+        name="newmessage" (keypress)="enterToSend($event)" />
       <button class="msg_send_btn" type="button" (click)="send()">
         <i class="fi fi-rs-paper-plane"></i>
       </button>

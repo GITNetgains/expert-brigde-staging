@@ -49,7 +49,7 @@ exports.create = async (tutorId, data) => {
       }
       const canAddSlot = await Service.Webinar.canUpdateWebinar(webinar._id);
       if (!canAddSlot) {
-        throw new Error("Can't add more slot on this group class,Your group class is in progress!");
+        throw new Error("Can't add more slot on this group session,Your group session is in progress!");
       }
       slot.webinarId = webinar._id;
       await Service.Webinar.setLastDate(webinar, slot);

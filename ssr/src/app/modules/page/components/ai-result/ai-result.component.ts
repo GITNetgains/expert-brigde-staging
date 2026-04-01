@@ -96,6 +96,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
       },
 
       
+      
       // after upload, save files
       onFinish: (res: any | any[]) => {
         const items = Array.isArray(res) ? res : [res];
@@ -149,6 +150,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
     });
+    
 
     // Voice recognition (SpeechRecognition / webkitSpeechRecognition)
     if (isPlatformBrowser(this.platformId)) {
@@ -188,6 +190,12 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
     });
+  }
+
+  scrollToTop() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   /** Enter = submit, Shift+Enter = new line (ChatGPT-style) */

@@ -246,9 +246,9 @@ exports.update = async (req, res, next) => {
       tutor.markModified('skillIds');
     }
     if (validate.value.highlights) {
-  tutor.highlights = _.uniq(validate.value.highlights);
-  tutor.markModified('highlights');
-}
+      tutor.highlights = _.uniq(validate.value.highlights);
+      tutor.markModified('highlights');
+    }
 
     if (validate.value.subjectIds) {
       tutor.subjectIds = _.uniq(validate.value.subjectIds);
@@ -270,9 +270,9 @@ exports.update = async (req, res, next) => {
       tutor.markModified('grades');
     }
 
-  if (validate.value.country) {
-    tutor.countryCode = validate.value.country.code || '';
-  }
+    if (validate.value.country) {
+      tutor.countryCode = validate.value.country.code || '';
+    }
 
 
 
@@ -326,9 +326,9 @@ exports.update = async (req, res, next) => {
             'x-api-key': REVERSE_SYNC_API_KEY
           },
           body: JSON.stringify(webhookPayload)
-        }).then(function(resp) {
+        }).then(function (resp) {
           pm2Log('[PROFILE-EDIT-WEBHOOK] Response:', resp.status, resp.ok ? 'OK' : 'FAILED');
-        }).catch(function(err) {
+        }).catch(function (err) {
           pm2Error('[PROFILE-EDIT-WEBHOOK] Error (non-blocking):', err && err.message ? err.message : err);
         });
       }
@@ -368,6 +368,10 @@ exports.list = async (req, res, next) => {
       } else {
         query._id = { $in: [] };
       }
+    }
+
+    if (req.query.userId) {
+      query.userId = { $regex: req.query.userId, $options: 'i' };
     }
 
     // ✅ Filter by specific tutor IDs (e.g. from AI query "view assigned experts")
@@ -415,22 +419,22 @@ exports.list = async (req, res, next) => {
       }
     }
 
-  const minFeeRaw = req.query.minPrice1On1Class;
-const maxFeeRaw = req.query.maxPrice1On1Class;
+    const minFeeRaw = req.query.minPrice1On1Class;
+    const maxFeeRaw = req.query.maxPrice1On1Class;
 
-const minFee =
-  minFeeRaw !== undefined && minFeeRaw !== '' ? parseFloat(minFeeRaw) : undefined;
-const maxFee =
-  maxFeeRaw !== undefined && maxFeeRaw !== '' ? parseFloat(maxFeeRaw) : undefined;
+    const minFee =
+      minFeeRaw !== undefined && minFeeRaw !== '' ? parseFloat(minFeeRaw) : undefined;
+    const maxFee =
+      maxFeeRaw !== undefined && maxFeeRaw !== '' ? parseFloat(maxFeeRaw) : undefined;
 
-const hasMin = Number.isFinite(minFee);
-const hasMax = Number.isFinite(maxFee);
+    const hasMin = Number.isFinite(minFee);
+    const hasMax = Number.isFinite(maxFee);
 
-if (hasMin || hasMax) {
-  query.price1On1Class = {};
-  if (hasMin) query.price1On1Class.$gte = minFee;
-  if (hasMax) query.price1On1Class.$lte = maxFee;
-}
+    if (hasMin || hasMax) {
+      query.price1On1Class = {};
+      if (hasMin) query.price1On1Class.$gte = minFee;
+      if (hasMax) query.price1On1Class.$lte = maxFee;
+    }
 
 
     if (!req.user || req.user.role !== 'admin') {
@@ -511,9 +515,9 @@ exports.remove = async (req, res, next) => {
           'x-api-key': REVERSE_SYNC_API_KEY
         },
         body: JSON.stringify(webhookPayload)
-      }).then(function(r) {
+      }).then(function (r) {
         pm2Log('[DELETE-WEBHOOK] Response status:', r.status);
-      }).catch(function(err) {
+      }).catch(function (err) {
         pm2Error('[DELETE-WEBHOOK] Error (non-blocking):', err.message);
       });
     } catch (webhookErr) {

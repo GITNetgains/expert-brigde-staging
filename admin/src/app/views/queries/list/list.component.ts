@@ -20,7 +20,11 @@ import {
   ModalComponent,
   ModalHeaderComponent,
   ModalBodyComponent,
+  FormControlDirective,
 } from '@coreui/angular';
+import { DatePickerCustomComponent } from '@components/common/date-picker-custom/date-picker-custom.component';
+import { Dayjs } from 'dayjs';
+import { IDatePickerOptions } from 'src/interfaces';
 
 @Component({
   selector: 'app-queries-list',
@@ -40,11 +44,31 @@ import {
     ModalComponent,
     ModalHeaderComponent,
     ModalBodyComponent,
+    FormControlDirective,
+    DatePickerCustomComponent,
   ],
 })
 export class ListComponent implements OnInit {
   loading = false;
+  allAiQueries: any[] = [];
   aiQueries: any[] = [];
+  searchFields = { name: '', email: '' };
+  dateChange: any;
+
+  public datePickerOptions: IDatePickerOptions = {
+    singleDatePicker: false,
+    onSelectedDate: this.onSelectedDate.bind(this),
+    autoApply: false,
+    closeOnApply: true,
+  };
+
+  onSelectedDate(event: { startDate: Dayjs; endDate: Dayjs }) {
+    if (!event) {
+      return;
+    }
+    this.dateChange = event;
+    this.doSearch();
+  }
 
   showDescriptionModal = false;
   activeDescription = '';
@@ -91,10 +115,11 @@ export class ListComponent implements OnInit {
     this.loading = true;
     this.userService.getAllAiQueries().subscribe({
       next: (resp) => {
-        this.aiQueries = ((resp as any).data || []).map((q: any) => ({
+        this.allAiQueries = ((resp as any).data || []).map((q: any) => ({
           ...q,
           assignedTutors: q.assignedTutors || [],
         }));
+        this.doSearch();
         this.loading = false;
       },
       error: () => {
@@ -102,6 +127,33 @@ export class ListComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  timeout: any;
+  doSearch() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      const nameQ = this.searchFields.name.toLowerCase().trim();
+      const emailQ = this.searchFields.email.toLowerCase().trim();
+      let startT = 0;
+      let endT = Infinity;
+      if (this.dateChange?.startDate) {
+        startT = new Date(this.dateChange.startDate).getTime();
+      }
+      if (this.dateChange?.endDate) {
+        endT = new Date(this.dateChange.endDate).getTime() + 86400000;
+      }
+      
+      this.aiQueries = this.allAiQueries.filter((q) => {
+        const matchName = !nameQ || (q.userName && q.userName.toLowerCase().includes(nameQ));
+        const matchEmail = !emailQ || (q.userEmail && q.userEmail.toLowerCase().includes(emailQ));
+        const qTime = new Date(q.createdAt).getTime();
+        const matchDate = (!startT || qTime >= startT) && (endT === Infinity || qTime < endT);
+        return matchName && matchEmail && matchDate;
+      });
+    }, 300);
   }
 
   openDescriptionModal(q: any) {

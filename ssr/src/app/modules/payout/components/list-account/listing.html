@@ -83,6 +83,14 @@
                 <app-sort [sortOption]="sortOption" [sortBy]="'additionalDetails'" (onSort)="onSort($event)"></app-sort>
               </th>
                   <th>
+                    <span (click)="sortBy('taxIdNumber', 'desc')" translate>TIN / ID Number</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'taxIdNumber'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
+                    <span (click)="sortBy('uniqueIdentificationNumberType', 'desc')" translate>ID Type</span>
+                    <app-sort [sortOption]="sortOption" [sortBy]="'uniqueIdentificationNumberType'" (onSort)="onSort($event)"></app-sort>
+                  </th>
+                  <th>
                     <span (click)="sortBy('createdAt', 'desc')" translate>Created On</span>
                     <app-sort [sortOption]="sortOption" [sortBy]="'createdAt'" (onSort)="onSort($event)"></app-sort>
                   </th>
@@ -93,12 +101,12 @@
               </thead>
               <tbody>
                 <tr>
-                  <td translate colspan="9" *ngIf="!accounts?.length && !loading" translate>
+                  <td translate colspan="11" *ngIf="!accounts?.length && !loading" translate>
                     There is no payment requests.
                   </td>
                 </tr>
                 <tr *ngIf="loading">
-                  <td translate colspan="9" translate><span translate>Loading</span>...</td>
+                  <td translate colspan="11" translate><span translate>Loading</span>...</td>
                 </tr>
                 <tr *ngFor="let item of accounts, let i = index">
                   <td>{{item?.accountHolderName}}</td>
@@ -117,6 +125,8 @@
                   <td>{{item?.routingNumber}}</td>
                   <td>{{item?.ifscCode}}</td>
                   <td>{{item?.routingCode}}</td>
+                  <td>{{item?.taxIdNumber || 'N/A'}}</td>
+                  <td>{{item?.uniqueIdentificationNumberType || 'N/A'}}</td>
                   <td>{{item?.additionalDetails}}</td>
                   <td>{{item.createdAt | date:'short'}}</td>
                   <td>

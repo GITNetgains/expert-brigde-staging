@@ -71,7 +71,7 @@ exports.remove = async (req, res, next) => {
     if (!canUpdate) {
       return next(
         PopulateResponse.error({
-          message: "Can't remove slot on this group class,Your group class is in progress!"
+          message: "Can't remove slot on this group class,Your group session is in progress!"
         })
       );
     }

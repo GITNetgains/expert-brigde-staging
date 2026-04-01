@@ -22,51 +22,53 @@
 
   <!-- Menu Grid for Tutor -->
   <div class="dashboard-grid" *ngIf="type === 'tutor'">
-    <a [routerLink]="[menu.path]" class="menu-card" *ngFor="let menu of tutorMenus; let i = index">
-      <div class="card-content">
-        <div class="icon-container" [style.background]="getIconBackground(i)">
-          <i class="{{menu.icon}}"></i>
+    <ng-container *ngFor="let menu of tutorMenus; let i = index">
+      <!-- External Link -->
+      <a *ngIf="isExternalLink(menu.path)" [href]="menu.path" target="_blank" class="menu-card">
+        <div class="card-content">
+          <div class="icon-container" [style.background]="getIconBackground(i)">
+            <i class="{{menu.icon}}"></i>
+          </div>
+          <h3 translate>{{menu.title}}</h3>
+          <p translate>{{menu.description}}</p>
         </div>
-        <h3 translate>{{menu.title}}</h3>
-        <p translate>{{menu.description}}</p>
-      </div>
-    </a>
+      </a>
+      <!-- Internal Link -->
+      <a *ngIf="!isExternalLink(menu.path)" [routerLink]="[menu.path]" class="menu-card">
+        <div class="card-content">
+          <div class="icon-container" [style.background]="getIconBackground(i)">
+            <i class="{{menu.icon}}"></i>
+          </div>
+          <h3 translate>{{menu.title}}</h3>
+          <p translate>{{menu.description}}</p>
+        </div>
+      </a>
+    </ng-container>
   </div>
 
   <!-- AI Search Section for Student/User -->
-  <div class="ai-search-section" *ngIf="type === 'student' || type === 'user'">
+  <div class="ai-search-section" *ngIf="(type === 'student' || type === 'user') && showSearch">
+    <div class="search-header">
+      <h3>Submit New Project</h3>
+      <button type="button" class="close-btn" (click)="showSearch = false">
+        <i class="fi fi-rr-cross-small"></i>
+      </button>
+    </div>
     <div class="search-wrap-container">
       <form (submit)="onSearch($event)" class="dashboard-search-wrap">
         <div class="dashboard-search-box">
-          <textarea
-            #searchTextarea
-            [(ngModel)]="query"
-            name="query"
-            class="dashboard-search-input"
-            placeholder="Provide a one line brief – our AI drafts your query - post in seconds"
-            rows="1"
-            (input)="resizeSearchInput()"
-            (keydown.enter)="onSearchKeydown($event)"
-            required
-          ></textarea>
+          
+          <textarea #searchTextarea [(ngModel)]="query" name="query" class="dashboard-search-input"
+            placeholder="Provide a one line brief – our AI drafts your query - post in seconds" rows="1"
+            (input)="resizeSearchInput()" (keydown.enter)="onSearchKeydown($event)" required></textarea>
 
           <span class="recording-indicator" *ngIf="isRecording">
             Listening...
           </span>
 
           <button type="button" class="mic-btn" (click)="toggleRecording()">
-            <img
-              *ngIf="!isRecording"
-              src="assets/images/homepage/mic.svg"
-              class="mic-img"
-              alt="mic"
-            />
-            <img
-              *ngIf="isRecording"
-              src="assets/images/homepage/mic.svg"
-              class="mic-img recording"
-              alt="recording"
-            />
+            <img *ngIf="!isRecording" src="assets/images/homepage/mic.svg" class="mic-img" alt="mic" />
+            <img *ngIf="isRecording" src="assets/images/homepage/mic.svg" class="mic-img recording" alt="recording" />
           </button>
         </div>
         <button type="submit" class="proceed-btn">Proceed</button>
@@ -76,15 +78,38 @@
 
   <!-- Menu Grid for Student/Other -->
   <div class="dashboard-grid" *ngIf="type === 'student' || type === 'user'">
-    <a [routerLink]="[menu.path]" class="menu-card" *ngFor="let menu of studentMenus; let i = index">
-      <div class="card-content">
-        <div class="icon-container" [style.background]="getIconBackground(i)">
-          <i class="{{menu.icon}}"></i>
+    <ng-container *ngFor="let menu of studentMenus; let i = index">
+      <!-- External Link -->
+      <a *ngIf="isExternalLink(menu.path)" [href]="menu.path" target="_blank" class="menu-card">
+        <div class="card-content">
+          <div class="icon-container" [style.background]="getIconBackground(i)">
+            <i class="{{menu.icon}}"></i>
+          </div>
+          <h3 translate>{{menu.title}}</h3>
+          <p translate>{{menu.description}}</p>
         </div>
-        <h3 translate>{{menu.title}}</h3>
-        <p translate>{{menu.description}}</p>
+      </a>
+      <!-- Internal Link -->
+      <a *ngIf="!isExternalLink(menu.path) && menu.path" [routerLink]="[menu.path]" class="menu-card">
+        <div class="card-content">
+          <div class="icon-container" [style.background]="getIconBackground(i)">
+            <i class="{{menu.icon}}"></i>
+          </div>
+          <h3 translate>{{menu.title}}</h3>
+          <p translate>{{menu.description}}</p>
+        </div>
+      </a>
+      <!-- Action Link (AI Search) -->
+      <div *ngIf="!isExternalLink(menu.path) && !menu.path" (click)="handleMenuClick(menu)" class="menu-card">
+        <div class="card-content">
+          <div class="icon-container" [style.background]="getIconBackground(i)">
+            <i class="{{menu.icon}}"></i>
+          </div>
+          <h3 translate>{{menu.title}}</h3>
+          <p translate>{{menu.description}}</p>
+        </div>
       </div>
-    </a>
+    </ng-container>
   </div>
 </div>
 

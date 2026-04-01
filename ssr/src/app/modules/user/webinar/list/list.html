@@ -13,7 +13,7 @@
           <div class="col-md-3">
             <a class="btn btn-default" [routerLink]="['/users/groupsession/create']"><i
                 class="fi fi-rr-plus me-2 font-sm"></i> <span translate>Add</span></a>
-          </div>
+          </div>  
         </div>
       </div>
     </div>
@@ -23,9 +23,9 @@
           aria-describedby="table_id_info">
           <thead>
             <tr role="row">
-              <th class="col-image" aria-label="Main Image" translate>Main Image</th>
+              <!-- <th class="col-image" aria-label="Main Image" translate>Main Image</th> -->
               <th class="col-name">
-                <span (click)="sortBy('name', 'asc')" translate>Name</span>
+                <span (click)="sortBy('name', 'asc')" translate>Topic</span>
                 <app-sort [sortOption]="sortOption" [sortBy]="'name'" (onSort)="onSort($event)"></app-sort>
               </th>
               <th class="col-num">
@@ -53,10 +53,10 @@
           </thead>
           <tbody>
             <tr role="row" *ngFor="let item of items; let i = index">
-              <td class="col-image">
+              <!-- <td class="col-image">
                 <img src="{{item?.mainImage?.thumbUrl || '/assets/images/no-image.jpg'}}" alt="" class="table-img"
                   onerror="this.src='/assets/images/no-image.jpg'" />
-              </td>
+              </td> -->
               <td class="col-name">
                 <a href="javascript:void(0)" (click)="showParticipants(item)">{{item?.name}}</a>
               </td>

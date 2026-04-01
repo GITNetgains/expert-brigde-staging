@@ -85,10 +85,11 @@ enrollQ.process(async (job, done) => {
           webinar: webinar.toObject()
         });
 
+        const appointment = await DB.Appointment.findOne({ transactionId: data._id, userId: data.userId });
         const notificationTutor = {
           title: `Booking`,
-          description: webinar.isFree || data.price <= 0 ? 'You have a new free group session booking!' : 'You have a new group session booking!',
-          itemId: webinar._id,
+          description: webinar.isFree || data.price <= 0 ? `${user.name} has booked your free group session ${webinar.name}` : `${user.name} has booked your group session ${webinar.name}`,
+          itemId: appointment ? appointment._id : webinar._id,
           notifyTo: tutor._id,
           type: 'booking'
         };

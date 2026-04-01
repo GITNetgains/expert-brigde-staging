@@ -222,6 +222,16 @@ export class AppointmentListingComponent implements OnInit {
     });
   }
 
+  timeout: any;
+  doSearch() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.filter();
+    }, 500);
+  }
+
   public datePickerOptions: IDatePickerOptions = {
     singleDatePicker: false,
     onSelectedDate: this.onSelectedDate.bind(this),
@@ -237,5 +247,6 @@ export class AppointmentListingComponent implements OnInit {
       });
     }
     this.dateChange = event;
+    this.doSearch();
   }
 }

@@ -15,6 +15,7 @@
                 type="text"
                 placeholder="Enter name"
                 [(ngModel)]="searchFields.name"
+                (ngModelChange)="doSearch()"
               />
             </div>
           </c-col>
@@ -26,13 +27,14 @@
                 type="text"
                 placeholder="Enter email"
                 [(ngModel)]="searchFields.email"
+                (ngModelChange)="doSearch()"
               />
             </div>
           </c-col>
 
           <c-col md="2">
             <div class="mb-3">
-              <select cSelect [(ngModel)]="searchFields.isActive">
+              <select cSelect [(ngModel)]="searchFields.isActive" (ngModelChange)="doSearch()">
                 <option value="">Active?</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
@@ -42,7 +44,7 @@
 
           <c-col md="2">
             <div class="mb-3">
-              <select cSelect [(ngModel)]="searchFields.emailVerified">
+              <select cSelect [(ngModel)]="searchFields.emailVerified" (ngModelChange)="doSearch()">
                 <option value="">Email verified?</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
@@ -50,18 +52,7 @@
             </div>
           </c-col>
 
-          <c-col md="2">
-            <div class="mb-3">
-              <button
-                cButton
-                color="primary"
-                class="w-100"
-                (click)="filter()"
-              >
-                Filter
-              </button>
-            </div>
-          </c-col>
+
         </c-row>
       </c-card-body>
     </c-card>

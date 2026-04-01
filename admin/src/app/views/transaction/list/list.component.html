@@ -17,6 +17,7 @@
               [clearable]="true"
               [virtualScroll]="true"
               class="my-select"
+              (ngModelChange)="doSearch()"
             >
             </ng-select>
           </c-col>
@@ -31,6 +32,7 @@
               [clearable]="true"
               [virtualScroll]="true"
               class="my-select"
+              (ngModelChange)="doSearch()"
             >
             </ng-select>
           </c-col>
@@ -40,6 +42,7 @@
               type="text"
               placeholder="Enter code"
               [(ngModel)]="searchFields.code"
+              (ngModelChange)="doSearch()"
             />
           </c-col>
           <c-col sm="12" md="4">
@@ -47,6 +50,7 @@
               cSelect
               [(ngModel)]="searchFields.targetType"
               placeholder="Choose enroll type"
+              (ngModelChange)="doSearch()"
             >
               <option value="" selected>All enroll type</option>
               <option value="webinar">Group Session</option>
@@ -55,7 +59,7 @@
             </select>
           </c-col>
           <c-col sm="12" md="4">
-            <select cSelect [(ngModel)]="searchFields.status">
+            <select cSelect [(ngModel)]="searchFields.status" (ngModelChange)="doSearch()">
               <option value="" selected disabled>Choose status</option>
               <option value="">All</option>
               <option value="pending">Pending</option>
@@ -66,16 +70,6 @@
               <option value="approved-refund">Approved refund</option>
               <option value="refunded">Refunded</option>
             </select>
-          </c-col>
-          <c-col sm="12" md="4">
-            <button
-              cButton
-              color="primary"
-              style="width: 100%"
-              (click)="filter()"
-            >
-              Filter
-            </button>
           </c-col>
         </c-row>
       </c-card-body>

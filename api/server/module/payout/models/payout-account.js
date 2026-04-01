@@ -2,12 +2,20 @@ const Schema = require('mongoose').Schema;
 
 const schema = new Schema({
   userId: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
+    index: true
+  },
+  tutorId: {
+    type: Schema.Types.ObjectId,
+    index: true
   },
   type: {
     type: String,
     enum: ['paypal', 'bank-account'],
     default: 'paypal'
+  },
+  country: {
+    type: String
   },
   // Bank account region: uk, india, us, other (for bank-account type only)
   bankAccountRegion: {
@@ -33,6 +41,12 @@ const schema = new Schema({
   },
   // The recipient's bank account number
   accountNumber: {
+    type: String
+  },
+  branchName: {
+    type: String
+  },
+  mobileNumber: {
     type: String
   },
   // Indicates if this is a personal account (Yes / No)

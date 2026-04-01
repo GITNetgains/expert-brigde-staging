@@ -17,7 +17,7 @@
                 <td>
                   <a
                     class="color-light-red"
-                    [routerLink]="['/experts', transaction.tutor.username]"
+                    [routerLink]="['/experts', transaction.tutor._id]"
                     *ngIf="transaction && transaction.tutor"
                     >{{ transaction?.tutor?.showPublicIdOnly === true ? transaction?.tutor?.userId : transaction?.tutor?.name }}</a
                   >

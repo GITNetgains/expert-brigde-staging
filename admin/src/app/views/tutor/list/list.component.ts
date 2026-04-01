@@ -3,6 +3,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { TutorService, UtilService } from 'src/services';
 import { cilCheckCircle, cilXCircle, cilPencil, cilTrash } from '@coreui/icons';
 import {
@@ -63,6 +65,7 @@ export class ListComponent implements OnInit {
     email: '',
     status: '',
     rating: '',
+    userId: '',
   };
   sortOption = {
     sortBy: 'createdAt',
@@ -71,6 +74,8 @@ export class ListComponent implements OnInit {
   updating: boolean = false;
   loading: boolean = false;
   icons = { cilCheckCircle, cilXCircle, cilPencil, cilTrash };
+
+  filterSubject: Subject<void> = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -82,13 +87,18 @@ export class ListComponent implements OnInit {
       const page = params['page'] ? parseInt(params['page']) : 1;
       this.currentPage = !isNaN(page) ? page : 1;
       this.searchFields.status = params['status'] != null && params['status'] !== '' ? params['status'] : '';
+      this.searchFields.name = params['name'] || '';
+      this.searchFields.email = params['email'] || '';
+      this.searchFields.rating = params['rating'] || '';
+      this.searchFields.userId = params['userId'] || '';
       this.query();
     });
   }
 
   ngOnInit() {
-    // Query is already called in constructor via route.queryParams.subscribe
-    // No need to call it again here to avoid duplicate API calls
+    this.filterSubject.pipe(debounceTime(500)).subscribe(() => {
+      this.filter();
+    });
   }
 
   query() {
@@ -149,23 +159,22 @@ export class ListComponent implements OnInit {
         ? event
         : parseInt(event.target.value || event.target.innerText, 10);
     this.currentPage = page;
-    const queryParams: Record<string, string | number | null> = { page: this.currentPage };
-    if (this.searchFields['status']) {
-      queryParams['status'] = this.searchFields['status'];
-    }
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge',
-    });
+    this.updateQueryParams();
   }
 
   filter() {
     this.currentPage = 1;
-    const queryParams: Record<string, string | number | null> = { page: 1 };
-    if (this.searchFields['status']) {
-      queryParams['status'] = this.searchFields['status'];
-    }
+    this.updateQueryParams();
+  }
+
+  updateQueryParams() {
+    const queryParams: Record<string, string | number | null> = { page: this.currentPage };
+    queryParams['status'] = this.searchFields['status'] || null;
+    queryParams['name'] = this.searchFields['name'] || null;
+    queryParams['email'] = this.searchFields['email'] || null;
+    queryParams['rating'] = this.searchFields['rating'] || null;
+    queryParams['userId'] = this.searchFields['userId'] || null;
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
@@ -175,11 +184,11 @@ export class ListComponent implements OnInit {
   }
 
   clearFilters() {
-    this.searchFields = { name: '', email: '', status: '', rating: '' };
+    this.searchFields = { name: '', email: '', status: '', rating: '', userId: '' };
     this.currentPage = 1;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: 1, status: null },
+      queryParams: { page: 1, status: null, name: null, email: null, rating: null, userId: null },
       queryParamsHandling: 'merge',
       replaceUrl: true
     });

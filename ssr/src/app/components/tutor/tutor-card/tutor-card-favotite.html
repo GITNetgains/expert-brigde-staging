@@ -9,11 +9,11 @@
   <div class="card-content">
     <div class="expert-header">
       <div class="avatar-section">
-        <a [routerLink]="['/experts', tutor.username]" class="avatar-link">
+        <a [routerLink]="['/experts', tutor._id]" class="avatar-link">
           <img *ngIf="tutor.showPublicIdOnly !== true" 
                [src]="tutor.avatarUrl || 'assets/images/default-avatar.jpg'" 
                class="avatar-img" />
-          <div *ngIf="tutor.showPublicIdOnly === true" class="avatar-placeholder">
+          <div *ngIf="tutor.showPublicIdOnly === true" style="display:flex; align-items: center; justify-content: center;" class="avatar-placeholder">
             <i class="fi fi-rr-user"></i>
           </div>
         </a>
@@ -22,7 +22,7 @@
 
       <div class="expert-info">
         <h3 class="name">
-          <a [routerLink]="['/experts', tutor.username]">
+          <a [routerLink]="['/experts', tutor._id]">
             {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}
           </a>
           <i class="fi fi-ss-badge-check verified-icon" *ngIf="$any(tutor).verified"></i>
@@ -61,8 +61,8 @@
 
   <div class="card-footer">
     <div class="primary-actions">
-      <button class="btn-outline-custom" [routerLink]="['/experts', tutor.username]">View</button>
-      <button class="btn-primary-custom" [routerLink]="['/experts', tutor.username, 'booking']">Engage</button>
+      <button class="btn-outline-custom" [routerLink]="['/experts', tutor._id]">View</button>
+      <button class="btn-primary-custom" [routerLink]="['/experts', tutor._id, 'booking']">Engage</button>
     </div>
     <button class="chat-btn" (click)="chat()" title="Message Expert">
       <i class="fi fi-rr-envelope"></i>

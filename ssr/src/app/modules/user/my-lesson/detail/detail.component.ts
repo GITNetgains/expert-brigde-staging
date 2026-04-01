@@ -52,6 +52,21 @@ export class LessonDetailComponent implements OnInit {
   public documentOptions: Object;
   public documentIds: string[] = [];
   public filesSelected: any = [];
+  get myDocuments() {
+    return (this.documents || []).filter((d: any) => d.uploaderId === this.currentUser?._id);
+  }
+
+  get expertDocuments() {
+    return (this.documents || []).filter(
+      (d: any) => d.uploaderId !== this.currentUser?._id && d.uploaderId === this.appointment?.tutorId
+    );
+  }
+
+  get clientDocuments() {
+    return (this.documents || []).filter(
+      (d: any) => d.uploaderId !== this.currentUser?._id && d.uploaderId === this.appointment?.userId
+    );
+  }
   public maxFileSize: number;
   public canReschedule = true;
   public showCalendar = false;

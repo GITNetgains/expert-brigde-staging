@@ -9,31 +9,25 @@
       </c-card-header>
       <c-card-body>
         <div class="row g-3 align-items-end">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">Name</label>
-            <input
-              type="text"
-              name="name"
-              cFormControl
-              class="form-control"
-              [(ngModel)]="searchFields.name"
-              placeholder="Search by name"
-            />
+            <input type="text" name="name" cFormControl class="form-control" [(ngModel)]="searchFields.name"
+              (ngModelChange)="filterSubject.next()" placeholder="By name" />
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">Email</label>
-            <input
-              type="text"
-              name="email"
-              cFormControl
-              class="form-control"
-              [(ngModel)]="searchFields.email"
-              placeholder="Search by email"
-            />
+            <input type="text" name="email" cFormControl class="form-control" [(ngModel)]="searchFields.email"
+              (ngModelChange)="filterSubject.next()" placeholder="By email" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">User ID</label>
+            <input type="text" name="userId" cFormControl class="form-control" [(ngModel)]="searchFields.userId"
+              (ngModelChange)="filterSubject.next()" placeholder="By User ID" />
           </div>
           <div class="col-md-2">
             <label class="form-label">Status</label>
-            <select cSelect [(ngModel)]="searchFields.status" class="form-select">
+            <select cSelect [(ngModel)]="searchFields.status" (ngModelChange)="filterSubject.next()"
+              class="form-select">
               <option value="">All statuses</option>
               <option value="approved">Approved</option>
               <option value="pending">Pending</option>
@@ -44,7 +38,8 @@
           </div>
           <div class="col-md-2">
             <label class="form-label">Rating</label>
-            <select cSelect [(ngModel)]="searchFields.rating" class="form-select">
+            <select cSelect [(ngModel)]="searchFields.rating" (ngModelChange)="filterSubject.next()"
+              class="form-select">
               <option value="">Any rating</option>
               <option value="5">5 stars</option>
               <option value="4">4 stars</option>
@@ -68,129 +63,73 @@
 
     <c-card>
       <c-card-header>
-        <div
-          class="d-flex flex-wrap justify-content-between align-items-center gap-2"
-        >
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
           <h4 class="mb-0">
             <span class="text-body-secondary fw-normal">Total experts:</span>
             <span class="badge bg-primary ms-2">{{ count }}</span>
           </h4>
           @if(count !== 0){
-          <app-pagination
-            [currentPage]="currentPage"
-            [pageSize]="pageSize"
-            [totalItems]="count"
-            [maxSize]="3"
-            (pageChanged)="onPageChange($event)"
-          ></app-pagination>
+          <app-pagination [currentPage]="currentPage" [pageSize]="pageSize" [totalItems]="count" [maxSize]="3"
+            (pageChanged)="onPageChange($event)"></app-pagination>
           }
         </div>
       </c-card-header>
       @if(count !== 0){
       <c-card-body>
         <div class="table-responsive">
-          <table
-            cTable
-            class="tutor-table"
-            [responsive]="true"
-            [cBorder]="1"
-            borderColor="gray"
-            bordered
-            style="table-layout: fixed; width: 1610px"
-          >
+          <table cTable class="tutor-table" [responsive]="true" [cBorder]="1" borderColor="gray" bordered
+            style="table-layout: fixed; width: 1610px">
             <thead>
               <tr>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="name"
-                    [sortOption]="sortOption"
-                    sortTitle="Name"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="userId" [sortOption]="sortOption"
+                    sortTitle="User ID"></app-sort>
                 </th>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="username"
-                    [sortOption]="sortOption"
-                    sortTitle="User Name"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="name" [sortOption]="sortOption"
+                    sortTitle="Name"></app-sort>
+                </th>
+                <th style="width: 200px">
+                  <app-sort (onSort)="onSort($event)" sortBy="username" [sortOption]="sortOption"
+                    sortTitle="User Name"></app-sort>
                 </th>
                 <th style="width: 250px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="email"
-                    [sortOption]="sortOption"
-                    sortTitle="Email"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="email" [sortOption]="sortOption"
+                    sortTitle="Email"></app-sort>
                 </th>
                 <th style="width: 150px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="ratingAvg"
-                    [sortOption]="sortOption"
-                    sortTitle="Rating"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="ratingAvg" [sortOption]="sortOption"
+                    sortTitle="Rating"></app-sort>
                 </th>
                 <th style="width: 150px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="isActive"
-                    [sortOption]="sortOption"
-                    sortTitle="Active"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="isActive" [sortOption]="sortOption"
+                    sortTitle="Active"></app-sort>
                 </th>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="emailVerified"
-                    [sortOption]="sortOption"
-                    sortTitle="Email Verified"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="emailVerified" [sortOption]="sortOption"
+                    sortTitle="Email Verified"></app-sort>
+                </th>
+                <!-- <th style="width: 200px">
+                  <app-sort (onSort)="onSort($event)" sortBy="isZoomAccount" [sortOption]="sortOption"
+                    sortTitle="Zoom Activation"></app-sort>
+                </th> -->
+                <th style="width: 200px">
+                  <app-sort (onSort)="onSort($event)" sortBy="isHomePage" [sortOption]="sortOption"
+                    sortTitle="In Home Page"></app-sort>
                 </th>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="isZoomAccount"
-                    [sortOption]="sortOption"
-                    sortTitle="Zoom Activation"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="featured" [sortOption]="sortOption"
+                    sortTitle="Featured"></app-sort>
                 </th>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="isHomePage"
-                    [sortOption]="sortOption"
-                    sortTitle="In Home Page"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="rejected" [sortOption]="sortOption"
+                    sortTitle="Approved"></app-sort>
                 </th>
                 <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="featured"
-                    [sortOption]="sortOption"
-                    sortTitle="Featured"
-                  ></app-sort>
+                  <app-sort (onSort)="onSort($event)" sortBy="createdAt" [sortOption]="sortOption"
+                    sortTitle="Created On"></app-sort>
                 </th>
-                <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="rejected"
-                    [sortOption]="sortOption"
-                    sortTitle="Approved"
-                  ></app-sort>
-                </th>
-                <th style="width: 200px">
-                  <app-sort
-                    (onSort)="onSort($event)"
-                    sortBy="createdAt"
-                    [sortOption]="sortOption"
-                    sortTitle="Created On"
-                  ></app-sort>
-                </th>
-                <th
-                  class="action-cell"
-                  style="
+                <th class="action-cell" style="
                     width: 120px;
                     min-width: 120px;
                     position: sticky;
@@ -199,8 +138,7 @@
                     box-shadow: inset -1px 0 0 var(--cui-border-color),
                       inset 1px 0 0 var(--cui-border-color);
                     background: var(--cui-body-bg);
-                  "
-                >
+                  ">
                   Action
                 </th>
               </tr>
@@ -209,106 +147,58 @@
             <tbody>
               @for(item of items; track item._id; let i = $index){
               <tr>
+                <td>{{ item.userId }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.username }}</td>
                 <td>{{ item.email }}</td>
                 <td>{{ item.ratingAvg }}</td>
                 <td>
-                  @if(!item.isActive){<span
-                    class="badge text-bg-warning text-white"
-                    (click)="update(item, 'isActive', true)"
-                    title="Click to activate"
-                    >Inactive</span
-                  >}@else{
-                  <span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'isActive', false)"
-                    title="Click to deactivate"
-                    >Active</span
-                  >}
+                  @if(!item.isActive){<span class="badge text-bg-warning text-white"
+                    (click)="update(item, 'isActive', true)" title="Click to activate">Inactive</span>}@else{
+                  <span class="badge text-bg-success text-white" (click)="update(item, 'isActive', false)"
+                    title="Click to deactivate">Active</span>}
                 </td>
                 <td>
                   @if(!item.emailVerified){
-                  <span
-                    class="badge text-bg-warning text-white"
-                    (click)="update(item, 'emailVerified', true)"
-                    title="Click to mark verified"
-                    >Unverified</span
-                  >}@else{
-                  <span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'emailVerified', false)"
-                    title="Click to unverify"
-                    >Verified</span
-                  >}
+                  <span class="badge text-bg-warning text-white" (click)="update(item, 'emailVerified', true)"
+                    title="Click to mark verified">Unverified</span>}@else{
+                  <span class="badge text-bg-success text-white" (click)="update(item, 'emailVerified', false)"
+                    title="Click to unverify">Verified</span>}
                 </td>
-                <td>
+                <!-- <td>
                   @if(item.isZoomAccount){
-                  <span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'isZoomAccount', false)"
-                    title="Click to deactivate Zoom"
-                    >Connected</span
-                  >}@else{
-                  <span
-                    class="badge text-bg-warning text-white"
-                    (click)="update(item, 'isZoomAccount', true)"
-                    title="Click to connect Zoom"
-                    >Not connected</span
-                  >}
-                </td>
+                  <span class="badge text-bg-success text-white" (click)="update(item, 'isZoomAccount', false)"
+                    title="Click to deactivate Zoom">Connected</span>}@else{
+                  <span class="badge text-bg-warning text-white" (click)="update(item, 'isZoomAccount', true)"
+                    title="Click to connect Zoom">Not connected</span>}
+                </td> -->
                 <td>
-                  @if(!item.isHomePage){<span
-                    class="badge text-bg-warning text-white"
-                    (click)="update(item, 'isHomePage', true)"
-                    title="Click to show on homepage"
-                    >Hidden</span
-                  >} @else{<span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'isHomePage', false)"
-                    title="Click to hide from homepage"
-                    >Shown</span
-                  >}
+                  @if(!item.isHomePage){<span class="badge text-bg-warning text-white"
+                    (click)="update(item, 'isHomePage', true)" title="Click to show on homepage">Hidden</span>}
+                  @else{<span class="badge text-bg-success text-white" (click)="update(item, 'isHomePage', false)"
+                    title="Click to hide from homepage">Shown</span>}
                 </td>
                 <td>
                   @if(!item.featured){
-                  <span
-                    class="badge text-bg-warning text-white"
-                    (click)="update(item, 'featured', true)"
-                    title="Click to feature"
-                    >No</span
-                  >} @else{<span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'featured', false)"
-                    title="Click to unfeature"
-                    >Featured</span
-                  >}
+                  <span class="badge text-bg-warning text-white" (click)="update(item, 'featured', true)"
+                    title="Click to feature">No</span>} @else{<span class="badge text-bg-success text-white"
+                    (click)="update(item, 'featured', false)" title="Click to unfeature">Featured</span>}
                 </td>
                 <td>
                   @if(item.pendingApprove) {
                   <span class="badge text-bg-primary text-white">Pending</span>
                   } @else if(!item.pendingApprove && item.rejected){
-                  <span
-                    class="badge text-bg-danger text-white"
-                    (click)="update(item, 'approved', true)"
-                    title="Click to approve"
-                    >Rejected</span
-                  >
+                  <span class="badge text-bg-danger text-white" (click)="update(item, 'approved', true)"
+                    title="Click to approve">Rejected</span>
                   } @else{
-                  <span
-                    class="badge text-bg-success text-white"
-                    (click)="update(item, 'approved', false)"
-                    title="Click to reject"
-                    >Approved</span
-                  >
+                  <span class="badge text-bg-success text-white" (click)="update(item, 'approved', false)"
+                    title="Click to reject">Approved</span>
                   }
                 </td>
                 <td>
                   <span>{{ item.createdAt | date }}</span>
                 </td>
-                <td
-                  class="action-cell"
-                  style="
+                <td class="action-cell" style="
                     position: sticky;
                     right: 0;
                     z-index: 10;
@@ -319,39 +209,23 @@
                     width: 120px;
                     min-width: 120px;
                     max-width: 120px;
-                  "
-                >
+                  ">
                   <div class="d-flex gap-1 flex-nowrap action-buttons">
-                    <a
-                      [routerLink]="['/tutor/update', item._id]"
-                      cButton
-                      class="btn btn-sm btn-primary"
-                      title="Edit expert"
-                    >
+                    <a [routerLink]="['/tutor/update', item._id]" cButton class="btn btn-sm btn-primary"
+                      title="Edit expert">
                       <svg cIcon name="cilPencil" size="sm"></svg>
                     </a>
-                    <button
-                      type="button"
-                      cButton
-                      [color]="item.isActive ? 'success' : 'danger'"
-                      size="sm"
-                      class="btn btn-sm"
-                      (click)="changeStatus(item)"
-                      [title]="item.isActive ? 'Deactivate' : 'Activate'"
-                    >
+                    <button type="button" cButton [color]="item.isActive ? 'success' : 'danger'" size="sm"
+                      class="btn btn-sm" (click)="changeStatus(item)"
+                      [title]="item.isActive ? 'Deactivate' : 'Activate'">
                       @if(item.isActive){
                       <svg cIcon name="cilCheckCircle" class="text-white" size="sm"></svg>
                       } @else {
                       <svg cIcon name="cilXCircle" class="text-white" size="sm"></svg>
                       }
                     </button>
-                    <button
-                      type="button"
-                      cButton
-                      class="btn btn-sm btn-danger"
-                      (click)="remove(item, i)"
-                      title="Delete expert"
-                    >
+                    <button type="button" cButton class="btn btn-sm btn-danger" (click)="remove(item, i)"
+                      title="Delete expert">
                       <svg cIcon name="cilTrash" size="sm"></svg>
                     </button>
                   </div>
@@ -374,13 +248,8 @@
 
       <c-card-footer class="d-flex justify-content-end">
         @if(count !== 0){
-        <app-pagination
-          [currentPage]="currentPage"
-          [pageSize]="pageSize"
-          [totalItems]="count"
-          [maxSize]="3"
-          (pageChanged)="onPageChange($event)"
-        ></app-pagination>
+        <app-pagination [currentPage]="currentPage" [pageSize]="pageSize" [totalItems]="count" [maxSize]="3"
+          (pageChanged)="onPageChange($event)"></app-pagination>
         }
       </c-card-footer>
     </c-card>

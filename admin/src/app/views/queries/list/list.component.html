@@ -6,6 +6,17 @@
         <p class="text-muted mb-0 small">All Clients AI queries with name and email</p>
       </c-card-header>
       <c-card-body>
+        <c-row class="mb-3">
+          <c-col md="4">
+            <input cFormControl type="text" placeholder="Search by name" [(ngModel)]="searchFields.name" (ngModelChange)="doSearch()" />
+          </c-col>
+          <c-col md="4">
+            <input cFormControl type="text" placeholder="Search by email" [(ngModel)]="searchFields.email" (ngModelChange)="doSearch()" />
+          </c-col>
+          <c-col md="4">
+            <app-date-picker-custom [options]="datePickerOptions"></app-date-picker-custom>
+          </c-col>
+        </c-row>
         <div *ngIf="loading" class="d-flex justify-content-center p-4">
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>

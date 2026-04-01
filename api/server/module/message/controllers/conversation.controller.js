@@ -71,8 +71,8 @@ exports.list = async (req, res, next) => {
     const senders = !senderIds.length
       ? []
       : await DB.User.find({
-          _id: { $in: senderIds }
-        });
+        _id: { $in: senderIds }
+      });
     const dataConversation = await Promise.all(
       items.map(async item => {
         const data = item.toObject();

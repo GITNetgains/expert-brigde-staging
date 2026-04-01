@@ -127,6 +127,17 @@ export class WebinarListComponent implements OnInit {
       replaceUrl: true
     });
   }
+
+  timeout: any;
+  doSearch() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      this.filter();
+    }, 500);
+  }
+
   query() {
     this.loading = true;
 
@@ -220,6 +231,7 @@ export class WebinarListComponent implements OnInit {
   }
   selectCategory(event: any) {
     this.categoryId = event;
+    this.doSearch();
   }
   sortBy(field: string, type: string) {
     this.sortOption.sortBy = field;

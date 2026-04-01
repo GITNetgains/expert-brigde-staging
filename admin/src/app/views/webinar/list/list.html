@@ -16,6 +16,7 @@
                   [(ngModel)]="searchFields.name"
                   aria-describedby="inputGroup-sizing-sm"
                   aria-label="Sizing example input"
+                  (ngModelChange)="doSearch()"
                 />
               </div>
             </c-col>
@@ -29,6 +30,7 @@
                   bindValue="_id"
                   placeholder="Select Expert"
                   class="my-select"
+                  (ngModelChange)="doSearch()"
                 ></ng-select>
               </div>
             </c-col>
@@ -40,13 +42,6 @@
                   [(selectedCategoryIds)]="categoryId"
                   (selectedCategoryIdsChange)="selectCategory($event)"
                 ></app-category-select>
-              </div>
-            </c-col>
-            <c-col md="3">
-              <div class="mb-3">
-                <button cButton color="primary" class="w-100" (click)="filter()">
-                  Filter
-                </button>
               </div>
             </c-col>
           </c-row>

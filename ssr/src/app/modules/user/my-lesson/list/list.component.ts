@@ -63,7 +63,7 @@ export class ListLessonComponent implements OnInit {
     private router: Router,
     public stateService: StateService
   ) {
-    this.seoService.setMetaTitle('My Lessons');
+    this.seoService.setMetaTitle('My Appointments');
     this.config = this.stateService.getState(STATE.CONFIG);
   }
 

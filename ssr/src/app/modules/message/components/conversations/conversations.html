@@ -8,21 +8,10 @@
           </div> -->
           <div class="srch_bar">
             <div class="input-group">
-              <input
-                autocomplete="off"
-                type="text"
-                class="search-bar form-control"
-                placeholder="{{'Search' | translate}}"
-                [(ngModel)]="q"
-                name="q"
-                (keypress)="enterToSend($event)"
-              />
+              <input autocomplete="off" type="text" class="search-bar form-control"
+                placeholder="{{'Search' | translate}}" [(ngModel)]="q" name="q" (keypress)="enterToSend($event)" />
               <span class="input-group-addon">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  (click)="filter()"
-                >
+                <button class="btn btn-outline-secondary" type="button" (click)="filter()">
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
               </span>
@@ -30,40 +19,27 @@
           </div>
         </div>
         <div class="inbox_chat" *ngIf="conversations && conversations.length">
-          <div
-            class="chat_list"
-            *ngFor="let conversation of conversations"
-            [ngClass]="{active_chat: conversation._id === activeConversation?._id}"
-          >
-            <span
-              class="dot-message"
-              *ngIf="conversation && conversation.userMeta && conversation.userMeta.unreadMessage > 0"
-              ><i class="fas fa-circle"></i
-            ></span>
+          <div class="chat_list" *ngFor="let conversation of conversations"
+            [ngClass]="{active_chat: conversation._id === activeConversation?._id}">
+            <span class="dot-message"
+              *ngIf="conversation && conversation.userMeta && conversation.userMeta.unreadMessage > 0"><i
+                class="fas fa-circle"></i></span>
             <div class="chat_people" (click)="selectConversation(conversation)">
               <div class="chat_img">
-                <img
-                  *ngIf="conversation?.member?.showPublicIdOnly !== true"
-                  [src]="conversation?.member?.avatarUrl"
-                  onerror="this.src='/assets/images/default-avatar.jpg'"
-                  [alt]="conversation?.member?.username"
-                />
-                <span *ngIf="conversation?.member?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
+                <img *ngIf="conversation?.member?.showPublicIdOnly !== true" [src]="conversation?.member?.avatarUrl"
+                  onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="conversation?.member?.username" />
+                <span *ngIf="conversation?.member?.showPublicIdOnly === true" class="avatar avatar-placeholder"
+                  aria-hidden="true"><i class="fi fi-rr-user"></i></span>
               </div>
               <div class="chat_ib">
                 <h5>
                   {{conversation.name}}
-                  <span class="chat_date" *ngIf="conversation.lastMessage"
-                    >{{conversation.lastMessage.createdAt|date}}</span
-                  >
+                  <span class="chat_date"
+                    *ngIf="conversation.lastMessage">{{conversation.lastMessage.createdAt|date}}</span>
                 </h5>
                 <p>
-                  <span *ngIf="!conversation?.lastMessage" translate
-                    >No message right now</span
-                  >
-                  <span *ngIf="conversation?.lastMessage"
-                    >{{substringMessage(conversation.lastMessage.text)}}</span
-                  >
+                  <span *ngIf="!conversation?.lastMessage" translate>No message right now</span>
+                  <span *ngIf="conversation?.lastMessage">{{substringMessage(conversation.lastMessage.text)}}</span>
                 </p>
               </div>
             </div>
@@ -73,18 +49,20 @@
           <div class="chat_list">
             <div class="chat_ib">
               <h5 translate>Start a conversation</h5>
-              <p translate>Select a tutor below to start chatting</p>
+              <p translate>Select an expert from their profile to start chatting</p>
             </div>
           </div>
           <div class="chat_list" *ngFor="let c of contacts">
             <div class="chat_people">
               <div class="chat_img">
-                <img *ngIf="c?.showPublicIdOnly !== true" [src]="c?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="c?.name" />
-                <span *ngIf="c?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i class="fi fi-rr-user"></i></span>
+                <img *ngIf="c?.showPublicIdOnly !== true" [src]="c?.avatarUrl"
+                  onerror="this.src='/assets/images/default-avatar.jpg'" [alt]="c?.name" />
+                <span *ngIf="c?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i
+                    class="fi fi-rr-user"></i></span>
               </div>
               <div class="chat_ib">
                 <h5>{{ c?.showPublicIdOnly === true ? c?.userId : c?.name }}</h5>
-                <p>{{c?.bio || ''}}</p>
+                <div [innerHTML]="getSafeHtml(c?.bio)"></div>
                 <button class="btn btn-default btn-sm mt-2" type="button" (click)="startConversation(c?._id)" translate>
                   Start Chat
                 </button>
@@ -98,11 +76,8 @@
           <div class="mesgs" *ngIf="!activeConversation">
             <p translate class="no-conversation">Please select conversation!</p>
           </div>
-          <app-messages
-            *ngIf="activeConversation"
-            [conversation]="activeConversation"
-            (doBack)="onBack()"
-          ></app-messages>
+          <app-messages *ngIf="activeConversation" [conversation]="activeConversation"
+            (doBack)="onBack()"></app-messages>
         </div>
       </div>
     </div>
