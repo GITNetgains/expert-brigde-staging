@@ -56,6 +56,30 @@ async function _syncZoomToBooking(appointment, zoomData) {
  * This is the authoritative expert presence signal — the expert is authenticated.
  * Non-blocking: errors are logged but never fail the meeting start.
  */
+/**
+ * Notify Credit Service that client clicked "Join Session".
+ * Mirror of _notifyExpertStarted — same pattern, same guarantees.
+ * Non-blocking: errors are logged but never fail the meeting join.
+ */
+async function _notifyClientStarted(appointment, user) {
+  try {
+    if (!appointment || !user) return;
+    await axios.post(CREDIT_SERVICE_URL + '/api/v1/webhook/client-started', {
+      mongo_appointment_id: appointment._id.toString(),
+      client_mongo_id: user._id.toString(),
+      client_email: user.email || '',
+      client_name: user.name || '',
+      started_at: new Date().toISOString()
+    }, {
+      timeout: 5000,
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': CREDIT_SERVICE_API_KEY }
+    });
+    console.log('[CreditService] Client started notification sent for', appointment._id.toString());
+  } catch (err) {
+    console.error('[CreditService] Client started notification failed (non-blocking):', err.message);
+  }
+}
+
 async function _notifyExpertStarted(appointment, user) {
   try {
     if (!appointment || !user) return;
@@ -427,6 +451,10 @@ exports.joinMeeting = async (req, res, next) => {
       if (spaceData && spaceData.client_url) {
         data.lessonspace.url = spaceData.client_url;
       }
+    }
+    // Notify Credit Service: client joined session (authoritative presence signal)
+    if (appointment && appointment.meetingId) {
+      _notifyClientStarted(appointment, req.user).catch(function() {});
     }
     res.locals.signature = data;
     return next();

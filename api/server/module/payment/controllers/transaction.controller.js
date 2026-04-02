@@ -161,7 +161,7 @@ exports.list = async (req, res, next) => {
     let excludeFields = {};
     if (req.user.role !== 'admin') {
       excludeFields = {
-        commission: 0, balance: 0, vat: 0, paymentInfo: 0
+        commission: 0, balance: 0, vat: 0, paymentInfo: 0, originalPrice: 0
       };
       query.userId = req.user._id;
     }
@@ -231,7 +231,7 @@ exports.findOne = async (req, res, next) => {
     let excludeFields = {};
     if (req.user.role !== 'admin') {
       excludeFields = {
-        commission: 0, balance: 0, vat: 0, paymentInfo: 0
+        commission: 0, balance: 0, vat: 0, paymentInfo: 0, originalPrice: 0
       };
     }
     const transaction = await DB.Transaction.findOne({ _id: req.params.transactionId }, excludeFields)
@@ -380,7 +380,7 @@ exports.transactionOfTutor = async (req, res, next) => {
     let excludeFields = {};
     if (req.user.role !== 'admin') {
       excludeFields = {
-        commission: 0, balance: 0, vat: 0, paymentInfo: 0
+        commission: 0, balance: 0, vat: 0, paymentInfo: 0, originalPrice: 0
       };
       query.tutorId = req.user._id;
     }

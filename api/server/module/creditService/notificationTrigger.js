@@ -253,7 +253,7 @@ exports.syncExpertEarnings = async function(req, res) {
 
     var transaction = new DB.Transaction({
       tutorId: expert._id,
-      userId: appointment ? appointment.userId : null,
+      userId: null,  // earnings-sync: expert-only, never link to client
       targetType: 'subject',
       type: 'booking',
       paid: true,
