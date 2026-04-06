@@ -67,6 +67,28 @@ exports.remove = async (req, res, next) => {
       return next(PopulateResponse.forbidden());
     }
 
+    const countBooked = await DB.Appointment.count({
+      paid: true,
+      status: { $in: ['progressing', 'booked', 'pending', 'completed'] },
+      $or: [
+        { slotId: slot._id },
+        {
+          tutorId: slot.tutorId,
+          targetType: { $ne: 'webinar' },
+          startTime: { $lt: moment(slot.toTime).toDate() },
+          toTime: { $gt: moment(slot.startTime).toDate() }
+        }
+      ]
+    });
+
+    if (countBooked) {
+      return next(
+        PopulateResponse.error({
+          message: 'Can not delete, this slot is already booked!'
+        })
+      );
+    }
+
     const canUpdate = await Service.Webinar.canUpdateWebinar(slot.webinarId);
     if (!canUpdate) {
       return next(
@@ -161,7 +183,7 @@ exports.list = async (req, res, next) => {
         data.booked = false;
         data.bookedRanges = [];
         if (item.type === 'webinar') {
-          const countBooked = await DB.Transaction.count({ slotId: item._id, paid: true });
+          const countBooked = await DB.Appointment.count({ slotId: item._id, paid: true, status: { $ne: 'canceled' } });
           const webinar = await DB.Webinar.findOne({ _id: item.webinarId });
           data.webinarName = (webinar && webinar.name) || '';
           if (countBooked) {
@@ -232,18 +254,27 @@ exports.update = async (req, res, next) => {
       return next(PopulateResponse.notFound());
     }
 
-    const countAppointment = await DB.Appointment.count({
-      slotId: slot._id,
-      paid: true
+    const countBooked = await DB.Appointment.count({
+      paid: true,
+      status: { $in: ['progressing', 'booked', 'pending', 'completed'] },
+      $or: [
+        { slotId: slot._id },
+        {
+          tutorId: slot.tutorId,
+          targetType: { $ne: 'webinar' },
+          startTime: { $lt: moment(slot.toTime).toDate() },
+          toTime: { $gt: moment(slot.startTime).toDate() }
+        }
+      ]
     });
 
-    // if (countAppointment) {
-    //   return next(
-    //     PopulateResponse.error({
-    //       message: 'Can not update,already have users enrolled'
-    //     })
-    //   );
-    // }
+    if (countBooked) {
+      return next(
+        PopulateResponse.error({
+          message: 'Can not update, this slot is already booked!'
+        })
+      );
+    }
 
     if (req.user.role !== 'admin' && req.user._id.toString() !== slot.tutorId.toString()) {
       return next(PopulateResponse.forbidden());

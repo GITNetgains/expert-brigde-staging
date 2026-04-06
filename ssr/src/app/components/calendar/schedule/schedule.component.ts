@@ -184,10 +184,10 @@ export class ScheduleEditComponent implements OnInit {
       return false;
     }
     // allow update ongoing/booked sessions
-    // if (moment().isAfter(startTime)) {
-    //   this.appService.toastError('Cannot update slot in the past!');
-    //   return false;
-    // }
+    if (moment().isAfter(startTime)) {
+      this.appService.toastError('Cannot update slot in the past!');
+      return false;
+    }
     return true;
   }
 
@@ -301,9 +301,14 @@ export class ScheduleEditComponent implements OnInit {
                   ? 'Other group session'
                   : soloClass
                     ? '1 on 1 session'
-                    : '',
-                isDisabled: otherClass || soloClass ? true : false
+                    : e.booked
+                      ? 'Booked'
+                      : '',
+                isDisabled: otherClass || soloClass || e.booked ? true : false
               };
+              if (e.booked) {
+                calendarevent.backgroundColor = '#ddd';
+              }
               this.calendarEvents.push(calendarevent);
               if (moment().utc().isAfter(moment.utc(calendarevent.start))) {
                 calendarevent.backgroundColor = '#ddd';
@@ -423,9 +428,9 @@ export class ScheduleEditComponent implements OnInit {
     const calendarApi = $event.view.calendar;
     this.calendarApi = calendarApi;
 
-    // if (moment().isAfter(startTime)) {
-    //   return this.appService.toastError('Cannot create slot in the past!');
-    // }
+    if (moment().isAfter(startTime)) {
+      return this.appService.toastError('Cannot create slot in the past!');
+    }
     let toTime = moment($event.end).toDate();
     const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
     if (minute > 600) {
@@ -512,8 +517,8 @@ export class ScheduleEditComponent implements OnInit {
       }
 
       if (slot.type === 'subject' && item.booked) {
-        // slot.backgroundColor = '#ddd';
-        // slot.isDisabled = true;
+        slot.backgroundColor = '#ddd';
+        slot.isDisabled = true;
 
         slot.title = item.isFree ? 'Free slot - Booked' : 'Paid slot - Booked';
       }
