@@ -22,7 +22,7 @@
                     ]"
                     *ngIf="appointment && appointment.tutor"
                   >
-                    {{ appointment?.tutor?.showPublicIdOnly === true ? appointment?.tutor?.userId : appointment?.tutor?.name }}
+                    {{ (appointment?.tutor?.type === 'tutor' && appointment?.tutor?.showPublicIdOnly === true) ? appointment?.tutor?.userId : appointment?.tutor?.name }}
                   </a>
                 </td>
               </tr>
@@ -31,7 +31,7 @@
                 <td>
                   <span *ngIf="appointment.targetType === 'subject'"
                     >{{appointment.subject ? appointment.subject?.name : 'name'}}</span>
-                  >
+                  
                   <a
                     class="color-light-red"
                     [routerLink]="['/groupsession', appointment?.webinar?.alias]"
@@ -79,11 +79,11 @@
                 <td><span> {{appointment.toTime | date:'short'}} </span></td>
               </tr>
               <tr>
-                <td translate>Price</td>
+                <td translate>Price (excluding taxes) <sup>*</sup></td>
                 <td>
                   <span *ngIf="appointment?.isFree" translate> Free </span>
                   <span *ngIf="!appointment?.transaction?.couponCode">
-                    {{appointment?.transaction?.price | appCurrency}}
+                    {{appointment?.transaction?.price | appCurrency}} 
                   </span>
                   <span *ngIf="appointment?.transaction?.couponCode">
                     {{appointment?.transaction?.discountAmount +
@@ -220,6 +220,9 @@
               </tr>
             </tbody>
           </table>
+          <p class="text-muted mt-2" style="font-size: 12px;">
+  * Price specified above is exclusive of taxes, if any.
+</p>
         </div>
       </div>
       <div class="col-md-7">

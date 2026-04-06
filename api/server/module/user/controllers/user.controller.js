@@ -293,7 +293,7 @@ exports.search = async (req, res, next) => {
 
   try {
     const query = Helper.App.populateDbQuery(req.query, {
-      text: ['name', 'phoneNumber', 'email', 'username'],
+      text: ['name', 'phoneNumber', 'email', 'username', 'userId'],
       boolean: ['isActive', 'phoneVerified', 'emailVerified'],
       equal: ['role', 'type']
     });
@@ -436,12 +436,14 @@ const baseEmailTemplate = ({ title, subtitle, body }) => `
 <tr>
 <td align="center" style="padding:40px 16px;">
 
+
 <table width="600" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.1);">
 
 <!-- HEADER -->
 <tr>
 <td style="background:${BRAND.dark};padding:24px;text-align:center;">
 <img src="${BRAND.logo}" height="40" alt="ExpertBridge" style="display:block;margin:auto;">
+<p style="margin:8px 0 0;color:#a0aec0;font-size:14px;letter-spacing:2px;text-transform:uppercase;">ENGAGE BRILLIANCE, GET IT DONE.</p>
 </td>
 </tr>
 
@@ -456,9 +458,16 @@ ${body}
 
 <!-- FOOTER -->
 <tr>
-<td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
-© ${new Date().getFullYear()} ExpertBridge · support@expertbridge.co
-</td>
+  <td style="background:${BRAND.dark};color:#fff;text-align:center;padding:14px;font-size:12px;">
+    <p style="margin:0 0 4px;">
+      &copy; 2026 ExpertBridge &middot; Elevatexcel Consulting Private Limited
+    </p>
+    <p style="margin:0;">
+      <a href="https://www.expertbridge.co" style="color:#ffffff;text-decoration:none;">expertbridge.co</a>
+      &middot;
+      <a href="mailto:support@expertbridge.co" style="color:#ffffff;text-decoration:none;">support@expertbridge.co</a>
+    </p>
+  </td>
 </tr>
 
 </table>
@@ -734,7 +743,7 @@ const userConfirmHtml = baseEmailTemplate({
     <p>Your query has been successfully submitted to ExpertBridge.</p>
 
     <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
-      ${value.query}
+    Your Query:  ${value.query}
     </p>
 
     <p>Our team will contact you shortly.</p>
@@ -853,7 +862,7 @@ const userConfirmHtml = baseEmailTemplate({
     <p>Your query has been successfully submitted to ExpertBridge.</p>
 
     <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
-      ${value.query}
+     Your Query: ${value.query}
     </p>
 
     <p>Our team will contact you shortly.</p>
@@ -1014,7 +1023,7 @@ exports.checkEmailAndSubmit = async (req, res, next) => {
           <p>Your query has been successfully submitted to ExpertBridge.</p>
 
           <p style="background:#F9FAFB;padding:14px;border-radius:8px;">
-            ${value.query}
+          Your query :  ${value.query}
           </p>
 
           <p>Our team will contact you shortly.</p>
@@ -1371,7 +1380,7 @@ exports.adminUploadAvatar = async (req, res, next) => {
     }
 
     // remove tmp file
-    if (fs.existsSync(path.resolve(req.file.path))) {
+    if (fs.existsSync(path.resolve(req.file.path))) {FV
       fs.unlinkSync(path.resolve(req.file.path));
     }
 

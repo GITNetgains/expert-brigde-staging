@@ -100,7 +100,7 @@
             [cBorder]="1"
             borderColor="gray"
             bordered
-            style="table-layout: fixed; width: 1610px"
+            style="table-layout: fixed; width: 1760px"
           >
             <thead>
               <tr>
@@ -117,7 +117,7 @@
                     (onSort)="onSort($event)"
                     sortBy="userId"
                     [sortOption]="sortOption"
-                    sortTitle="User Name"
+                    sortTitle="Client Name"
                   ></app-sort>
                 </th>
                 <th style="width: 150px">
@@ -200,6 +200,7 @@
                     sortTitle="Created on"
                   ></app-sort>
                 </th>
+                <th style="width: 150px">Slot Date/Time</th>
                 <th style="width: 150px">
                   <app-sort
                     (onSort)="onSort($event)"
@@ -286,6 +287,13 @@
                 </td>
                 <td>
                   <span>{{ item?.createdAt | date : "HH:mm M/d/yy" }}</span>
+                </td>
+                <td>
+                  @if(item?.appointment){
+                  <span>{{ item?.appointment?.startTime | date : "HH:mm M/d/yy" }}</span>
+                  }@else {
+                  <span>-</span>
+                  }
                 </td>
                 <td>
                   @switch(item?.status){ @case('pending'){

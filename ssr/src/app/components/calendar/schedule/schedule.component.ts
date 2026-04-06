@@ -66,6 +66,7 @@ export class ScheduleEditComponent implements OnInit {
       interactionPlugin,
       momentPlugin
     ],
+    height: 450,
     editable: true,
     headerToolbar: {
       left: 'prev,next today',
@@ -182,10 +183,11 @@ export class ScheduleEditComponent implements OnInit {
       );
       return false;
     }
-    if (moment().isAfter(startTime)) {
-      this.appService.toastError('Cannot update slot in the past!');
-      return false;
-    }
+    // allow update ongoing/booked sessions
+    // if (moment().isAfter(startTime)) {
+    //   this.appService.toastError('Cannot update slot in the past!');
+    //   return false;
+    // }
     return true;
   }
 
@@ -376,9 +378,9 @@ export class ScheduleEditComponent implements OnInit {
       const calendarApi = $event.view.calendar;
       const item = $event.event.extendedProps.item;
       const startTime = moment($event.event.start).toDate();
-      if (moment().isAfter(startTime)) {
-        return this.appService.toastError('Cannot update slot in the past!');
-      }
+      // if (moment().isAfter(startTime)) {
+      //   return this.appService.toastError('Cannot update slot in the past!');
+      // }
       const toTime = moment($event.event.end).toDate();
       this.calendar
         .update(item._id, {
@@ -421,9 +423,9 @@ export class ScheduleEditComponent implements OnInit {
     const calendarApi = $event.view.calendar;
     this.calendarApi = calendarApi;
 
-    if (moment().isAfter(startTime)) {
-      return this.appService.toastError('Cannot create slot in the past!');
-    }
+    // if (moment().isAfter(startTime)) {
+    //   return this.appService.toastError('Cannot create slot in the past!');
+    // }
     let toTime = moment($event.end).toDate();
     const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
     if (minute > 600) {
@@ -510,8 +512,8 @@ export class ScheduleEditComponent implements OnInit {
       }
 
       if (slot.type === 'subject' && item.booked) {
-        slot.backgroundColor = '#ddd';
-        slot.isDisabled = true;
+        // slot.backgroundColor = '#ddd';
+        // slot.isDisabled = true;
 
         slot.title = item.isFree ? 'Free slot - Booked' : 'Paid slot - Booked';
       }

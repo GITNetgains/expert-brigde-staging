@@ -1,3 +1,17 @@
+<style>
+
+  @media (max-width: 576px) {
+  .table td .btn {
+    width: 100%;
+  }
+
+  .table td .d-flex {
+    flex-direction: column;
+  }
+}
+</style>
+
+
 <c-row [gutter]="3">
   <c-col xs="12" sm="12" md="6">
     <c-card>
@@ -16,12 +30,12 @@
         <div class="table-responsive">
           <table class="table table-horizontal">
             <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Is Activated</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
+  <tr>
+    <th>Name</th>
+    <th class="text-center">Is Activated</th>
+    <th class="text-center">Action</th>
+  </tr>
+</thead>
             <tbody>
               @if (!myCategories.length && !filterMyCategory.loading) {
               <tr>
@@ -39,36 +53,36 @@
                 }"
               >
                 <td>{{ item?.name }}</td>
-                <td>
-                  @if (item?.isActive) {
-                  <c-badge color="success">Yes</c-badge>
-                  } @else {
-                  <c-badge color="danger">No</c-badge>
-                  }
-                </td>
-                <td>
-                  <button
-                    cButton
-                    color="secondary"
-                    size="sm"
-                    class="me-1"
-                    (click)="submitCategory(item)"
-                  >
-                    <svg
-                      [cIcon]="icons.cilPencil"
-                      class="text-white"
-                      size="sm"
-                    ></svg>
-                  </button>
-                  <button
-                    cButton
-                    color="secondary"
-                    size="sm"
-                    (click)="selectMyCategory(item)"
-                  >
-                    <strong>List Subjects</strong>
-                  </button>
-                </td>
+                <td class="text-center">
+  @if (item?.isActive) {
+    <c-badge color="success">Yes</c-badge>
+  } @else {
+    <c-badge color="danger">No</c-badge>
+  }
+</td>
+<td class="text-center">
+  <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+    
+    <button
+      cButton
+      color="secondary"
+      size="sm"
+      (click)="submitCategory(item)"
+    >
+      <svg [cIcon]="icons.cilPencil" class="text-white" size="sm"></svg>
+    </button>
+
+    <button
+      cButton
+      color="secondary"
+      size="sm"
+      (click)="selectMyCategory(item)"
+    >
+      <strong>List Subjects</strong>
+    </button>
+
+  </div>
+</td>
               </tr>
               }
             </tbody>
@@ -129,20 +143,18 @@
                   <c-badge color="danger">No</c-badge>
                   }
                 </td>
-                <td>
-                  <button
-                    cButton
-                    color="secondary"
-                    size="sm"
-                    (click)="submitSubject(item)"
-                  >
-                    <svg
-                      [cIcon]="icons.cilPencil"
-                      class="text-white"
-                      size="sm"
-                    ></svg>
-                  </button>
-                </td>
+              <td class="text-center">
+  <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+    <button
+      cButton
+      color="secondary"
+      size="sm"
+      (click)="submitSubject(item)"
+    >
+      <svg [cIcon]="icons.cilPencil" class="text-white" size="sm"></svg>
+    </button>
+  </div>
+</td>
               </tr>
               }
             </tbody>

@@ -88,9 +88,9 @@
             <tr>
               <td>
                 @if(transaction.couponCode){
-                <th>Original price</th>
+                <th>Original price (excluding taxes) <sup>*</sup></th>
                 }@else{
-                <th>Price</th>
+                <th>Price (excluding taxes) <sup>*</sup></th>
                 }
               </td>
               <td>
@@ -186,6 +186,16 @@
               </td>
             </tr>
             <tr>
+              <th>Slot Date/Time</th>
+              <td>
+                @if(transaction?.appointment){
+                <span>{{ transaction?.appointment?.startTime | date : 'HH:mm M/d/yy' }}</span>
+                }@else {
+                <span>-</span>
+                }
+              </td>
+            </tr>
+            <tr>
               <th>Status</th>
               <td>
                 @switch(transaction?.status){ @case('pending'){
@@ -207,6 +217,7 @@
             </tr>
           </tbody>
         </table>
+        <p class="text-muted mt-2" style="font-size: 12px;">  * Price specified above is exclusive of taxes, if any.</p> 
       </c-card-body>
     </c-card>
   </c-col>

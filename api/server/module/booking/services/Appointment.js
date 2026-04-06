@@ -167,13 +167,17 @@ exports.userCancel = async (appointmentId, reason, cancelBy) => {
       );
     }
 
-    if (!isBefore) {
+    if (!isBefore && userCancel.type !== 'tutor') {
       throw new Error(`Can't request, your appointment will start at ${
         userCancel.timezone
           ? momentTimeZone.utc(firstAppointment.startTime).tz(userCancel.timezone).format('DD/MM/YYYY HH:mm')
           : moment(firstAppointment.startTime).format('DD/MM/YYYY HH:mm')
       },
         please request 24 hours in advance before the appointment start`);
+    }
+
+    if (appointment.status === 'progressing' && userCancel.type !== 'tutor') {
+       throw new Error('You cannot cancel an ongoing session');
     }
 
     if (appointment.targetType === 'webinar') {
@@ -334,6 +338,7 @@ exports.checkNotStart = async appointmentId => {
       startTime,
       toTime,
       tutorName: tutor.name,
+      tutorId: tutor.userId,
       userName: user.name
     };
     // send mail to admin
@@ -348,6 +353,7 @@ exports.checkNotStart = async appointmentId => {
       startTime: startTimeTutor,
       toTime: toTimeTutor,
       userName: user.name,
+      tutorId: tutor.userId,
       tutorName: tutor.name
     };
     // send mail to tutor

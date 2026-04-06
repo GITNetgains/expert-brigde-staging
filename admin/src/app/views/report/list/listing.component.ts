@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { ReportService } from '@services/complaint.service';
 import { UtilService } from '@services/util.service';
 import { CommonModule } from '@angular/common';
@@ -15,6 +17,7 @@ import {
   CardHeaderComponent,
   ContainerComponent,
 } from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
 import { freeSet } from '@coreui/icons';
 import { TutorService } from '@services/tutor.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -40,13 +43,14 @@ import { AppPaginationComponent } from '@components/index';
     CommonModule,
     SortComponent,
     EyeIconComponent,
+    IconDirective,
   ],
 })
 export class ListingComponent implements OnInit {
   public items = [];
   public take: number = 1;
   public total: number = 0;
-  public searchFields = { q: '' };
+  public searchFields = { q: '', userID: '' };
   public currentPage: number = 1;
   public pageSize: number = 10;
   sortOption: ISortOption = {
@@ -63,6 +67,8 @@ export class ListingComponent implements OnInit {
   icons = freeSet;
 
   loading = false;
+  private searchSubject = new Subject<void>();
+  private searchSubscription!: Subscription;
 
   constructor(
     private reportService: ReportService,
@@ -76,7 +82,22 @@ export class ListingComponent implements OnInit {
       this.query();
     });
   }
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.searchSubscription = this.searchSubject
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        this.currentPage = 1;
+        this.query();
+      });
+  }
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
+  onSearch() {
+    this.searchSubject.next();
+  }
   query() {
     this.loading = true;
     this.reportService
@@ -104,5 +125,35 @@ export class ListingComponent implements OnInit {
   onSort(sortOption: ISortOption) {
     this.sortOption = sortOption;
     this.query();
+  }
+  resolveReport(item: any) {
+    if (confirm('Are you sure you want to resolve this complaint?')) {
+      this.reportService
+        .update(item._id, {
+          targetId: item.targetId,
+          issue: item.issue,
+          targetType: item.targetType,
+          status: 'approved',
+        })
+        .subscribe((res) => {
+          this.utilService.toastSuccess({ message: 'Report resolved successfully!' });
+          this.query();
+        });
+    }
+  }
+  rejectReport(item: any) {
+    if (confirm('Are you sure you want to reject this complaint?')) {
+      this.reportService
+        .update(item._id, {
+          targetId: item.targetId,
+          issue: item.issue,
+          targetType: item.targetType,
+          status: 'rejected',
+        })
+        .subscribe((res) => {
+          this.utilService.toastSuccess({ message: 'Report rejected successfully!' });
+          this.query();
+        });
+    }
   }
 }

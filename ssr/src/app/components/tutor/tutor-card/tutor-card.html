@@ -62,9 +62,8 @@
   <!-- DIVIDER -->
   <div class="divider"></div>
 
-  <!-- ACTIONS -->
   <div class="card-actions">
-    <a [routerLink]="['/experts', tutor._id]">View</a>
+    <a (click)="openIntro()" style="cursor: pointer">View</a>
     <a [routerLink]="['/experts', tutor._id, 'booking']">Engage</a>
     <a (click)="favorite()" *ngIf="!tutor.isFavorite">Shortlist</a>
     <a (click)="unFavorite()" *ngIf="tutor.isFavorite">Remove</a>
@@ -75,3 +74,18 @@
   </div>
 
 </div>
+
+<ng-template #introVideoTpl let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Assessment  Video</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body text-center">
+    <div class="video-container" *ngIf="videoUrl">
+      <iframe width="100%" height="450" [src]="videoUrl" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="video-container" *ngIf="introVideoUrl && !videoUrl">
+      <video width="100%" height="auto" [src]="introVideoUrl" controls autoplay></video>
+    </div>
+  </div>
+</ng-template>

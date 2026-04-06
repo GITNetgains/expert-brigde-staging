@@ -1,23 +1,23 @@
 <div class="card">
   <div class="card-body">
-    <div class="col-md-12" *ngIf="!earningStats" translate>No information</div>
+    <div class="col-md-12" *ngIf="!earningStats">No information</div>
     <div class="table-responsive table-no-fixed">
       <table class="table table-bordered">
         <tbody>
           <tr>
-            <td translate>Expert Name:</td>
+            <td>Expert Name:</td>
             <td>{{earningStats?.tutor?.name}}</td>
           </tr>
           <tr>
-            <td translate>Expert Email:</td>
+            <td>Expert Email:</td>
             <td>{{earningStats?.tutor?.email}}</td>
           </tr>
           <tr>
-            <td translate>Admin %:</td>
+            <td>Admin %:</td>
             <td>{{earningStats?.commissionRate}} %</td>
           </tr>
           <tr>
-            <td translate>Total amount requested for payment:</td>
+            <td>Total amount requested for payment:</td>
             <td>{{earningStats?.totalAmountPayoutRequest}} %</td>
           </tr>
           <tr class="table-danger">

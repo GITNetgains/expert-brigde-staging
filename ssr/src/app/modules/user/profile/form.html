@@ -52,6 +52,10 @@
         <div class="col-lg-5 col-md-12">
           <form #frm="ngForm" (submit)="submit(frm)" class="edit-profile-form edit-profile-form-glass" ngNativeValidate
             [attr.disabled]="uploading" *ngIf="!loading">
+          <div *ngIf="isEditProfile" class="alert alert-info py-2 px-3 mb-3" style="border-radius: 8px; font-size: 0.9rem;">
+            <i class="fi fi-rr-info me-2"></i>
+            <span translate>Please ensure you click the <strong>Submit</strong> button at the bottom of this form to save your profile changes.</span>
+          </div>
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}">
             <h6><span translate>Profile name</span></h6>
             <p class="text-secondary2" *ngIf="!isEditProfile">{{info.name}}</p>
@@ -112,10 +116,8 @@
             <p class="text-secondary2" *ngIf="!isEditProfile" translate>
               {{(info?.state || '-') | ellipsis: 20}}
             </p>
-            <ng-select [hidden]="!isEditProfile" [items]="states" appendTo="body" name="state" [multiple]="false"
-              [closeOnSelect]="true" [searchable]="true" [addTag]="true" addTagText="Add state"
-              [(ngModel)]="info.state" placeholder="{{ 'Select or type state' | translate }}">
-            </ng-select>
+            <input *ngIf="isEditProfile" type="text" class="form-control" [(ngModel)]="info.state"
+              name="state" placeholder="{{ 'Enter state' | translate }}" />
           </div>
           <div class="item-profile-form" [ngClass]="{'d-flex':!isEditProfile}" *ngIf="info && info.type === 'tutor'">
             <h6><span translate>City</span></h6>

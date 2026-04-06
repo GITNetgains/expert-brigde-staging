@@ -3,8 +3,10 @@ const Joi = require('joi');
 
 const validateSchema = Joi.object().keys({
   targetId: Joi.string().required(),
-  issue: Joi.string().required(),
-  targetType: Joi.string().required()
+  issue: Joi.string().optional(),
+  targetType: Joi.string().optional(),
+  status: Joi.string().valid('progressing', 'approved', 'rejected').optional(),
+  note: Joi.string().allow('', null).optional()
 });
 
 exports.findOne = async (req, res, next) => {
@@ -13,9 +15,19 @@ exports.findOne = async (req, res, next) => {
     if (!id) {
       return next(PopulateResponse.validationError());
     }
-    const report = await DB.Report.findOne({ _id: id });
+    const report = await DB.Report.findOne({ _id: id })
+      .populate('reportByUserId', 'name username type role userId')
+      .populate('reportToUserId', 'name username type role userId');
     if (!report) {
       return res.status(404).send(PopulateResponse.notFound());
+    }
+
+    if (report.targetId && (report.targetType === 'subject' || report.targetType === 'webinar')) {
+      const target = await DB.Appointment.findOne({ _id: report.targetId });
+      if (target) {
+        report._doc.startTime = target.startTime;
+        report._doc.toTime = target.toTime;
+      }
     }
 
     req.report = report;
@@ -86,7 +98,11 @@ exports.create = async (req, res, next) => {
       transactionCode: transaction.code,
       meta: {
         reportBy: req.user.name,
-        reportTo: reportToName
+        reportByUsername: req.user.username,
+        reportTo: reportToName,
+        reportToUsername: isExpertReporter ? (await DB.User.findOne({ _id: target.userId }))?.username : tutor.username,
+        startTime: target.startTime,
+        toTime: target.toTime
       }
     });
     await report.save();
@@ -137,30 +153,69 @@ exports.list = async (req, res, next) => {
   try {
     const query = {};
 
+    const and = [];
     if (req.query.q) {
-      query.$or = [
-        {
-          issue: { $regex: req.query.q.trim(), $options: 'i' }
-        },
-        {
-          'meta.reportBy': { $regex: req.query.q.trim(), $options: 'i' }
-        },
-        {
-          transactionCode: { $regex: req.query.q.trim(), $options: 'i' }
-        },
-        {
-          targetCode: { $regex: req.query.q.trim(), $options: 'i' }
-        }
-      ];
+      and.push({
+        $or: [
+          { issue: { $regex: req.query.q.trim(), $options: 'i' } },
+          { 'meta.reportBy': { $regex: req.query.q.trim(), $options: 'i' } },
+          { 'meta.reportTo': { $regex: req.query.q.trim(), $options: 'i' } },
+          { transactionCode: { $regex: req.query.q.trim(), $options: 'i' } },
+          { targetCode: { $regex: req.query.q.trim(), $options: 'i' } }
+        ]
+      });
+    }
+
+    if (req.query.userID || req.query.userId) {
+      const uId = (req.query.userID || req.query.userId).trim();
+      const users = await DB.User.find({
+        $or: [
+          { userId: { $regex: uId, $options: 'i' } },
+          { username: { $regex: uId, $options: 'i' } }
+        ]
+      }).select('_id');
+      const userIds = users.map((u) => u._id);
+      
+      and.push({
+        $or: [
+          { reportByUserId: { $in: userIds } },
+          { reportToUserId: { $in: userIds } },
+          { 'meta.reportByUsername': { $regex: uId, $options: 'i' } },
+          { 'meta.reportToUsername': { $regex: uId, $options: 'i' } }
+        ]
+      });
+    }
+
+    if (and.length > 0) {
+      query.$and = and;
     }
 
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Report.count(query);
     let items = await DB.Report.find(query)
+      .populate('reportByUserId', 'name username type role userId')
+      .populate('reportToUserId', 'name username type role userId')
       .sort(sort)
       .skip(page * take)
       .limit(take)
       .exec();
+
+    // Populate session times for appointments
+    const appointmentIds = items.filter(i => i.targetId && (i.targetType === 'subject' || i.targetType === 'webinar')).map(i => i.targetId);
+    const appointments = await DB.Appointment.find({ _id: { $in: appointmentIds } }).select('startTime toTime');
+    const apptMap = _.keyBy(appointments, (a) => a._id.toString());
+    
+    items = items.map(item => {
+      const appt = item.targetId ? apptMap[item.targetId.toString()] : null;
+      if (appt) {
+        item._doc.startTime = appt.startTime;
+        item._doc.toTime = appt.toTime;
+      } else if (item.meta && item.meta.startTime) {
+        item._doc.startTime = item.meta.startTime;
+        item._doc.toTime = item.meta.toTime;
+      }
+      return item;
+    });
 
     res.locals.list = { count, items };
     next();

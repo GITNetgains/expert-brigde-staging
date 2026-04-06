@@ -11,6 +11,8 @@ import { register } from 'swiper/element/bundle';
 export class BlogSectionComponent implements OnInit {
   posts: any[] = [];
   isBrowser = false;
+  isBeginning = true;
+  isEnd = false;
 
   @ViewChild('blogSwiper', { static: false }) blogSwiper!: ElementRef;
 
@@ -40,7 +42,7 @@ export class BlogSectionComponent implements OnInit {
     const swiperParams = {
       slidesPerView: 3,
       spaceBetween: 24,
-      loop: true,
+      loop: false,
       autoplay: { delay: 4000, disableOnInteraction: false },
       pagination: { clickable: true },
       breakpoints: {
@@ -48,6 +50,16 @@ export class BlogSectionComponent implements OnInit {
         992:  { slidesPerView: 2, spaceBetween: 20 },
         0:    { slidesPerView: 1.1, spaceBetween: 12 }
       },
+      on: {
+        slideChange: (swiper: any) => {
+          this.isBeginning = swiper.isBeginning;
+          this.isEnd = swiper.isEnd;
+        },
+        init: (swiper: any) => {
+          this.isBeginning = swiper.isBeginning;
+          this.isEnd = swiper.isEnd;
+        }
+      }
     };
 
     Object.assign(swiperEl, swiperParams);
@@ -57,12 +69,20 @@ export class BlogSectionComponent implements OnInit {
   // Navigation Logic
   onPrev() {
     const swiperEl = this.blogSwiper?.nativeElement as any;
-    if (swiperEl?.swiper) swiperEl.swiper.slidePrev();
+    if (swiperEl?.swiper) {
+      swiperEl.swiper.slidePrev();
+      this.isBeginning = swiperEl.swiper.isBeginning;
+      this.isEnd = swiperEl.swiper.isEnd;
+    }
   }
 
   onNext() {
     const swiperEl = this.blogSwiper?.nativeElement as any;
-    if (swiperEl?.swiper) swiperEl.swiper.slideNext();
+    if (swiperEl?.swiper) {
+      swiperEl.swiper.slideNext();
+      this.isBeginning = swiperEl.swiper.isBeginning;
+      this.isEnd = swiperEl.swiper.isEnd;
+    }
   }
 
   getImage(item: any): string {

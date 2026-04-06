@@ -65,6 +65,8 @@ export class ListComponent implements OnInit {
   };
   letterLimit: number = 10;
   icons = { cilPencil, cilTrash };
+  selectedIds: string[] = [];
+  allSelected: boolean = false;
 
   private postService = inject(PostService);
   private toasty = inject(UtilService);
@@ -84,6 +86,8 @@ export class ListComponent implements OnInit {
 
     if (!isNaN(page) && page > 0 && page !== this.currentPage) {
       this.currentPage = page;
+      this.selectedIds = [];
+      this.allSelected = false;
       this.query();
     }
   }
@@ -99,8 +103,50 @@ export class ListComponent implements OnInit {
 
     this.postService.search(params).subscribe({
       next: (resp) => {
+        this.selectedIds = [];
+        this.allSelected = false;
         this.count = resp?.data?.count || 0;
         this.items = resp?.data?.items || [];
+      },
+      error: () => {
+        this.toasty.toastError({
+          title: 'Error',
+          message: 'Something went wrong, please try again!',
+        });
+      },
+    });
+  }
+
+  toggleAll() {
+    this.allSelected = !this.allSelected;
+    if (this.allSelected) {
+      this.selectedIds = this.items.map((item) => item._id);
+    } else {
+      this.selectedIds = [];
+    }
+  }
+
+  toggleItem(id: string) {
+    const index = this.selectedIds.indexOf(id);
+    if (index > -1) {
+      this.selectedIds.splice(index, 1);
+    } else {
+      this.selectedIds.push(id);
+    }
+    this.allSelected = this.selectedIds.length === this.items.length;
+  }
+
+  removeSelected() {
+    if (!this.selectedIds.length) return;
+    if (!confirm('Are you sure you want to delete selected items?')) return;
+
+    this.postService.bulkDelete(this.selectedIds).subscribe({
+      next: () => {
+        this.toasty.toastSuccess({
+          title: 'Success',
+          message: 'Posts have been deleted!',
+        });
+        this.query();
       },
       error: () => {
         this.toasty.toastError({
@@ -147,6 +193,8 @@ export class ListComponent implements OnInit {
           message: 'Post has been deleted!',
         });
         this.items.splice(index, 1);
+        this.selectedIds = this.selectedIds.filter(id => id !== item._id);
+        this.allSelected = this.selectedIds.length === this.items.length && this.items.length > 0;
         this.count--;
       },
       error: () => {

@@ -6,7 +6,7 @@
       <label for="{{options.id || 'file-upload'}}" class="custom-file-upload">
 
       </label>
-      <span translate>{{ options.hintText || 'Drop or select file to here' }}</span>
+      <span>{{ options.hintText || 'Drop or select file to here' }}</span>
       @if (options?.multiple) {
       <input id="{{options.id}}" type="file" ng2FileSelect [uploader]="uploader" name="mediaPath" multiple
         (onFileSelected)="onFileSelected($event)" class="custom-file-input" style="display: none"
@@ -20,7 +20,7 @@
     <div class="progress" [hidden]="!progress">
       <div class="bg-color-default" [ngStyle]="{ width: progress + '%' }"
         [ngClass]="{ 'bg-success': progress === 100 }">
-        <span *ngIf="progress === 100" translate>File was uploaded</span>
+        <span *ngIf="progress === 100">File was uploaded</span>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@
   }
   <div class="file-list-container" *ngIf="uploader.queue.length">
     <app-file-list [files]="uploader.queue" (onRemoveFile)="removeFile($event)"></app-file-list>
-    <button class="upload-btn" type="button" cButton (click)="uploadAll()" translate [disabled]="uploader.isUploading"
+    <button class="upload-btn" type="button" cButton (click)="uploadAll()" [disabled]="uploader.isUploading"
       *ngIf="uploader.queue.length && !options.autoUpload">
       Upload
     </button>

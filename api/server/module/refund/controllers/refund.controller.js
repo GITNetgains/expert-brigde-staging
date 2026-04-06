@@ -98,7 +98,7 @@ exports.list = async (req, res, next) => {
     const count = await DB.RefundRequest.count(query);
     let items = await DB.RefundRequest.find(query)
       .populate({ path: 'user', select: '_id name username paypalEmailId' })
-      .populate({ path: 'tutor', select: '_id name username userId showPublicIdOnly' })
+      .populate({ path: 'tutor', select: '_id name username userId showPublicIdOnly type' })
       .populate('appointment')
       .populate({ path: 'transaction', select: req.user.role !== 'admin' ? '-commission -balance' : '' })
       .sort(sort)
@@ -125,7 +125,7 @@ exports.list = async (req, res, next) => {
         const data = item.toObject();
         data[item.targetType] = target;
         // Apply showPublicIdOnly for students (refund list is user's own requests)
-        if (req.user.role !== 'admin' && data.tutor && data.tutor.showPublicIdOnly === true) {
+        if (req.user.role !== 'admin' && data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly === true) {
           data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
           data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
         }
@@ -146,7 +146,7 @@ exports.findOne = async (req, res, next) => {
   try {
     const refundRequest = await DB.RefundRequest.findOne({ _id: req.params.refundRequestId })
       .populate({ path: 'user', select: '_id name username paypalEmailId' })
-      .populate({ path: 'tutor', select: '_id name username userId showPublicIdOnly' })
+      .populate({ path: 'tutor', select: '_id name username userId showPublicIdOnly type' })
       .populate('appointment')
       .populate({ path: 'transaction', select: req.user.role !== 'admin' ? '-commission -balance' : '' })
       .populate({ path: 'webinar', select: '_id name alias price' })
@@ -178,7 +178,7 @@ exports.findOne = async (req, res, next) => {
     const data = refundRequest.toObject();
     data[targetType] = target;
     // Apply showPublicIdOnly for students (refund detail is user's own request)
-    if (req.user.role !== 'admin' && data.tutor && data.tutor.showPublicIdOnly === true) {
+    if (req.user.role !== 'admin' && data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly === true) {
       data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
       data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
     }

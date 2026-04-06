@@ -92,7 +92,8 @@
 
 
         <!-- SUBMIT -->
-        <button class="btn primary-btn w-100 mt-4">
+        <button class="btn primary-btn w-100 mt-4" [disabled]="loading">
+          <i class="fa fa-spinner fa-spin me-2" *ngIf="loading"></i>
           {{ loginMode === 'otp'
             ? (step === 'email' ? 'Send Code' : 'Verify & Sign In')
             : 'Sign In' }}

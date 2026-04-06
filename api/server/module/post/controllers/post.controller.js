@@ -121,6 +121,22 @@ exports.remove = async(req, res, next) => {
     }
 };
 
+exports.bulkDelete = async(req, res, next) => {
+    try {
+        const ids = req.body.ids;
+        if (!ids || !Array.isArray(ids)) {
+            return next(PopulateResponse.validationError('Invalid IDs'));
+        }
+        await DB.Post.remove({ _id: { $in: ids } });
+        res.locals.remove = {
+            message: 'Posts are deleted'
+        };
+        next();
+    } catch (e) {
+        next(e);
+    }
+};
+
 /**
  * get list post
  */

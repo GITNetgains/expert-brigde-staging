@@ -184,6 +184,53 @@ export class BookingComponent implements OnInit {
         content: 'ExpertBridge is an online expert consultation platform'
       }
     ]);
+    this.webUrl = environment.url;
+  }
+
+  getShareProfileUrl(): string {
+    return `${this.webUrl}/experts/${this.tutor?._id}`;
+  }
+
+  public copied: boolean = false;
+  public webUrl: string;
+
+  shareProfile() {
+    const url = this.getShareProfileUrl();
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.copied = true;
+        this.appService.toastSuccess('Profile link copied!');
+
+        setTimeout(() => {
+          this.copied = false;
+        }, 2000);
+      });
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        this.copied = true;
+        this.appService.toastSuccess('Profile link copied!');
+        setTimeout(() => {
+          this.copied = false;
+        }, 2000);
+      } catch (err) {}
+      document.body.removeChild(textArea);
+    }
+  }
+
+  shareOnFacebook() {
+    const url = encodeURIComponent(this.getShareProfileUrl());
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+  }
+
+  shareOnTwitter() {
+    const url = encodeURIComponent(this.getShareProfileUrl());
+    window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank');
   }
 
   ngOnInit() {

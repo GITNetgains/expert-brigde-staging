@@ -144,15 +144,7 @@ exports.createWebinarPerSlot = async (webinarId, beforeTimeInMinute) => {
 
 exports.canUpdateWebinar = async webinarId => {
   try {
-    const pendingAppointment = await DB.Appointment.count({
-      targetType: 'webinar',
-      webinarId,
-      status: {
-        $in: ['booked', 'pending', 'progressing']
-      },
-      paid: true
-    });
-    return !pendingAppointment;
+    return true;
   } catch (error) {
     throw error;
   }

@@ -6,7 +6,7 @@ import { AuthService } from '../auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class StudentGuard implements CanActivate {
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(private router: Router, private auth: AuthService) { }
 
   canActivate(): Observable<boolean | UrlTree> {
     return this.auth.currentUserSubject.pipe(

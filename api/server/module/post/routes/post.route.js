@@ -42,6 +42,7 @@ module.exports = router => {
    * @apiParam {String}   id        post id
    * @apiPermission admin
    */
+  router.delete('/v1/posts', Middleware.hasRole('admin'), postController.bulkDelete, Middleware.Response.success('remove'));
   router.delete('/v1/posts/:id', Middleware.hasRole('admin'), postController.findOne, postController.remove, Middleware.Response.success('remove'));
 
   /**

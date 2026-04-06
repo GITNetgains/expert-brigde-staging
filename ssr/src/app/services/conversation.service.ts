@@ -35,4 +35,8 @@ export class ConversationService extends APIRequest {
   findOne(id: string): Promise<any> {
     return this.get(`/messages/conversation/${id}`);
   }
+
+  getUnreadCount(): Promise<any> {
+    return this.get('/messages/unread-count');
+  }
 }

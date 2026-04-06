@@ -7,7 +7,7 @@
         </c-card-header>
         <c-card-body>
           <c-row>
-            <c-col md="8">
+            <c-col md="6">
               <div class="mb-3">
                 <input
                   cFormControl
@@ -15,14 +15,20 @@
                   [(ngModel)]="searchFields.q"
                   name="name"
                   placeholder="Enter name"
+                  (input)="onSearch()"
                 />
               </div>
             </c-col>
-            <c-col md="4">
+            <c-col md="6">
               <div class="mb-3">
-                <button cButton color="primary" class="w-100" (click)="query()">
-                  Filter
-                </button>
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="searchFields['userID']"
+                  name="userID"
+                  placeholder="Enter UserID"
+                  (input)="onSearch()"
+                />
               </div>
             </c-col>
           </c-row>
@@ -64,6 +70,7 @@
                       sortTitle="Class"
                     ></app-sort>
                   </th>
+                  <th style="min-width: 150px">Session Date/Time</th>
                   <th>
                     <app-sort
                       (onSort)="onSort($event)"
@@ -81,6 +88,7 @@
                     ></app-sort>
                   </th>
                   <th>Report By</th>
+                  <th>Reported To</th>
                   <th>
                     <app-sort
                       (onSort)="onSort($event)"
@@ -107,21 +115,74 @@
                     >
                   </td>
                   <td>{{ item.targetCode }}</td>
+                  <td>
+                    <div *ngIf="item.startTime">
+                      <small class="text-muted d-block">Start: {{ item.startTime | date:'medium' }}</small>
+                      <small class="text-muted">End: {{ item.toTime | date:'medium' }}</small>
+                    </div>
+                    <span *ngIf="!item.startTime" class="text-muted">N/A</span>
+                  </td>
                   <td>{{ item.transactionCode }}</td>
                   <td>{{ item.issue }}</td>
-                  <td>{{ item.meta.reportBy }}</td>
+                  <td>
+                    <a [routerLink]="item.reportByUserId?.type === 'tutor' || item.reportByUserId?.role === 'tutor' ? ['/tutor/update', item.reportByUserId?._id] : ['/users/update', item.reportByUserId?._id]" class="text-decoration-none">
+                      {{ item.meta?.reportBy }}
+                    </a>
+                    <span class="ms-1 badge bg-info" *ngIf="item.reportByUserId?.type === 'tutor' || item.reportByUserId?.role === 'tutor'">Expert ({{ item.reportByUserId?.userId }})</span>
+                    <span class="ms-1 badge bg-secondary" *ngIf="item.reportByUserId && item.reportByUserId?.type !== 'tutor' && item.reportByUserId?.role !== 'tutor'">Client</span>
+                  </td>
+                  <td>
+                    <a [routerLink]="item.reportToUserId?.type === 'tutor' || item.reportToUserId?.role === 'tutor' ? ['/tutor/update', item.reportToUserId?._id] : ['/users/update', item.reportToUserId?._id]" class="text-decoration-none">
+                      {{ item.meta?.reportTo }}
+                    </a>
+                    <span class="ms-1 badge bg-info" *ngIf="item.reportToUserId?.type === 'tutor' || item.reportToUserId?.role === 'tutor'">Expert ({{ item.reportToUserId?.userId }})</span>
+                    <span class="ms-1 badge bg-secondary" *ngIf="item.reportToUserId && item.reportToUserId?.type !== 'tutor' && item.reportToUserId?.role !== 'tutor'">Client</span>
+                  </td>
                   <td>
                     <span>{{item?.createdAt | date}}</span>
                   </td>
                   <td>
-                    <a
-                      cButton
-                      color="secondary"
-                      size="sm"
-                      [routerLink]="['/reports/details/', item._id]"
-                    >
-                      <app-eye-icon></app-eye-icon>
-                    </a>
+                    <div class="d-flex gap-1">
+                      <a
+                        cButton
+                        color="secondary"
+                        size="sm"
+                        [routerLink]="['/reports/details/', item._id]"
+                        title="View details"
+                      >
+                        <app-eye-icon></app-eye-icon>
+                      </a>
+                      <button
+                        *ngIf="item.status === 'progressing'"
+                        cButton
+                        color="success"
+                        size="sm"
+                        (click)="resolveReport(item)"
+                        title="Resolve"
+                      >
+                        <svg cIcon name="cil-check" size="sm"></svg>
+                      </button>
+                      <button
+                        *ngIf="item.status === 'progressing'"
+                        cButton
+                        color="danger"
+                        size="sm"
+                        (click)="rejectReport(item)"
+                        title="Reject"
+                      >
+                        <svg cIcon name="cil-x-circle" size="sm"></svg>
+                      </button>
+                      <span
+                        *ngIf="item.status === 'approved'"
+                        class="badge bg-success"
+                        >Resolved</span
+                      >
+                      <span
+                        *ngIf="item.status === 'rejected'"
+                        class="badge bg-danger"
+                        >Rejected</span
+                      >
+                    </div>
                   </td>
                 </tr>
                 }

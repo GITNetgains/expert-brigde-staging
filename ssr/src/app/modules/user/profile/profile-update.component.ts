@@ -357,9 +357,6 @@ shareProfile() {
       (this.info as any).country = country;
       (this.info as any).countryCode = country.code;
       this.updateStates();
-      if (this.states.length && this.states.indexOf((this.info as any).state) === -1) {
-        (this.info as any).state = '' as any;
-      }
     }
   }
   shareOnFacebook() {

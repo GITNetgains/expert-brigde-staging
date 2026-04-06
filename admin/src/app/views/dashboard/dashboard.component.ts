@@ -185,12 +185,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.statsSubscription = this.starterService.stats().subscribe({
       next: (resp) => {
         const { data } = resp;
-        this.starts = Object.keys(this.start).map((key) => {
-          return {
-            ...this.start[key],
-            value: data[key] ?? 0,
-          };
-        });
+      this.starts = Object.keys(this.start).map((key) => {
+  let value = data[key] ?? 0;
+
+  if (key === 'totalRevenue') {
+    value = Number(value).toFixed(2); // ✅ Fix here
+  }
+
+  return {
+    ...this.start[key],
+    value,
+  };
+});
 
         if (data['totalContacts'] === undefined || data['totalContacts'] === null) {
           this.contactService.search({ page: 1, take: 1 }).subscribe((cResp) => {

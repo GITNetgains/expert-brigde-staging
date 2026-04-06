@@ -33,6 +33,7 @@ public loading = false;
   public submitted = false;
   public returnUrl = '';
   public showPassword = false;
+  public loginSuccess = false;
 
 togglePasswordVisibility() {
   this.showPassword = !this.showPassword;
@@ -152,15 +153,20 @@ resendOtp() {
         })
         .then(() => this.auth.getCurrentUser())
         .then((user: any) => {
-          this.loading = false;
           if (user && user.type === 'tutor' && (user.rejected || user.pendingApprove)) {
+            this.loading = false;
             this.appService.toastError('Your profile is pending admin approval. Please wait for approval email.');
             this.auth.removeToken();
             this.step = 'email';
             this.otpCode = '';
             return;
           }
-          this.router.navigateByUrl(this.returnUrl);
+           // We keep this.loading = true to keep the button spinner visible until navigation starts
+          if (user && user.type === 'student' && this.returnUrl === '/users/dashboard') {
+            this.router.navigateByUrl('/');
+          } else {
+            this.router.navigateByUrl(this.returnUrl);
+          }
         })
         .catch((err) => {
           this.loading = false;
@@ -202,15 +208,20 @@ resendOtp() {
         })
         .then(() => this.auth.getCurrentUser())
         .then((user: any) => {
-          this.loading = false;
           if (user && user.type === 'tutor' && (user.rejected || user.pendingApprove)) {
+            this.loading = false;
             this.appService.toastError('Your profile is pending admin approval. Please wait for approval email.');
             this.auth.removeToken();
             this.step = 'email';
             this.credentials.password = '';
             return;
           }
-          this.router.navigateByUrl(this.returnUrl);
+           // We keep this.loading = true to keep the button spinner visible until navigation starts
+          if (user && user.type === 'student' && this.returnUrl === '/users/dashboard') {
+            this.router.navigateByUrl('/');
+          } else {
+            this.router.navigateByUrl(this.returnUrl);
+          }
         })
         .catch((err) => {
           this.loading = false;

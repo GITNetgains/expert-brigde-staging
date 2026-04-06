@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { IUser } from 'src/app/interface';
-import { AuthService, CartService, STATE, StateService, SystemService } from 'src/app/services';
+import { AuthService, CartService, ConversationService, STATE, SocketService, StateService, SystemService } from 'src/app/services';
 import { NotificationService } from 'src/app/services';
 import { CartComponent } from '../user/cart/cart.component';
 
@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit {
   public flag: any = '/assets/images/flags/en.svg';
   public isLoaded: any = false;
   public showHelloBar = true;
+  public unreadMessageCount = 0;
   public notificationOptions = {
     filter: {
       page: 1,
@@ -48,6 +49,8 @@ export class HeaderComponent implements OnInit {
     private translate: TranslateService,
     private cartService: CartService,
     private notificationService: NotificationService,
+    private conversationService: ConversationService,
+    private socketService: SocketService,
     private modalService: NgbModal,
     private router: Router
   ) {
@@ -91,13 +94,34 @@ if (this.appConfig?.i18n?.languages?.length) {
         const { items } = resp;
         this.cartCount = items.length;
       });
+      
+      this.conversationService.unreadChanged$.subscribe(total => {
+        this.unreadMessageCount = total;
+      });
+      
+      this.socketService.getMessage((msg: any) => {
+        // Increment global unread count if we're NOT on the conversations page 
+        // (conversations page handles its own updates and broadcasts the new total)
+        if (this.router.url.indexOf('/users/conversations') === -1) {
+          this.unreadMessageCount += 1;
+        }
+      });
     }
   }
 
   ngOnInit(): void {
     if (this.currentUser && this.currentUser._id) {
       this.getNotification();
+      this.getUnreadMessageCount();
     }
+  }
+
+  getUnreadMessageCount() {
+    this.conversationService.getUnreadCount().then(resp => {
+      if (resp && resp.data) {
+        this.unreadMessageCount = resp.data.total;
+      }
+    });
   }
 
   logout() {

@@ -26,7 +26,10 @@ export class ReportService {
   findOne(id: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/reports/${id}`);
   }
-  remove(id: any): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/reports`, id);
+  update(id: string, data: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/reports/${id}`, data);
+  }
+  remove(id: string): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/reports/${id}`);
   }
 }

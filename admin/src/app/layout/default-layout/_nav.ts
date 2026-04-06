@@ -68,7 +68,6 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Filters',
-    url: '/filter',
     iconComponent: { name: 'cil-filter' },
     children: [
       // {
@@ -136,7 +135,6 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Group Sessions',
-    url: '/classes',
     iconComponent: { name: 'cil-book' },
     children: [
       {
@@ -207,7 +205,6 @@ export const navItems: INavData[] = [
 
   {
     name: 'Payment',
-    url: '/refund',
     iconComponent: { name: 'cil-calculator' },
     children: [
       {
@@ -241,7 +238,6 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Settings',
-    url: '/config',
     iconComponent: { name: 'cil-settings' },
     children: [
       {
@@ -254,21 +250,21 @@ export const navItems: INavData[] = [
         url: '/templates/list',
         icon: 'nav-icon-bullet',
       },
-      {
-        name: 'Testimonials',
-        url: '/testimonials',
-        icon: 'nav-icon-bullet',
-        children: [
-          {
-            name: 'All Testimonials',
-            url: '/testimonials/list',
-          },
-          {
-            name: 'Create New',
-            url: '/testimonials/create',
-          },
-        ],
-      },
+      // {
+      //   name: 'Testimonials',
+      //   url: '/testimonials',
+      //   icon: 'nav-icon-bullet',
+      //   children: [
+      //     {
+      //       name: 'All Testimonials',
+      //       url: '/testimonials/list',
+      //     },
+      //     {
+      //       name: 'Create New',
+      //       url: '/testimonials/create',
+      //     },
+      //   ],
+      // },
     ],
   },
   {
@@ -295,23 +291,23 @@ export const navItems: INavData[] = [
       },
     ],
   },
-  {
-    name: 'Language',
-    url: '/language',
-    iconComponent: { name: 'cil-language' },
-    children: [
-      {
-        name: 'All Language',
-        url: '/language/list',
-        icon: 'nav-icon-bullet',
-      },
-      {
-        name: 'Text',
-        url: '/language/text',
-        icon: 'nav-icon-bullet',
-      },
-    ],
-  },
+  // {
+  //   name: 'Language',
+  //   url: '/language',
+  //   iconComponent: { name: 'cil-language' },
+  //   children: [
+  //     {
+  //       name: 'All Language',
+  //       url: '/language/list',
+  //       icon: 'nav-icon-bullet',
+  //     },
+  //     {
+  //       name: 'Text',
+  //       url: '/language/text',
+  //       icon: 'nav-icon-bullet',
+  //     },
+  //   ],
+  // },
 
   // {
   //   name: 'Typography',

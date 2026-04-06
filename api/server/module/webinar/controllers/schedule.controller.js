@@ -76,13 +76,13 @@ exports.remove = async (req, res, next) => {
       );
     }
 
-    if ((slot.status === 'pending' || slot.status === 'progressing') && !slot.hashWebinar) {
-      return next(
-        PopulateResponse.error({
-          message: 'Can not delete, this slot not completed!'
-        })
-      );
-    }
+    // if ((slot.status === 'pending' || slot.status === 'progressing') && !slot.hashWebinar) {
+    //   return next(
+    //     PopulateResponse.error({
+    //       message: 'Can not delete, this slot not completed!'
+    //     })
+    //   );
+    // }
 
     await slot.remove();
     await Service.Webinar.updateLastDate(slot);
@@ -237,13 +237,13 @@ exports.update = async (req, res, next) => {
       paid: true
     });
 
-    if (countAppointment) {
-      return next(
-        PopulateResponse.error({
-          message: 'Can not update,already have users enrolled'
-        })
-      );
-    }
+    // if (countAppointment) {
+    //   return next(
+    //     PopulateResponse.error({
+    //       message: 'Can not update,already have users enrolled'
+    //     })
+    //   );
+    // }
 
     if (req.user.role !== 'admin' && req.user._id.toString() !== slot.tutorId.toString()) {
       return next(PopulateResponse.forbidden());
@@ -252,6 +252,11 @@ exports.update = async (req, res, next) => {
     //   return next(PopulateResponse.forbidden());
     // }
     const result = await Service.Schedule.update(slot._id, validate.value);
+    // Update all appointments with new time
+    await DB.Appointment.updateMany(
+      { slotId: slot._id, paid: true },
+      { $set: { startTime: result.startTime, toTime: result.toTime } }
+    );
     if (slot.type === 'webinar') {
       await availableTimeWebinarQ.updateAvailableTime(result, slot);
     }

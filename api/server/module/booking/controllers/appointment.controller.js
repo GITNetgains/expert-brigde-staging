@@ -34,17 +34,27 @@ exports.list = async (req, res, next) => {
       ];
     }
 
+    if (req.query.tutorUserId) {
+      const tutor = await DB.User.findOne({ userId: req.query.tutorUserId, type: 'tutor' });
+      if (tutor) {
+        query.tutorId = tutor._id;
+      } else {
+        // if not found, return empty
+        query.tutorId = Helper.App.toObjectId('000000000000000000000000');
+      }
+    }
+
     query.visible = true;
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Appointment.count(query);
     let items = await DB.Appointment.find(query)
       .populate({ 
         path: 'user', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .populate({ 
         path: 'tutor', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .populate({ path: 'subject', select: '_id name alias' })
       .populate({ path: 'topic', select: '_id name alias' })
@@ -59,17 +69,17 @@ exports.list = async (req, res, next) => {
     // Apply showPublicIdOnly logic
     items = items.map(item => {
       const data = item.toObject();
-      
-      if (data.user && data.user.showPublicIdOnly) {
-        data.user.name = data.user.userId || data.user._id.toString();
-        data.user.username = data.user.userId || data.user._id.toString();
+      if (req.user.role !== 'admin') {
+        if (data.user && data.user.type === 'tutor' && data.user.showPublicIdOnly) {
+          data.user.name = data.user.userId || data.user._id.toString();
+          data.user.username = data.user.userId || data.user._id.toString();
+        }
+
+        if (data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly) {
+          data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+          data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+        }
       }
-      
-      if (data.tutor && data.tutor.showPublicIdOnly) {
-        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
-        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
-      }
-      
       return data;
     });
 
@@ -207,11 +217,11 @@ exports.findOne = async (req, res, next) => {
     const item = await DB.Appointment.findOne({ _id: req.params.appointmentId })
       .populate({ 
         path: 'user', 
-        select: '_id name username totalRating ratingAvg userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username totalRating ratingAvg userId showPublicIdOnly type' // Add type
       })
       .populate({ 
         path: 'tutor', 
-        select: '_id name username totalRating ratingAvg userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username totalRating ratingAvg userId showPublicIdOnly type' // Add type
       })
       .populate({ path: 'subject', select: '_id name price alias' })
       .populate({ path: 'topic', select: '_id name alias' })
@@ -231,14 +241,16 @@ exports.findOne = async (req, res, next) => {
     const data = item.toObject();
     
     // Apply showPublicIdOnly logic
-    if (data.user && data.user.showPublicIdOnly) {
-      data.user.name = data.user.userId || data.user._id.toString();
-      data.user.username = data.user.userId || data.user._id.toString();
-    }
-    
-    if (data.tutor && data.tutor.showPublicIdOnly) {
-      data.tutor.name = data.tutor.userId || data.tutor._id.toString();
-      data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+    if (req.user.role !== 'admin') {
+      if (data.user && data.user.type === 'tutor' && data.user.showPublicIdOnly) {
+        data.user.name = data.user.userId || data.user._id.toString();
+        data.user.username = data.user.userId || data.user._id.toString();
+      }
+
+      if (data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly) {
+        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+      }
     }
     
     if (!data.paid && data.webinar && data.webinar.mediaIds && data.webinar.mediaIds.length) {
@@ -471,7 +483,7 @@ exports.reSchedule = async (req, res, next) => {
     }
 
     const canReschedule = await Service.Appointment.canReschedule(appointment);
-    if (!canReschedule) {
+    if (!canReschedule && !isTutor) {
       return next(
         PopulateResponse.error({
           message: 'Cannot reschedule the session starting within 1 hour'
@@ -598,7 +610,7 @@ exports.listByGroupClass = async (req, res, next) => {
             const userProfile = user.getPublicProfile();
             
             // Apply showPublicIdOnly logic for user
-            if (user.showPublicIdOnly) {
+            if (req.user.role !== 'admin' && user.type === 'tutor' && user.showPublicIdOnly) {
               userProfile.name = user.userId || user._id.toString();
               userProfile.username = user.userId || user._id.toString();
             }
@@ -612,7 +624,7 @@ exports.listByGroupClass = async (req, res, next) => {
             const tutorProfile = tutor.getPublicProfile();
             
             // Apply showPublicIdOnly logic for tutor
-            if (tutor.showPublicIdOnly) {
+            if (req.user.role !== 'admin' && tutor.type === 'tutor' && tutor.showPublicIdOnly) {
               tutorProfile.name = tutor.userId || tutor._id.toString();
               tutorProfile.username = tutor.userId || tutor._id.toString();
             }

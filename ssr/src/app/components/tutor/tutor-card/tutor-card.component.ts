@@ -35,6 +35,7 @@ export class TutorCardComponent implements OnInit {
   @Input() assessmentInfo: { hasAssessment: boolean; tier?: string | null; verification_level?: string } | null = null;
   @ViewChild('introVideoTpl') introVideoTpl: TemplateRef<any>;
   public videoUrl: any;
+  public introVideoUrl: string | null = null;
   /** When true, full bio is shown in the card (no navigation). */
   public bioExpanded = false;
   public effectiveCommissionRate = 0;
@@ -84,9 +85,22 @@ export class TutorCardComponent implements OnInit {
     const rawCommission = (this.tutor as any)?.commissionRate ?? this.config?.commissionRate ?? 0;
     this.effectiveCommissionRate = Math.max(typeof rawCommission === "number" ? rawCommission : parseFloat(rawCommission) || 0, this.platformConfig.getMinCommission());
     this.gstRate = this.platformConfig.getGstRate();
+    
+    // YouTube Video
     const id = (this.tutor as any).introYoutubeId || (this.tutor as any).idYoutube;
     if (id) {
       this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${id}`);
+    }
+
+    // Direct Video File
+    const introVideo: any = this.tutor.introVideo;
+    if (introVideo && (introVideo.fileUrl || introVideo.originalPath || introVideo.filePath)) {
+      this.introVideoUrl =
+        introVideo.fileUrl ||
+        introVideo.mediumUrl ||
+        introVideo.thumbUrl ||
+        introVideo.originalPath ||
+        introVideo.filePath;
     }
   }
 
@@ -161,7 +175,11 @@ export class TutorCardComponent implements OnInit {
   }
 
   openIntro() {
-    if (!this.videoUrl) return;
-    this.modalService.open(this.introVideoTpl, { centered: true });
+    if (!this.videoUrl && !this.introVideoUrl) {
+      // If no video, navigate to profile as fallback
+      this.router.navigate(['/experts', this.tutor._id]);
+      return;
+    }
+    this.modalService.open(this.introVideoTpl, { centered: true, size: 'lg' });
   }
 }

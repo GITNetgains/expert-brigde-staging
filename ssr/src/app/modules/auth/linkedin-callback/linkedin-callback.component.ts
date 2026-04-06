@@ -85,7 +85,11 @@ export class LinkedinCallbackComponent implements OnInit {
           return;
         }
         this.appService.toastSuccess('Successfully logged in with LinkedIn!');
-        this.router.navigate(['/users/dashboard']);
+        if (user && user.type === 'student') {
+          this.router.navigate(['/']);
+        } else {
+          this.router.navigate(['/users/dashboard']);
+        }
       })
       .catch((err) => {
         console.error('LinkedIn login error:', err);

@@ -100,6 +100,17 @@ exports.list = async (req, res, next) => {
   }
 };
 
+exports.unreadCount = async (req, res, next) => {
+  try {
+    const metas = await DB.ConversationUserMeta.find({ userId: req.user._id });
+    const total = metas.reduce((sum, meta) => sum + (meta.unreadMessage || 0), 0);
+    res.locals.unreadCount = { total };
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
 exports.mute = async (req, res, next) => {
   try {
     await DB.Conversation.update(

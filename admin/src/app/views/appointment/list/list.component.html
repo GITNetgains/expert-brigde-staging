@@ -9,7 +9,7 @@
           <c-col sm="12" md="2">
             <ng-select
               [items]="tutor"
-              bindLabel="name"
+              bindLabel="displayName"
               bindValue="_id"
               [loading]="searching"
               [(ngModel)]="tutorId"
@@ -24,7 +24,7 @@
           <c-col sm="12" md="2">
             <ng-select
               [items]="user"
-              bindLabel="name"
+              bindLabel="displayName"
               bindValue="_id"
               [loading]="searching"
               [(ngModel)]="userId"
@@ -35,6 +35,14 @@
               (ngModelChange)="doSearch()"
             >
             </ng-select>
+          </c-col>
+          <c-col sm="12" md="2">
+            <input
+              cFormControl
+              [(ngModel)]="tutorUserId"
+              (ngModelChange)="doSearch()"
+              placeholder="Expert ID (e.g. EB-0007)"
+            />
           </c-col>
           <c-col sm="12" md="2">
             <select cSelect [(ngModel)]="searchFields.status" (ngModelChange)="doSearch()">
@@ -101,7 +109,7 @@
                     (onSort)="onSort($event)"
                     [sortBy]="'userId'"
                     [sortOption]="sortOption"
-                    sortTitle="User Name"
+                    sortTitle="Client Name"
                   ></app-sort>
                 </th>
                 <th style="width: 200px">
@@ -128,14 +136,14 @@
                     sortTitle="Enroll type"
                   ></app-sort>
                 </th>
-                <th style="width: 200px">
+                <!-- <th style="width: 200px">
                   <app-sort
                     (onSort)="onSort($event)"
                     sortBy="paid"
                     [sortOption]="sortOption"
                     sortTitle="Paid"
                   ></app-sort>
-                </th>
+                </th> -->
                 <th style="width: 200px">
                   <app-sort
                     (onSort)="onSort($event)"
@@ -186,8 +194,8 @@
             <tbody>
               @for (item of items; track item.id) {
               <tr>
-                <td>{{ item?.tutor?.name }}</td>
-                <td>{{ item?.user?.name }}</td>
+                <td>{{ item?.tutor?.name }} <span *ngIf="item?.tutor?.userId">({{ item?.tutor?.userId }})</span></td>
+                <td>{{ item?.user?.name }} <span *ngIf="item?.user?.userId">({{ item?.user?.userId }})</span></td>
                 <td>{{ item?.webinar?.name }}</td>
                 <td>{{ item?.subject?.name }}</td>
                 <td>
@@ -197,13 +205,13 @@
                   <c-badge color="primary">One-One</c-badge>
                   } }
                 </td>
-                <td>
+                <!-- <td>
                   @if (item?.paid) {
                   <c-badge color="success">Yes</c-badge>
                   } @else {
                   <c-badge color="primary">No</c-badge>
                   }
-                </td>
+                </td> -->
                 <td>{{ item?.startTime | date : "short" }}</td>
                 <td>{{ item?.toTime | date : "short" }}</td>
                 <td>{{ item?.createdAt | date }}</td>

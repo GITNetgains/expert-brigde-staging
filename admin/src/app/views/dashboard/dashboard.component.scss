@@ -11,17 +11,19 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 }
-
 .widget-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; // ✅ better alignment
   height: 100%;
 }
+
+
 
 .widget-text {
   flex: 1;
   display: flex;
+  min-width: 0;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
@@ -39,6 +41,11 @@
   margin: 0;
   color: white;
   line-height: 1;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .widget-icon {

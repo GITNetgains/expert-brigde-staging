@@ -1,17 +1,36 @@
 .sort-group {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 8px;
+
+  .sort-title {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover {
+      cursor: pointer;
+      color: #5856d6;
+    }
+  }
 
   .sort-options {
     display: flex;
+    flex-direction: column;
+    line-height: 0.5;
 
     .sort {
-      color: initial;
-      font-style: bold;
+      color: #ccc;
+      line-height: 1;
 
       &:hover {
         cursor: pointer;
+        color: #5856d6;
+      }
+      
+      svg {
+        width: 12px;
+        height: 12px;
       }
     }
 

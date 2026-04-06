@@ -11,7 +11,7 @@
         <table id="table_id" class="table table-text tble-responsive">
           <tbody>
             <tr>
-              <td translate>User Name</td>
+              <td translate>Client Name</td>
               <td>{{appointment?.user?.name}}</td>
             </tr>
             <tr>
@@ -55,7 +55,7 @@
               <td><span translate>Price</span></td>
               <td>
                 <span *ngIf="!appointment?.transaction?.couponCode">
-                  {{appointment?.transaction?.price | appCurrency}}
+                  {{appointment?.transaction?.originalPrice | appCurrency}}
                 </span>
                 <span *ngIf="appointment?.transaction?.couponCode">
                   {{appointment?.transaction?.discountAmount +
@@ -85,7 +85,7 @@
                 <span> {{appointment?.couponCode}} </span>
               </td>
             </tr>
-            <tr>
+            <!-- <tr>
               <td translate>Payment Type</td>
               <td>
                 <span
@@ -101,7 +101,7 @@
                   >Unpaid</span
                 >
               </td>
-            </tr>
+            </tr> -->
             <!-- <tr>
               <td translate>Lesson Type</td>
               <td>

@@ -1,3 +1,10 @@
 <p>Hello {{user.name}},</p>
-<p>You have an unread message from {{sender.name}}. Please login to see the message</p>
+<p>You have an unread message from 
+  {% if sender.type === "tutor" %}
+    {{sender.userId}}
+  {% else %}
+    {{sender.name}}
+  {% endif %}.
+</p>
 <p>Content: {{message.text}}</p>
+<p>Please check your message at: <a href="{{appConfig.userWebUrl}}/users/conversations">{{appConfig.userWebUrl}}/users/conversations</a></p>

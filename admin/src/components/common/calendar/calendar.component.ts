@@ -39,6 +39,7 @@ export class CalendarComponent implements OnInit {
       timeGridPlugin,
       listPlugin,
     ],
+    height: 450,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',

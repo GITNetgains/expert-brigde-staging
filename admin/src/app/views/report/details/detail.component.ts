@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ReportService } from '@services/complaint.service';
 import { AppConfigService } from '@services/app-config.service';
 import { CommonModule } from '@angular/common';
@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-report-detail',
   templateUrl: './detail.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
 })
 export class ReportDetailComponent implements OnInit {
   public report: any = {};

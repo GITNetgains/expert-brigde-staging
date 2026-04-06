@@ -171,13 +171,14 @@ exports.list = async (req, res, next) => {
     let items = await DB.Transaction.find(query, excludeFields)
       .populate({ 
         path: 'user', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .populate({ 
         path: 'tutor', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .populate({ path: 'recipient', select: '_id name' })
+      .populate({ path: 'appointment', select: '_id startTime toTime' })
       .sort(sort)
       .skip(page * take)
       .limit(take)
@@ -205,13 +206,15 @@ exports.list = async (req, res, next) => {
       data.tutorSubject = subject;
       
       // Apply showPublicIdOnly logic - use userId field instead of _id
-      if (data.user && data.user.showPublicIdOnly) {
-        data.user.name = data.user.userId || data.user._id.toString();
-        data.user.username = data.user.userId || data.user._id.toString();
-      }
-      if (data.tutor && data.tutor.showPublicIdOnly) {
-        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
-        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+      if (req.user.role !== 'admin') {
+        if (data.user && data.user.type === 'tutor' && data.user.showPublicIdOnly) {
+          data.user.name = data.user.userId || data.user._id.toString();
+          data.user.username = data.user.userId || data.user._id.toString();
+        }
+        if (data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly) {
+          data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+          data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+        }
       }
       
       return data;
@@ -237,13 +240,14 @@ exports.findOne = async (req, res, next) => {
     const transaction = await DB.Transaction.findOne({ _id: req.params.transactionId }, excludeFields)
       .populate({ 
         path: 'user', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .populate({ 
         path: 'tutor', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
-      .populate({ path: 'recipient', select: '_id name' });
+      .populate({ path: 'recipient', select: '_id name' })
+      .populate({ path: 'appointment', select: '_id startTime toTime' });
       
     let target = null;
     let subject = null;
@@ -267,13 +271,15 @@ exports.findOne = async (req, res, next) => {
     data.tutorSubject = subject;
     
     // Apply showPublicIdOnly logic - use userId field instead of _id
-    if (data.user && data.user.showPublicIdOnly) {
-      data.user.name = data.user.userId || data.user._id.toString();
-      data.user.username = data.user.userId || data.user._id.toString();
-    }
-    if (data.tutor && data.tutor.showPublicIdOnly) {
-      data.tutor.name = data.tutor.userId || data.tutor._id.toString();
-      data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+    if (req.user.role !== 'admin') {
+      if (data.user && data.user.type === 'tutor' && data.user.showPublicIdOnly) {
+        data.user.name = data.user.userId || data.user._id.toString();
+        data.user.username = data.user.userId || data.user._id.toString();
+      }
+      if (data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly) {
+        data.tutor.name = data.tutor.userId || data.tutor._id.toString();
+        data.tutor.username = data.tutor.userId || data.tutor._id.toString();
+      }
     }
     
     req.transaction = transaction;
@@ -389,7 +395,7 @@ exports.transactionOfTutor = async (req, res, next) => {
     let items = await DB.Transaction.find(query, excludeFields)
       .populate({ 
         path: 'user', 
-        select: '_id name username userId showPublicIdOnly' // Add userId and showPublicIdOnly
+        select: '_id name username userId showPublicIdOnly type' // Add type
       })
       .sort(sort)
       .skip(page * take)
@@ -418,9 +424,11 @@ exports.transactionOfTutor = async (req, res, next) => {
       data.tutorSubject = subject;
       
       // Apply showPublicIdOnly logic - use userId field instead of _id
-      if (data.user && data.user.showPublicIdOnly) {
-        data.user.name = data.user.userId || data.user._id.toString();
-        data.user.username = data.user.userId || data.user._id.toString();
+      if (req.user.role !== 'admin') {
+        if (data.user && data.user.type === 'tutor' && data.user.showPublicIdOnly) {
+          data.user.name = data.user.userId || data.user._id.toString();
+          data.user.username = data.user.userId || data.user._id.toString();
+        }
       }
       
       return data;

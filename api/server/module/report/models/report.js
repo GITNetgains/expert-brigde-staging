@@ -13,10 +13,12 @@ const schema = new Schema(
     },
     transactionCode: { type: String },
     reportByUserId: {
-      type: Schema.Types.ObjectId
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     },
     reportToUserId: {
-      type: Schema.Types.ObjectId
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     },
     targetType: {
       type: String,

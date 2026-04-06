@@ -252,6 +252,14 @@
     </div>
 
     <div class="right-buttons desktop-only" *ngIf="currentUser">
+      <!-- <a [routerLink]="['/users/conversations']" class="nav-link-icon me-3">
+        <div style="display: inline-block; position: relative">
+          <i class="fi fi-rr-envelope"></i>
+          <span class="badge-notification" *ngIf="unreadMessageCount > 0">
+            {{ unreadMessageCount > 99 ? '99+' : unreadMessageCount }}
+          </span>
+        </div>
+      </a> -->
       <button class="btn expert" [routerLink]="['/users/dashboard']">
         Dashboard
       </button>
@@ -289,6 +297,12 @@
       (click)="toggleDrawer()"
     >
       Group Sessions
+    </a>
+    <a [routerLink]="['/users/conversations']" (click)="toggleDrawer()" *ngIf="currentUser">
+      Messages
+      <span class="badge badge-danger badge-pill ms-2" *ngIf="unreadMessageCount > 0">
+        {{ unreadMessageCount }}
+      </span>
     </a>
     <a routerLink="/pages/about" (click)="toggleDrawer()">About</a>
     <!-- <a routerLink="/pages/services" (click)="toggleDrawer()">Services</a> -->

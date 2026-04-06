@@ -69,7 +69,11 @@ export class GoogleCallbackComponent implements OnInit {
         this.router.navigate(['/auth/login']);
         return;
       }
-      this.router.navigate(['/users/dashboard']);
+      if (user && user.type === 'student') {
+        this.router.navigate(['/']);
+      } else {
+        this.router.navigate(['/users/dashboard']);
+      }
     } catch (e) {
       this.router.navigate(['/auth/login']);
     }

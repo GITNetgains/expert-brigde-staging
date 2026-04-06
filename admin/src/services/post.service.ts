@@ -36,4 +36,8 @@ export class PostService {
   delete(id: string | number): Observable<any> {
     return this.http.delete(`${this.postUrl}/${id}`);
   }
+
+  bulkDelete(ids: string[]): Observable<any> {
+    return this.http.request('delete', this.postUrl, { body: { ids } });
+  }
 }

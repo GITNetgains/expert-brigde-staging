@@ -19,7 +19,7 @@
                     class="color-light-red"
                     [routerLink]="['/experts', transaction.tutor._id]"
                     *ngIf="transaction && transaction.tutor"
-                    >{{ transaction?.tutor?.showPublicIdOnly === true ? transaction?.tutor?.userId : transaction?.tutor?.name }}</a
+                    >{{ (transaction?.tutor?.type === 'tutor' && transaction?.tutor?.showPublicIdOnly === true) ? transaction?.tutor?.userId : transaction?.tutor?.name }}</a
                   >
                 </td>
               </tr>
@@ -103,7 +103,7 @@
               </tr>
               <tr>
                 <td>
-                  <span translate class="payment-detail-text">Amount</span>
+                  <span translate class="payment-detail-text">Amount (excluding taxes) <sup>*</sup></span>
                 </td>
                 <td>
                   <span *ngIf="transaction?.vat && (transaction?.vat ?? 0) > 0">{{((transaction?.price || 0) + (transaction?.vat || 0)) | appCurrency}}</span>
@@ -118,14 +118,14 @@
                   <span>{{transaction?.vat | appCurrency}}</span>
                 </td>
               </tr>
-              <tr *ngIf="transaction?.originalPrice && transaction?.originalPrice !== transaction?.price">
+              <!-- <tr *ngIf="transaction?.originalPrice && transaction?.originalPrice !== transaction?.price">
                 <td>
                   <span translate class="payment-detail-text">Original price</span>
                 </td>
                 <td>
                   <span>{{transaction?.originalPrice | appCurrency}}</span>
                 </td>
-              </tr>
+              </tr> -->
               <tr *ngIf="transaction.usedCoupon">
                 <td translate>Discount Amount</td>
                 <td>
@@ -197,6 +197,9 @@
               </tr>
             </tbody>
           </table>
+          <p class="text-muted mt-2" style="font-size: 12px;">
+  * Price specified above is exclusive of taxes, if any.
+</p>
         </div>
       </div>
       <div class="col-md-7">

@@ -18,7 +18,7 @@
               <td>
                 @if (appointment?.tutor) {
                 <a [routerLink]="['/tutor/update', appointment.tutor._id]">
-                  {{ appointment.tutor.name }}
+                  {{ appointment.tutor.name }} <span *ngIf="appointment.tutor.userId">({{ appointment.tutor.userId }})</span>
                 </a>
                 }
               </td>
@@ -28,7 +28,7 @@
               <td>
                 @if (appointment?.user) {
                 <a [routerLink]="['/users/update', appointment.user._id]">
-                  {{ appointment.user.name }}
+                  {{ appointment.user.name }} <span *ngIf="appointment.user.userId">({{ appointment.user.userId }})</span>
                 </a>
                 }
               </td>
@@ -53,7 +53,7 @@
               <td>{{ appointment?.toTime | date : "short" }}</td>
             </tr>
             <tr>
-              <th>Price</th>
+              <th>Price  (excluding taxes) <sup>*</sup></th>
               <td>
                 @if (appointment?.isFree) {
                 <span class="text-success">Free</span>
@@ -176,6 +176,9 @@
             }
           </tbody>
         </table>
+           <p class="text-muted mt-2" style="font-size: 12px;">
+  * Price specified above is exclusive of taxes, if any.
+</p>
       </c-card-body>
     </c-card>
   </c-col>

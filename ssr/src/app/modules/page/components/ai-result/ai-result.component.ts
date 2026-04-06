@@ -297,6 +297,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (!q || this.loading) return;
     this.stopRecognition();
     this.router.navigate(['/pages/ai-result'], { queryParams: { q } });
+    this.scrollToTop();
     // Route queryParams subscription will run and call fetch()
   }
 
@@ -309,6 +310,7 @@ export class AiResultComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.editableText = '';
     this.error = null;
     this.router.navigate(['/pages/ai-result']);
+    this.scrollToTop();
   }
 
 lead = {
@@ -411,6 +413,7 @@ async submit() {
 
       this.submittedSuccess = true;
       this.aiStep = 'success';
+      this.scrollToTop();
       this.startCountdown();
     } catch (err: any) {
       this.appService.toastError(
@@ -471,6 +474,7 @@ async submit() {
     if (data?.userExists === true) {
       this.submittedSuccess = true;
       this.aiStep = 'success';
+      this.scrollToTop();
       this.appService.toastSuccess('Query submitted successfully!');
       this.startCountdown();
     } else {
@@ -480,6 +484,7 @@ async submit() {
       });
       
       this.aiStep = 'otp';
+      this.scrollToTop();
       this.startOtpTimer();
       this.appService.toastSuccess('OTP sent to your email');
     }
@@ -526,6 +531,7 @@ async verifyOtp() {
 });
     this.submittedSuccess = true;
     this.aiStep = 'success';
+    this.scrollToTop();
     this.startCountdown();
 
   } catch (err: any) {

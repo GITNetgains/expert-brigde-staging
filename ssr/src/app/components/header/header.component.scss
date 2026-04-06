@@ -206,3 +206,43 @@ gap: 12px;
     height: 45px;
   }
 }
+
+.nav-link-icon {
+  color: #0c2a51;
+  font-size: 24px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    color: #E4543C;
+  }
+}
+
+.badge-notification {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: #E4543C;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.side-drawer .badge-danger {
+  background-color: #E4543C;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}

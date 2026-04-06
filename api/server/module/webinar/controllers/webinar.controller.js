@@ -39,7 +39,7 @@ exports.findOne = async (req, res, next) => {
       .populate({
         path: 'tutor',
         // include commissionRate so frontend can compute student-facing price = base + commission
-        select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner userId showPublicIdOnly commissionRate'
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar bio completedByLearner userId showPublicIdOnly commissionRate type'
       })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'subjects', select: '_id name alias' })
@@ -91,7 +91,7 @@ exports.findOne = async (req, res, next) => {
     const isStudentViewing = req.user && req.user.role !== 'admin' &&
       (!webinar.tutorId || req.user._id.toString() !== webinar.tutorId.toString());
     if (isStudentViewing && data.tutor) {
-      if (data.tutor.showPublicIdOnly === true) {
+      if (data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly === true) {
         data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
         data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
         delete data.tutor.avatarUrl;
@@ -194,7 +194,7 @@ exports.list = async (req, res, next) => {
         path: 'tutor',
         match: { name: { $regex: req.query.tutorName, $options: 'i' } },
         // include commissionRate for list view as well
-        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly commissionRate'
+        select: 'name avatarUrl username country featured ratingAvg totalRating avatar userId showPublicIdOnly commissionRate type'
       })
       .populate({ path: 'categories', select: '_id name alias' })
       .populate({ path: 'mainImage', select: '_id name filePath thumbPath fileUrl thumbUrl convertStatus uploaded' })
@@ -239,7 +239,7 @@ exports.list = async (req, res, next) => {
           const isStudentViewing = req.user && req.user.role !== 'admin' &&
             (!item.tutorId || req.user._id.toString() !== item.tutorId.toString());
           if (isStudentViewing && data.tutor) {
-            if (data.tutor.showPublicIdOnly === true) {
+            if (data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly === true) {
               data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
               data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
               delete data.tutor.avatarUrl;
@@ -253,7 +253,7 @@ exports.list = async (req, res, next) => {
       // When no user logged in, apply showPublicIdOnly for all tutors (public view = student view)
       items = items.map(item => {
         const data = item.toObject ? item.toObject() : item;
-        if (data.tutor && data.tutor.showPublicIdOnly === true) {
+        if (data.tutor && data.tutor.type === 'tutor' && data.tutor.showPublicIdOnly === true) {
           data.tutor.name = data.tutor.userId || data.tutor._id?.toString() || '';
           data.tutor.username = data.tutor.userId || data.tutor._id?.toString() || '';
           delete data.tutor.avatarUrl;
@@ -353,6 +353,9 @@ exports.update = async (req, res, next) => {
         })
       );
     }
+    if (validate.value.maximumStrength < req.webinar.numberParticipants) {
+       return next(PopulateResponse.error({ message: `Cannot decrease capacity below current enrollment (${req.webinar.numberParticipants} students)` }));
+    }
     // Ensure we don't persist an empty string for mainImageId, which would fail ObjectId casting
     if (!validate.value.mainImageId) {
       delete validate.value.mainImageId;
@@ -392,18 +395,18 @@ exports.remove = async (req, res, next) => {
         })
       );
     }
-    const appointments = await DB.Appointment.count({
-      paid: true,
-      webinarId: req.webinar._id,
-      status: { $nin: ['canceled', 'not-start'] }
-    });
-    if (appointments) {
-      return next(
-        PopulateResponse.error({
-          message: 'Can not delete,already have users enrolled this webinar'
-        })
-      );
-    }
+    // const appointments = await DB.Appointment.count({
+    //   paid: true,
+    //   webinarId: req.webinar._id,
+    //   status: { $nin: ['canceled', 'not-start'] }
+    // });
+    // if (appointments) {
+    //   return next(
+    //     PopulateResponse.error({
+    //       message: 'Can not delete,already have users enrolled this webinar'
+    //     })
+    //   );
+    // }
     await req.webinar.remove();
     if (req.webinar.categoryIds && req.webinar.categoryIds.length) {
       await DB.User.update(

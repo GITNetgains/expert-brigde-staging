@@ -9,7 +9,7 @@
           <table id="table_id" class="table table-bordered">
             <tbody>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Type
                 </td>
                 <td>
@@ -21,7 +21,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Session Code
                 </td>
                 <td>
@@ -29,7 +29,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Transaction Code
                 </td>
                 <td>
@@ -37,31 +37,55 @@
                 </td>
               </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Issue
                 </td>
                 <td>
                   {{ report.issue }}
                 </td>
               </tr>
+              <tr *ngIf="report.startTime">
+                <td class="appoint-detail" style="min-width: 200px">
+                  Session Start Time
+                </td>
+                <td>
+                  {{ report.startTime | date:'medium' }}
+                </td>
+              </tr>
+              <tr *ngIf="report.toTime">
+                <td class="appoint-detail" style="min-width: 200px">
+                  Session End Time
+                </td>
+                <td>
+                  {{ report.toTime | date:'medium' }}
+                </td>
+              </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Reported by
                 </td>
                 <td>
-                  {{ report?.meta?.reportBy }}
+                  <a [routerLink]="report?.reportByUserId?.type === 'tutor' || report?.reportByUserId?.role === 'tutor' ? ['/tutor/update', report?.reportByUserId?._id] : ['/users/update', report?.reportByUserId?._id]" class="text-decoration-none">
+                    {{ report?.meta?.reportBy }}
+                  </a>
+                  <span class="ms-1 badge bg-info" *ngIf="report?.reportByUserId?.type === 'tutor' || report?.reportByUserId?.role === 'tutor'">Expert ({{ report?.reportByUserId?.userId }})</span>
+                  <span class="ms-1 badge bg-secondary" *ngIf="report?.reportByUserId && report?.reportByUserId?.type !== 'tutor' && report?.reportByUserId?.role !== 'tutor'">Client </span>
                 </td>
               </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Reported to
                 </td>
                 <td>
-                  {{ report?.meta?.reportTo }}
+                  <a [routerLink]="report?.reportToUserId?.type === 'tutor' || report?.reportToUserId?.role === 'tutor' ? ['/tutor/update', report?.reportToUserId?._id] : ['/users/update', report?.reportToUserId?._id]" class="text-decoration-none">
+                    {{ report?.meta?.reportTo }}
+                  </a>
+                  <span class="ms-1 badge bg-info" *ngIf="report?.reportToUserId?.type === 'tutor' || report?.reportToUserId?.role === 'tutor'">Expert ({{ report?.reportToUserId?.userId }})</span>
+                  <span class="ms-1 badge bg-secondary" *ngIf="report?.reportToUserId && report?.reportToUserId?.type !== 'tutor' && report?.reportToUserId?.role !== 'tutor'">Client </span>
                 </td>
               </tr>
               <tr>
-                <td class="appoint-detail" translate style="min-width: 200px">
+                <td class="appoint-detail" style="min-width: 200px">
                   Reported on
                 </td>
                 <td>

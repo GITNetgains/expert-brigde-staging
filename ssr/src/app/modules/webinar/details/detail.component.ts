@@ -264,7 +264,7 @@ export class DetailWebinarComponent implements OnInit {
           type: type,
           targetType: 'webinar',
           targetName: webinar.name,
-          tutorName: webinar.tutor.showPublicIdOnly === true ? String(webinar.tutor.userId || '') : (webinar.tutor.name || '')
+          tutorName: (webinar.tutor?.type === 'tutor' && webinar.tutor?.showPublicIdOnly === true) ? String(webinar.tutor.userId || '') : (webinar.tutor?.name || '')
         },
         state: params
       });

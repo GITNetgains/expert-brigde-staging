@@ -20,4 +20,12 @@ module.exports = router => {
    * @apiPermission Authenticated user
    */
   router.get('/v1/messages/conversations', Middleware.isAuthenticated, conservationController.list, Middleware.Response.success('list'));
+
+  /**
+   * @apiGroup Message
+   * @apiVersion 4.0.0
+   * @api {get} /v1/messages/unread-count Get total unread messages
+   * @apiPermission Authenticated user
+   */
+  router.get('/v1/messages/unread-count', Middleware.isAuthenticated, conservationController.unreadCount, Middleware.Response.success('unreadCount'));
 };

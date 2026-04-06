@@ -1,5 +1,7 @@
 import { Router } from '@angular/router';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IUser } from 'src/app/interface';
 import {
   AppService,
@@ -21,6 +23,9 @@ export class TutorCardFavoriteComponent implements OnInit {
   @Input() config: any;
   public isLoggedin: boolean;
   @Input() currentUser: IUser;
+  @ViewChild('introVideoTpl') introVideoTpl: TemplateRef<any>;
+  public videoUrl: any;
+  public introVideoUrl: string | null = null;
   avatarOptions: any = {};
   public effectiveCommissionRate = 0;
   public gstRate = 0;
@@ -33,7 +38,9 @@ export class TutorCardFavoriteComponent implements OnInit {
     private stateService: StateService,
     private platformConfig: PlatformConfigService,
     private appService: AppService,
-    private conversationService: ConversationService
+    private conversationService: ConversationService,
+    private sanitizer: DomSanitizer,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
@@ -46,6 +53,23 @@ export class TutorCardFavoriteComponent implements OnInit {
     const rawCommission = (this.tutor as any)?.commissionRate ?? this.config?.commissionRate ?? 0;
     this.effectiveCommissionRate = Math.max(typeof rawCommission === "number" ? rawCommission : parseFloat(rawCommission) || 0, this.platformConfig.getMinCommission());
     this.gstRate = this.platformConfig.getGstRate();
+
+    // YouTube Video
+    const id = (this.tutor as any).introYoutubeId || (this.tutor as any).idYoutube;
+    if (id) {
+      this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${id}`);
+    }
+
+    // Direct Video File
+    const introVideo: any = this.tutor.introVideo;
+    if (introVideo && (introVideo.fileUrl || introVideo.originalPath || introVideo.filePath)) {
+      this.introVideoUrl =
+        introVideo.fileUrl ||
+        introVideo.mediumUrl ||
+        introVideo.thumbUrl ||
+        introVideo.originalPath ||
+        introVideo.filePath;
+    }
   }
 
   favorite() {
@@ -102,5 +126,14 @@ export class TutorCardFavoriteComponent implements OnInit {
         this.router.navigate(['/users/conversations']);
       })
       .catch(() => this.appService.toastError('You cannot send messages to yourself.'));
+  }
+
+  openIntro() {
+    if (!this.videoUrl && !this.introVideoUrl) {
+      // If no video, navigate to profile as fallback
+      this.router.navigate(['/experts', this.tutor._id]);
+      return;
+    }
+    this.modalService.open(this.introVideoTpl, { centered: true, size: 'lg' });
   }
 }

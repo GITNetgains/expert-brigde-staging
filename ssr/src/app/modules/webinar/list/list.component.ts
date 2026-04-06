@@ -186,9 +186,9 @@ export class WebinarListingComponent implements OnInit {
       disabled: false,
       ...(this.sortOption.sortType && this.sortOption.sortBy
         ? {
-            sort: `${this.sortOption.sortBy}`,
-            sortType: `${this.sortOption.sortType}`
-          }
+          sort: `${this.sortOption.sortBy}`,
+          sortType: `${this.sortOption.sortType}`
+        }
         : { sort: 'createdAt', sortType: 'desc' }),
       ...this.searchFields,
       ...this.dateChange

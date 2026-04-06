@@ -59,7 +59,40 @@
   line-height: 1.7;
   will-change: height;
 }
+.services-buttons a {
+    color: white;
+    transition: all .2s;
+    background: #E4543C;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 13px;
+    border-radius: 5px;
+}
+.services-buttons  {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  
+}
+.services-buttons a:hover{
+  border: 2px solid #0c2a51!important;
+  background: transparent!important;
+  color: #0c2a51;
+}
 
+@media (max-width: 768px) {
+  .services-buttons a {
+    padding: 10px;
+    font-size: 14px;
+  }
+  .services-buttons {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
 /* AI Result page: full-width layout (body class set by AiResultComponent) */
 body.ai-result-page-full-width app-root {
   padding-left: 0 !important;

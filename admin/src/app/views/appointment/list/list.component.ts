@@ -82,6 +82,7 @@ export class AppointmentListingComponent implements OnInit {
   };
   tutorId: any;
   userId: any;
+  tutorUserId: string = '';
   dateChange: any;
   status: string = '';
   searching = false;
@@ -124,7 +125,13 @@ export class AppointmentListingComponent implements OnInit {
           )
         )
       )
-      .subscribe((items) => (this.tutorItems = items));
+      .subscribe((items) => {
+        this.tutorItems = items;
+        this.tutor = items.map((i: any) => ({
+          ...i,
+          displayName: i.name + (i.userId ? ' (' + i.userId + ')' : ''),
+        }));
+      });
 
     this.userInput$
       .pipe(
@@ -139,18 +146,30 @@ export class AppointmentListingComponent implements OnInit {
           )
         )
       )
-      .subscribe((items) => (this.userItems = items));
+      .subscribe((items) => {
+        this.userItems = items;
+        this.user = items.map((i: any) => ({
+          ...i,
+          displayName: i.name + (i.userId ? ' (' + i.userId + ')' : ''),
+        }));
+      });
   }
 
   query() {
     const paramsTutor = Object.assign(this.searchTutor);
     this.tutorService.search(paramsTutor).subscribe((resp) => {
-      this.tutor = resp.data.items;
+      this.tutor = resp.data.items.map((i: any) => ({
+        ...i,
+        displayName: i.name + (i.userId ? ' (' + i.userId + ')' : ''),
+      }));
     });
 
     const paramsUser = Object.assign(this.searchUser);
     this.userService.search(paramsUser).subscribe((resp) => {
-      this.user = resp.data.items;
+      this.user = resp.data.items.map((i: any) => ({
+        ...i,
+        displayName: i.name + (i.userId ? ' (' + i.userId + ')' : ''),
+      }));
     });
 
     const params: any = {
@@ -164,6 +183,7 @@ export class AppointmentListingComponent implements OnInit {
     if (this.status) params.status = this.status;
     if (this.tutorId) params.tutorId = this.tutorId;
     if (this.userId) params.userId = this.userId;
+    if (this.tutorUserId) params.tutorUserId = this.tutorUserId;
 
     params.startTime = new Date(this.dateChange?.startDate || 0).toISOString();
     params.toTime = new Date(

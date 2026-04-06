@@ -58,13 +58,20 @@
       <c-card-header class="d-flex flex-wrap justify-content-between">
         <h4>Total Pages: {{ count }}</h4>
         @if(count !== 0){
-        <app-pagination
-          [currentPage]="currentPage"
-          [pageSize]="pageSize"
-          [totalItems]="count"
-          [maxSize]="3"
-          (pageChanged)="onPageChange($event)"
-        ></app-pagination>
+        <div class="d-flex align-items-center gap-2">
+          @if(selectedIds.length > 0) {
+            <button class="btn btn-danger btn-sm" (click)="removeSelected()">
+              Delete Selected ({{ selectedIds.length }})
+            </button>
+          }
+          <app-pagination
+            [currentPage]="currentPage"
+            [pageSize]="pageSize"
+            [totalItems]="count"
+            [maxSize]="3"
+            (pageChanged)="onPageChange($event)"
+          ></app-pagination>
+        </div>
         }
       </c-card-header>
       @if(count !== 0){
@@ -78,6 +85,9 @@
         >
           <thead>
             <tr>
+              <th>
+                <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
+              </th>
               <th>
                 <app-sort
                   (onSort)="onSort($event)"
@@ -114,8 +124,11 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of items; track item._id) {
+            @for (item of items; track item._id; let i = $index) {
             <tr>
+              <td>
+                <input type="checkbox" [checked]="selectedIds.includes(item._id)" (change)="toggleItem(item._id)" />
+              </td>
               <td>{{ item?.title }}</td>
               <td>{{ item?.alias }}</td>
               <td>
@@ -132,7 +145,7 @@
                   </a>
                   <app-modal-delete
                     [item]="item"
-                    (confirmDelete)="remove($event, $event._id)"
+                    (confirmDelete)="remove($event, i)"
                   ></app-modal-delete>
                 </div>
               </td>

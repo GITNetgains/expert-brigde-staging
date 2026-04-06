@@ -107,8 +107,12 @@ export class ListScheduleComponent implements OnInit {
   }
 
   sortBy(field: string, type: string) {
-    this.sortOption.sortBy = field;
-    this.sortOption.sortType = type;
+    if (this.sortOption.sortBy === field) {
+      this.sortOption.sortType = this.sortOption.sortType === 'asc' ? 'desc' : 'asc'
+    } else {
+      this.sortOption.sortBy = field;
+      this.sortOption.sortType = type;
+    }
     this.query();
   }
 

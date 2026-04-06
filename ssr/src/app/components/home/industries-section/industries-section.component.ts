@@ -26,6 +26,8 @@ import { StaticPageService } from 'src/app/services';
 export class IndustriesCarouselComponent implements OnInit {
   industries: any[] = [];
   isBrowser = false;
+  isBeginning = true;
+  isEnd = false;
 
   @ViewChild('swiperRef') swiperRef!: ElementRef;
 
@@ -58,7 +60,7 @@ export class IndustriesCarouselComponent implements OnInit {
     const swiperParams = {
       slidesPerView: 4,
       spaceBetween: 24,
-      loop: true,
+      loop: false,
       autoplay: { delay: 4000, disableOnInteraction: false },
       pagination: { clickable: true },
       breakpoints: {
@@ -67,6 +69,16 @@ export class IndustriesCarouselComponent implements OnInit {
         768:  { slidesPerView: 2, spaceBetween: 18 },
         0:    { slidesPerView: 1.1, spaceBetween: 12 },
       },
+      on: {
+        slideChange: (swiper: any) => {
+          this.isBeginning = swiper.isBeginning;
+          this.isEnd = swiper.isEnd;
+        },
+        init: (swiper: any) => {
+          this.isBeginning = swiper.isBeginning;
+          this.isEnd = swiper.isEnd;
+        }
+      }
     };
 
     Object.assign(swiperEl, swiperParams);
@@ -79,6 +91,10 @@ export class IndustriesCarouselComponent implements OnInit {
     if (!swiperEl) return;
     if (!swiperEl.swiper) this.initSwiper();
     swiperEl.swiper?.slidePrev();
+    if (swiperEl.swiper) {
+      this.isBeginning = swiperEl.swiper.isBeginning;
+      this.isEnd = swiperEl.swiper.isEnd;
+    }
   }
 
   onNext() {
@@ -86,6 +102,10 @@ export class IndustriesCarouselComponent implements OnInit {
     if (!swiperEl) return;
     if (!swiperEl.swiper) this.initSwiper();
     swiperEl.swiper?.slideNext();
+    if (swiperEl.swiper) {
+      this.isBeginning = swiperEl.swiper.isBeginning;
+      this.isEnd = swiperEl.swiper.isEnd;
+    }
   }
 
   getImage(item: any): string {
