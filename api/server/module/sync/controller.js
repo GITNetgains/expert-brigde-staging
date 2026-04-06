@@ -43,11 +43,12 @@ function wordBoundaryContains(needle, haystack) {
   }
 }
 
-// Check if two tokens match (exact or prefix for longer tokens)
+// Check if two tokens match (exact or prefix with >= 70% coverage of longer token)
 function tokenMatch(a, b) {
   if (a === b) return true;
-  if (a.length >= 4 && b.startsWith(a)) return true;
-  if (b.length >= 4 && a.startsWith(b)) return true;
+  var longer = Math.max(a.length, b.length);
+  var shorter = Math.min(a.length, b.length);
+  if (shorter >= 4 && (a.startsWith(b) || b.startsWith(a)) && shorter / longer >= 0.7) return true;
   return false;
 }
 
@@ -79,20 +80,22 @@ async function matchSkills(skillStrings) {
         continue;
       }
 
-      // 2. Word-boundary substring (both directions, min 3 chars for shorter string)
+      // 2. Word-boundary substring (both directions, min 3 chars, >= 60% length coverage)
       var shorter = norm.length <= skillNorm.length ? norm : skillNorm;
       var longer = norm.length <= skillNorm.length ? skillNorm : norm;
-      if (shorter.length >= 3 && wordBoundaryContains(shorter, longer)) {
+      var lengthRatio = shorter.length / longer.replace(/\s+/g, '').length;
+      if (shorter.length >= 3 && lengthRatio >= 0.6 && wordBoundaryContains(shorter, longer)) {
         matchedIds.add(skill._id.toString());
         matched = true;
         continue;
       }
 
-      // 3. Alias word-boundary substring
+      // 3. Alias word-boundary substring (with 60% length ratio)
       if (aliasNorm && aliasNorm.length >= 3) {
         var shortA = norm.length <= aliasNorm.length ? norm : aliasNorm;
         var longA = norm.length <= aliasNorm.length ? aliasNorm : norm;
-        if (shortA.length >= 3 && wordBoundaryContains(shortA, longA)) {
+        var aliasLenRatio = shortA.length / longA.replace(/\s+/g, '').length;
+        if (shortA.length >= 3 && aliasLenRatio >= 0.6 && wordBoundaryContains(shortA, longA)) {
           matchedIds.add(skill._id.toString());
           matched = true;
           continue;
@@ -114,7 +117,7 @@ async function matchSkills(skillStrings) {
         return sum + (bestMatch ? Math.max(t.length, bestMatch.length) : t.length);
       }, 0);
       var charCoverage = skillNorm.length > 0 ? effectiveChars / skillNorm.length : 0;
-      if (matchCount > 0 && inputCoverage > 0.5 && charCoverage >= 0.4) {
+      if (matchCount > 0 && inputCoverage > 0.5 && charCoverage >= 0.7) {
         matchedIds.add(skill._id.toString());
         matched = true;
         continue;
@@ -163,27 +166,44 @@ async function matchIndustries(industryStrings) {
         continue;
       }
 
-      // 2. Word-boundary substring containment (prevents "technology" matching "biotechnology")
-      if (wordBoundaryContains(norm, indNorm) || wordBoundaryContains(indNorm, norm)) {
+      // 2. Aliases array check (exact match against aliases like "healthcare", "telecom")
+      if (industry.aliases && Array.isArray(industry.aliases)) {
+        var inputSlug = norm.replace(/[\s\-\/]+/g, '_');
+        var aliasHit = industry.aliases.some(function(a) {
+          var aLower = (a || '').toLowerCase();
+          return aLower === norm || aLower === inputSlug;
+        });
+        if (aliasHit) {
+          matchedIds.add(industry._id.toString());
+          matched = true;
+          continue;
+        }
+      }
+
+      // 3. Word-boundary substring containment (with 60% length ratio, prevents "retail" matching all retail sub-industries)
+      var indShorter = norm.length <= indNorm.length ? norm : indNorm;
+      var indLonger = norm.length <= indNorm.length ? indNorm : norm;
+      var indLenRatio = indShorter.length / indLonger.replace(/\s+/g, '').length;
+      if (indShorter.length >= 3 && indLenRatio > 0.6 && (wordBoundaryContains(norm, indNorm) || wordBoundaryContains(indNorm, norm))) {
         matchedIds.add(industry._id.toString());
         matched = true;
         continue;
       }
 
-      // 3. Abbreviation matching
-      // 3a. Both have parens abbreviations that match
+      // 4. Abbreviation matching
+      // 4a. Both have parens abbreviations that match
       if (inputAbbrev && indAbbrev && inputAbbrev === indAbbrev) {
         matchedIds.add(industry._id.toString());
         matched = true;
         continue;
       }
-      // 3b. Short input like "IT" or "BPO" matches DB abbreviation in parens
+      // 4b. Short input like "IT" or "BPO" matches DB abbreviation in parens
       if (norm.length <= 5 && indAbbrev && norm === indAbbrev) {
         matchedIds.add(industry._id.toString());
         matched = true;
         continue;
       }
-      // 3c. Any input TOKEN matches DB abbreviation (e.g., "IT" in "IT Services" matches "(IT)")
+      // 4c. Any input TOKEN matches DB abbreviation (e.g., "IT" in "IT Services" matches "(IT)")
       if (indAbbrev) {
         var hasAbbrevMatch = inputToks.some(function(t) { return t === indAbbrev; });
         if (hasAbbrevMatch) {
@@ -192,7 +212,7 @@ async function matchIndustries(industryStrings) {
           continue;
         }
       }
-      // 3d. Input contains the name without abbreviation (use original name, not normalized)
+      // 4d. Input contains the name without abbreviation (use original name, not normalized)
       if (indAbbrev) {
         var cleanName = normalize(removeParens(industry.name));
         if (cleanName && cleanName.length >= 3 && (wordBoundaryContains(norm, cleanName) || wordBoundaryContains(cleanName, norm))) {
@@ -202,7 +222,7 @@ async function matchIndustries(industryStrings) {
         }
       }
 
-      // 4. Token overlap - require input coverage >50% AND effective char coverage >=40% of DB name
+      // 5. Token overlap - require input coverage >50% AND effective char coverage >=40% of DB name
       var sigTokens = indToks.filter(function(t) { return t.length >= 3; });
       var inputSigToks = inputToks.filter(function(t) { return t.length >= 3; });
       var matchedInputToks = inputSigToks.filter(function(t) {
@@ -216,13 +236,13 @@ async function matchIndustries(industryStrings) {
         return sum + (bestDbMatch ? Math.max(t.length, bestDbMatch.length) : t.length);
       }, 0);
       var charCoverage = indNorm.length > 0 ? effectiveChars / indNorm.length : 0;
-      if (matchCount > 0 && inputCoverage > 0.5 && charCoverage >= 0.4) {
+      if (matchCount > 0 && inputCoverage > 0.5 && charCoverage >= 0.7) {
         matchedIds.add(industry._id.toString());
         matched = true;
         continue;
       }
 
-      // 5. Alias token overlap (same effective character coverage requirement)
+      // 6. Alias token overlap (same effective character coverage requirement)
       var aliasSigToks = aliasToks.filter(function(t) { return t.length >= 3; });
       var matchedAliasToks = inputSigToks.filter(function(t) {
         return aliasSigToks.some(function(at) { return tokenMatch(t, at); });
@@ -235,7 +255,7 @@ async function matchIndustries(industryStrings) {
         return sum + (bestMatch ? Math.max(t.length, bestMatch.length) : t.length);
       }, 0);
       var aliasCharCov = aliasNormStr.length > 0 ? aliasEffChars / aliasNormStr.length : 0;
-      if (aliasMatchCount > 0 && aliasInputCov > 0.5 && aliasCharCov >= 0.4) {
+      if (aliasMatchCount > 0 && aliasInputCov > 0.5 && aliasCharCov >= 0.7) {
         matchedIds.add(industry._id.toString());
         matched = true;
       }
@@ -504,11 +524,10 @@ exports.syncExpertProfile = async (req, res) => {
       }
     }
 
-    // Combine all skill arrays for matching
+    // Combine technical + framework skills for skill matching (domains go to industries)
     const allSkills = [
       ...(Array.isArray(skills_technical) ? skills_technical : []),
-      ...(Array.isArray(skills_frameworks) ? skills_frameworks : []),
-      ...(Array.isArray(skills_domains) ? skills_domains : [])
+      ...(Array.isArray(skills_frameworks) ? skills_frameworks : [])
     ];
 
     if (allSkills.length > 0) {
@@ -521,8 +540,11 @@ exports.syncExpertProfile = async (req, res) => {
       }
     }
 
-    // Industries
-    const industryList = Array.isArray(industries) ? industries : [];
+    // Industries: combine skills_domains + industries (domain labels like "Healthcare" route here)
+    const industryList = [
+      ...(Array.isArray(skills_domains) ? skills_domains : []),
+      ...(Array.isArray(industries) ? industries : [])
+    ];
     if (industryList.length > 0) {
       const industryIds = await matchIndustries(industryList);
       syncLog.matched_industries = industryIds.length;
