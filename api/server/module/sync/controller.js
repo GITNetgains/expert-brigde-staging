@@ -52,6 +52,49 @@ function tokenMatch(a, b) {
   return false;
 }
 
+// Split compound skill strings from pipeline into individual skills
+// e.g. "Docker, Kubernetes, OpenShift" -> ["Docker", "Kubernetes", "OpenShift"]
+// e.g. "Monitoring & Observability (AppDynamics, Splunk, ELK Stack)" -> ["Monitoring & Observability", "AppDynamics", "Splunk", "ELK Stack"]
+// e.g. "SAST/DAST/SCA, Prisma Cloud" -> ["SAST", "DAST", "SCA", "Prisma Cloud"]
+function splitCompound(arr) {
+  if (!Array.isArray(arr)) return [];
+  var result = [];
+  for (var i = 0; i < arr.length; i++) {
+    var s = (arr[i] || '').trim();
+    if (!s) continue;
+
+    // Extract parenthetical contents as separate items
+    var parenMatch = s.match(/\(([^)]+)\)/);
+    if (parenMatch) {
+      // Add the part before parens (e.g. "Monitoring & Observability")
+      var prefix = s.replace(/\s*\([^)]*\)\s*/, '').trim();
+      if (prefix) result.push(prefix);
+      // Split contents of parens on commas
+      var inner = parenMatch[1].split(/,/).map(function(x) { return x.trim(); }).filter(Boolean);
+      result = result.concat(inner);
+      continue;
+    }
+
+    // Strip leading labels like "Databases:" or "Application Servers:"
+    s = s.replace(/^[A-Za-z &]+:\s*/, '');
+
+    // Split on comma first, then check each part for slashes
+    var commaParts = s.split(/,/).map(function(x) { return x.trim(); }).filter(Boolean);
+    for (var j = 0; j < commaParts.length; j++) {
+      var part = commaParts[j];
+      // Split on "/" unless any part is <= 2 chars (preserves CI/CD, I/O but splits Retail/Consumer)
+      var slashParts = part.split(/\//).map(function(x) { return x.trim(); }).filter(Boolean);
+      var hasAbbrevPair = slashParts.some(function(sp) { return sp.length <= 2; });
+      if (slashParts.length > 1 && !hasAbbrevPair) {
+        result = result.concat(slashParts);
+      } else {
+        result.push(part);
+      }
+    }
+  }
+  return result.map(function(x) { return x.trim(); }).filter(function(x) { return x.length >= 2; });
+}
+
 async function matchSkills(skillStrings) {
   if (!skillStrings || !Array.isArray(skillStrings) || skillStrings.length === 0) return [];
 
@@ -525,9 +568,10 @@ exports.syncExpertProfile = async (req, res) => {
     }
 
     // Combine technical + framework skills for skill matching (domains go to industries)
+    // splitCompound handles pipeline's compound strings like "Docker, Kubernetes, OpenShift"
     const allSkills = [
-      ...(Array.isArray(skills_technical) ? skills_technical : []),
-      ...(Array.isArray(skills_frameworks) ? skills_frameworks : [])
+      ...splitCompound(Array.isArray(skills_technical) ? skills_technical : []),
+      ...splitCompound(Array.isArray(skills_frameworks) ? skills_frameworks : [])
     ];
 
     if (allSkills.length > 0) {
@@ -541,8 +585,9 @@ exports.syncExpertProfile = async (req, res) => {
     }
 
     // Industries: combine skills_domains + industries (domain labels like "Healthcare" route here)
+    // splitCompound handles "Retail/Consumer" -> ["Retail", "Consumer"]
     const industryList = [
-      ...(Array.isArray(skills_domains) ? skills_domains : []),
+      ...splitCompound(Array.isArray(skills_domains) ? skills_domains : []),
       ...(Array.isArray(industries) ? industries : [])
     ];
     if (industryList.length > 0) {
