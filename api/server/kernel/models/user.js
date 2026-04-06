@@ -38,6 +38,10 @@ exports.model = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
       }],
+      cohort_tags: {
+        type: [String],
+        default: []
+      },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }
     }, {

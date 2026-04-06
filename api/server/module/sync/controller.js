@@ -530,6 +530,12 @@ exports.syncExpertProfile = async (req, res) => {
       syncLog.fields_updated.push('highlights');
     }
 
+    // Cohort tags (rule-based tags from pipeline: experience band, domain, stack, role)
+    if (Array.isArray(cohort_tags) && cohort_tags.length > 0) {
+      update.cohort_tags = cohort_tags;
+      syncLog.fields_updated.push('cohort_tags');
+    }
+
     // Apply update (use collection.updateOne to bypass Mongoose strict mode for workHistory)
     if (Object.keys(update).length > 0) {
       update.updatedAt = new Date();

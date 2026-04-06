@@ -314,6 +314,20 @@ exports.update = async (req, res, next) => {
           updated_fields: updatedFieldNames
         };
 
+        // Resolve skillIds/industryIds to names for PostgreSQL (text[] columns)
+        try {
+          if (tutor.skillIds && tutor.skillIds.length > 0) {
+            const skills = await DB.Skill.find({ _id: { $in: tutor.skillIds } }, { name: 1 }).lean();
+            webhookPayload.skill_names = skills.map(s => s.name);
+          }
+          if (tutor.industryIds && tutor.industryIds.length > 0) {
+            const industries = await DB.Industry.find({ _id: { $in: tutor.industryIds } }, { name: 1 }).lean();
+            webhookPayload.industry_names = industries.map(i => i.name);
+          }
+        } catch (resolveErr) {
+          pm2Error('[PROFILE-EDIT-WEBHOOK] Skill/industry resolve error (non-blocking):', resolveErr.message);
+        }
+
         pm2Log('[PROFILE-EDIT-WEBHOOK] Syncing profile edit to PostgreSQL for', tutor.email,
           'fields:', updatedFieldNames.join(', '));
 
