@@ -511,32 +511,18 @@ exports.remove = async (req, res, next) => {
     await req.tutor.remove();
     res.locals.remove = { success: true };
 
-    // [DELETE-WEBHOOK] Notify PostgreSQL to archive the candidate record
-    try {
-      const fetch = (await import('node-fetch')).default;
-      const webhookPayload = {
-        action: 'ARCHIVE',
-        email: deletedEmail,
-        mongo_user_id: deletedMongoId,
-        name: deletedName,
-        source: 'admin_delete_tutor'
-      };
-      pm2Log('[DELETE-WEBHOOK] Archiving tutor in PostgreSQL:', deletedEmail);
-      fetch(REVERSE_SYNC_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': REVERSE_SYNC_API_KEY
-        },
-        body: JSON.stringify(webhookPayload)
-      }).then(function (r) {
-        pm2Log('[DELETE-WEBHOOK] Response status:', r.status);
-      }).catch(function (err) {
-        pm2Error('[DELETE-WEBHOOK] Error (non-blocking):', err.message);
-      });
-    } catch (webhookErr) {
-      pm2Error('[DELETE-WEBHOOK] Setup error (non-blocking):', webhookErr.message);
-    }
+    // [DELETE-WEBHOOK] Notify PostgreSQL to archive the candidate record (with retry)
+    const webhookPayload = {
+      action: 'ARCHIVE',
+      email: deletedEmail,
+      mongo_user_id: deletedMongoId,
+      name: deletedName,
+      source: 'admin_delete_tutor'
+    };
+    pm2Log('[DELETE-WEBHOOK] Archiving tutor in PostgreSQL:', deletedEmail);
+    // Non-blocking: retry in background, don't delay response
+    sendWebhookWithRetry(REVERSE_SYNC_URL, webhookPayload, { label: '[DELETE-WEBHOOK]' })
+      .catch(function(err) { pm2Error('[DELETE-WEBHOOK] Unexpected error:', err.message); });
 
     return next();
   } catch (e) {
@@ -549,6 +535,48 @@ const EXPERT_REGISTRATION_WEBHOOK_URL = 'http://13.205.83.59:5678/webhook/expert
 // REVERSE SYNC: Expert profile edits -> PostgreSQL
 const REVERSE_SYNC_URL = 'http://13.205.83.59:8002/sync/expert-from-mongo';
 const REVERSE_SYNC_API_KEY = 'expertbridge-reverse-sync-m7n3p5';
+
+/**
+ * Send webhook with exponential backoff retry.
+ * @param {string} url - Webhook URL
+ * @param {object} payload - JSON body
+ * @param {object} [opts] - Options: maxRetries (default 3), label (log prefix)
+ * @returns {Promise<{ok: boolean, status?: number, attempt?: number, error?: string}>}
+ */
+async function sendWebhookWithRetry(url, payload, opts) {
+  var maxRetries = (opts && opts.maxRetries) || 3;
+  var label = (opts && opts.label) || '[WEBHOOK-RETRY]';
+  var delays = [1000, 3000, 9000]; // 1s, 3s, 9s
+
+  for (var attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      var fetch = (await import('node-fetch')).default;
+      var response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': REVERSE_SYNC_API_KEY
+        },
+        body: JSON.stringify(payload),
+        timeout: 10000
+      });
+      if (response.ok || response.status < 500) {
+        pm2Log(label, 'Success on attempt', attempt, '- status:', response.status);
+        return { ok: true, status: response.status, attempt: attempt };
+      }
+      // 5xx -> retry
+      pm2Error(label, 'Attempt', attempt, 'got status', response.status, '- will retry');
+    } catch (err) {
+      pm2Error(label, 'Attempt', attempt, 'failed:', err.message);
+    }
+    if (attempt < maxRetries) {
+      var delay = delays[attempt - 1] || 9000;
+      await new Promise(function(resolve) { setTimeout(resolve, delay); });
+    }
+  }
+  pm2Error(label, 'All', maxRetries, 'attempts failed for:', JSON.stringify(payload).substring(0, 200));
+  return { ok: false, error: 'All retries exhausted' };
+}
 const EXPERT_REGISTRATION_WEBHOOK_API_KEY = 'expertbridge-cv-ingestion-a7f3e9b2d4c1';
 
 /**
