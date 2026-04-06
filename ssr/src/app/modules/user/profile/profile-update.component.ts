@@ -240,14 +240,14 @@ export class ProfileUpdateComponent implements OnInit {
     this.mapGradeName(this.info.grades);
     this.mapLanguageName(this.info.languages);
     await this.skillService
-      .search({ take: 1000, sort: 'ordering', sortType: 'asc' })
+      .search({ take: 5000, sort: 'ordering', sortType: 'asc' })
       .then((resp) => {
         this.skills = resp.data.items || [];
       })
       .catch(() => this.appService.toastError());
 
     await this.industryService
-      .search({ take: 1000, sort: 'ordering', sortType: 'asc' })
+      .search({ take: 5000, sort: 'ordering', sortType: 'asc' })
       .then((resp) => {
         this.industries = resp.data.items || [];
       })

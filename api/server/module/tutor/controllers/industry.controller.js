@@ -87,17 +87,7 @@ exports.list = async (req, res, next) => {
   try {
     const query = Helper.App.populateDbQuery(req.query, { text: ['name', 'alias'], boolean: ['isActive'] });
     const sort = Helper.App.populateDBSort(req.query);
-    // Sync missing industries from Pages (type=industry)
-    const posts = await DB.Post.find({ type: 'industry' }).sort({ createdAt: -1 }).limit(200).exec();
-    for (const p of posts) {
-      const name = p.title || '';
-      const alias = p.alias || Helper.String.createAlias(name);
-      const exists = await DB.Industry.findOne({ $or: [{ alias }, { name }] });
-      if (!exists && name) {
-        const ind = new DB.Industry({ name, alias, description: (p.meta && p.meta.tagline) || '', isActive: true });
-        await ind.save();
-      }
-    }
+    // Post-based industry sync removed (2026-04-06) — industries now use GICS taxonomy
 
     const count = await DB.Industry.count(query);
     const items = await DB.Industry.find(query)

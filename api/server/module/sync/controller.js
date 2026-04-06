@@ -79,27 +79,42 @@ async function matchSkills(skillStrings) {
         continue;
       }
 
-      // 2. Substring containment (for skills, keep plain includes since "react" should match "reactjs")
-      if (norm.includes(skillNorm) || skillNorm.includes(norm)) {
+      // 2. Word-boundary substring (both directions, min 3 chars for shorter string)
+      var shorter = norm.length <= skillNorm.length ? norm : skillNorm;
+      var longer = norm.length <= skillNorm.length ? skillNorm : norm;
+      if (shorter.length >= 3 && wordBoundaryContains(shorter, longer)) {
         matchedIds.add(skill._id.toString());
         matched = true;
         continue;
       }
 
-      // 3. Alias substring (string alias) - also try plain includes for single-word skills like "react" in "reactjs"
-      if (aliasNorm && (wordBoundaryContains(aliasNorm, norm) || wordBoundaryContains(norm, aliasNorm)
-          || aliasNorm.includes(norm) || norm.includes(aliasNorm))) {
-        matchedIds.add(skill._id.toString());
-        matched = true;
-        continue;
+      // 3. Alias word-boundary substring
+      if (aliasNorm && aliasNorm.length >= 3) {
+        var shortA = norm.length <= aliasNorm.length ? norm : aliasNorm;
+        var longA = norm.length <= aliasNorm.length ? aliasNorm : norm;
+        if (shortA.length >= 3 && wordBoundaryContains(shortA, longA)) {
+          matchedIds.add(skill._id.toString());
+          matched = true;
+          continue;
+        }
       }
 
-      // 4. Token overlap: any significant token match
-      var hasMatch = inputToks.some(function(t) {
-        return skillToks.some(function(st) { return tokenMatch(t, st); })
+      // 4. Token overlap: require >50% input coverage AND >40% char coverage of skill name
+      var sigTokens = skillToks.filter(function(t) { return t.length >= 3; });
+      var inputSigToks = inputToks.filter(function(t) { return t.length >= 3; });
+      var matchedInputToks = inputSigToks.filter(function(t) {
+        return sigTokens.some(function(st) { return tokenMatch(t, st); })
             || aliasToks.some(function(at) { return tokenMatch(t, at); });
       });
-      if (hasMatch) {
+      var matchCount = matchedInputToks.length;
+      var inputCoverage = inputSigToks.length > 0 ? matchCount / inputSigToks.length : 0;
+      var effectiveChars = matchedInputToks.reduce(function(sum, t) {
+        var bestMatch = sigTokens.find(function(st) { return tokenMatch(t, st); })
+                     || aliasToks.find(function(at) { return tokenMatch(t, at); });
+        return sum + (bestMatch ? Math.max(t.length, bestMatch.length) : t.length);
+      }, 0);
+      var charCoverage = skillNorm.length > 0 ? effectiveChars / skillNorm.length : 0;
+      if (matchCount > 0 && inputCoverage > 0.5 && charCoverage >= 0.4) {
         matchedIds.add(skill._id.toString());
         matched = true;
         continue;
