@@ -54,7 +54,7 @@ const validateSchema = Joi.object().keys({
   isHomePage: Joi.boolean().allow(null).optional(),
   zipCode: Joi.string().allow([null, '']).optional(),
   idYoutube: Joi.string().allow([null, '']).optional(),
-  country: Joi.object().allow(null).optional(),
+  country: Joi.alternatives().try(Joi.object(), Joi.string().allow('')).allow(null).optional(),
   featured: Joi.boolean().allow(null).optional(),
   gender: Joi.string().allow([null, '']).optional(),
   yearsExperience: Joi.number().min(0).optional(),
@@ -195,8 +195,8 @@ exports.create = async (req, res, next) => {
     }
 
     let countryCode = '';
-    if (validate.value.country) {
-      countryCode = validate.value.country.code || '';
+    if (validate.value.country && typeof validate.value.country === 'object' && validate.value.country.code) {
+      countryCode = validate.value.country.code;
     }
 
     const tutor = await Service.User.create(
@@ -270,8 +270,8 @@ exports.update = async (req, res, next) => {
       tutor.markModified('grades');
     }
 
-    if (validate.value.country) {
-      tutor.countryCode = validate.value.country.code || '';
+    if (validate.value.country && typeof validate.value.country === 'object' && validate.value.country.code) {
+      tutor.countryCode = validate.value.country.code;
     }
 
 
