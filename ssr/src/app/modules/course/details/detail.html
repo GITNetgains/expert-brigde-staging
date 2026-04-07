@@ -397,10 +397,10 @@
             <span class="offer ms-1" *ngIf="appliedCoupon&&course?.coupon?.type==='money'">
               -${{saleValue}}</span>
             <p class="color-light-red mt-1"></p>
-            <!-- <div *ngIf="!course?.booked && currentUser?._id!==tutorId" class="mb-2">
+            <div *ngIf="!course?.booked && currentUser?._id!==tutorId" class="mb-2">
               <app-apply-coupon *ngIf="course && course.price > 0" [options]="optionsCoupon"
                 (doApply)="applyCoupon($event)" (doCancel)="onCancelCoupon($event)"></app-apply-coupon>
-            </div> -->
+            </div>
             <div class="d-grid gap-2">
               <button [disabled]="(currentUser && currentUser._id === course?.tutorId) || course?.booked"
                 *ngIf="showBooking" class="btn btn-default btn-block" (click)="enrollCourse(course, 'booking')">

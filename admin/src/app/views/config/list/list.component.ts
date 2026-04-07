@@ -45,12 +45,12 @@ import { ThemeComponent } from '../components/theme/theme.component';
 export class ListComponent implements OnInit {
   items: any[] = [];
   groups = [
-    'general',
+    // 'general',
     'seo',
-    'image',
+    // 'image',
     'commission',
-    'smtp',
-    'stripe',
+    // 'smtp',
+    // 'stripe',
     'platform',
     'theme',
     'other',

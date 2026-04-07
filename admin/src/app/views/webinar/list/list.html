@@ -110,17 +110,10 @@
                       (onSort)="onSort($event)"
                       sortBy="numberParticipants"
                       [sortOption]="sortOption"
-                      sortTitle="Number of people booked"
+                      sortTitle="Total Participants"
                     ></app-sort>
                   </th>
-                  <th style="width: 150px">
-                    <app-sort
-                      (onSort)="onSort($event)"
-                      sortBy="featured"
-                      [sortOption]="sortOption"
-                      sortTitle="Featured"
-                    ></app-sort>
-                  </th>
+                  <th style="width: 150px">Appointments</th>
 
                   <th style="width: 200px">
                     <app-sort
@@ -157,19 +150,27 @@
                     }
                   </td>
                   <td>{{ item.maximumStrength }}</td>
-                  <td>{{ item.numberParticipants }}</td>
                   <td>
-                    @if(item.featured) {
-                    <span
-                      class="badge text-bg-success text-white"
-                      (click)="update(item, 'featured', false)"
-                      >Y</span
-                    >}@else{
-                    <span
-                      class="badge text-bg-warning text-white"
-                      (click)="update(item, 'featured', true)"
-                      >N</span
-                    >}
+                    <a
+                      [routerLink]="['/appointment/list']"
+                      [queryParams]="{ webinarId: item._id }"
+                      class="fw-bold"
+                      style="text-decoration: none"
+                    >
+                      {{ item.numberParticipants }}
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      [routerLink]="['/appointment/list']"
+                      [queryParams]="{ webinarId: item._id }"
+                      cButton
+                      color="info"
+                      size="sm"
+                      class="text-white"
+                    >
+                      View Appointments
+                    </a>
                   </td>
 
                   <td>

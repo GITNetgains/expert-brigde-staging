@@ -12,7 +12,7 @@ import { ConversationService, MessageService, STATE, SeoService, SocketService, 
 export class ConversationsComponent implements OnDestroy {
   public originalConversations: any = [];
   public conversations: any = [];
-  private currentUser: any;
+  public currentUser: any;
   public activeConversation: any;
   public q: any = '';
   private sendMessageSubscription: Subscription;
@@ -88,7 +88,10 @@ export class ConversationsComponent implements OnDestroy {
       const member = (conversation.members || []).filter((m: any) => m._id && m._id !== this.currentUser._id);
       const other = member.length ? member[0] : this.currentUser;
       conversation.member = other;
-      conversation.name = other.showPublicIdOnly === true ? (other.userId || other.name) : (other.name || '');
+      const isTutor = (other.type === 'tutor' || other.role === 'tutor');
+      const privacyApplied = this.currentUser.type !== 'tutor' && this.currentUser.role !== 'tutor' && isTutor && other.showPublicIdOnly === true;
+      conversation.privacyApplied = privacyApplied;
+      conversation.name = privacyApplied ? (other.userId || 'Expert') : (other.name || '');
       return conversation;
     });
   }
@@ -135,6 +138,11 @@ export class ConversationsComponent implements OnDestroy {
       return text.substring(0, 55) + '...';
     }
     return text;
+  }
+
+  isPrivacyApplied(user: any) {
+    const isTutor = (user?.type === 'tutor' || user?.role === 'tutor');
+    return this.currentUser.type !== 'tutor' && this.currentUser.role !== 'tutor' && isTutor && user?.showPublicIdOnly === true;
   }
 
   ngOnDestroy() {

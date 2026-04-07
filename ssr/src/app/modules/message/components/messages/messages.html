@@ -1,11 +1,11 @@
 <div class="mesgs">
   <div class="top-mesgs">
     <i class="fi fi-rs-angle-left" (click)="goBack()"></i>
-    <img *ngIf="receiver?.showPublicIdOnly !== true" [src]="receiver?.avatarUrl"
+    <img *ngIf="!isPrivacyApplied(receiver)" [src]="receiver?.avatarUrl"
       onerror="this.src='/assets/images/default-avatar.jpg'" alt="sunil" />
-    <span *ngIf="receiver?.showPublicIdOnly === true" class="avatar avatar-placeholder" aria-hidden="true"><i
+    <span *ngIf="isPrivacyApplied(receiver)" class="avatar avatar-placeholder" aria-hidden="true"><i
         class="fi fi-rr-user"></i></span>
-    <h4 *ngIf="receiver">{{ receiver?.showPublicIdOnly === true ? receiver?.userId : receiver?.name }}</h4>
+    <h4 *ngIf="receiver">{{ isPrivacyApplied(receiver) ? (receiver?.userId || 'Expert') : receiver?.name }}</h4>
   </div>
   <div class="msg_history" #commentEl [scrollTop]="scrolltop">
     <div *ngIf="items.length < total" class="text-center mb-3">
@@ -19,7 +19,9 @@
     <div *ngFor="let item of items" #item>
       <div class="incoming_msg" *ngIf="item.senderId !== currentUser._id">
         <div class="incoming_msg_img">
-          <img [src]="item.sender?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="sunil" />
+          <img *ngIf="!isPrivacyApplied(item.sender)" [src]="item.sender?.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="sunil" />
+          <span *ngIf="isPrivacyApplied(item.sender)" class="avatar avatar-placeholder" aria-hidden="true"><i
+              class="fi fi-rr-user"></i></span>
         </div>
         <div class="received_msg">
           <div class="received_withd_msg">

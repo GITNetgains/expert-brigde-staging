@@ -61,7 +61,7 @@ exports.groupMessages = async (req, res, next) => {
     const sort = Helper.App.populateDBSort(req.query);
     const count = await DB.Message.count(query);
     const items = await DB.Message.find(query)
-      .populate({ path: 'sender', select: '_id name username avatar avatarUrl' })
+      .populate({ path: 'sender', select: '_id name username avatar avatarUrl userId showPublicIdOnly type' })
       .populate('file')
       .sort(sort)
       .skip(page * take)

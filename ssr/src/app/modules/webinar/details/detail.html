@@ -68,7 +68,19 @@
             <div class="show-mobile">
               <div class="mt-2">
                 <h4 class="color-light-red">
-                  <strong>{{ (webinar?.price || 0) * (1 + webinarEffectiveCommissionRate) | appCurrency}}</strong>
+                  <span class="color-light-red price-text" *ngIf="webinar?.isFree" translate>FREE</span>
+                  <span class="color-light-red price-text" *ngIf="appliedCoupon">{{salePrice * (1 +
+                    webinarEffectiveCommissionRate) * (1 + gstRate) | appCurrency}}</span>
+                  <span class="color-light-red price-text" *ngIf="!appliedCoupon && !webinar?.isFree">{{(webinar?.price
+                    || 0) * (1 + webinarEffectiveCommissionRate) * (1 + gstRate) |
+                    appCurrency }}</span>
+                  <span class="ms-1" *ngIf="appliedCoupon && !webinar?.isFree"><del>{{(webinar?.price || 0) * (1 +
+                      webinarEffectiveCommissionRate) * (1 + gstRate) | appCurrency
+                      }}</del></span>
+                  <span class="offer ms-1" *ngIf="appliedCoupon&&webinar?.coupon?.type==='percent'">{{saleValue}}%
+                    off</span>
+                  <span class="offer ms-1" *ngIf="appliedCoupon&&webinar?.coupon?.type==='money'">
+                    -${{saleValue}}</span>
                 </h4>
               </div>
               <div class="mt-2 button-list" *ngIf="showBooking">
@@ -184,8 +196,24 @@
           </div>
           <div class="card-body">
             <h4 class="color-light-red">
-              <strong>{{ (webinar?.price || 0) * (1 + webinarEffectiveCommissionRate) | appCurrency}}</strong>
+              <span class="color-light-red price-text" *ngIf="webinar?.isFree" translate>FREE</span>
+              <span class="color-light-red price-text" *ngIf="appliedCoupon">{{salePrice * (1 +
+                webinarEffectiveCommissionRate) * (1 + gstRate) | appCurrency}}</span>
+              <span class="color-light-red price-text" *ngIf="!appliedCoupon && !webinar?.isFree">{{(webinar?.price ||
+                0) * (1 + webinarEffectiveCommissionRate) * (1 + gstRate) |
+                appCurrency }}</span>
+              <span class="ms-1" *ngIf="appliedCoupon && !webinar?.isFree"><del>{{(webinar?.price || 0) * (1 +
+                  webinarEffectiveCommissionRate) * (1 + gstRate) | appCurrency
+                  }}</del></span>
+              <span class="offer ms-1" *ngIf="appliedCoupon&&webinar?.coupon?.type==='percent'">{{saleValue}}%
+                off</span>
+              <span class="offer ms-1" *ngIf="appliedCoupon&&webinar?.coupon?.type==='money'">
+                -${{saleValue}}</span>
             </h4>
+            <div *ngIf="!booked && currentUser?._id!==webinar?.tutorId && showBooking" class="mb-2">
+              <app-apply-coupon *ngIf="webinar && webinar.price > 0" [options]="optionsCoupon"
+                (doApply)="applyCoupon($event)" (doCancel)="onCancelCoupon($event)"></app-apply-coupon>
+            </div>
             <div class="mt-2" *ngIf="webinar?.isFree || (webinar?.price ?? 0) <= 0">
               <label class="required-label" style="display: block; margin-bottom: 5px; font-weight: bold">
                 {{'Recipient\'s email id' | translate}}

@@ -81,6 +81,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
   }
 
+  isPrivacyApplied(user: any) {
+    const isTutor = (user?.type === 'tutor' || user?.role === 'tutor');
+    return this.currentUser.type !== 'tutor' && this.currentUser.role !== 'tutor' && isTutor && user?.showPublicIdOnly === true;
+  }
+
   ngOnDestroy() {
     // prevent memory leak when component destroyed
     this.conversationSubscription.unsubscribe();

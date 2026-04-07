@@ -12,6 +12,7 @@ import { WebinarRoutingModule } from './webinar.routing';
 import { DetailWebinarComponent } from './details/detail.component';
 import { CardTextComponent } from 'src/app/components/uis/card-text.component';
 import { ReviewListComponent } from 'src/app/components/review/review-list/list.component';
+import { ApplyCouponComponent } from 'src/app/components/coupon/apply-coupon/apply.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -23,7 +24,8 @@ import { ReviewListComponent } from 'src/app/components/review/review-list/list.
     NgSelectModule,
     WebinarRoutingModule,
     CardTextComponent,
-    ReviewListComponent
+    ReviewListComponent,
+    ApplyCouponComponent
   ],
   declarations: [WebinarListingComponent, DetailWebinarComponent],
   exports: [CardWebinarComponent]

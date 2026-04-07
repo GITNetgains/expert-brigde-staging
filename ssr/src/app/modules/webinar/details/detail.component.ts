@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import {
+  ICoupon,
   IMylesson,
   IStatsReview,
   IUser,
@@ -17,6 +18,7 @@ import {
   StateService,
   WebinarService
 } from 'src/app/services';
+import { PlatformConfigService } from 'src/app/services/platform-config.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -39,6 +41,15 @@ export class DetailWebinarComponent implements OnInit {
   public booked = false;
   public isLoggedin = false;
   public slotLeft: number;
+  public gstRate = 0;
+  public salePrice: any;
+  public coupon: ICoupon;
+  public saleValue: any;
+  public appliedCoupon: Boolean = false;
+  public appliedCouponCode = '';
+  public optionsCoupon: any = {
+    targetType: 'webinar'
+  };
 
   public optionsReview: any = {
     webinarId: ''
@@ -62,7 +73,8 @@ export class DetailWebinarComponent implements OnInit {
     private router: Router,
     private webinarFavoriteService: FavoriteService,
     private stateService: StateService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    private platformConfig: PlatformConfigService
   ) {
     this.webinarParam = this.route.snapshot.params['id'];
     this.config = this.stateService.getState(STATE.CONFIG);
@@ -113,6 +125,7 @@ export class DetailWebinarComponent implements OnInit {
         ? tutorRate
         : (typeof commissionRate === 'number' ? commissionRate : 0);
     this.webinarEffectiveCommissionRate = effective || 0;
+    this.gstRate = this.platformConfig.getGstRate();
   }
 
   async ngOnInit() {
@@ -151,6 +164,10 @@ export class DetailWebinarComponent implements OnInit {
       };
       this.slotLeft =
         this.webinar.maximumStrength - this.webinar.numberParticipants;
+
+      this.optionsCoupon.targetId = this.webinarId;
+      this.optionsCoupon.tutorId = this.webinar.tutorId;
+      this.salePrice = this.webinar.price;
 
       await this.findSlots();
     }
@@ -240,7 +257,27 @@ export class DetailWebinarComponent implements OnInit {
       type: type,
       emailRecipient: this.emailRecipient
     });
+    if (this.appliedCouponCode && this.appliedCoupon) {
+      params.couponCode = this.appliedCouponCode;
+    }
     if (webinar.price <= 0 || webinar.isFree) {
+      return this.webinarService
+        .enroll(params)
+        .then((resp) => {
+          if (resp.data.status === 'completed') {
+            this.appService.toastSuccess(
+              'Have successfully booked free group session'
+            );
+            return this.router.navigate(['/users/lessons']);
+          } else {
+            return this.router.navigate(['/payments/cancel']);
+          }
+        })
+        .catch((e) => {
+          this.appService.toastError(e);
+          this.router.navigate(['/payments/cancel']);
+        });
+    } else if (this.salePrice <= 0 && this.appliedCoupon) {
       return this.webinarService
         .enroll(params)
         .then((resp) => {
@@ -268,6 +305,38 @@ export class DetailWebinarComponent implements OnInit {
         },
         state: params
       });
+    }
+  }
+
+  applyCoupon(event: { appliedCoupon: boolean; coupon: ICoupon }) {
+    this.appliedCoupon = event.appliedCoupon;
+    if (this.appliedCoupon) {
+      this.appliedCouponCode = event.coupon.code;
+      if (event.coupon.type === 'percent') {
+        this.saleValue = event.coupon.value;
+        this.salePrice =
+          this.webinar.price - this.webinar.price * (this.saleValue / 100) <= 0
+            ? 0
+            : this.webinar.price - this.webinar.price * (this.saleValue / 100);
+      } else if (event.coupon.type === 'money') {
+        this.saleValue =
+          event.coupon.value > this.webinar.price
+            ? this.webinar.price
+            : event.coupon.value;
+        this.salePrice = this.webinar.price - this.saleValue;
+      }
+      this.appService.toastSuccess('Applied coupon');
+    } else {
+      this.salePrice = this.webinar.price || 0;
+    }
+  }
+
+  onCancelCoupon(event: { cancelled: boolean }) {
+    if (event.cancelled) {
+      this.salePrice = this.webinar.price || 0;
+      this.saleValue = 0;
+      this.appliedCoupon = false;
+      this.appliedCouponCode = '';
     }
   }
 

@@ -23,7 +23,8 @@
               @switch (group) {
               @case ('general') {
               <app-general [items]="items" [save]="save.bind(this)"></app-general>
-              } @case ('seo') {
+              }
+               @case ('seo') {
               <app-seo [items]="items" [save]="save.bind(this)"></app-seo>
               } @case ('image') {
               <app-image [items]="items" [save]="save.bind(this)"></app-image>

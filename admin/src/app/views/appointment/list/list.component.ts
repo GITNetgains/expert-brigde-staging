@@ -106,6 +106,11 @@ export class AppointmentListingComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const page = parseInt(params['page']) || 1;
       this.currentPage = !isNaN(page) ? page : 1;
+      if (params['webinarId']) {
+        this.searchFields.webinarId = params['webinarId'];
+      } else {
+        delete this.searchFields.webinarId;
+      }
       this.query();
     });
     this.initSearchStreams();
