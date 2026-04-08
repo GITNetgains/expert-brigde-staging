@@ -13,6 +13,36 @@
           <p class="location">
             {{ (tutor.state && tutor.country?.name) ? (tutor.state + ', ' + tutor.country.name) : (tutor.state || tutor.country?.name || '') }}
           </p>
+          <div class="expert-card-share expert-card-share--compact" (click)="$event.stopPropagation()">
+            <p class="expert-card-share-label mb-0" translate>Share profile:</p>
+            <div class="banner-top-right-actions expert-card-share-actions">
+              <div
+                class="share-pill"
+                (click)="shareProfile(); $event.stopPropagation()"
+                [ngClass]="{ copied: copied }"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="shareProfile()"
+                (keydown.space)="$event.preventDefault(); shareProfile()"
+                [attr.aria-label]="copied ? 'Copied' : 'Copy profile link'">
+                <i class="fi" [ngClass]="copied ? 'fi-rr-check' : 'fi-rr-link'"></i>
+              </div>
+              <a
+                href="javascript:void(0)"
+                class="social-circle fb"
+                title="Share on Facebook"
+                (click)="shareOnFacebook(); $event.preventDefault(); $event.stopPropagation()">
+                <i class="fi fi-brands-facebook"></i>
+              </a>
+              <a
+                href="javascript:void(0)"
+                class="social-circle tw"
+                title="Share on Twitter"
+                (click)="shareOnTwitter(); $event.preventDefault(); $event.stopPropagation()">
+                <i class="fi fi-brands-twitter"></i>
+              </a>
+            </div>
+          </div>
         </div>
         <p class="fee">
           <img src="./assets/images/card-fee-icon.svg" alt="fee-icon" onerror="this.style.display='none'" />

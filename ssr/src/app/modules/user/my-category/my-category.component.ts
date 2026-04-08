@@ -58,6 +58,7 @@ export class MyCategoriesComponent implements OnInit {
   public selectedCategory: IMyCategory;
   public selectedSubject: IMySubject;
   public config: any;
+  public currencySymbol = '₹';
 
   constructor(
     private myCategoryService: MyCategoryService,
@@ -79,6 +80,8 @@ export class MyCategoriesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.currencySymbol =
+      this.config?.currencySymbol || localStorage.getItem('currencySymbol') || '₹';
     this.queryMyCategories();
   }
 

@@ -97,6 +97,7 @@ export class ListComponent implements OnInit {
   private subjectService = inject(SubjectService);
 
   categories: any[] = [];
+  private tutorRequestSequence = 0;
 
   ngOnInit() {
     this.loadCategories();
@@ -181,8 +182,13 @@ export class ListComponent implements OnInit {
   }
 
   loadSubjects(preselect = false) {
+    this.tutorRequestSequence += 1;
     this.assign.subjects = [];
     this.assign.tutors = [];
+    if (!preselect) {
+      this.assign.subjectId = '';
+      this.assign.tutorIds = [];
+    }
 
     if (!this.assign.categoryId) return;
 
@@ -201,22 +207,52 @@ export class ListComponent implements OnInit {
 
   loadTutors() {
     if (!this.assign.subjectId) return;
+    const currentRequest = ++this.tutorRequestSequence;
+    const fetchedTutors: any[] = [];
+    const take = 500;
+    let page = 1;
 
-    this.tutorService
-      .search({
-        subjectIds: this.assign.subjectId,
-        pendingApprove: false,
-        rejected: false,
-        isActive: true,
-        take: 1000,
-      })
-      .subscribe((res) => {
-        const fetchedTutors = res.data.items || [];
-        const merged = [...this.assign.tutors, ...fetchedTutors];
-        this.assign.tutors = Array.from(
-          new Map(merged.map((t) => [t._id, t])).values()
-        );
-      });
+    const fetchNextPage = () => {
+      this.tutorService
+        .search({
+          subjectIds: this.assign.subjectId,
+          pendingApprove: false,
+          rejected: false,
+          isActive: true,
+          take,
+          page,
+          sort: 'name',
+          sortType: 'asc',
+        })
+        .subscribe((res) => {
+          if (currentRequest !== this.tutorRequestSequence) return;
+
+          const items = res?.data?.items || [];
+          const total = res?.data?.count || 0;
+          fetchedTutors.push(...items);
+
+          if (fetchedTutors.length < total && items.length > 0) {
+            page += 1;
+            fetchNextPage();
+            return;
+          }
+
+          const subjectTutors = Array.from(
+            new Map(
+              fetchedTutors.map((t) => [String(t._id || t.id), t])
+            ).values()
+          );
+          const allowedTutorIds = new Set(
+            subjectTutors.map((t) => String(t._id || t.id))
+          );
+          this.assign.tutorIds = (this.assign.tutorIds || []).filter((id) =>
+            allowedTutorIds.has(String(id))
+          );
+          this.assign.tutors = subjectTutors;
+        });
+    };
+
+    fetchNextPage();
   }
 
   saveTutorAssignment() {

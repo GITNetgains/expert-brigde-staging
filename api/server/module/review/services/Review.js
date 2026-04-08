@@ -1,3 +1,5 @@
+const { tutorEmailLabel } = require('../../../kernel/helpers/tutor-email-label');
+
 exports.updateReviewScoreAppointment = async (appointmentId, reviewBy) => {
   try {
     const appointment = appointmentId instanceof DB.Appointment ? appointmentId : await DB.Appointment.findOne({ _id: appointmentId });
@@ -222,12 +224,17 @@ exports.create = async (userId, data) => {
     const template = user._id.toString() === appointment.tutorId.toString() ? 'new-review-user' : 'new-review-tutor';
     const notifyUser = await DB.User.findOne({ _id: notifyUserId });
     if (notifyUser) {
+      const expertRatedClient = user._id.toString() === appointment.tutorId.toString();
+      const mailSubject = expertRatedClient
+        ? `Your expert left a review for meeting #${appointment.code}`
+        : `A client rated your meeting #${appointment.code}`;
       await Service.Mailer.send(template, notifyUser.email, {
-        subject: `${user.name} rated your meeting #${appointment.code}`,
+        subject: mailSubject,
         review: review.toObject(),
         appointment: appointment.toObject(),
         rateBy: user.toObject(),
         rateTo: notifyUser.toObject(),
+        expertLabel: expertRatedClient ? tutorEmailLabel(user) : '',
         appName: process.env.APP_NAME,
         subject_replace_fields: {
           userName: user.name,
@@ -236,7 +243,10 @@ exports.create = async (userId, data) => {
       });
       const notification = {
         title: `Reviews`,
-        description: `Your ${user.type === 'user' ? 'student' : 'tutor'} ${user.name} has left a review`,
+        description:
+          user.type === 'user'
+            ? `Client ${user.name} has left a review`
+            : `Expert ${tutorEmailLabel(user)} has left a review`,
         itemId: appointment._id,
         notifyTo: notifyUser._id,
         type: 'booking'
@@ -284,7 +294,7 @@ exports.reviewCourse = async (userId, data) => {
     const notifyUser = await DB.User.findOne({ _id: Helper.App.toObjectId(notifyUserId) });
     if (notifyUser) {
       await Service.Mailer.send(template, notifyUser.email, {
-        subject: `${user.name} rated your course`,
+        subject: `A client rated your course`,
         review: review.toObject(),
         course: course.toObject(),
         rateBy: user.toObject(),
@@ -297,7 +307,7 @@ exports.reviewCourse = async (userId, data) => {
       });
       const notification = {
         title: `Course`,
-        description: `Your student ${user.name} has left a review`,
+        description: `Your client ${user.name} has left a review`,
         itemId: course._id,
         notifyTo: notifyUser._id,
         type: 'course'

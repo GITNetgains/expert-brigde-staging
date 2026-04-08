@@ -13,7 +13,7 @@
     </nav>
     <div class="profile-detail">
       <div class="profile-detail-left">
-        <div class="card card-border card-body profile-card mb-3">
+        <div class="card card-border card-body profile-card expert-profile-card booking-profile-card mb-3">
           <div class="profile-img">
             <img *ngIf="tutor.showPublicIdOnly !== true" src="{{tutor.avatarUrl}}"
               onerror="this.src='/assets/images/default-avatar.jpg'" alt="" />
@@ -30,25 +30,25 @@
           </div>
 
           <div class="profile-info">
-            <h5 class="font-weight-bold">
+            <h5 class="font-weight-bold profile-name">
               {{ tutor.showPublicIdOnly === true ? tutor.userId : tutor.name }}<i
                 *ngIf="tutor.showPublicIdOnly !== true" class="fi fi-ss-badge-check color-blue ms-1 font-sm"></i>
             </h5>
             <div class="rating-stars">
-              <ul id="stars">
+              <ul id="stars" class="profile-rating-list">
                 <app-star-rating [rate]="tutor.ratingAvg"></app-star-rating>
-                <span style="padding-left: 5px">{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
+                <span class="profile-rating-value">{{tutor?.ratingAvg}} ({{tutor?.totalRating}})</span>
               </ul>
             </div>
-            <div class="mb-3">
+            <div class="profile-location mb-3">
               <div class="img-flag-tutor">
                 <img src="{{tutor?.country?.flag}}" alt="" class="image-sm"
                   onerror="this.src='/assets/images/no-image.jpg'" />
               </div>
-              <span class="ms-2 text-secondary" translate>{{tutor?.country?.name || 'Updating'}}</span>
+              <span class="ms-2 text-secondary" translate>{{tutor?.country?.name || ''}}</span>
             </div>
             <app-send-message-btn [recipientId]="tutor._id"></app-send-message-btn>
-            <button type="button" class="btn bg-transparent color-white btn-link  mt-3"
+            <button type="button" class="btn btn-link profile-back-btn mt-3 text-white"
               [routerLink]="['/experts', tutor.username]">
               ← Back to expert profile
             </button>
@@ -93,9 +93,9 @@
         <div class="card card-border mb-3">
           <div class="card-body">
             <div class="row row-sm step-to-booking mb-2">
-              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
+              <div class="col-md-4 d-flex flex-column align-items-center justify-content-start booking-step-col">
                 <h5 translate>Step 1</h5>
-                <select class="custom-select form-select" [(ngModel)]="selectedCategoryId"
+                <select class="custom-select form-select booking-step-control" [(ngModel)]="selectedCategoryId"
                   (change)="selectMyCategory()">
                   <option selected value="" translate>Select Category</option>
                   <option *ngFor="let cat of myCategories" [value]="cat._id">
@@ -103,28 +103,30 @@
                   </option>
                 </select>
               </div>
-              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
+              <div class="col-md-4 d-flex flex-column align-items-center justify-content-start booking-step-col">
                 <h5 translate>Step 2</h5>
-                <select class="custom-select form-select" [(ngModel)]="selectedSubjectId" (change)="selectMySubject()">
+                <select class="custom-select form-select booking-step-control" [(ngModel)]="selectedSubjectId" (change)="selectMySubject()">
                   <option selected value="" translate>Select Expertise</option>
                   <option *ngFor="let subject of mySubjects" [value]="subject._id">
                     {{subject.name}}
                   </option>
                 </select>
               </div>
-              <div class="col-md-4 d-flex align-items-center justify-content-center flex-direction-column">
-                <div class="text-center ">
-                  <p class="mb-1"><strong>Survey</strong> - Per Survey</p>
-                  <p class="mb-1"><strong>For Consultation</strong> - Per Hour</p>
-                  <p class="slot-btn mb-0 d-inline-block" *ngIf="!appliedCoupon">
+              <div class="col-md-4 d-flex flex-column align-items-center justify-content-start booking-step-col">
+                <h5>Price</h5>
+                <div class="text-center booking-price-panel">
+                  <p class="slot-btn mb-0 d-inline-block booking-step-control booking-price-value" *ngIf="!appliedCoupon">
                     {{ (price * (1 + effectiveCommissionRate) * (1 + gstRate)) | appCurrency }}/<span
-                      translate>Hour</span>
+                      >{{ getPriceUnitLabel() }}</span>
                   </p>
-                  <p class="slot-btn mb-0 d-inline-block" *ngIf="appliedCoupon">
+                  <p class="slot-btn mb-0 d-inline-block booking-step-control booking-price-value" *ngIf="appliedCoupon">
                     <small class="text-line-through me-1">
                       {{ (price * (1 + effectiveCommissionRate) * (1 + gstRate)) | appCurrency }}</small>
                     {{ ((salePrice ? salePrice : 0) * (1 + effectiveCommissionRate) * (1 + gstRate)) |
-                    appCurrency}}/<span translate>Hour</span>
+                    appCurrency}}/<span>{{ getPriceUnitLabel() }}</span>
+                  </p>
+                  <p class="mt-2 mb-0 booking-unit-label" *ngIf="selectedCategoryName">
+                    <strong>{{ selectedCategoryName }}</strong> - Per {{ getPriceUnitLabel() }}
                   </p>
                 </div>
               </div>

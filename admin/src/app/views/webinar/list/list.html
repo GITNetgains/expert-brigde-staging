@@ -44,6 +44,17 @@
                 ></app-category-select>
               </div>
             </c-col>
+            <c-col md="3">
+              <div class="mb-3">
+                <input
+                  cFormControl
+                  type="text"
+                  [(ngModel)]="tutorUserId"
+                  placeholder="Expert ID (e.g. EB-0007)"
+                  (ngModelChange)="doSearch()"
+                />
+              </div>
+            </c-col>
           </c-row>
         </c-card-body>
       </c-card>
@@ -76,7 +87,7 @@
               [cBorder]="1"
               borderColor="gray"
               bordered
-              style="table-layout: fixed; width: 1610px"
+              style="table-layout: fixed; width: 1960px"
             >
               <thead>
                 <tr>
@@ -96,6 +107,7 @@
                       sortTitle="Expert Name"
                     ></app-sort>
                   </th>
+                  <th style="width: 150px">Expert ID</th>
                   <th style="width: 200px">Categories</th>
                   <th style="width: 150px">
                     <app-sort
@@ -103,6 +115,14 @@
                       sortBy="maximumStrength"
                       [sortOption]="sortOption"
                       sortTitle="Maximum Strength"
+                    ></app-sort>
+                  </th>
+                  <th style="width: 150px">
+                    <app-sort
+                      (onSort)="onSort($event)"
+                      sortBy="price"
+                      [sortOption]="sortOption"
+                      sortTitle="Price"
                     ></app-sort>
                   </th>
                   <th style="width: 200px">
@@ -142,6 +162,7 @@
                 <tr>
                   <td>{{ item.name }}</td>
                   <td>{{ item.tutor?.name ?? '—' }}</td>
+                  <td>{{ item.tutor?.userId ?? '—' }}</td>
                   <td>
                     @for (cat of (item.categories ?? []); track cat) {
                     <c-badge color="primary" class="me-1">
@@ -150,10 +171,14 @@
                     }
                   </td>
                   <td>{{ item.maximumStrength }}</td>
+                  <td>{{ item.price ?? '—' }}</td>
                   <td>
                     <a
                       [routerLink]="['/appointment/list']"
-                      [queryParams]="{ webinarId: item._id }"
+                      [queryParams]="{
+                        webinarId: item._id,
+                        targetType: 'webinar'
+                      }"
                       class="fw-bold"
                       style="text-decoration: none"
                     >
@@ -163,7 +188,10 @@
                   <td>
                     <a
                       [routerLink]="['/appointment/list']"
-                      [queryParams]="{ webinarId: item._id }"
+                      [queryParams]="{
+                        webinarId: item._id,
+                        targetType: 'webinar'
+                      }"
                       cButton
                       color="info"
                       size="sm"
@@ -187,7 +215,7 @@
                   >
                     <div class="d-flex">
                       <a
-                        [routerLink]="['/webinar/update', item.id]"
+                        [routerLink]="['/webinar/update', item._id]"
                         cButton
                         class="btn btn-sm btn-primary me-1"
                       >

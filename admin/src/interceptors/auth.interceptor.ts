@@ -15,28 +15,25 @@ export const authInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
   const router = inject(Router);
-  const token = localStorage.getItem('accessToken');
+  const token = (localStorage.getItem('accessToken') || '').trim();
   let authReq = req;
   const isApiRequest = req.url.includes(environment.apiUrl);
   const publicEndpoints = ['/auth/login', '/auth/forgot', '/auth/register'];
   const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
-  
+
   if (isApiRequest && !token && !isPublicEndpoint) {
+    localStorage.removeItem('isLoggedIn');
     router.navigate(['/login']);
-    return next(req).pipe(
-      catchError((error) => {
-        return throwError(() => error);
-      })
-    );
+    return throwError(() => new Error('Missing access token'));
   }
 
-  if (token) {
+  if (isApiRequest && token) {
     authReq = req.clone({
-      headers: req.headers.append('Authorization', `Bearer ${token}`),
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
     });
-    return next(authReq);
   }
-
 
   return next(authReq).pipe(
     catchError((error) => {

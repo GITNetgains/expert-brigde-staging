@@ -21,6 +21,8 @@ import {
 } from 'src/app/services';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlatformConfigService } from 'src/app/services/platform-config.service';
+import { environment } from 'src/environments/environment';
+
 @Component({
   selector: 'app-tutor-card',
   templateUrl: './tutor-card.html',
@@ -40,6 +42,10 @@ export class TutorCardComponent implements OnInit {
   public bioExpanded = false;
   public effectiveCommissionRate = 0;
   public gstRate = 0;
+
+  /** Share profile (same URL pattern as expert detail page) */
+  public webUrl = environment.url;
+  public copied = false;
 
   @Output() hover = new EventEmitter();
   constructor(
@@ -181,5 +187,49 @@ export class TutorCardComponent implements OnInit {
       return;
     }
     this.modalService.open(this.introVideoTpl, { centered: true, size: 'lg' });
+  }
+
+  getShareProfileUrl(): string {
+    return `${this.webUrl}/experts/${this.tutor?._id}`;
+  }
+
+  shareProfile(): void {
+    const url = this.getShareProfileUrl();
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.copied = true;
+        this.appService.toastSuccess('Profile link copied!');
+        setTimeout(() => {
+          this.copied = false;
+        }, 2000);
+      });
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        this.copied = true;
+        this.appService.toastSuccess('Profile link copied!');
+        setTimeout(() => {
+          this.copied = false;
+        }, 2000);
+      } catch {
+        /* ignore */
+      }
+      document.body.removeChild(textArea);
+    }
+  }
+
+  shareOnFacebook(): void {
+    const u = encodeURIComponent(this.getShareProfileUrl());
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}`, '_blank');
+  }
+
+  shareOnTwitter(): void {
+    const u = encodeURIComponent(this.getShareProfileUrl());
+    window.open(`https://twitter.com/intent/tweet?url=${u}`, '_blank');
   }
 }

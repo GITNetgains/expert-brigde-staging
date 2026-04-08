@@ -118,7 +118,7 @@
         </div>
         <div class="card card-border mb-3">
           <div class="card-body list-slotChunk">
-            <div class="row" *ngIf="slots.length<=6 || isShowingMoreSlots">
+            <div class="row" *ngIf="(slots?.length || 0) <= 6 || isShowingMoreSlots">
               <div class="col-md-6 col-sm-6 col-item-chunk" *ngFor="let item of slots">
                 <div class="slot-item rmb-3 mb-2">
                   <span class="sub-text me-2">{{item.startTime | date: 'dd/MM/yyyy'}}, {{item.startTime |
@@ -129,7 +129,7 @@
               </div>
             </div>
 
-            <div class="row" *ngIf="slots.length > 6 && !isShowingMoreSlots">
+            <div class="row" *ngIf="(slots?.length || 0) > 6 && !isShowingMoreSlots">
               <div class="col-md-6 col-sm-6 col-item-chunk" *ngFor="let item of slots.slice(0, 6)">
                 <div class="slot-item rmb-3 mb-2">
                   <span class="sub-text me-2">{{item.startTime | date: 'dd/MM/yyyy'}}, {{item.startTime |
@@ -140,7 +140,7 @@
               </div>
             </div>
 
-            <div *ngIf="slots.length > 6">
+            <div *ngIf="(slots?.length || 0) > 6">
               <a href="javascript:void(0)" class="morelink" (click)="isShowingMoreSlots = true"
                 *ngIf="!isShowingMoreSlots"><span translate>Read More</span>...</a>
               <a href="javascript:void(0)" class="morelink" (click)="isShowingMoreSlots = false"

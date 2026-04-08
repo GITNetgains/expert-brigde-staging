@@ -142,6 +142,7 @@ export class BookingComponent implements OnInit {
 
   public selectedCategoryId = '';
   public selectedSubjectId = '';
+  public selectedCategoryName = '';
 
   public topic: IMyTopic;
   currentUser: IUser;
@@ -669,12 +670,34 @@ export class BookingComponent implements OnInit {
   selectMyCategory() {
     this.filterMySubject.myCategoryId = this.selectedCategoryId;
     this.mySubjects = [];
+    this.selectedCategoryName = '';
     this.booking.targetId = '';
     this.selectedSubjectId = '';
     this.booking.targetId = '';
     if (this.selectedCategoryId) {
+      const selectedCategory = this.myCategories.find((item) => item._id === this.selectedCategoryId);
+      this.selectedCategoryName = selectedCategory ? selectedCategory.name : '';
+    }
+    if (this.selectedCategoryId) {
       this.queryMySubjects();
     }
+  }
+
+  getPriceUnitLabel(): string {
+    const normalizedCategoryName = (this.selectedCategoryName || '').trim().toLowerCase();
+
+    if (normalizedCategoryName.includes('survey')) {
+      return 'Per Survey';
+    }
+    if (
+      normalizedCategoryName.includes('project')
+      || normalizedCategoryName.includes('extended project')
+    ) {
+      return 'Project';
+    }
+
+    // Default for consultation-like categories such as "Short Consult".
+    return 'Hour';
   }
 
   queryMySubjects() {

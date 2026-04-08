@@ -332,6 +332,9 @@ exports.checkNotStart = async appointmentId => {
 
     const startTime = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const toTime = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
+    const expertLabel = tutor.showPublicIdOnly === true
+      ? (tutor.userId || tutor._id.toString())
+      : tutor.name;
     const data = {
       subject: `Expert did not start meeting for the session #${appointment.code}`,
       appointment: appointment.toObject(),
@@ -341,23 +344,41 @@ exports.checkNotStart = async appointmentId => {
       tutorId: tutor.userId,
       userName: user.name
     };
-    // send mail to admin
-    await Service.Mailer.send('tutor-not-start-meeting-to-admin', process.env.ADMIN_EMAIL, data);
+    // send mail to admin (raw HTML, no DB template)
+    const adminHtml = `
+      <p>Hello Admin,</p>
+      <p>${expertLabel} did not start the meeting for session #${appointment.code}.</p>
+      <p><strong>Appointment code:</strong> #${appointment.code}</p>
+      <p><strong>Expert:</strong> ${expertLabel}</p>
+      <p><strong>Client:</strong> ${user.name}</p>
+      <p><strong>Time:</strong> ${startTime} - ${toTime}</p>
+    `;
+    await Service.Mailer.sendRawNow(
+      process.env.ADMIN_EMAIL,
+      `Expert did not start meeting for the session #${appointment.code}`,
+      adminHtml,
+      null,
+      { useDefaultLayout: true }
+    );
 
     const startTimeTutor = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
     const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
 
-    const dataTutor = {
-      subject: `You did not start meeting for the session #${appointment.code}`,
-      appointment: appointment.toObject(),
-      startTime: startTimeTutor,
-      toTime: toTimeTutor,
-      userName: user.name,
-      tutorId: tutor.userId,
-      tutorName: tutor.name
-    };
-    // send mail to tutor
-    await Service.Mailer.send('tutor-not-start-meeting-to-tutor', tutor.email, dataTutor);
+    // send mail to expert (raw HTML, no DB template)
+    const expertHtml = `
+      <p>Hello ${expertLabel},</p>
+      <p>You did not start the meeting for session #${appointment.code}.</p>
+      <p><strong>Appointment code:</strong> #${appointment.code}</p>
+      <p><strong>Client:</strong> ${user.name}</p>
+      <p><strong>Time:</strong> ${startTimeTutor} - ${toTimeTutor}</p>
+    `;
+    await Service.Mailer.sendRawNow(
+      tutor.email,
+      `You did not start the meeting for session #${appointment.code}`,
+      expertHtml,
+      null,
+      { useDefaultLayout: true }
+    );
 
     appointment.status = 'not-start';
     appointment.zoomData = null;

@@ -408,7 +408,21 @@ exports.list = async (req, res, next) => {
     }
 
     if (req.query.subjectIds) {
-      query.subjectIds = { $in: req.query.subjectIds.split(',') };
+      const subjectIdList = req.query.subjectIds
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean);
+      const mySubjectTutorIds = await DB.MySubject.distinct('tutorId', {
+        originalSubjectId: { $in: subjectIdList },
+        isActive: true,
+        isDeleted: false
+      });
+      const subjectConditions = [{ subjectIds: { $in: subjectIdList } }];
+      if (mySubjectTutorIds.length) {
+        subjectConditions.push({ _id: { $in: mySubjectTutorIds } });
+      }
+      query.$and = query.$and || [];
+      query.$and.push({ $or: subjectConditions });
     }
 
     if (req.query.categoryIds) {
@@ -460,6 +474,10 @@ exports.list = async (req, res, next) => {
     }
 
     const sort = Helper.App.populateDBSort(req.query);
+    const stableSort = Object.assign({}, sort);
+    if (!Object.prototype.hasOwnProperty.call(stableSort, '_id')) {
+      stableSort._id = 1;
+    }
     const count = await DB.User.count(query);
 
     const items = await DB.User.find(query)
@@ -468,7 +486,7 @@ exports.list = async (req, res, next) => {
       .populate({ path: 'industries', select: '_id name alias' })
       .populate({ path: 'gradeItems', select: '_id name alias' })
       .populate({ path: 'experience', select: 'title organization fromYear toYear' })
-      .sort(sort)
+      .sort(stableSort)
       .skip(page * take)
       .limit(take)
       .exec();

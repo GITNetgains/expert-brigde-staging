@@ -1,6 +1,22 @@
 import { Routes } from '@angular/router';
+import { CreateOneOnOneSessionComponent } from './create/create.component';
+import { OneOnOneListComponent } from './one-on-one-list/one-on-one-list.component';
 
 export const routes: Routes = [
+  {
+    path: 'create',
+    component: CreateOneOnOneSessionComponent,
+    data: {
+      title: `Appointments / Create 1on1`,
+    },
+  },
+  {
+    path: 'list/one-on-one',
+    component: OneOnOneListComponent,
+    data: {
+      title: `Appointments / 1on1 Availability`,
+    },
+  },
   {
     path: 'list',
     loadComponent: () =>

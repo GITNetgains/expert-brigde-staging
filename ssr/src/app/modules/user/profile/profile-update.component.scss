@@ -48,26 +48,73 @@ $radius-sm: 12px;
     box-shadow: $shadow-soft;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: 1.25rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
+
+  .profile-avatar-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  .profile-avatar-column .banner-top-right-actions {
+    width: auto;
+    max-width: 100%;
+    margin-top: 0;
+    justify-content: center;
+  }
+
+  .profile-share-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .profile-share-label {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+
 /* Ensure the parent can contain absolute elements */
 .profile-card-glass {
   position: relative; /* CRITICAL */
   padding: 30px; /* Adjust based on your current padding */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-/* Positioning the container to the top right of the hero container */
+/* Share icons row (under avatar only) */
 .banner-top-right-actions {
-  position: absolute;
-  top: 15px;
-  right: 15px;
+  position: static;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: auto;
+  gap: 8px;
+  margin-top: 0;
   z-index: 100;
 }
 
@@ -75,16 +122,17 @@ $radius-sm: 12px;
 .share-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 10px 20px;
-  border-radius: $radius;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
   color: white;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -123,9 +171,9 @@ $radius-sm: 12px;
 
 /* Social Circles */
 .social-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px; /* Matching the card radius style */
+  width: 40px;
+  height: 40px;
+  border-radius: 10px; /* Matching the card radius style */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -160,22 +208,7 @@ $radius-sm: 12px;
 /* Tablet / Mobile tweaks */
 @media (max-width: 991px) {
   .banner-top-right-actions {
-    position: static;
-    margin-bottom: 2rem;
-    justify-content: center;
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .share-pill span {
-    display: none; /* Icon only on small mobile to save space */
-  }
-  .share-pill {
-    padding: 10px;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
+    margin-top: 0.35rem;
     justify-content: center;
   }
 }
@@ -236,6 +269,12 @@ $radius-sm: 12px;
   .profile-meta {
     flex: 1;
     min-width: 0;
+    max-width: 100%;
+  }
+
+  .profile-meta .d-flex.align-items-center {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
   }
 
   .profile-name {
@@ -439,6 +478,25 @@ $radius-sm: 12px;
   }
 }
 
+.public-id-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h6 {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .switch {
+    flex-shrink: 0;
+    margin: 0;
+  }
+}
+
 // Right column cards (password, description, skills, etc.)
 .profile-settings-page .glass-card {
   .list-grades .badge {
@@ -531,11 +589,25 @@ $radius-sm: 12px;
 @media (max-width: 991px) {
   .profile-settings-page .profile-hero .profile-card-glass {
     flex-direction: column;
+    align-items: center;
     text-align: center;
+    gap: 1.25rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .profile-settings-page .profile-hero .profile-avatar-column {
+    align-self: center;
+    width: 100%;
   }
 
   .profile-settings-page .profile-hero .profile-meta {
     text-align: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .profile-settings-page .profile-hero .profile-meta .d-flex.align-items-center {
+    justify-content: center;
   }
 
   .edit-profile-form-glass .item-profile-form {
@@ -558,7 +630,8 @@ $radius-sm: 12px;
   }
 
   .profile-settings-page .profile-hero .profile-card-glass {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 0.875rem;
+    gap: 1rem;
   }
 
   .profile-settings-page .profile-hero .profile-avatar-wrap img {
@@ -566,8 +639,13 @@ $radius-sm: 12px;
     height: 80px;
   }
 
+  .profile-settings-page .profile-hero .profile-share-label {
+    font-size: 0.65rem;
+  }
+
   .profile-settings-page .profile-hero .profile-name {
     font-size: 1.25rem;
+    word-break: break-word;
   }
 
   .profile-settings-page .profile-content {
@@ -586,6 +664,68 @@ $radius-sm: 12px;
     button {
       width: 100%;
     }
+  }
+
+  /* Ensure label/value rows stay aligned in view mode on small screens */
+  .edit-profile-form-glass .item-profile-form,
+  .edit-profile-form-glass .item-profile-form.d-flex {
+    display: block !important;
+    text-align: left;
+    padding: 0.85rem 0;
+  }
+
+  .edit-profile-form-glass .item-profile-form h6 {
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  .edit-profile-form-glass .item-profile-form p.text-secondary2 {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .public-id-toggle-row {
+    align-items: flex-start;
+  }
+
+  .public-id-toggle-row h6 {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .profile-settings-page .profile-hero .share-pill,
+  .profile-settings-page .profile-hero .social-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-settings-page .profile-hero .share-pill i {
+    font-size: 1rem;
+  }
+
+  .profile-settings-page .profile-hero .social-circle {
+    font-size: 1.1rem;
+  }
+
+  .profile-settings-page .profile-hero .banner-top-right-actions {
+    gap: 6px;
+  }
+
+  .edit-profile-form-glass .item-profile-form h6 {
+    font-size: 0.95rem;
+  }
+
+  .edit-profile-form-glass .item-profile-form p.text-secondary2 {
+    font-size: 1.08rem;
+  }
+
+  .public-id-toggle-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
 

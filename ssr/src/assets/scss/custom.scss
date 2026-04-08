@@ -2823,6 +2823,135 @@ input:checked + .slider {
     margin-bottom: 0.25rem;
   }
 
+  .expert-profile-card {
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .profile-name {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      line-height: 1.3;
+      margin-bottom: 0.45rem;
+      color: #1b2636;
+    }
+
+    .profile-rating-list {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      color: #6c7581;
+      font-size: 0.9rem;
+    }
+
+    .profile-rating-value {
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .profile-location {
+      display: flex;
+      align-items: center;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      padding: 0.85rem 0;
+      margin: 0.95rem 0 1.1rem;
+    }
+
+    .profile-actions {
+      margin-top: 0.25rem;
+    }
+
+    .profile-info .btn.btn-default,
+    .profile-info app-send-message-btn .btn {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-back-btn {
+      width: 100%;
+      margin-top: 1rem !important;
+      border: 1px solid #e8eaef;
+      border-radius: 10px;
+      color: #344054;
+      background: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.7rem 0.8rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #d9dde5;
+        background: #fff;
+        color: #1f2a37;
+      }
+    }
+
+    .share-pill {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      padding: 0 !important;
+      border-radius: 10px !important;
+      background: #fff !important;
+      border: 1px solid #e8eaef !important;
+      color: #1f2a37 !important;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06) !important;
+      justify-content: center !important;
+    }
+
+    .share-pill span {
+      display: none !important;
+    }
+
+    .social-circle {
+      border-radius: 10px !important;
+      border-color: #e8eaef !important;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06) !important;
+    }
+  }
+  
+
+  .booking-profile-card {
+    .profile-img img,
+    .profile-img .avatar-placeholder {
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .profile-info .btn.btn-default,
+    .profile-info app-send-message-btn .btn {
+      width: 100%;
+      border-radius: 10px;
+      font-weight: 700;
+      min-height: 44px;
+    }
+
+    .banner-top-right-actions {
+      gap: 10px !important;
+      margin-top: 0.5rem;
+    }
+
+    .social-circle {
+      border-radius: 999px !important;
+      width: 40px !important;
+      height: 40px !important;
+      border-color: #e8eaef !important;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06) !important;
+    }
+  }
+
   .rating-stars {
     margin: 0.5rem 0 0.75rem;
   }
@@ -2877,6 +3006,59 @@ input:checked + .slider {
 
   .card-body .tutor-features + .tutor-info-m .item-tutor-info:first-child {
     margin-top: 0.5rem;
+  }
+
+  .step-to-booking {
+    .col-md-4 {
+      margin-bottom: 0.75rem;
+    }
+
+    .booking-step-col {
+      h5 {
+        margin-bottom: 0.8rem;
+      }
+    }
+
+    .booking-step-control {
+      height: 56px;
+      border-radius: 8px;
+    }
+
+    .booking-step-col .form-select.booking-step-control {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .booking-price-panel {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .booking-unit-label {
+      display: block;
+      min-height: 0;
+      line-height: 1.25;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #475467;
+    }
+
+    .booking-price-panel .slot-btn {
+      width: 100%;
+      min-width: 0;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .booking-price-value {
+      font-size: 1rem;
+    }
   }
 
   .card-header {

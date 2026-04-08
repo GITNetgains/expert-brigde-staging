@@ -1,9 +1,9 @@
-<p>Hello {{tutor.name}},</p>
+<p>Hello {% if tutor.showPublicIdOnly %}Expert (ID: {{ tutor.userId }}){% else %}{{ tutor.name }}{% endif %},</p>
 
-<p>Your appointment #{{webinar.name}} has been completed.</p>
+<p>Your group session &ldquo;{{ webinar.name }}&rdquo; has been completed.</p>
 
-<p><strong>Appointment: </strong> #{{webinar.name}}</p>
-<p><strong>Time: </strong> {{startTime}} - {{toTime}} <br /></p>
+<p><strong>Session:</strong> {{ webinar.name }}</p>
+<p><strong>Time:</strong> {{ startTime }} &ndash; {{ toTime }}<br /></p>
 <!-- <p>
-  <a href="{{reviewLink}}">{{reviewLink}}</a>
+  <a href="{{ reviewLink }}">{{ reviewLink }}</a>
 </p> -->

@@ -11,11 +11,12 @@ export interface ISchedule {
   _id: string;
   startTime: Date;
   toTime: Date;
-  tutorId: string;
+  tutorId: any;
   disabled: boolean;
   type: string;
   booked: boolean;
   webinarName?: string;
   isFree?: boolean;
   webinarId?: string;
+  hashWebinar?: string;
 }

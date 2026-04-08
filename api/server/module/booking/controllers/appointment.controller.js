@@ -4,6 +4,7 @@ const _ = require('lodash');
 const momentTimeZone = require('moment-timezone');
 
 const enrollQ = require('../../webinar/queue');
+const { tutorEmailLabel } = require('../../../kernel/helpers/tutor-email-label');
 
 exports.list = async (req, res, next) => {
   try {
@@ -339,6 +340,7 @@ exports.uploadDocument = async (req, res, next) => {
             subject: 'New material uploaded',
             user: user.getPublicProfile(),
             tutor: tutor.getPublicProfile(),
+            tutorEmailLabel: tutorEmailLabel(tutor),
             title: 'New Material Uploaded!',
             appointment: req.appointment.toObject(),
             startTime: startTimeUser,

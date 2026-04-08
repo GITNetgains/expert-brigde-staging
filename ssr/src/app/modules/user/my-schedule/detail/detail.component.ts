@@ -26,7 +26,8 @@ export class ScheduleDetailComponent implements OnInit {
   public hasReview: boolean;
   public reviewOptions: any = {
     appointmentId: '',
-    type: 'subject',
+    type: '',
+    webinarId: '',
     rateTo: '',
     rateBy: ''
   };
@@ -122,6 +123,11 @@ export class ScheduleDetailComponent implements OnInit {
           this.isShowRefundButton = true;
         }
         this.reviewOptions.appointmentId = this.appointment._id;
+        this.reviewOptions.type = this.appointment.targetType || 'subject';
+        this.reviewOptions.webinarId =
+          this.appointment.targetType === 'webinar' && this.appointment.webinarId
+            ? this.appointment.webinarId
+            : '';
         this.reviewOptions.rateTo = this.appointment.user._id;
         this.reviewOptions.rateBy = this.appointment.tutor._id;
         this.loading = false;

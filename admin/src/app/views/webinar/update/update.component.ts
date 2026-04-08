@@ -192,14 +192,24 @@ export class UpdateWebinarComponent implements OnInit {
   };
   ngOnInit(): void {
     this.webinarId = this.route.snapshot.paramMap.get('id');
+    if (!this.webinarId) {
+      this.utilService.toastError({
+        title: 'Error',
+        message: 'Invalid group session id.'
+      });
+      this.router.navigate(['/webinar/list']);
+      return;
+    }
     this.webinarService.findOne(this.webinarId).subscribe((resp) => {
-      this.medias = resp.data.media;
-      this.mainImageUrl = resp.data.mainImage.fileUrl;
-      // console.log(this.medias);
+      const data = resp?.data || {};
+      this.medias = data.media || [];
+      this.mainImageUrl = data?.mainImage?.thumbUrl || data?.mainImage?.fileUrl || '';
 
-      this.tutorId = resp.data.tutorId;
-      this.calendarPayload.tutorId = resp.data.tutorId;
+      const tutorId = typeof data.tutorId === 'string' ? data.tutorId : data?.tutorId?._id;
+      this.tutorId = tutorId || '';
+      this.calendarPayload.tutorId = tutorId || '';
       this.calendarPayload.webinarId = this.webinarId;
+      this.calendarPayload.type = 'webinar';
       this.webinar = pick(resp.data, [
         'name',
         'maximumStrength',
@@ -215,12 +225,35 @@ export class UpdateWebinarComponent implements OnInit {
         'subjectIds',
         'topicIds',
       ]);
+      this.webinar.tutorId = tutorId || '';
+      this.webinar.categoryIds = (this.webinar.categoryIds || []).map((item: any) =>
+        typeof item === 'string' ? item : item?.originalCategoryId || item?._id || item?.id
+      ).filter(Boolean);
+      this.webinar.subjectIds = (this.webinar.subjectIds || []).map((item: any) =>
+        typeof item === 'string' ? item : item?.originalSubjectId || item?._id || item?.id
+      ).filter(Boolean);
+      this.webinar.topicIds = (this.webinar.topicIds || []).map((item: any) =>
+        typeof item === 'string' ? item : item?.originalTopicId || item?._id || item?.id
+      ).filter(Boolean);
       this.webinar.isFree = false;
       this.queryMyCategory();
       this.setupFileUpload();
     });
   }
   setupFileUpload() {}
+
+  selectTutor(tutorId: string) {
+    if (!tutorId) return;
+    this.webinar.tutorId = tutorId;
+    this.calendarPayload.tutorId = tutorId;
+    this.myCategories = [];
+    this.mySubjects = [];
+    this.myTopics = [];
+    this.webinar.categoryIds = [];
+    this.webinar.subjectIds = [];
+    this.webinar.topicIds = [];
+    this.queryMyCategory();
+  }
 
   submit(event: any): void {
     this.customStylesValidated = true;

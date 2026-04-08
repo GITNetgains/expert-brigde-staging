@@ -134,20 +134,35 @@ export const navItems: INavData[] = [
     ],
   },
   {
-    name: 'Group Sessions',
+    name: 'Sessions',
     iconComponent: { name: 'cil-book' },
     children: [
       {
-        name: 'Group Sessions',
+        name: '1on1 Session',
+        url: '/appointment',
+        icon: 'nav-icon-bullet',
+        children: [
+          {
+            name: 'All 1on1 Session',
+            url: '/appointment/list/one-on-one',
+          },
+          {
+            name: 'Create New 1on1 Session',
+            url: '/appointment/create',
+          },
+        ],
+      },
+      {
+        name: 'Group Session',
         url: '/webinar',
         icon: 'nav-icon-bullet',
         children: [
           {
-            name: 'All Group Sessions',
+            name: 'All Group Session',
             url: '/webinar/list',
           },
           {
-            name: 'Create new',
+            name: 'Create New Group Session',
             url: '/webinar/create',
           },
         ],

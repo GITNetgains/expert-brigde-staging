@@ -135,7 +135,7 @@ exports.list = async (req, res, next) => {
     //   query.type = 'webinar';
     // }
 
-    if (!query.tutorId && query.type === 'subject') {
+    if (!query.tutorId && query.type === 'subject' && req.user.role !== 'admin') {
       query.tutorId = req.user._id;
       return next(
         PopulateResponse.error({
@@ -168,6 +168,7 @@ exports.list = async (req, res, next) => {
 
     const count = await DB.Schedule.count(query);
     let items = await DB.Schedule.find(query, { meta: 0, hashWebinar: 0 })
+      .populate('tutorId', 'name userId')
       .sort(sort)
       .skip(page * take)
       .limit(take)
@@ -190,8 +191,9 @@ exports.list = async (req, res, next) => {
             data.booked = true;
           }
         } else if (item.type === 'subject') {
+          const tutorId = item.tutorId && item.tutorId._id ? item.tutorId._id : item.tutorId;
           const overlappingAppointments = await DB.Appointment.find({
-            tutorId: query.tutorId,
+            tutorId,
             targetType: { $ne: 'webinar' },
             status: { $in: ['progressing', 'booked', 'pending', 'completed'] },
             paid: true,

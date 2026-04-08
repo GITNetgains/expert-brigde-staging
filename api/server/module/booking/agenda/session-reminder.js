@@ -1,5 +1,73 @@
 const moment = require('moment');
 const date = require('../../date');
+const { PLATFORM_ONLINE } = require('../../meeting');
+
+async function ensureZoomDataForReminder(appointment, tutor) {
+  if (!appointment || appointment.zoomData) return appointment;
+
+  const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
+  if (!isZoomPlatform) return appointment;
+
+  // For webinar/group sessions, reuse one Zoom room for all appointments in the same slot.
+  if (appointment.targetType === 'webinar' && appointment.slotId) {
+    const siblingWithZoom = await DB.Appointment.findOne({
+      _id: { $ne: appointment._id },
+      slotId: appointment.slotId,
+      zoomData: { $exists: true, $ne: null }
+    });
+
+    if (siblingWithZoom && siblingWithZoom.zoomData && siblingWithZoom.meetingId) {
+      appointment.zoomData = siblingWithZoom.zoomData;
+      appointment.meetingId = siblingWithZoom.meetingId;
+      appointment.platform = PLATFORM_ONLINE.ZOOM_US;
+      await appointment.save();
+      return appointment;
+    }
+  }
+
+  const tutorDisplayName = tutor.showPublicIdOnly === true
+    ? (tutor.userId || tutor._id.toString())
+    : tutor.name;
+  const durationMinutes = Math.max(
+    1,
+    Math.ceil((new Date(appointment.toTime) - new Date(appointment.startTime)) / (1000 * 60))
+  );
+  const zoomData = await Service.ZoomUs.createMeeting({
+    appointmentId: appointment._id,
+    topic: appointment.description || `${tutorDisplayName}'s Tutoring Session`,
+    startTime: appointment.startTime.toISOString(),
+    duration: durationMinutes,
+    timezone: 'Asia/Calcutta'
+  });
+
+  if (zoomData && zoomData.join_url) {
+    appointment.zoomData = zoomData;
+    appointment.meetingId = zoomData.id;
+    appointment.platform = PLATFORM_ONLINE.ZOOM_US;
+    await appointment.save();
+
+    if (appointment.targetType === 'webinar' && appointment.slotId) {
+      await DB.Appointment.update(
+        {
+          _id: { $ne: appointment._id },
+          slotId: appointment.slotId,
+          status: { $in: ['pending', 'booked'] },
+          paid: true
+        },
+        {
+          $set: {
+            zoomData,
+            meetingId: zoomData.id,
+            platform: PLATFORM_ONLINE.ZOOM_US
+          }
+        },
+        { multi: true }
+      );
+    }
+  }
+
+  return appointment;
+}
 
 /**
  * Session Reminder — 10 minutes before start
@@ -56,6 +124,8 @@ module.exports = async (job, done) => {
             await DB.Appointment.update({ _id: appointment._id }, { $set: updateFlag });
             return;
           }
+
+          await ensureZoomDataForReminder(appointment, tutor);
 
           const startTimeTutor = date.formatDate(appointment.startTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');
           const toTimeTutor = date.formatDate(appointment.toTime, 'DD/MM/YYYY HH:mm', tutor.timezone || '');

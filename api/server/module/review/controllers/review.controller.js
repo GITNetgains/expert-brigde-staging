@@ -6,12 +6,22 @@ exports.findOne = async (req, res, next) => {
     const review = await DB.Review.findOne({ _id: req.params.reviewId })
       .populate({ path: 'rater', select: '_id name username avatar avatarUrl email notificationSettings' })
       .populate({ path: 'rater', select: '_id name username avatar avatarUrl email notificationSettings' })
-      .populate({ path: 'tutor', select: '_id name username avatar avatarUrl ' })
+      .populate({ path: 'tutor', select: '_id name username avatar avatarUrl showPublicIdOnly userId type' })
       .populate({ path: 'webinar', select: '_id name' })
       .populate({ path: 'course', select: '_id name' })
       .populate({ path: 'appointment', populate: { path: 'subject', select: '_id name' } });
     if (!review) {
       return res.status(404).send(PopulateResponse.notFound());
+    }
+
+    // Hidden: visible to admins and to the author (for edit); hidden from everyone else
+    if (review.hidden) {
+      const isAdmin = req.user && req.user.role === 'admin';
+      const isAuthor =
+        req.user && review.rateBy && req.user._id.toString() === review.rateBy.toString();
+      if (!isAdmin && !isAuthor) {
+        return res.status(404).send(PopulateResponse.notFound());
+      }
     }
 
     req.review = review;
@@ -148,6 +158,12 @@ exports.list = async (req, res, next) => {
       equal: ['webinarId', 'rateBy', 'type', 'rateTo', 'appointmentId', 'courseId']
     });
 
+    // Appointment-scoped lists: do not filter by type — legacy rows may have empty/wrong type
+    // while appointmentId + rateTo/rateBy already identify the review.
+    if (query.appointmentId) {
+      delete query.type;
+    }
+
     // Non-admin (and unauthenticated) only see non-hidden reviews; admin sees all
     if (!req.user || req.user.role !== 'admin') {
       query.hidden = { $ne: true };
@@ -176,15 +192,17 @@ exports.list = async (req, res, next) => {
 
 exports.getMyCurrentReview = async (req, res, next) => {
   try {
-    // const query = {
-    //   rateBy: req.user._id
-    // };
     const query = {};
     query.appointmentId = req.params.itemId;
     if (req.query.rateBy) query.rateBy = req.query.rateBy;
     if (req.query.rateTo) query.rateTo = req.query.rateTo;
     const review = await DB.Review.findOne(query).populate('rater');
-    res.locals.review = review;
+    // Hidden reviews must not appear for non-admins (moderated content)
+    if (review && review.hidden && (!req.user || req.user.role !== 'admin')) {
+      res.locals.review = null;
+    } else {
+      res.locals.review = review;
+    }
     next();
   } catch (e) {
     next(e);

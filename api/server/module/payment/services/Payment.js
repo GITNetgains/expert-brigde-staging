@@ -1,11 +1,54 @@
 const url = require('url');
 const Razorpay = require('razorpay');
 const enrollQ = require('../../webinar/queue');
+const { PLATFORM_ONLINE } = require('../../meeting');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
+
+async function getGiftJoinLink(transaction, target, tutor) {
+  try {
+    if (!transaction || transaction.targetType !== 'webinar' || !target) return '';
+    const slot = await DB.Schedule.findOne({
+      webinarId: target._id,
+      status: { $in: ['scheduled', 'pending'] },
+      startTime: { $gte: new Date() }
+    }).sort({ startTime: 1 });
+    if (!slot) return '';
+
+    if (slot.zoomData && slot.zoomData.join_url) return slot.zoomData.join_url;
+
+    const isZoomPlatform = await Service.Meeting.isPlatform(PLATFORM_ONLINE.ZOOM_US);
+    if (!isZoomPlatform) return '';
+
+    const durationMinutes = Math.max(
+      1,
+      Math.ceil((new Date(slot.toTime) - new Date(slot.startTime)) / (1000 * 60))
+    );
+    const zoomData = await Service.ZoomUs.createMeeting({
+      appointmentId: slot._id,
+      topic: target.name || 'ExpertBridge Group Session',
+      startTime: slot.startTime.toISOString(),
+      duration: durationMinutes,
+      timezone: 'UTC'
+    });
+    if (!zoomData || !zoomData.join_url) return '';
+
+    slot.zoomData = zoomData;
+    await slot.save();
+    await DB.Appointment.update(
+      { slotId: slot._id, status: { $in: ['booked', 'pending'] }, paid: true },
+      { $set: { zoomData, meetingId: zoomData.id, platform: PLATFORM_ONLINE.ZOOM_US } },
+      { multi: true }
+    );
+    return zoomData.join_url;
+  } catch (e) {
+    console.warn('[Payment.js] Failed to build gift join link:', e.message);
+    return '';
+  }
+}
 
 // Commission settings cache -- source of truth is PostgreSQL via Credit Service API
 let _commissionCache = null;
@@ -589,18 +632,45 @@ exports.updatePayment = async transactionId => {
     await enrollQ.createMyCourse(transaction);
   }
 
-  // 🎁 Gift logic (unchanged)
+  // 🎁 Gift logic (raw HTML only; do not use DB templates)
   if (type === 'gift') {
-    await Service.Mailer.send('send-gift', emailRecipient, {
-      subject: `${user.name} gave you a gift`,
-      user: user.getPublicProfile(),
-      tutor: tutor.getPublicProfile(),
-      transaction: transaction.toObject(),
-      signupLink: url.resolve(
-        process.env.userWebUrl,
-        '/auth/signup'
-      ),
-      appName: process.env.APP_NAME
+    const signupLink = url.resolve(process.env.userWebUrl, '/auth/signup');
+    const targetLabel = targetType === 'webinar'
+      ? `group session "${(target && target.name) || ''}"`
+      : targetType === 'course'
+        ? `course "${(target && target.name) || ''}"`
+        : 'session';
+    const joinUrl = await getGiftJoinLink(transaction, target, tutor);
+    const tutorLabel = tutor && tutor.showPublicIdOnly
+      ? (tutor.userId || tutor._id.toString())
+      : (tutor && tutor.name) || '';
+    const body = `
+      <p style="margin:0 0 14px;">Hello ${emailRecipient},</p>
+      <p style="margin:0 0 14px;">${user.name} has booked a gifted ${targetLabel} for you.</p>
+      <p style="margin:0 0 14px;">Please be on time. You will receive reminder emails at 60 minutes and 10 minutes before the session.</p>
+      <p style="margin:0 0 8px;"><strong>Expert:</strong> ${tutorLabel}</p>
+      <p style="margin:0 0 16px;"><strong>Code:</strong> ${transaction.code}</p>
+      ${joinUrl ? `
+      <p style="margin:16px 0;">
+        <a href="${joinUrl}" style="display:inline-block;background:#2D89EF;color:#ffffff;padding:11px 18px;text-decoration:none;border-radius:6px;font-weight:700;">
+          Join Zoom Meeting
+        </a>
+      </p>
+      <p style="margin:0 0 14px;font-size:13px;color:#555;">If button does not work, use this link: ${joinUrl}</p>
+      ` : ''}
+      <p style="margin:0;">If you do not have an account yet, sign up here: <a href="${signupLink}">${signupLink}</a></p>
+    `;
+    const html = body;
+    await Service.Mailer.sendRawNow(
+      emailRecipient,
+      `${user.name} booked a gifted session for you`,
+      html,
+      null,
+      { useDefaultLayout: true }
+    );
+    console.log('[GiftMailRaw] Sent payment gift email', {
+      to: emailRecipient,
+      transactionId: transaction._id.toString()
     });
   }
 

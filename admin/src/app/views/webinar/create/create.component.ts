@@ -78,7 +78,7 @@ export class CreateWebinarComponent implements OnInit {
     topicIds: [],
   };
   public calendarPayload: ICalendarPayload = {
-    type: '',
+    type: 'webinar',
     tutorId: '',
     webinarId: '',
     hashWebinar: '',
@@ -183,12 +183,16 @@ export class CreateWebinarComponent implements OnInit {
         this.tutor = resp.data.items;
       },
     });
-    this.hashWebinar = localStorage.getItem('hast_webinar');
-    this.calendarPayload.hashWebinar = this.hashWebinar;
-    if (!this.hashWebinar) {
-      this.hashWebinar = randomHash(32, '');
-      localStorage.setItem('hast_webinar', this.hashWebinar);
+    const previousHash = localStorage.getItem('hast_webinar');
+    if (previousHash) {
+      this.calendarService.deleteByHash(previousHash).subscribe({
+        error: () => {}
+      });
+      localStorage.removeItem('hast_webinar');
     }
+    this.hashWebinar = randomHash(32, '');
+    localStorage.setItem('hast_webinar', this.hashWebinar);
+    this.calendarPayload.hashWebinar = this.hashWebinar;
   }
   removeMedia(media: any, i: any) {
     this.medias = this.medias.filter((item: any) => item._id !== media._id);

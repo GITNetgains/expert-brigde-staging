@@ -32,8 +32,8 @@ export class DetailWebinarComponent implements OnInit {
   public webinarParam: string;
   public webinarId: String = '';
   public webinar: IWebinar;
-  public slots: IMylesson[];
-  public slotChunks: IMylesson[][];
+  public slots: IMylesson[] = [];
+  public slotChunks: IMylesson[][] = [];
   public isShowingMoreSlots = false;
   public emailRecipient: any = '';
   public canBooking = false;

@@ -4,6 +4,7 @@ const _ = require('lodash');
 const availableTimeWebinarQ = require('../available-time-queue');
 const availableTimeTutorQ = require('../../tutor/available-time-queue');
 const { PLATFORM_ONLINE } = require('../../meeting');
+const { tutorEmailLabel } = require('../../../kernel/helpers/tutor-email-label');
 
 const validateSchema = Joi.object().keys({
   name: Joi.string().required(),
@@ -121,6 +122,24 @@ exports.list = async (req, res, next) => {
       const tutorIds = req.query.tutorIds.split(',').filter(Boolean);
       if (tutorIds.length) {
         query.tutorId = { $in: tutorIds };
+      }
+    }
+    const tutorUserIdParam = req.query.tutorUserId;
+    const tutorUserIdRaw = Array.isArray(tutorUserIdParam)
+      ? String(tutorUserIdParam[0] || '').trim()
+      : String(tutorUserIdParam || '').trim();
+    if (tutorUserIdRaw) {
+      const escaped = tutorUserIdRaw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Public Expert ID is unique; do not require type:'tutor' (some records differ)
+      const tutorsByUid = await DB.User.find({
+        userId: { $regex: escaped, $options: 'i' }
+      })
+        .select('_id')
+        .lean();
+      if (tutorsByUid.length) {
+        query.tutorId = { $in: tutorsByUid.map(t => t._id) };
+      } else {
+        query.tutorId = { $in: [] };
       }
     }
     if (req.query.categoryIds) {
@@ -567,6 +586,7 @@ exports.uploadDocument = async (req, res, next) => {
             subject: 'New groupclass material uploaded',
             user: user.getPublicProfile(),
             tutor: tutor.getPublicProfile(),
+            tutorEmailLabel: tutorEmailLabel(tutor),
             title: 'New Material Uploaded!',
             webinar: req.webinar.toObject()
           });

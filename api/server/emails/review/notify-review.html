@@ -1,9 +1,8 @@
-<p>Hello {% if type === 'student' %} {{user.name}} {% endif %} {% if type === 'tutor' %} {{tutor.name}} {% endif %} ,
-</p>
+<p>Hello {% if type == 'student' %}{{ user.name }}{% elseif type == 'tutor' %}{{ tutor.name }}{% else %}{{ user.name }}{% endif %},</p>
 
-<p>Your appointment #{{appointment.code}} has been completed.</p>
+<p>Your session (appointment #{{ appointment.code }}) has been completed.</p>
 
-<p><strong>Appointment: </strong> #{{appointment.code}}</p>
+<p><strong>Appointment:</strong> #{{ appointment.code }}</p>
 <p>
-  <a href="{{reviewLink}}">{{reviewLink}}</a>
+  <a href="{{ reviewLink }}">{{ reviewLink }}</a>
 </p>

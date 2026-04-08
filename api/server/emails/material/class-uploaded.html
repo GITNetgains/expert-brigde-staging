@@ -1,11 +1,7 @@
 <p>Hello {{user.name}},</p>
-<br />
-<p>Your expert {% if tutor.showPublicIdOnly %}Expert (ID: {{ tutor.userId }}){% else %}{{tutor.name}}{% endif %} has uploaded new material for your session {{appointment.code}} {{startTime}} - {{toTime}}
-</p>
-<p>Please sign in to your client dashboard to view the new materials</p>
+<p>Your expert {{ tutorEmailLabel }} has uploaded new material for your session {{appointment.code}} {{startTime}} - {{toTime}}</p>
+<p>Please sign in to your client dashboard to view the new materials.</p>
 <p>
-  <br />
-  <br />
   <a target="_blank" style="
       display: inline-block;
       color: #ffffff;

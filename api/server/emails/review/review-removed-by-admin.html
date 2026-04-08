@@ -1,14 +1,13 @@
-<p>Hello {{review.rater.name}},</p>
+<p>Hello {{ review.rater.name }},</p>
 
 <p>
-  We are sorry your review to {% if review.type === 'webinar' && review.webinar %} the session "{{ review.webinar.name }}"
-  {% endif %} {% if review.type
-  === 'course' && review.course %} the course "{{ review.course.name }}" {% endif %} {% if review.type === 'subject' &&
+  We are sorry your review {% if review.type === 'webinar' && review.webinar %} for the session &ldquo;{{ review.webinar.name }}&rdquo;
+  {% endif %} {% if review.type === 'course' && review.course %} for the course &ldquo;{{ review.course.name }}&rdquo; {% endif %} {% if review.type === 'subject' &&
   review.appointment &&
-  review.tutor %} the appointment with the expert {{ review.tutor.name }} {% endif %} has been removed by admin.
+  review.tutor %} for the appointment with the expert {% if review.tutor.type === 'tutor' && review.tutor.showPublicIdOnly %}Expert (ID: {{ review.tutor.userId }}){% else %}{{ review.tutor.name }}{% endif %} {% endif %} has been removed by an administrator.
 </p>
 
 <p>
-  <strong>Rate:</strong> {{review.rating}} <br />
-  <strong>Comment:</strong> {{review.comment}}
+  <strong>Rate:</strong> {{ review.rating }} <br />
+  <strong>Comment:</strong> {{ review.comment }}
 </p>

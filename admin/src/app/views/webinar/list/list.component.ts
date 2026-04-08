@@ -78,6 +78,7 @@ export class WebinarListComponent implements OnInit {
   public courseList: any[] = [];
   public tutorList: any[] = [];
   public tutorId: string | null = null;
+  public tutorUserId = '';
   loading = false;
 
   constructor(
@@ -89,8 +90,13 @@ export class WebinarListComponent implements OnInit {
     private tutorService: TutorService
   ) {
     this.route.queryParams.subscribe((params) => {
-      const page = params['page'] ? parseInt(params['page']) : 1;
+      const page = params['page'] ? parseInt(params['page'], 10) : 1;
       this.currentPage = !isNaN(page) ? page : 1;
+      if (Object.prototype.hasOwnProperty.call(params, 'tutorUserId')) {
+        const v = params['tutorUserId'];
+        this.tutorUserId =
+          v === null || v === undefined || v === '' ? '' : String(v);
+      }
       this.query();
     });
   }
@@ -122,9 +128,12 @@ export class WebinarListComponent implements OnInit {
     // Use replaceUrl to avoid adding unnecessary history entries
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: 1 },
+      queryParams: {
+        page: 1,
+        tutorUserId: (this.tutorUserId || '').trim() || null,
+      },
       queryParamsHandling: 'merge',
-      replaceUrl: true
+      replaceUrl: true,
     });
   }
 
@@ -156,12 +165,15 @@ export class WebinarListComponent implements OnInit {
     const params = Object.assign(
       {
         page: this.currentPage,
-        pageSize: this.pageSize,
+        take: this.pageSize,
         sort: `${this.sortOption.sortBy}`,
         sortType: `${this.sortOption.sortType}`,
       },
       this.searchFields
     );
+    if (this.tutorUserId && this.tutorUserId.trim()) {
+      params['tutorUserId'] = this.tutorUserId.trim();
+    }
     if (this.categoryId) {
       params.categoryIds = this.categoryId.toString();
     }

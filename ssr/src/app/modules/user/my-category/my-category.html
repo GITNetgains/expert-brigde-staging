@@ -1,14 +1,17 @@
-<section class="sm-padding">
-  <div class="container-fluid px-4">
-    <div class="row mb-3">
+<section class="sm-padding my-category-page">
+  <div class="container-fluid page-shell">
+    <div class="row page-header-row">
       <div class="col-12">
-        <h2 class="page-title">Services and Pricing</h2>
+        <div class="page-title-wrap">
+          <h2 class="page-title pt-3">Services and Pricing</h2>
+          
+        </div>
       </div>
     </div>
-    <div class="row my-category-layout g-4">
+    <div class="row my-category-layout g-2 align-items-start">
       
       <div class="col-12 col-xl-6">
-        <div class="card custom-card animate-card delay-1">
+        <div class="card custom-card">
           <div class="custom-card-header">
             <h4>Categories</h4>
             <button type="button" class="btn btn-add" (click)="submitCategory()">
@@ -17,21 +20,27 @@
           </div>
           
           <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle table-services">
               <thead>
                 <tr>
-                  <th (click)="sortBy('category', 'name', 'asc')" class="cursor-pointer">Name</th>
-                  <th class="text-end">Actions</th>
+                  <th (click)="sortBy('category', 'name', 'asc')" class="th-sortable th-name">
+                    <span class="th-label">Name</span>
+                    <span class="th-sort" aria-hidden="true">
+                      <i class="fi fi-rr-arrow-up"></i>
+                      <i class="fi fi-rr-arrow-down"></i>
+                    </span>
+                  </th>
+                  <th class="text-end th-action">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let item of myCategories; let i = index" 
                     [class.highlight]="selectedCategory?._id === item._id">
-                  <td class="fw-medium">{{item?.name}}</td>
-                  <td>
+                  <td class="td-name">{{item?.name}}</td>
+                  <td class="td-actions">
                     <div class="action-cell">
-                      <button (click)="selectMyCategory(item)" class="btn btn-list-action">
-                        Manage Subcategories
+                      <button (click)="selectMyCategory(item)" class="btn btn-list-action text-white" type="button">
+                        List Subcategories
                       </button>
                       
                       <button (click)="changeStatus('category',item)" 
@@ -52,7 +61,7 @@
       </div>
 
       <div class="col-12 col-xl-6">
-        <div class="card custom-card animate-card delay-2">
+        <div class="card custom-card">
           <div class="custom-card-header">
             <h4>Subcategories</h4>
             <button *ngIf="selectedCategory" type="button" class="btn btn-add" (click)="submitSubject()">
@@ -61,25 +70,31 @@
           </div>
           
           <div class="table-responsive">
-            <div *ngIf="!selectedCategory" class="py-5 text-center">
+            <div *ngIf="!selectedCategory" class="empty-subcategories text-center">
               <p class="text-muted mb-0">Select a category from the left to view subjects.</p>
             </div>
 
-            <table class="table align-middle" *ngIf="selectedCategory">
+            <table class="table align-middle table-services" *ngIf="selectedCategory">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th class="text-end">Actions</th>
+                  <th (click)="sortBy('subject', 'name', 'asc')" class="th-sortable th-name">
+                    <span class="th-label">Name</span>
+                    <span class="th-sort" aria-hidden="true">
+                      <i class="fi fi-rr-arrow-up"></i>
+                      <i class="fi fi-rr-arrow-down"></i>
+                    </span>
+                  </th>
+                  <th class="th-price">Price ({{ currencySymbol }})</th>
+                  <th class="text-end th-action">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let item of mySubjects; let i = index">
-                  <td class="fw-medium">{{item?.name}}</td>
-                  <td><span class="badge bg-light text-dark">{{item?.price | appCurrency}}</span></td>
-                  <td>
+                  <td class="td-name">{{item?.name}}</td>
+                  <td class="td-price"><span class="price-value">{{item?.price | appCurrency}}</span></td>
+                  <td class="td-actions">
                     <div class="action-cell">
-                      <button (click)="submitSubject(item)" class="btn btn-list-action">Edit</button>
+                      <button (click)="submitSubject(item)" class="btn btn-list-action text-white">Edit</button>
                       <button (click)="remove('subject',item, i)" class="btn-status btn-delete">
                         <i class="fi fi-rr-trash"></i>
                       </button>
@@ -94,11 +109,11 @@
 
     </div>
 
-    <div class="row mt-3">
-      <div class="col-12 text-left">
+    <div class="row mt-2">
+      <div class="col-12">
         <div class="pricing-note">
-          <p class="mb-1"><strong>Consultation</strong> – per hour</p>
-          <p class="mb-0"><strong>Survey</strong> – per survey</p>
+          <p class="mb-1"><strong>Consultation</strong> – {{currencySymbol}} per hour</p>
+          <p class="mb-0"><strong>Survey</strong> – {{currencySymbol}} per survey</p>
         </div>
       </div>
     </div>

@@ -102,7 +102,12 @@ exports.router = router => {
    * @apiParam {String}   reviewId        Review id
    * @apiPermission all
    */
-  router.get('/v1/reviews/:reviewId', reviewController.findOne, Middleware.Response.success('review'));
+  router.get(
+    '/v1/reviews/:reviewId',
+    Middleware.loadUser,
+    reviewController.findOne,
+    Middleware.Response.success('review')
+  );
 
   /**
    * @apiGroup Review

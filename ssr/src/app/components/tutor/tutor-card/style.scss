@@ -168,6 +168,88 @@
   background: #e5e7eb;
 }
 
+/* Share profile — compact row under location; icon-only; uniform icon tiles */
+.expert-card-share--compact {
+  margin-top: 8px;
+  max-width: 100%;
+}
+
+.expert-card-share--compact .expert-card-share-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.01em;
+  margin-bottom: 6px !important;
+}
+
+.expert-card-share--compact .expert-card-share-actions {
+  margin-top: 0 !important;
+  gap: 6px !important;
+  flex-wrap: wrap;
+  align-items: center !important;
+}
+
+/* Override global .share-pill / .social-circle (!important in custom.scss) */
+.expert-card .expert-card-share--compact .share-pill {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  font-size: 0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+}
+
+.expert-card .expert-card-share--compact .share-pill:hover {
+  opacity: 1 !important;
+  transform: none !important;
+  border-color: #d1d5db !important;
+  background: #f9fafb !important;
+}
+
+.expert-card .expert-card-share--compact .share-pill.copied {
+  background: #fff !important;
+  border-color: #34c759 !important;
+  color: #34c759 !important;
+}
+
+.expert-card .expert-card-share--compact .share-pill i {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+.expert-card .expert-card-share--compact .social-circle {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border-radius: 8px !important;
+  font-size: 0.75rem !important;
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+}
+
+.expert-card .expert-card-share--compact .social-circle:hover {
+  transform: none !important;
+  border-color: #d1d5db !important;
+  background: #f9fafb !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+}
+
+.expert-card .expert-card-share--compact .social-circle.fb:hover {
+  color: #1877f2 !important;
+}
+
+.expert-card .expert-card-share--compact .social-circle.tw:hover {
+  color: #000 !important;
+}
+
 /* =========================
    ACTIONS
 ========================= */

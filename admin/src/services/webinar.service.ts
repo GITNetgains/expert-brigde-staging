@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -9,8 +9,17 @@ import { environment } from '../environments/environment';
 export class WebinarService {
   constructor(private http: HttpClient) {}
 
-  search(params: any): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/webinars`, { params });
+  search(params: Record<string, unknown>): Observable<any> {
+    let httpParams = new HttpParams();
+    for (const key of Object.keys(params || {})) {
+      const raw = (params as any)[key];
+      if (raw === undefined || raw === null) continue;
+      const str = Array.isArray(raw)
+        ? raw.map((x) => String(x)).join(',')
+        : String(raw);
+      httpParams = httpParams.set(key, str);
+    }
+    return this.http.get(`${environment.apiUrl}/webinars`, { params: httpParams });
   }
   create(params: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/webinars`, params);

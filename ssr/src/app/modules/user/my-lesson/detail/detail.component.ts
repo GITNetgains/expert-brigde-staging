@@ -120,10 +120,10 @@ export class LessonDetailComponent implements OnInit {
         };
         this.loadingReview = true;
         this.reviewService
-          .current(this.appointment._id, { rateTo: this.appointment.tutor._id })
+          .current(this.appointment._id, { rateBy: this.appointment.tutor._id })
           .then((reviewResp) => {
-            if (reviewResp.data !== null) {
-              this.review = resp.data;
+            if (reviewResp.data !== null && reviewResp.data !== undefined) {
+              this.review = reviewResp.data;
             }
             this.loadingReview = false;
           })

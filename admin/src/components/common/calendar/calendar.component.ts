@@ -114,7 +114,7 @@ export class CalendarComponent implements OnInit {
       start: moment(schedule.startTime).toDate(),
       end: moment(schedule.toTime).toDate(),
       allDay: false,
-      backgroundColor: schedule.booked || schedule.disabled ? mainColor['default'] : mainColor[schedule.type],
+      backgroundColor: schedule.booked || schedule.disabled ? mainColor['default'] : (mainColor[schedule.type] || mainColor['default']),
       extendedProps: {
         ...schedule
       }
@@ -127,11 +127,20 @@ export class CalendarComponent implements OnInit {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
+    if (this.loading()) {
+      return;
+    }
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect(); // clear date selection
     const startTime = moment(selectInfo.start).toDate();
     let toTime = moment(selectInfo.end).toDate();
     const minute = (moment(toTime).unix() - moment(startTime).unix()) / 60;
+    if (minute <= 0) {
+      return this.utilService.toastWarning({
+        title: 'Invalid Slot',
+        message: 'Please select a valid future time slot.',
+      });
+    }
     if (minute > this.slotDuration) {
       return this.utilService.toastWarning({
         title: 'Invalid Slot Duration',
@@ -157,6 +166,12 @@ export class CalendarComponent implements OnInit {
     if (this.payload.hashWebinar) {
       params['hashWebinar'] = this.payload.hashWebinar;
     }
+    if (!params['tutorId']) {
+      return this.utilService.toastWarning({
+        title: 'Missing Expert',
+        message: 'Please select an expert first, then add calendar slots.',
+      });
+    }
     this.loading.set(true);
     this.calendarService.create(params).subscribe({
       next: (resp) => {
@@ -180,6 +195,21 @@ export class CalendarComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
+        const backendMessage = err?.error?.message || err?.error?.data?.message || err?.message;
+        if (err?.status === 401) {
+          this.utilService.toastError({
+            title: 'Session Expired',
+            message: 'Your session expired. Please login again and retry creating the slot.',
+          });
+          return;
+        }
+        if (backendMessage) {
+          this.utilService.toastError({
+            title: 'Unable to create slot',
+            message: backendMessage,
+          });
+          return;
+        }
         this.utilService.toastError({
           title: 'Error',
           message: 'Failed to create the event. Please try again later.',

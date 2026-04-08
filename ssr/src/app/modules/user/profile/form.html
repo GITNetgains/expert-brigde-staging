@@ -1,26 +1,34 @@
 <div class="profile-settings-page" *ngIf="info">
   <section class="profile-hero bg-dashboard" [ngStyle]="{'background-image': banner}">
     <div class="container profile-hero-inner">
-      <div class="banner-top-right-actions" *ngIf="info && info.type === 'tutor'">
-        <div class="share-pill" (click)="shareProfile()" [ngClass]="{'copied': copied}">
-          <i class="fi" [ngClass]="copied ? 'fi-rr-check' : 'fi-rr-link'"></i>
-
-          <span translate>{{ copied ? 'Copied!' : 'Copy Profile Link' }}</span>
-        </div>
-        <a (click)="shareOnFacebook()" class="social-circle fb" title="Share on Facebook">
-          <i class="fi fi-brands-facebook"></i>
-        </a>
-        <a (click)="shareOnTwitter()" class="social-circle tw" title="Share on Twitter">
-          <i class="fi fi-brands-twitter"></i>
-        </a>
-      </div>
       <div class="row">
         <div class="col-12">
           <div class="profile-card-glass">
-            <div class="profile-avatar-wrap box-image">
-              <img [src]="info.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="" />
-              <a (click)="openChangeAvatarModal()" class="btn-upload-avatar"><i class="fi fi-rr-pencil"></i></a>
-              <a (click)="deleteAvatar()" class="btn-delete-avatar"><i class="fi fi-rr-trash"></i></a>
+            <div class="profile-avatar-column">
+              <div class="profile-avatar-wrap box-image">
+                <img [src]="info.avatarUrl" onerror="this.src='/assets/images/default-avatar.jpg'" alt="" />
+                <a (click)="openChangeAvatarModal()" class="btn-upload-avatar"><i class="fi fi-rr-pencil"></i></a>
+                <a (click)="deleteAvatar()" class="btn-delete-avatar"><i class="fi fi-rr-trash"></i></a>
+              </div>
+              <div class="profile-share-block" *ngIf="info && info.type === 'tutor'">
+                <span class="profile-share-label" translate>Share</span>
+                <div class="banner-top-right-actions">
+                  <div
+                    class="share-pill"
+                    (click)="shareProfile()"
+                    [ngClass]="{'copied': copied}"
+                    [title]="copied ? 'Copied' : 'Copy profile link'"
+                  >
+                    <i class="fi" [ngClass]="copied ? 'fi-rr-check' : 'fi-rr-link'"></i>
+                  </div>
+                  <a (click)="shareOnFacebook()" class="social-circle fb" title="Share on Facebook">
+                    <i class="fi fi-brands-facebook"></i>
+                  </a>
+                  <a (click)="shareOnTwitter()" class="social-circle tw" title="Share on Twitter">
+                    <i class="fi fi-brands-twitter"></i>
+                  </a>
+                </div>
+              </div>
             </div>
             <div class="profile-meta">
               <h4 class="profile-name">{{info.name}}</h4>
@@ -142,7 +150,7 @@
             </div>
         
           </div>
-          <div class="d-flex align-items-center mt-2" *ngIf="info && info.type === 'tutor'">
+          <div class="public-id-toggle-row mt-2" *ngIf="info && info.type === 'tutor'">
             <h6 class="me-3 mb-0"><span translate>Show only my ID (hide personal info)</span></h6>
             <label class="switch">
               <input type="checkbox" [checked]="!!info.showPublicIdOnly" (change)="changeShowPublicIdOnly()" />
@@ -427,34 +435,7 @@
             </form>
           </div>
         </div>
-        <div *ngIf="info" class="card glass-card mt-4">
-          <div class="card-header">
-            <h4 translate>Update password</h4>
-          </div>
-          <div class="card-body">
-            <form class="row" #frmPass="ngForm" (submit)="submit(frmPass)" ngNativeValidate>
-              <div class="col-md-8 rmb-2">
-                <div class="form-group input-border mb-0">
-                  <input type="password" class="form-control" [(ngModel)]="info.password" name="password"
-                    #password="ngModel" minlength="6" placeholder="{{'Enter password' | translate}}" />
-                  <div *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)">
-                    <p [hidden]="!password.errors['minlength']" style="color: red">
-                      Password must be at least 6 characters!
-                    </p>
-                  </div>
-                  <p class="help help-block">
-                    <small>Leave blank to keep the current password</small>
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-4 text-end rtxt-left">
-                <button class="btn btn-default btn-block" type="submit" translate>
-                  Update
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      
       </div>
 
       <div class="col-lg-7 col-md-12">
@@ -952,6 +933,34 @@
 
 
 </div>
+          </div>
+        </div>
+        <div *ngIf="info" class="card glass-card mt-4">
+          <div class="card-header">
+            <h4 translate>Update password</h4>
+          </div>
+          <div class="card-body">
+            <form class="row" #frmPass="ngForm" (submit)="submit(frmPass)" ngNativeValidate>
+              <div class="col-md-8 rmb-2">
+                <div class="form-group input-border mb-0">
+                  <input type="password" class="form-control" [(ngModel)]="info.password" name="password"
+                    #password="ngModel" minlength="6" placeholder="{{'Enter password' | translate}}" />
+                  <div *ngIf="password.errors && (password.dirty || password.touched || isSubmitted)">
+                    <p [hidden]="!password.errors['minlength']" style="color: red">
+                      Password must be at least 6 characters!
+                    </p>
+                  </div>
+                  <p class="help help-block">
+                    <small>Leave blank to keep the current password</small>
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-4 text-end rtxt-left">
+                <button class="btn btn-default btn-block" type="submit" translate>
+                  Update
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
