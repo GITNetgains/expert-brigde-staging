@@ -388,24 +388,44 @@ p.error {
 
   .srch_bar {
     input {
-      border: 1px solid #cdcdcd;
-      border-width: 0 0 1px 0;
+      border: 0;
       width: 100%;
-      padding: 2px 0 4px 6px;
-      background: none;
+      padding: 8px 42px 8px 12px;
+      background: #fff;
+      border-radius: 24px !important;
+      min-height: 38px;
     }
 
     .input-group-addon {
       button {
-        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-        border: medium none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--primary-color, #e4543c);
+        border: none;
         padding: 0;
-        color: #707070;
-        font-size: 18px;
+        color: #fff;
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      button i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: 0;
+        line-height: 1;
+        transform: translate(-50%, -50%);
       }
       position: absolute;
-      right: 0;
+      right: 7px;
       z-index: 9;
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 
@@ -454,6 +474,11 @@ p.error {
     padding: 18px 16px 10px;
     cursor: pointer;
     position: relative;
+  }
+
+  .empty-state-chat {
+    border-bottom: 0;
+    cursor: default;
   }
 
   .inbox_chat {

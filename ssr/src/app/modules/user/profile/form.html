@@ -11,7 +11,7 @@
                 <a (click)="deleteAvatar()" class="btn-delete-avatar"><i class="fi fi-rr-trash"></i></a>
               </div>
               <div class="profile-share-block" *ngIf="info && info.type === 'tutor'">
-                <span class="profile-share-label" translate>Share</span>
+                <span class="profile-share-label">Share Profile:</span>
                 <div class="banner-top-right-actions">
                   <div
                     class="share-pill"
@@ -21,10 +21,10 @@
                   >
                     <i class="fi" [ngClass]="copied ? 'fi-rr-check' : 'fi-rr-link'"></i>
                   </div>
-                  <a (click)="shareOnFacebook()" class="social-circle fb" title="Share on Facebook">
+                  <a (click)="shareOnFacebook()" class="share-pill social-share-pill" title="Share on Facebook">
                     <i class="fi fi-brands-facebook"></i>
                   </a>
-                  <a (click)="shareOnTwitter()" class="social-circle tw" title="Share on Twitter">
+                  <a (click)="shareOnTwitter()" class="share-pill social-share-pill" title="Share on Twitter">
                     <i class="fi fi-brands-twitter"></i>
                   </a>
                 </div>

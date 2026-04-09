@@ -238,6 +238,7 @@ export class CreateWebinarComponent implements OnInit {
     this.webinar.isFree = false;
     this.calendarService.checkByHash(this.hashWebinar).subscribe((check) => {
       if (!check.data.success && this.webinar.isOpen) {
+        this.isSubmitted = false;
         return this.utilService.toastError({
           title: 'Validation Error',
           message: 'This webinar is already open for booking.',
@@ -248,13 +249,23 @@ export class CreateWebinarComponent implements OnInit {
         : this.webinar;
       console.log(data);
       this.calendarPayload.hashWebinar = this.hashWebinar;
-      this.webinarService.create(data).subscribe((resp) => {
-        localStorage.removeItem('hast_webinar');
-        this.utilService.toastSuccess({
-          title: 'success',
-          message: 'Create Success',
-        });
-        this.router.navigate(['/webinar/list/']);
+      this.webinarService.create(data).subscribe({
+        next: () => {
+          localStorage.removeItem('hast_webinar');
+          this.utilService.toastSuccess({
+            title: 'success',
+            message: 'Create Success',
+          });
+          this.router.navigate(['/webinar/list/']);
+        },
+        error: (err) => {
+          this.isSubmitted = false;
+          const backendMessage = err?.error?.message || err?.error?.data?.message || err?.message;
+          this.utilService.toastError({
+            title: 'Create Failed',
+            message: backendMessage || 'Unable to submit group session. Please check session slots and try again.',
+          });
+        }
       });
     });
   }

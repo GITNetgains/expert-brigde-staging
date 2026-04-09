@@ -84,7 +84,7 @@ $radius-sm: 12px;
   .profile-share-label {
     margin: 0;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
@@ -127,8 +127,8 @@ $radius-sm: 12px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border-radius: 10px;
   color: white;
@@ -138,7 +138,7 @@ $radius-sm: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
   i {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     transition: transform 0.3s;
   }
 
@@ -164,6 +164,10 @@ $radius-sm: 12px;
   }
 }
 
+.share-pill.social-share-pill {
+  text-decoration: none;
+}
+
 @keyframes check-scale {
   0% { transform: scale(0.8); opacity: 0.5; }
   100% { transform: scale(1.1); opacity: 1; }
@@ -171,8 +175,8 @@ $radius-sm: 12px;
 
 /* Social Circles */
 .social-circle {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px; /* Matching the card radius style */
   display: flex;
   align-items: center;
@@ -182,26 +186,18 @@ $radius-sm: 12px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: white;
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-decoration: none;
 
   &:hover {
-    background: white;
-    transform: translateY(-3px) rotate(8deg);
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  &.fb:hover {
-    color: #1877f2;
-    border-color: #1877f2;
-  }
-
-  &.tw:hover {
-    color: #000;
-    border-color: #000;
+    border-color: rgba(255, 255, 255, 0.5);
   }
 }
 
@@ -434,6 +430,24 @@ $radius-sm: 12px;
     .switch {
       margin: 0;
     }
+  }
+
+  // Keep label/value rows aligned in view mode even when template adds Bootstrap d-flex.
+  .item-profile-form.d-flex {
+    display: grid !important;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .item-profile-form > h6 {
+    min-width: 0;
+  }
+
+  .item-profile-form > p.text-secondary2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .form-actions {

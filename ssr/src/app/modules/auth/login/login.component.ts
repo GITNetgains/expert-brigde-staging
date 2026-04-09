@@ -170,7 +170,7 @@ resendOtp() {
         })
         .catch((err) => {
           this.loading = false;
-          const code = err?.message || err?.code;
+          const code = err?.message || err?.code || err?.error || err?.data?.error || err?.data?.code;
           if (code === 'ERR_PROFILE_INCOMPLETE') {
             const msg =
               err?.data?.message || err?.message || 'Please complete your profile to sign in.';
@@ -225,7 +225,15 @@ resendOtp() {
         })
         .catch((err) => {
           this.loading = false;
-          const code = err?.message || err?.code;
+          const code = err?.message || err?.code || err?.error || err?.data?.error || err?.data?.code;
+          if (code === 'ERR_PASSWORD_NOT_SET') {
+            this.appService.toastError('You haven\'t set a password for this profile yet. Please sign in using OTP.');
+            this.loginMode = 'otp';
+            this.step = 'email';
+            this.credentials.password = '';
+            this.otpCode = '';
+            return;
+          }
           if (code === 'ERR_PROFILE_INCOMPLETE') {
             const msg =
               err?.data?.message || err?.message || 'Please complete your profile to sign in.';

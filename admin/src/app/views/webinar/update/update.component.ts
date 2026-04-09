@@ -305,6 +305,12 @@ export class UpdateWebinarComponent implements OnInit {
             message: 'Update  Webinar Success',
           });
           this.router.navigate(['/webinar/list']);
+        }, (err) => {
+          const backendMessage = err?.error?.message || err?.error?.data?.message || err?.message;
+          this.utilService.toastError({
+            title: 'Update Failed',
+            message: backendMessage || 'Unable to submit group session update. Please check session slots and try again.',
+          });
         });
     });
   }

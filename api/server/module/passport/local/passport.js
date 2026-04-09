@@ -25,6 +25,21 @@ exports.setup = () => {
               )
             );
           }
+          if (!user.password) {
+            return done(
+              null,
+              false,
+              PopulateResponse.error(
+                {
+                  message:
+                    'You do not have a password yet. Please log in using OTP and set a password from Profile Settings.'
+                },
+                'ERR_PASSWORD_NOT_SET',
+                400,
+                400
+              )
+            );
+          }
 
           return user.authenticate(password, (authError, authenticated) => {
             if (authError) {

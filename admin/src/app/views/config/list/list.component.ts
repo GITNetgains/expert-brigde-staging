@@ -55,9 +55,14 @@ export class ListComponent implements OnInit {
     'theme',
     'other',
   ];
-  activeGroup = 'general';
+  activeGroup = 'seo';
 
   private toasty = inject(UtilService);
+
+  get activeTabKey(): number {
+    const idx = this.groups.indexOf(this.activeGroup);
+    return idx >= 0 ? idx : 0;
+  }
   private configService = inject(ConfigService);
 
   ngOnInit(): void {

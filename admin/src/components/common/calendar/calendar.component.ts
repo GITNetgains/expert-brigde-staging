@@ -55,7 +55,7 @@ export class CalendarComponent implements OnInit {
     longPressDelay: 50,
     eventLongPressDelay: 50,
     selectLongPressDelay: 50,
-    slotDuration: '00:10:00',
+    slotDuration: '01:00:00',
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
@@ -67,7 +67,7 @@ export class CalendarComponent implements OnInit {
   });
   currentEvents = signal<EventApi[]>([]);
   loading = signal(false);
-  slotDuration = 40; // Default slot duration
+  slotDuration = 60; // Fixed slot duration in minutes
 
   readonly utilService = inject(UtilService);
 
@@ -141,12 +141,6 @@ export class CalendarComponent implements OnInit {
         message: 'Please select a valid future time slot.',
       });
     }
-    if (minute > this.slotDuration) {
-      return this.utilService.toastWarning({
-        title: 'Invalid Slot Duration',
-        message: `The selected slot duration is ${minute} minutes, which exceeds the allowed duration of ${this.slotDuration} minutes.`,
-      })
-    };
     if (minute < this.slotDuration) {
       toTime = moment(toTime)
         .add(this.slotDuration - minute, 'minutes')
@@ -272,6 +266,15 @@ export class CalendarComponent implements OnInit {
       return this.utilService.toastWarning({
         title: 'Event Unavailable',
         message: `This slot is ${schedule.disabled ? 'disabled' : 'booked'} and cannot be modified.`,
+      });
+    }
+    const updatedDurationInMinutes =
+      (moment(event.event.end).unix() - moment(event.event.start).unix()) / 60;
+    if (updatedDurationInMinutes < this.slotDuration) {
+      event.revert();
+      return this.utilService.toastWarning({
+        title: 'Invalid Slot Duration',
+        message: `Slot duration must be at least ${this.slotDuration} minutes.`,
       });
     }
     const params = {
